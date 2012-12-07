@@ -71,6 +71,8 @@ exit 0
 %defattr(-,root,root,-)
 
 %_datadir/apel/server.sql
+%_datadir/apel/cloud.sql
+%_datadir/apel/storage.sql
 # Directories for logs, PID files
 %dir %attr(644,apel,apel) %{_localstatedir}/log/apel
 %dir %attr(644,apel,apel) %{_localstatedir}/run/apel
