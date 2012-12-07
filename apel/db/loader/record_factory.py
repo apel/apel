@@ -46,7 +46,7 @@ class RecordFactory(object):
     restrict the capability to make more.
     '''
     # Message headers
-    JR_HEADER = 'APEL-individual-job-message.'
+    JR_HEADER = 'APEL-individual-job-message'
     SR_HEADER = 'APEL-summary-job-message'
     SYNC_HEADER = 'APEL-sync-message'
     CLOUD_HEADER = 'APEL-cloud-message'
@@ -94,7 +94,7 @@ class RecordFactory(object):
                 elif (header == RecordFactory.CLOUD_HEADER):
                     created_records = self._create_clouds(msg_text)
                 else:
-                    raise RecordFactoryException('Message type not recognised.')
+                    raise RecordFactoryException('Message type %s not recognised.' % header)
                 
             return created_records
         
