@@ -1,0 +1,10 @@
+/var/log/apel/loader.log {
+    notifempty
+    daily
+    rotate 7
+    missingok
+    postrotate
+        # only restart if the dbloader is running already
+        /sbin/service dbld status > /dev/null 2>&1 && /sbin/service dbld restart >/dev/null 2>&1
+    endscript
+}

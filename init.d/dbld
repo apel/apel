@@ -1,0 +1,73 @@
+#!/bin/sh
+# Startup script for dbloader
+#
+# chkconfig: 2345 95 05
+# description: Run the dbloader as a daemon
+# pidfile: /var/run/apel/loader.pid
+#
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+
+prog="dbloader"
+user="apel"
+PIDFILE=/var/run/apel/${prog}.pid
+
+start() {
+    echo -n $"Starting $prog: "
+    su $user -c $prog
+    RETVAL=$?
+    if [ $RETVAL -ne 0 ]; then
+        failure;
+    else
+		success;
+    fi;
+    echo
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    if [ -f $PIDFILE ]; then
+        kill `cat $PIDFILE`
+        RETVAL=$?
+        if [ $RETVAL -ne 0 ]; then
+            failure;
+	else 
+	    success;
+        fi;
+    else
+        RETVAL=1
+        failure;
+    fi
+    echo
+    return $RETVAL
+}
+
+
+case "$1" in
+        start)
+            start
+            ;;
+
+        stop)
+            stop
+            ;;
+
+        status)
+            status -p $PIDFILE $prog
+            ;;
+
+        restart)
+            stop
+            start
+            ;;
+
+        *)
+            echo $"Usage: $0 {start|stop|restart|status}"
+            exit 1
+
+esac
+
+exit $RETVAL
+

@@ -1,0 +1,29 @@
+from apel.common import parse_fqan
+from unittest import TestCase
+
+class ParsingUtilsTest(TestCase):
+    '''
+    Test case for test_parse_fqan method
+    '''
+    
+    def test_parse_fqan(self):
+        self.assertEqual((None, None, 'role=2'), parse_fqan('role=2'))
+        self.assertEqual(('role=some', '/Test', 'Test'), parse_fqan('/Test/role=some/test'))
+        
+        wrong_fqan1 = "hello."
+        wrong_fqan2 = "the/the/the"
+        wrong_fqan3 = "/no/role/or/equals"
+        
+        right_fqan1 = "/atlas/role=doer"
+        right_fqan2 = "/atlas/somethingelse/role=doer"
+        right_fqan3 = "/atlas/Role=production/Capability=NULL;/atlas/Role=NULL/Capability=NULL;/atlas/alarm/Role=NULL/Capability=NULL;/atlas/au/Role=NULL/Capability=NULL;/atlas/dataprep/Role=NULL/Capability=NULL;/atlas/lcg1/Role=NULL/Capability=NULL;/atlas/team/Role=NULL/Capability=NULL;/atlas/uk/Role=NULL/Capability=NULL"
+        right_fqan4 = "/ilc/Role=NULL/Capability=NULL"
+        
+        self.assertEqual(parse_fqan(wrong_fqan1), (None, None, wrong_fqan1))
+        self.assertEqual(parse_fqan(wrong_fqan2), (None, None, wrong_fqan2))
+        self.assertEqual(parse_fqan(wrong_fqan3), (None, None, wrong_fqan3))
+        
+        self.assertEqual(parse_fqan(right_fqan1), ("role=doer", "/atlas", "atlas"))
+        self.assertEqual(parse_fqan(right_fqan2), ("role=doer", "/atlas/somethingelse", "atlas"))
+        self.assertEqual(parse_fqan(right_fqan3), ("Role=production", "/atlas", "atlas"))
+        self.assertEqual(parse_fqan(right_fqan4), ("Role=NULL", "/ilc", "ilc"))

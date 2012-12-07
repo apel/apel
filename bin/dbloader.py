@@ -1,0 +1,159 @@
+#!/usr/bin/env python
+
+'''
+   Copyright (C) 2012 STFC
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+   
+@author: Will Rogers
+
+Module used to start and run the APEL loader.
+'''
+
+import sys
+import os
+import time
+import logging.config
+
+from daemon.daemon import DaemonContext
+from apel.db.loader import Loader, LoaderException
+from apel.common import set_up_logging
+import ConfigParser
+from optparse import OptionParser
+from dirq.queue import Queue
+
+log = None
+
+def runprocess(db_config_file, config_file, log_config_file):
+    '''Parse the configuration file and start the loader.'''
+    
+    # Read configuration from file 
+    cp = ConfigParser.ConfigParser()
+    cp.read(config_file)
+
+    dbcp = ConfigParser.ConfigParser()
+    dbcp.read(db_config_file)
+    
+    # set up logging
+    try:
+        if os.path.exists(options.log_config):
+            logging.config.fileConfig(options.log_config)
+        else:
+            set_up_logging(cp.get('logging', 'logfile'), 
+                           cp.get('logging', 'level'),
+                           cp.getboolean('logging', 'console'))
+        global log
+        log = logging.getLogger('dbloader')
+    except (ConfigParser.Error, ValueError, IOError), err:
+        print 'Error configuring logging: %s' % str(err)
+        print 'The system will exit.'
+        sys.exit(1)
+    
+
+    try:
+        qpath = cp.get('loader', 'msgpath')
+        db_backend = dbcp.get('db', 'backend')
+        db_hostname = dbcp.get('db', 'hostname')
+        db_port = int(dbcp.get('db', 'port'))
+        db_name = dbcp.get('db', 'name')
+        db_username = dbcp.get('db', 'username')
+        db_password = dbcp.get('db', 'password')
+        
+        interval = cp.getint('loader', 'interval')               
+        
+        pidfile = cp.get('loader', 'pidfile')
+        
+        if (cp.get('loader', 'test').lower() == 'true'):
+            test = True
+        else:
+            test = False
+        
+    except Exception, err:
+        print "Error in configuration file: " + str(err)
+        sys.exit(1)
+        
+    # Create a Loader object
+    try:
+        if os.path.exists(pidfile):
+            error = "Cannot start loader.  Pidfile %s already exists." % pidfile
+            raise LoaderException(error)
+        loader = Loader(qpath, db_backend, db_hostname, db_port, db_name, db_username, db_password, pidfile)
+    except Exception, err:
+        print "Error initialising loader: " + str(err)
+        sys.exit(1)
+        
+    # Once it's initialised correctly, set it going.
+    run_as_daemon(loader, interval)
+    
+
+        
+def run_as_daemon(loader, interval):
+    """
+    Given a loader object, start it as a daemon process.
+    """
+    log.info("The loader will run as a daemon.")
+    # We need to preserve the file descriptor for any log files.
+    rootlogger = logging.getLogger()
+    log_files = [x.stream for x in rootlogger.handlers]
+    dc = DaemonContext(files_preserve=log_files)
+    
+    try:
+        # Note: because we need to be compatible with python 2.4, we can't use
+        # with dc:
+        # here - we need to call the open() and close() methods 
+        # manually.
+        dc.open()
+        loader.startup()
+
+        # every <interval> seconds, process the records in the incoming 
+        # directory  
+        while True:
+            loader.load_all_msgs()
+            time.sleep(interval)
+                
+    except SystemExit, e:
+        log.info("Received the shutdown signal: " + str(e))
+        loader.shutdown()
+        dc.close()
+    except LoaderException, e:
+        log.error("An unrecoverable exception was thrown:")
+        log.error(str(e))
+        log.error("The loader will exit.")  
+        loader.shutdown()
+        dc.close()
+    except Exception, e:
+        log.error(type(e))
+        log.error(str(e))
+        log.error("Unexpected exception: " + str(e))
+        log.error("The loader will exit.")  
+        loader.shutdown()
+        dc.close()
+        
+    log.info("=======================")
+
+
+
+if __name__ == '__main__':   
+    '''Main method for running the loader.'''
+    opt_parser = OptionParser()
+    opt_parser.add_option('-d', '--db', help='location of configuration file for database',
+                          default='/etc/apel/db.cfg')
+    opt_parser.add_option('-c', '--config', help='Location of configuration file for dbloader',
+                          default='/etc/apel/loader.cfg')
+    opt_parser.add_option('-l', '--log_config', help='Location of logging configuration file for dbloader',
+                          default='/etc/apel/logging.cfg')
+    
+    (options, args) = opt_parser.parse_args()
+    
+    runprocess(options.db, options.config, options.log_config)
+    

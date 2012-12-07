@@ -1,0 +1,21 @@
+APEL2
+
+1. Purpose of project
+
+The main aim of this project is to provide accounting data for EGI Accounting 
+Portal. Accounting data may be extracted from following batch systems:
+ * SGE/OGE
+ * LSF 5.x, 6.x, 7.x, 8.x
+ * PBS
+
+2. Structure of the project
+
+Project was divided into several subdirectories. Here is the explanation:
+ * bin - contains executable scripts
+ * apel - codebase with all core functionalities
+ * test - unit tests for the system
+ * init.d - startup scripts for Scientific Linux
+ * schemas - database schemas
+ * specs - .spec files for creating RPM.
+
+ 
