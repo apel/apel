@@ -36,7 +36,7 @@ class CloudRecordTest(TestCase):
 #        self.assertEquals(record.get_field('LogicalCapacityUsed'), 13617)
 
     def setUp(self):
-        self._msg = '''
+        self._msg1 = '''
 RecordId: 2012-12-04 09:15:01+00:00 CESNET vm-0
 SiteName: CESNET
 ZoneName: EU
@@ -62,11 +62,70 @@ StorageRecordId: NULL
 ImageId: 'scilin6'
 CloudType: OpenNebula
 '''
+        self._values1 = {'SiteName': 'CESNET',
+                        'ZoneName': 'EU',
+                        'MachineName': '\'one-0\'',
+                        'LocalUserId': '5',
+                        'Status': 'completed',
+                        'CpuCount': 1,
+                        'Memory': 512,
+                        'ImageId': '\'scilin6\'',
+                        'CloudType': 'OpenNebula'
+                        }
+        
+        self._msg2 = '''
+RecordId: 2012-08-14 14:00:01+0200 FZJ Accounting Test
+SiteName: FZJ
+ZoneName: EU
+MachineName: Accounting Test
+LocalUserId: 1189105086dc4959bc9889383afc43b5
+LocalGroupId: EGI FCTF
+GlobalUserName: NULL
+FQAN: NULL
+Status: started
+StartTime: 1343362725
+EndTime: NULL
+SuspendTime: NULL
+TimeZone: CEST
+WallDuration: 1582876
+CpuDuration: 437
+CpuCount: 1
+NetworkType: NULL
+NetworkInbound: NULL
+NetworkOutbound: NULL
+Memory: 512
+Disk: 0
+StorageRecordId: NULL
+ImageId: Debian Testing (Wheezy)
+CloudType: Openstack
+'''
+
+        self._values2 = {'SiteName': 'FZJ',
+                        'ZoneName': 'EU',
+                        'MachineName': 'Accounting Test',
+                        'LocalUserId': '1189105086dc4959bc9889383afc43b5',
+                        'Status': 'started',
+                        'CpuCount': 1,
+                        'Memory': 512,
+                        'ImageId': 'Debian Testing (Wheezy)',
+                        'CloudType': 'Openstack'                  
+                         }
+        
+        self.cases = {}
+        self.cases[self._msg1] = self._values1
+        self.cases[self._msg2] = self._values2
 
     def test_load_from_msg(self):
-        cr = CloudRecord()
-        cr.load_from_msg(self._msg)
         
+        for msg in self.cases.keys():
+        
+            cr = CloudRecord()
+            cr.load_from_msg(msg)
+            
+            cont = cr._record_content
+        
+            for key in self.cases[msg].keys():
+                self.assertEqual(cont[key], self.cases[msg][key], "%s != %s for key %s" % (cont[key], self.cases[msg][key], key))
         
         
     def test_mandatory_fields(self):

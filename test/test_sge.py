@@ -71,12 +71,3 @@ class ParserSGETest(TestCase):
             for key in cases[line].keys():
                 self.assertEqual(cont[key], cases[line][key], "%s != %s for key %s" % (cont[key], cases[line][key], key))
         
-#        self.assertEqual("43", cont["JobName"])
-#        self.assertEqual("dteam041", cont['LocalUserID'])
-#        self.assertEqual("dteam", cont['LocalUserGroup'])
-#        self.assertEqual(1, cont['WallDuration'])
-#        self.assertEqual(0, cont['CpuDuration'])
-#        self.assertEqual(1200093294, cont["StartTime"])
-#        self.assertEqual(1200093295, cont["StopTime"])
-#        self.assertEqual(223, cont["MemoryReal"])
-#        self.assertEqual(30171136, cont["MemoryVirtual"])

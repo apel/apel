@@ -20,7 +20,7 @@ class ParserLSFTest(TestCase):
         
         line1_values = {"JobName": "699195", 
                         "LocalUserID":"raortega", 
-                        "LocalUserGroup": "", 
+                        "LocalUserGroup": None, 
                         "WallDuration":544, 
                         "CpuDuration": 294,
                         "StartTime": datetime.datetime.utcfromtimestamp(1089406862),
@@ -50,7 +50,7 @@ class ParserLSFTest(TestCase):
 
         line2_values = {"JobName": "436491", 
                         "LocalUserID":"viglen", 
-                        "LocalUserGroup": "", 
+                        "LocalUserGroup": None, 
                         "WallDuration":16, 
                         "CpuDuration": 2,
                         "StartTime": datetime.datetime.utcfromtimestamp(1302184004),
