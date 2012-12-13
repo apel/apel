@@ -101,7 +101,7 @@ if __name__ == '__main__':
     try:
         number_rec = unloader.unload_latest(table_name, send_ur)
     except KeyError:
-        log.warning('Invalid table name: %s, omitting' % record_type)
+        log.warning('Invalid table name: %s, omitting' % table_name)
         
     log.info('%d files unloaded from %s' % (number_rec, table_name))
         
