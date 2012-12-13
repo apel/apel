@@ -57,10 +57,14 @@ class DbUnloader(object):
         ''' 
         query = Query()
         
-        if record_type == (JobRecord or SummaryRecord):
+        if record_type == JobRecord or record_type == SummaryRecord:
             if self._inc_vos is not None:
                 query.VO_in = self._inc_vos
+                log.info('Sending only these VOs: ')
+                log.info(self._inc_vos)
             elif self._exc_vos is not None:
+                log.info('Excluding these VOs: ')
+                log.info(self._exc_vos)
                 query.VO_notin = self._exc_vos
             if not self._local:
                 query.InfrastructureType = 'grid'
@@ -71,11 +75,13 @@ class DbUnloader(object):
         '''
         Unload all records from the specified table.
         '''
+        log.info('Unloading all records from %s.' % table_name)
+        
         record_type = self.RECORD_TYPES[table_name]
         
         query = self._get_base_query(record_type)
-        count = self._write_messages(record_type, table_name, query, car)
-        return count
+        msgs, records = self._write_messages(record_type, table_name, query, car)
+        return msgs, records
         
     def unload_gap(self, table_name, start, end, car=False):
         '''
@@ -89,17 +95,23 @@ class DbUnloader(object):
         
         start_tuple = [ int(x) for x in start.split('-') ]
         end_tuple = [ int(x) for x in end.split('-') ]
+        # get the start of the start date
         start_date = datetime.date(*start_tuple)
-        end_date = datetime.date(end_tuple[0], end_tuple[1], end_tuple[2] + 1)
         start_datetime = datetime.datetime.combine(start_date, datetime.time())
+        # get the end of the end date
+        end_date = datetime.date(*end_tuple)
         end_datetime = datetime.datetime.combine(end_date, datetime.time())
+        end_datetime += datetime.timedelta(days=1)
         
+        log.info('Finding records with end times between:')
+        log.info(start_datetime)
+        log.info(end_datetime)
         query = self._get_base_query(record_type)
         query.EndTime_gt = start_datetime
         query.EndTime_lt = end_datetime
             
-        count = self._write_messages(record_type, table_name, query, car)
-        return count
+        msgs, records = self._write_messages(record_type, table_name, query, car)
+        return msgs, records
     
     def unload_latest(self, table_name, car=False):
         '''
@@ -112,28 +124,32 @@ class DbUnloader(object):
         query = self._get_base_query(record_type)
         since = self._db.get_last_updated()
         
+        log.info('Getting records updated since: %s' % since)
         if since is not None:
             query.UpdateTime_gt = str(since)
             
-        count = self._write_messages(record_type, table_name, query, car)
+        msgs, records = self._write_messages(record_type, table_name, query, car)
         
-        return count
+        self._db.set_updated()
+        
+        return msgs, records
             
     def _write_messages(self, record_type, table_name, query, car):
         '''
         Write messsages for all the records found in the specified table,
         according to the logic contained in the query object.
         '''
-        counter = 0
+        msgs = 0
+        records = 0
         for batch in self._db.get_records(record_type, table_name, query=query):
+            records += len(batch)
             if car:
                 self._write_xml(batch)
             else:
                 self._write_apel(batch)
-            counter += 1
+            msgs += 1
         
-        self._db.set_updated()
-        return counter
+        return msgs, records
     
     def _write_xml(self, records):
         '''

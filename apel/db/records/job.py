@@ -43,7 +43,7 @@ class JobRecord(Record):
                                   "StartTime", "EndTime"]
             
         # This list allows us to specify the order of lines when we construct records.
-        self._msg_fields  = ["Site", "SubmitHost", "MachineName", "LocalJobId", "LocalUserId", 
+        self._msg_fields  = ["Site", "SubmitHost", "MachineName", "Queue", "LocalJobId", "LocalUserId", 
                        "GlobalUserName", "FQAN", "VO", "VOGroup", "VORole", "WallDuration", 
                        "CpuDuration", "Processors", "NodeCount", "StartTime", "EndTime", "InfrastructureDescription", "InfrastructureType",
                        "MemoryReal", "MemoryVirtual", "ServiceLevelType", 
@@ -60,7 +60,7 @@ class JobRecord(Record):
         #self._fqan_fields = ["VO", "VOGroup", "VORole"]
         
         # Fields which are accepted but currently ignored.
-        self._ignored_fields = ["SubmitHostType", "Queue", "UpdateTime"]
+        self._ignored_fields = ["SubmitHostType", "UpdateTime"]
         
         self._all_fields = self._msg_fields + self._ignored_fields
         

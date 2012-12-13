@@ -126,8 +126,6 @@ class AurParser(XMLParser):
             except KeyError, e:
                 log.debug('Failed to parse field %s: %s' % (field, e))
         
-        log.info(data)
-            
         sr = SummaryRecord()
         sr.set_all(data)
         
