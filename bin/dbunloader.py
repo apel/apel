@@ -24,6 +24,7 @@ from apel.common import set_up_logging
 from apel.db.records import JobRecord, SummaryRecord
 from apel.db import ApelDb, ApelDbException
 from apel.db.unloader import DbUnloader
+from apel import __version__
 from optparse import OptionParser
 import ConfigParser
 
@@ -79,7 +80,7 @@ if __name__ == '__main__':
         sys.exit(1)
     
     log.info('=====================')
-    log.info('Starting unloader.')
+    log.info('Starting apel dbunloader version %s.%s.%s' % __version__)
     
     unload_dir       = cp.get('unloader', 'dir_location')
     table_name       = cp.get('unloader', 'table_name')

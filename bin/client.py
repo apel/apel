@@ -128,7 +128,6 @@ def main():
             try:
                 include      = cp.get('unloader', 'include_vos')
                 include_vos  = [ vo.strip() for vo in include.split(',') ]
-                log.debug('Including VOs: ', include_vos)
             except ConfigParser.NoOptionError:
                 # Only exclude VOs if we haven't specified the ones to include.
                 include_vos = None
@@ -146,6 +145,7 @@ def main():
         log.error('Error in configuration file: ' + str(err))
         sys.exit(1)
    
+    log.info('Starting apel client version %s.%s.%s' % __version__)
         
     # Log into the database
     try:
@@ -203,30 +203,32 @@ def main():
         log.info('=====================')
         log.info('Starting unloader.')
         
+        log.info('Will unload from %s.' % table_name)
+        
         interval = cp.get('unloader', 'interval')
         
         unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs)
         try:
             if interval == 'latest':
-                number_rec = unloader.unload_latest(table_name, send_ur)
+                msgs, recs = unloader.unload_latest(table_name, send_ur)
             elif interval == 'gap':
                 start = cp.get('unloader', 'gap-start')
                 end = cp.get('unloader', 'gap-end')
-                number_rec = unloader.unload_gap(table_name, start, end, send_ur)
+                msgs, recs = unloader.unload_gap(table_name, start, end, send_ur)
             elif interval == 'all':
-                number_rec = unloader.unload_all(table_name, send_ur)
+                msgs, recs = unloader.unload_all(table_name, send_ur)
             else:
                 log.warn('Unrecognised interval: %s' % interval)
                 log.warn('Will not start unloader.')
         except KeyError:
             log.warning('Invalid table name: %s, omitting' % table_name)
             
-        log.info('%d files unloaded' % number_rec)
+        log.info('Unloaded %d records in %d messages.' % (recs, msgs))
             
         # Always send sync messages
-        number_sync = unloader.unload_all('VSyncRecords', False)
+        msgs, recs = unloader.unload_all('VSyncRecords', False)
         
-        log.info('%s sync messages unloaded.' % number_sync)
+        log.info('Unloaded %d sync records in %d messages.' % (recs, msgs))
         
         log.info('Unloading complete.')
         log.info('=====================')

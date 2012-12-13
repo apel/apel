@@ -28,6 +28,7 @@ import logging.config
 from daemon.daemon import DaemonContext
 from apel.db.loader import Loader, LoaderException
 from apel.common import set_up_logging
+from apel import __version__
 import ConfigParser
 from optparse import OptionParser
 from dirq.queue import Queue
@@ -59,6 +60,7 @@ def runprocess(db_config_file, config_file, log_config_file):
         print 'The system will exit.'
         sys.exit(1)
     
+    log.info('Starting apel dbloader version %s.%s.%s' % __version__)
 
     try:
         qpath = cp.get('loader', 'msgpath')

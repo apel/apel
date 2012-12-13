@@ -28,6 +28,7 @@ import sys
 
 from apel.db import ApelDb
 from apel.common import set_up_logging
+from apel import __version__
 
 def runprocess(db_config_file, config_file, log_config_file):
     '''Parse the configuration file, connect to the database and run the 
@@ -67,6 +68,8 @@ def runprocess(db_config_file, config_file, log_config_file):
         print 'Error configuring logging: %s' % str(err)
         print 'The system will exit.'
         sys.exit(1)
+        
+    log.info('Starting apel summariser version %s.%s.%s' % __version__)
         
     # Log into the database
     try:

@@ -209,6 +209,7 @@ def main():
 
     global log
     log = logging.getLogger('parser')
+    log.info('Starting apel parser version %s.%s.%s' % __version__)
 
     # database connection
     try:
