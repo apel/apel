@@ -57,8 +57,8 @@ CREATE PROCEDURE InsertCloudRecord(
   localUserId VARCHAR(255),
   localGroupId VARCHAR(255), globalUserName VARCHAR(255), 
   fqan VARCHAR(255), status VARCHAR(255),
-  startTime INT, endTime INT, 
-  suspendTime INT, timeZone VARCHAR(255),
+  startTime DATETIME, endTime DATETIME, 
+  suspendTime DATETIME, timeZone VARCHAR(255),
   wallDuration INT, cpuDuration INT, 
   cpuCount INT, networkType VARCHAR(255),  networkInbound INT, 
   networkOutbound INT, memory INT, 
@@ -72,12 +72,30 @@ BEGIN
         ImageId, CloudType, PublisherDNID)
       VALUES (
         recordId, SiteLookup(site), zoneName, machineName, localUserId, localGroupId, DNLookup(globalUserName), 
-        fqan, status, FROM_UNIXTIME(startTime), FROM_UNIXTIME(endTime), FROM_UNIXTIME(suspendTime), 
+        fqan, status, startTime, endTime, suspendTime, 
         timeZone, wallDuration, cpuDuration, cpuCount, networkType, networkInbound, networkOutbound, memory,
         disk, storageRecordId, imageId, cloudType, DNLookup(publisherDN)
         );
 END //
 DELIMITER ;
+
+-- ------------------------------------------------------------------------------
+-- LastUpdated
+DROP TABLE IF EXISTS LastUpdated;
+CREATE TABLE LastUpdated (
+  UpdateTime TIMESTAMP NOT NULL,
+  Type VARCHAR(255)
+);
+
+DROP PROCEDURE IF EXISTS UpdateTimestamp;
+DELIMITER //
+CREATE PROCEDURE UpdateTimestamp(type VARCHAR(255)) 
+  BEGIN
+   REPLACE INTO LastUpdated (Type) VALUES (type);
+  END //
+
+DELIMITER ;    
+
 
 -- -----------------------------------------------------------------------------
 -- Sites
@@ -134,7 +152,7 @@ DELIMITER ;
 -- -----------------------------------------------------------------------------
 -- View on CloudRecords
 CREATE VIEW VCloudRecords AS
-    SELECT UpdateTime, RecordId, site.name Site, ZoneName, MachineName, 
+    SELECT UpdateTime, RecordId, site.name SiteName, ZoneName, MachineName, 
            LocalUserId, LocalGroupId, userdn.name GlobalUserName, FQAN, Status, StartTime, EndTime,
            SuspendTime, TimeZone, WallDuration, CpuDuration, CpuCount, NetworkType,
            NetworkInbound, NetworkOutbound, Memory, Disk, StorageRecordId, ImageId, CloudType
@@ -145,7 +163,7 @@ CREATE VIEW VCloudRecords AS
 -- -----------------------------------------------------------------------------
 -- View on CloudRecords
 CREATE VIEW VAnonCloudRecords AS
-    SELECT UpdateTime, RecordId, site.name Site, ZoneName, MachineName,
+    SELECT UpdateTime, RecordId, site.name SiteName, ZoneName, MachineName,
            LocalUserId, LocalGroupId, GlobalUserNameID, FQAN, Status, StartTime, EndTime,
            SuspendTime, TimeZone, WallDuration, CpuDuration, CpuCount, NetworkType,
            NetworkInbound, NetworkOutbound, Memory, Disk, StorageRecordId, ImageId, CloudType

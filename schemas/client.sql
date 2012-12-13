@@ -222,8 +222,8 @@ DROP PROCEDURE IF EXISTS JoinJobRecords;
 DELIMITER //
 CREATE PROCEDURE JoinJobRecords()
 BEGIN
-    DECLARE startTime DATETIME;
-    SET startTime = NOW();
+    DECLARE procstart DATETIME;
+    SET procstart = NOW();
 
     REPLACE INTO JobRecords (
       UpdateTime,
@@ -296,7 +296,13 @@ BEGIN
                              AND SpecRecords.SiteID = BlahdRecords.SiteID AND SpecRecords.CEID = BlahdRecords.CEID
     WHERE
         EventRecords.Status != 2;  -- all events which are not already grid jobs
-
+        
+    UPDATE EventRecords, JobRecords
+    SET Status = 2 
+    WHERE EventRecords.MachineNameID = JobRecords.MachineNameID
+        AND EventRecords.JobName = JobRecords.LocalJobId 
+        AND EventRecords.EndTime = JobRecords.EndTime 
+        AND JobRecords.UpdateTime >= procstart;
 END //
 DELIMITER ;
 
@@ -304,6 +310,8 @@ DROP PROCEDURE IF EXISTS LocalJobs;
 DELIMITER //
 CREATE PROCEDURE LocalJobs()
 BEGIN
+    DECLARE procstart DATETIME;
+    SET procstart = NOW();
     REPLACE INTO JobRecords (
       UpdateTime,
       SiteID,                -- Foreign key
@@ -371,8 +379,13 @@ BEGIN
     WHERE
     
         Status = 0; 
-    
---    UPDATE EventRecords SET Status = 1 WHERE Status = 0;
+
+    UPDATE EventRecords, JobRecords
+    SET Status = 1 
+    WHERE EventRecords.MachineNameID = JobRecords.MachineNameID
+        AND EventRecords.JobName = JobRecords.LocalJobId 
+        AND EventRecords.EndTime = JobRecords.EndTime 
+        AND JobRecords.UpdateTime >= procstart;
 
 END //
 DELIMITER ;
