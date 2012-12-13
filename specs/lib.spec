@@ -4,7 +4,7 @@
 %endif
 
 Name:           apellib
-Version:        0.0.1
+Version:        0.0.2
 Release:        0%{?dist}
 Summary:        Libraries required for Apel Client, Server and Parsers
 
@@ -49,5 +49,8 @@ rm -rf $RPM_BUILD_ROOT
 %{python_sitelib}/apel
 
 %changelog
- * Tue Nov 13 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.0-1
+ * Tue Nov 13 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.1-0
  - First release
+
+ * Wed Dec 13 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.2-0
+ - Change datatype handling.  Add cloud functionality.

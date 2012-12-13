@@ -1,5 +1,5 @@
 Name:           apelparsers
-Version:        0.0.1
+Version:        0.0.2
 Release:        0%{?dist}
 Summary:        Parsers for APEL system
 
@@ -53,5 +53,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{apelconf}/parser.cfg
 
 %changelog
- * Fri Nov 16 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.0-1
+ * Fri Nov 16 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.1-0
  - First release
+
+ * Wed Dec 16 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.2-0
+ - No major changes.

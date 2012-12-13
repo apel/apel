@@ -1,5 +1,5 @@
 Name:           apelclient
-Version:        0.0.1
+Version:        0.0.2
 Release:        0%{?dist}
 Summary:        APEL Client package
 
@@ -71,5 +71,9 @@ exit 0
 %config(noreplace) %{apelconf}/client.cfg
 
 %changelog
- * Tue Nov 13 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.0-1
+ * Tue Nov 13 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.1-0
  - First release
+
+ * Thu Dec 13 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.2-0
+ - Correct database logic.  Improve logging.
+

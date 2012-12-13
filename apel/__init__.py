@@ -16,4 +16,4 @@
    @author Konrad Jopek, Will Rogers
 '''
 
-__version__ = (0, 0, 1)
+__version__ = (0, 0, 2)
