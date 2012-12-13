@@ -129,9 +129,7 @@ class ApelMysqlDb(object):
             for record in record_list:
                 proc = self.MYSQL_PROCEDURES[type(record)]
                 values = record.get_db_tuple(source)
-                
                 c.execute(proc, values)
-                
             self.db.commit()
         except (MySQLdb.Warning, MySQLdb.Error), err:
             log.error("Error loading records: %s" % str(err))
@@ -208,7 +206,7 @@ class ApelMysqlDb(object):
         
         
     def get_last_updated(self):
-        query = "select UpdateTime from LastUpdated where Type = \"sent\""
+        query = 'select UpdateTime from LastUpdated where Type = "sent"'
         c = self.db.cursor()
         c.execute(query)
         result = c.fetchone()
@@ -219,10 +217,12 @@ class ApelMysqlDb(object):
             return result[0]
         
     def set_updated(self):
+        log.info('Updating timestamp.')
         query = 'call UpdateTimestamp("sent")'
         c = self.db.cursor()
         c.execute(query)
         c.fetchone()
+        self.db.commit()
         return True
     
     def summarise(self):
