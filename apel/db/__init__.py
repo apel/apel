@@ -18,5 +18,6 @@ LOGGER_ID = "apeldb"
 JOB_MSG_HEADER = "APEL-individual-job-message: v0.3"
 SUMMARY_MSG_HEADER = "APEL-summary-job-message: v0.2"
 SYNC_MSG_HEADER = "APEL-sync-message: v0.1"
+CLOUD_MSG_HEADER = 'APEL-cloud-message: v0.1'
 
 from apel.db.apeldb import ApelDb, Query, ApelDbException

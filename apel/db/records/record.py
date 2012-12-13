@@ -145,7 +145,7 @@ class Record(object):
                 
             elif name in self._float_fields: # float values
                 try:
-                    return int(value)
+                    return float(value)
                 except ValueError:
                     raise InvalidRecordException('Invalid float value %s in field %s' % (value, name))
                 
@@ -233,7 +233,7 @@ class Record(object):
                     value = str(int(calendar.timegm(ttuple)))
                 else:    
                     value = str(self._record_content[key]) # make sure we have a string
-            except KeyError:
+            except (KeyError, AttributeError):
                 if key in self._mandatory_fields:
                     raise InvalidRecordException('No mandatory key: %s found' % key)
             if value == None or value.isspace() or value == "":

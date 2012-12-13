@@ -71,6 +71,7 @@ class CarParser(XMLParser):
             'Site'             : lambda nodes: self.getText(nodes['Site'][0].childNodes),
             'SubmitHost'       : lambda nodes: self.getText(nodes['SubmitHost'][0].childNodes),
             'MachineName'      : lambda nodes: self.getText(nodes['MachineName'][0].childNodes),
+            'Queue'            : lambda nodes: self.getText(nodes['Queue'][0].childNodes),
             'LocalJobId'       : lambda nodes: self.getText(nodes['LocalJobId'][0].childNodes),
             'LocalUserId'      : lambda nodes: self.getText(nodes['LocalUserId'][0].childNodes),
             'GlobalUserName'   : lambda nodes: self.getText(nodes['GlobalUserName'][0].childNodes),
@@ -104,7 +105,7 @@ class CarParser(XMLParser):
                                         nodes['ServiceLevel'][0].childNodes),
             }
 
-        tags = ['Site', 'SubmitHost', 'MachineName', 'LocalJobId', 'LocalUserId', 
+        tags = ['Site', 'SubmitHost', 'MachineName', 'Queue', 'LocalJobId', 'LocalUserId', 
                 'GlobalUserName', 'GroupAttribute',
                 'Group', 'WallDuration', 'CpuDuration', 
                 'Processors', 'NodeCount', 'StartTime', 'EndTime', 'Infrastructure',

@@ -49,10 +49,14 @@ class CloudRecord(Record):
         self._db_fields = self._msg_fields
         self._all_fields = self._msg_fields
         
+        self._ignored_fields = [ "UpdateTime" ]
+        
         # Fields which will have an integer stored in them
         self._int_fields = ["WallDuration", "CpuDuration", "CpuCount", 
-                            "StartTime", "EndTime", "SuspendTime", "NetworkInbound", 
+                            "NetworkInbound", 
                             "NetworkOutbound", "Memory", "Disk"]
+        
+        self._datetime_fields = [ "StartTime", "EndTime", "SuspendTime"]
     
     
     def _check_fields(self):

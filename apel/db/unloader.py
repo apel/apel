@@ -16,13 +16,14 @@
    @author: Konrad Jopek, Will Rogers
 '''
 from apel.db import Query, ApelDbException, LOGGER_ID,\
-    JOB_MSG_HEADER, SUMMARY_MSG_HEADER, SYNC_MSG_HEADER
-from apel.db.records import JobRecord, SummaryRecord, SyncRecord
+    JOB_MSG_HEADER, SUMMARY_MSG_HEADER, SYNC_MSG_HEADER, CLOUD_MSG_HEADER
+from apel.db.records import JobRecord, SummaryRecord, SyncRecord, CloudRecord
 from dirq.QueueSimple import QueueSimple
 try:
     import cStringIO as StringIO
 except ImportError:
     import StringIO
+import datetime
 import os
 import logging
 
@@ -32,11 +33,14 @@ class DbUnloader(object):
     
     APEL_HEADERS = {JobRecord: JOB_MSG_HEADER, 
                     SummaryRecord: SUMMARY_MSG_HEADER,
-                    SyncRecord: SYNC_MSG_HEADER}
+                    SyncRecord: SYNC_MSG_HEADER,
+                    CloudRecord: CLOUD_MSG_HEADER}
     
     RECORD_TYPES = {'VJobRecords': JobRecord,
                     'VSummaries': SummaryRecord,
-                    'VSuperSummaries': SummaryRecord}
+                    'VSuperSummaries': SummaryRecord,
+                    'VSyncRecords': SyncRecord,
+                    'VCloudRecords': CloudRecord}
     
     def __init__(self, db, qpath, inc_vos=None, exc_vos=None, local=False):
         self._db = db
@@ -46,41 +50,53 @@ class DbUnloader(object):
         self._exc_vos = exc_vos
         self._local = local
         
-    def _get_base_query(self):
+    def _get_base_query(self, record_type):
         '''
         Set up a query object containing the logic which is common for 
         all users of this DbUnloader.
         ''' 
         query = Query()
-
-        if self._inc_vos is not None:
-            query.VOs_in = self._inc_vos
-        elif self._exc_vos is not None:
-            query.VOs_notin = self._exc_vos
-        if not self._local:
-            query.InfrastructureType = 'grid'
+        
+        if record_type == (JobRecord or SummaryRecord):
+            if self._inc_vos is not None:
+                query.VO_in = self._inc_vos
+            elif self._exc_vos is not None:
+                query.VO_notin = self._exc_vos
+            if not self._local:
+                query.InfrastructureType = 'grid'
             
         return query
         
-    def unload_all(self, record_type, table_name, car=False):
+    def unload_all(self, table_name, car=False):
         '''
         Unload all records from the specified table.
         '''
-        query = self._get_base_query()
+        record_type = self.RECORD_TYPES[table_name]
+        
+        query = self._get_base_query(record_type)
         count = self._write_messages(record_type, table_name, query, car)
         return count
         
-    def unload_gap(self, record_type, table_name, start, end, car=False):
+    def unload_gap(self, table_name, start, end, car=False):
         '''
         Unload all records from the JobRecords table whose EndTime falls
         within the provided dates (inclusive).
         '''
+        record_type = self.RECORD_TYPES[table_name]
+        
         if record_type != JobRecord:
             raise ApelDbException("Can only gap publish for JobRecords.")
         
-        query = self._get_base_query()
-        query.EndTime_gt = start
-        query.EndTime_lt = end
+        start_tuple = [ int(x) for x in start.split('-') ]
+        end_tuple = [ int(x) for x in end.split('-') ]
+        start_date = datetime.date(*start_tuple)
+        end_date = datetime.date(end_tuple[0], end_tuple[1], end_tuple[2] + 1)
+        start_datetime = datetime.datetime.combine(start_date, datetime.time())
+        end_datetime = datetime.datetime.combine(end_date, datetime.time())
+        
+        query = self._get_base_query(record_type)
+        query.EndTime_gt = start_datetime
+        query.EndTime_lt = end_datetime
             
         count = self._write_messages(record_type, table_name, query, car)
         return count
@@ -93,7 +109,7 @@ class DbUnloader(object):
         '''
         record_type = self.RECORD_TYPES[table_name]
         
-        query = self._get_base_query()
+        query = self._get_base_query(record_type)
         since = self._db.get_last_updated()
         
         if since is not None:
