@@ -100,11 +100,11 @@ if __name__ == '__main__':
     
     unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs)
     try:
-        number_rec = unloader.unload_latest(table_name, send_ur)
+        msgs, recs = unloader.unload_latest(table_name, send_ur)
     except KeyError:
         log.warning('Invalid table name: %s, omitting' % table_name)
         
-    log.info('%d files unloaded from %s' % (number_rec, table_name))
+    log.info('%d records in %d messages unloaded from %s' % (recs, msgs, table_name))
         
     
     log.info('Unloading complete.')
