@@ -40,8 +40,9 @@ class StorageRecord(Record):
     DB_FIELDS = ["RecordId", "CreateTime", "StorageSystem", "Site", "StorageShare", 
                        "StorageMedia", "StorageClass", "FileCount", "DirectoryPath",
                        "LocalUser", "LocalGroup", "UserIdentity", 
-                       "GroupName", "StartTime", "EndTime", 
-                       "ResourceCapacityUsed", "LogicalCapacityUsed"]
+                       "Group", "StartTime", "EndTime", 
+                       "ResourceCapacityUsed", "LogicalCapacityUsed",
+                       "ResourceCapacityAllocated"]
     
     ALL_FIELDS = DB_FIELDS
     
@@ -62,8 +63,7 @@ class StorageRecord(Record):
         self._all_fields = self._db_fields
         self._datetime_fields = ["CreateTime", "StartTime", "EndTime"]
         # Fields which will have an integer stored in them
-        self._int_fields = ["FileCount", "ValidDuration", 
-                            "ResourceCapacityUsed", "LogicalCapacityUsed"]
+        self._int_fields = ["FileCount", "ResourceCapacityUsed", "LogicalCapacityUsed", "ResourceCapacityAllocated"]
         
     
     def get_apel_db_insert(self, apel_db, source):

@@ -60,7 +60,7 @@ class ApelMysqlDb(object):
               SyncRecord  : "CALL InsertSyncRecord(%s, %s, %s, %s, %s, %s)",
               CloudRecord : "CALL InsertCloudRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               SummaryRecord: "CALL InsertSummary(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-              StorageRecord: "CALL InsertStarRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              StorageRecord: "CALL InsertStarRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               GroupAttributeRecord: "CALL InsertGroupAttribute(%s, %s, %s)",
               ProcessedRecord : "CALL InsertProcessedFile(%s, %s, %s, %s, %s)"
               }

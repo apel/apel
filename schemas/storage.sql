@@ -23,6 +23,31 @@ END //
 DELIMITER ;
 
 -- ------------------------------------------------------------------------------
+-- Sites
+DROP TABLE IF EXISTS Sites;
+CREATE TABLE Sites (
+    id                      INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name                    VARCHAR(255),
+
+    INDEX(name)
+);
+
+DROP FUNCTION IF EXISTS SiteLookup;
+DELIMITER //
+CREATE FUNCTION SiteLookup(lookup VARCHAR(255)) RETURNS INTEGER DETERMINISTIC
+BEGIN
+    DECLARE result INTEGER;
+    SELECT id FROM Sites WHERE name=lookup INTO result;
+    IF result IS NULL THEN
+        INSERT INTO Sites(name) VALUES (lookup);
+        SET result=LAST_INSERT_ID();
+    END IF;
+RETURN result;
+END //
+DELIMITER ;
+
+
+-- ------------------------------------------------------------------------------
 -- StorageShares
 DROP TABLE IF EXISTS StorageShares;
 CREATE TABLE StorageShares (
@@ -166,29 +191,24 @@ DELIMITER ;
 -- StarRecords
 DROP TABLE IF EXISTS StarRecords;
 CREATE TABLE StarRecords (
--- TODO: RecordIdentity as VARCHAR!?
-    RecordIdentity          VARCHAR(255) NOT NULL PRIMARY KEY,
-    CreateTime              TIMESTAMP NOT NULL,
--- normalise me! [DONE]
+    RecordId          VARCHAR(255) NOT NULL PRIMARY KEY,
+    CreateTime              DATETIME NOT NULL,
     StorageSystemID         INT NOT NULL,
--- normalise me! [DONE]
+    SiteID                  INT NOT NULL,
     StorageShareID          INT NOT NULL,
--- normalise me! [DONE]
     StorageMediaID          INT NOT NULL,
--- normalise me! [DONE]
     StorageClassID          INT NOT NULL,
     FileCount               INTEGER,
     DirectoryPath           VARCHAR(255),
     LocalUser               VARCHAR(255),
     LocalGroup              VARCHAR(255),
--- normalize me! [DONE]
     UserIdentityID          INT NOT NULL,
--- normalize me! [DONE]
     GroupID                 INT NOT NULL,
-    MeasureTime             TIMESTAMP NOT NULL,
-    ValidDuration           INTEGER NOT NULL,
+    StartTime               DATETIME NOT NULL,
+    EndTime                 DATETIME NOT NULL,
     ResourceCapacityUsed    BIGINT NOT NULL,
-    LogicalCapacityUsed     BIGINT NOT NULL,
+    LogicalCapacityUsed     BIGINT,
+    ResourceCapacityAllocated BIGINT,
 
     INDEX(StorageSystemID),
     INDEX(StorageShareID),
@@ -204,9 +224,10 @@ CREATE TABLE StarRecords (
 DROP PROCEDURE IF EXISTS InsertStarRecord;
 DELIMITER //
 CREATE PROCEDURE InsertStarRecord(
-    recordIdentity          VARCHAR(255),
-    createTime              TIMESTAMP,
+    recordId                VARCHAR(255),
+    createTime              DATETIME,
     storageSystem           VARCHAR(255),
+    site                    VARCHAR(255),
     storageShare            VARCHAR(255),
     storageMedia            VARCHAR(255),
     storageClass            VARCHAR(255),
@@ -216,15 +237,17 @@ CREATE PROCEDURE InsertStarRecord(
     localGroup              VARCHAR(255),
     userIdentity            VARCHAR(255),
     groupName               VARCHAR(255),
-    measureTime             TIMESTAMP,
-    validDuration           INTEGER,
+    startTime               DATETIME,
+    endTime                 DATETIME,
     resourceCapacityUsed    BIGINT,
-    logicalCapacityUsed     BIGINT
+    logicalCapacityUsed     BIGINT,
+    resourceCapacityAllocated BIGINT
     )
 BEGIN
-    REPLACE INTO StarRecords(RecordIdentity, 
+    REPLACE INTO StarRecords(RecordId, 
         CreateTime,
         StorageSystemID,
+        SiteID,
         StorageShareID,
         StorageMediaID,
         StorageClassID,
@@ -234,14 +257,16 @@ BEGIN
         LocalGroup,
         UserIdentityID,
         GroupID,
-        MeasureTime,
-        ValidDuration,
+        StartTime,
+        EndTime,
         ResourceCapacityUsed,
-        LogicalCapacityUsed)
+        LogicalCapacityUsed,
+        ResourceCapacityAllocated)
     VALUES (
-        recordIdentity,
+        recordId,
         createTime,
         StorageSystemLookup(storageSystem),
+        SiteLookup(site),
         StorageShareLookup(storageShare),
         StorageMediaLookup(storageMedia),
         StorageClassLookup(storageClass),
@@ -251,10 +276,11 @@ BEGIN
         localGroup,
         UserIdentityLookup(userIdentity),
         GroupLookup(groupName),
-        measureTime,
-        validDuration,
+        startTime,
+        endTime,
         resourceCapacityUsed,
-        logicalCapacityUsed
+        logicalCapacityUsed,
+        resourceCapacityAllocated
         );
 END //
 DELIMITER ;

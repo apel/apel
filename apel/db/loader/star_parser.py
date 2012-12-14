@@ -74,10 +74,11 @@ class StarParser(XMLParser):
                                                         self.getAttr(nodes['RecordIdentity'][0],
                                                                      'createTime'), 
                                                         self.TIME_FORMAT),
-            'Site'                  : lambda nodes: self.getText(
-                                                        nodes['Site'][0].childNodes),
             'StorageSystem'         : lambda nodes: self.getText(
                                                         nodes['StorageSystem'][0].childNodes),
+            'Site'                  : lambda nodes: self.getText(
+                                                        nodes['Site'][0].childNodes),
+
             'StorageShare'          : lambda nodes: self.getText(
                                                         nodes['StorageShare'][0].childNodes),
             'StorageMedia'          : lambda nodes: self.getText(
@@ -103,6 +104,9 @@ class StarParser(XMLParser):
                                                           .childNodes),
             'LogicalCapacityUsed'   : lambda nodes: self.getText(
                                                         nodes['LogicalCapacityUsed'][0]
+                                                          .childNodes),
+            'ResourceCapacityAllocated'   : lambda nodes: self.getText(
+                                                        nodes['ResourceCapacityAllocated'][0]
                                                           .childNodes)
             }
 
@@ -110,6 +114,8 @@ class StarParser(XMLParser):
         # we only want to change 'RecordId' to 'RecordIdentity',
         nodes = {}.fromkeys( map (lambda f: f == 'RecordId' and 'RecordIdentity' or f, 
                                   [S for S in functions]) )
+       #nodes = {}.fromkeys(functions.keys())
+        print nodes
         data = {}
 
         for node in nodes:
@@ -118,11 +124,11 @@ class StarParser(XMLParser):
             
         for field in functions:
             try:
-                if field == 'Group':
-                    data['GroupName'] = functions[field](nodes)
-                else:
-                    data[field] = functions[field](nodes)
-            except IndexError, e:
+#                if field == 'Group':
+#                    data['GroupName'] = functions[field](nodes)
+#                else:
+                data[field] = functions[field](nodes)
+            except (IndexError, KeyError), e:
                 print "Failed to get field %s: %s" % (field, e)
         
         sr = StorageRecord()

@@ -94,9 +94,9 @@ class StarParserTest(TestCase):
         self.assertEqual(star_record.get_field('RecordId'), "desycerttb_cms_disk_20121030T172004Z")
         self.assertEqual(star_record.get_field('StorageSystem'), 'discordia.desy.de')
         self.assertEqual(star_record.get_field('FileCount'), 5)
-        self.assertEqual(star_record.get_field('GroupName'), 'cms')
-#        self.assertEqual(str(star_record.get_field('StartTime')), "2012-10-30 17:10:04")
-#        self.assertEqual(str(star_record.get_field('EndTime')), "2012-10-30 17:10:04")
+        self.assertEqual(star_record.get_field('Group'), 'cms')
+        self.assertEqual(str(star_record.get_field('StartTime')), "2012-10-30 17:10:04")
+        self.assertEqual(str(star_record.get_field('EndTime')), "2012-10-30 17:10:04")
         self.assertEqual(star_record.get_field('ResourceCapacityUsed'), 693064064)
         
         # check the correctess of group_attribute
