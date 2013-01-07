@@ -17,10 +17,10 @@
 import md5
 import gzip
 
-def calculate_hash(fname, gz=False):
+def calculate_hash(fname):
     '''
-    Calculates MD5 hash from content of file with name='fname'.  Opens gzip
-    file if gz=True.
+    Calculates MD5 hash from content of file with name='fname'.  Also opens gzip
+    files.
     
     Used in parsers to avoid double parsing of files.
     For sample usage please go to: apel2/bin/client.py
@@ -28,17 +28,25 @@ def calculate_hash(fname, gz=False):
     
     data = 'initial'
     
-    if gz:
-        fp = gzip.open(fname, 'r')
-    else:
-        fp = open(fname, 'r')
-    
+#    if gz:
+#        fp = gzip.open(fname, 'r')
+#    else:
+#        fp = open(fname, 'r')
     md = md5.new()
-    
-    while data != '':
-        # 128kiB buffer
-        data = fp.read(131072)
-        md.update(data)
+
+    try:
+        fp = gzip.open(fname, 'r')
+        while data != '':
+            # 128kiB buffer
+            data = fp.read(131072)
+            md.update(data)
+    except IOError: # not a gzipped file
+        fp = open(fname, 'r')
+        while data != '':
+            # 128kiB buffer
+            data = fp.read(131072)
+            md.update(data)    
+
     
     fp.close()
     return md.hexdigest()

@@ -79,8 +79,6 @@ class LSFParser(Parser):
         # get unique values for the different hosts listed after num_exec
         nnodes = len(set(items[24 + num_asked:24 + offset]))
         
-        # submitHost is taken from lsf accounting log file 
-        
         mapping_lsf_5678 = {
                    'Site'           : lambda x: self.siteName,
                    'JobName'        : lambda x: x[3],

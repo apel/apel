@@ -32,7 +32,7 @@ class Parser(object):
         '''
         self.siteName = siteName
         self.machineName = machineName
-        logger.info('Created parser for: %s / %s' % (self.siteName, self.machineName))
+        logger.info('Site: %s; batch system: %s' % (self.siteName, self.machineName))
 
     def parse(self, line):
         '''

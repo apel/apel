@@ -74,13 +74,16 @@ def parse_file(log_type, cp, apel_db, batch_size, fp):
     # how many times given error was raised
     exceptions = {}
     
-    fine = 0
+    parsed = 0
+    failed = 0
+    ignored = 0
     
     for i, line in enumerate(fp):
         try:
             record = parser.parse(line)
         except Exception, e:
             log.debug('Error %s on line %d' % (str(e), i))
+            failed += 1
             if exceptions.has_key(str(e)):
                 exceptions[str(e)] += 1
             else:
@@ -88,20 +91,27 @@ def parse_file(log_type, cp, apel_db, batch_size, fp):
         else:
             if record is not None:
                 records.append(record)
-                fine += 1
+                parsed += 1
+            else:
+                ignored += 1
             if len(records) % batch_size == 0 and len(records) != 0:
                 apel_db.load_records(records)
                 del records
                 records = []
         
-    
     apel_db.load_records(records)
-    log.info('Parsed: %d/%d lines' % (fine, i+1))
+        
+    if parsed == 0:
+        log.warn('Failed to parse file.  Is it a %s log file?' % log_type)        
+    else:
+        log.info('Parsed %d lines' % parsed)
+        log.info('Ignored %d lines (incomplete jobs)' % parsed)
+        log.info('Failed to parse %d lines' % failed)
+        
+        for error in exceptions:
+            log.error('%s raised %d times' % (error, exceptions[error]))
     
-    for error in exceptions:
-        log.error('%s raised %d times' % (error, exceptions[error]))
-    
-    return fine, i
+    return parsed, i
 
 def scan_dir(log_type, dir_location, apel_db,
              batch_size, cp, processed_files,
@@ -113,7 +123,7 @@ def scan_dir(log_type, dir_location, apel_db,
         else:
             expr = re.compile(cp.get('Batch', 'pattern'))
     except ConfigParser.NoOptionError:
-        log.warning('Cannot find pattern for files for: %s' % log_type)
+        log.warning('No pattern specified for %s log file names.' % log_type)
         log.warning('Parser will try to parse all files in directory')
         expr = re.compile('(.*)')
         
@@ -128,7 +138,7 @@ def scan_dir(log_type, dir_location, apel_db,
                 
                 # firstly we calculate the hash
                 # for file:
-                file_hash = calculate_hash(abs_file, gz)
+                file_hash = calculate_hash(abs_file)
                 found = False
                 # next, try to find corresponding entry
                 # in database
@@ -143,12 +153,13 @@ def scan_dir(log_type, dir_location, apel_db,
                 if not found:
                     try:
                         log.info('Parsing file: %s' % abs_file)
-                        if gz:
+                        try:
                             fp = gzip.open(abs_file)
-                        else:
+                            parsed, total = parse_file(log_type, cp, apel_db, batch_size, fp)
+                        except IOError, e: # not a gzipped file
                             fp = open(abs_file, 'r')
-                        parsed, total = parse_file(log_type, cp, apel_db, batch_size, fp)
-                        fp.close()
+                            parsed, total = parse_file(log_type, cp, apel_db, batch_size, fp)
+                            fp.close()
                     except IOError, e:
                         log.error('Cannot open file %s due to: %s' % 
                                      (item, str(e)))
@@ -166,7 +177,7 @@ def scan_dir(log_type, dir_location, apel_db,
             else:
                 log.info('Not a regular file: %s [omitting]' % item)
                 
-        log.info('%s log files parsed correctly' % log_type)
+        log.info('Finished parsing %s log files.' % log_type)
     except KeyError, e:
         log.fatal('Improperly configured.')
         log.fatal('Check the section for %s parser, %s' % (log_type, str(e)))
@@ -209,6 +220,7 @@ def main():
 
     global log
     log = logging.getLogger('parser')
+    log.info('=====================================')
     log.info('Starting apel parser version %s.%s.%s' % __version__)
 
     # database connection
@@ -277,6 +289,7 @@ def main():
     apel_db.clean_processed_files(hostname)
     apel_db.load_records(new_db, None)
     
+    log.info('=====================================')
     sys.exit(0)
     
 if __name__ == '__main__':
