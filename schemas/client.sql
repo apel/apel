@@ -55,7 +55,6 @@ CREATE TABLE JobRecords (
 -- EventRecords
 DROP TABLE IF EXISTS EventRecords;
 CREATE TABLE EventRecords (
-  EventID VARCHAR(100) NOT NULL PRIMARY KEY,
   SiteID          INT             NOT NULL, -- foreign key
   JobName         VARCHAR(60)     NOT NULL,
   LocalUserID     VARCHAR(20),
@@ -66,14 +65,14 @@ CREATE TABLE EventRecords (
   EndTime         DATETIME        NOT NULL,
   Infrastructure  VARCHAR(100),
   MachineNameID   INT             NOT NULL, -- foreign key
-  QueueID         INT ,                      -- foreign key
+  QueueID         INT             NOT NULL, -- foreign key
   MemoryReal      BIGINT,
   MemoryVirtual   BIGINT,
   Processors      INT,
   NodeCount       INT,
   Status          INT,                      -- 0 for unprocessed, 1 for local job, 2 for grid job
   
---  PRIMARY KEY(EndTime, SiteID, JobName),
+  PRIMARY KEY(MachineNameID, JobName, EndTime),
   INDEX EventJoinIdx (SiteID, JobName)
 );
 
@@ -96,9 +95,9 @@ CREATE PROCEDURE InsertEventRecord(
   processors     INT,
   nodeCount      INT)
 BEGIN
-        REPLACE INTO EventRecords(EventID, SiteID, JobName, LocalUserID, LocalUserGroup, WallDuration,
+        REPLACE INTO EventRecords(SiteID, JobName, LocalUserID, LocalUserGroup, WallDuration,
                                   CpuDuration, StartTime, EndTime, Infrastructure, MachineNameID, QueueID, MemoryReal, MemoryVirtual, Processors, NodeCount, Status)
-        VALUES (CONCAT(endTime, "-", site, "-", jobName), SiteLookup(site), jobName, localUserId, localUserGroup, wallDuration, cpuDuration, 
+        VALUES (SiteLookup(site), jobName, localUserId, localUserGroup, wallDuration, cpuDuration, 
           startTime, endTime, infrastructure, MachineNameLookup(machineName), QueueLookup(queue), memoryReal, memoryVirtual, processors, nodeCount, 0);
 END //
 DELIMITER ;
