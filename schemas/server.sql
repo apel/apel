@@ -198,11 +198,11 @@ CREATE PROCEDURE CopySummaries()
 BEGIN
     REPLACE INTO SuperSummaries(SiteID, Month, Year, GlobalUserNameID, VOID,
         VOGroupID, VORoleID, SubmitHostID, InfrastructureType, ServiceLevelType, ServiceLevel, 
-        EarliestEndTime, LatestEndTime, WallDuration,
+        NodeCount, Processors, EarliestEndTime, LatestEndTime, WallDuration,
         CpuDuration, NumberOfJobs)
     SELECT SiteID, Month, Year, GlobalUserNameID, VOID,
         VOGroupID, VORoleID, SubmitHostID, InfrastructureType, ServiceLevelType, ServiceLevel, 
-        EarliestEndTime, LatestEndTime, WallDuration,
+        NodeCount, Processors, EarliestEndTime, LatestEndTime, WallDuration,
         CpuDuration, NumberOfJobs
     FROM Summaries;
 END //
