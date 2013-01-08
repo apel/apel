@@ -146,13 +146,12 @@ def run_as_daemon(loader, interval):
 
 
 if __name__ == '__main__':   
-    '''Main method for running the loader.'''
     opt_parser = OptionParser()
-    opt_parser.add_option('-d', '--db', help='location of configuration file for database',
+    opt_parser.add_option('-d', '--db', help='location of DB config file',
                           default='/etc/apel/db.cfg')
-    opt_parser.add_option('-c', '--config', help='Location of configuration file for dbloader',
+    opt_parser.add_option('-c', '--config', help='Location of config file',
                           default='/etc/apel/loader.cfg')
-    opt_parser.add_option('-l', '--log_config', help='Location of logging configuration file for dbloader',
+    opt_parser.add_option('-l', '--log_config', help='Location of logging config file (optional)',
                           default='/etc/apel/logging.cfg')
     
     (options, args) = opt_parser.parse_args()

@@ -1,26 +1,27 @@
 #!/usr/bin/env python
+
+#   Copyright (C) 2012 STFC
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+# APEL parser. This is an universal script which supports following systems:
+# - BLAH
+# - PBS
+# - SGE
+# - LSF (5.x, 6.x, 7.x 8.x)
+
 '''
-   Copyright (C) 2012 STFC
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
-    @author: Konrad Jopek
-
-APEL2 parser. This is an universal script which supports following systems:
- - BLAH
- - PBS
- - SGE
- - LSF (5.x, 6.x, 7.x 8.x)
+    @author: Konrad Jopek, Will Rogers
 '''
 
 import logging.config
@@ -34,7 +35,6 @@ from optparse import OptionParser
 from apel import __version__
 from apel.db import ApelDb, ApelDbException
 from apel.common import calculate_hash, set_up_logging
-from apel.parsers import LOGGER_ID
 from apel.parsers.blah import BlahParser
 from apel.parsers.lsf import LSFParser
 from apel.parsers.sge import SGEParser
@@ -136,8 +136,7 @@ def scan_dir(log_type, dir_location, apel_db,
             if os.path.isfile(abs_file) and expr.match(item):
                 gz = abs_file.endswith('.gz')
                 
-                # firstly we calculate the hash
-                # for file:
+                # first, calculate the hash of the file:
                 file_hash = calculate_hash(abs_file)
                 found = False
                 # next, try to find corresponding entry
@@ -153,6 +152,8 @@ def scan_dir(log_type, dir_location, apel_db,
                 if not found:
                     try:
                         log.info('Parsing file: %s' % abs_file)
+                        # try to open as a gzip file, and if it fails try as 
+                        # a regular file
                         try:
                             fp = gzip.open(abs_file)
                             parsed, total = parse_file(log_type, cp, apel_db, batch_size, fp)
@@ -185,8 +186,8 @@ def scan_dir(log_type, dir_location, apel_db,
     
 
 def main():
-    
-    opt_parser = OptionParser(description=__doc__, version=__version__)
+    ver = "APEL client %s.%s.%s" % __version__
+    opt_parser = OptionParser(description=__doc__, version=ver)
     opt_parser.add_option("-c", "--config", help="the location of config file", 
                           default="/etc/apel/parser.cfg")
     opt_parser.add_option("-l", "--log_config", help="the location of logging config file", 

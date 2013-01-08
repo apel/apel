@@ -1,29 +1,28 @@
 #!/usr/bin/env python
-'''
-   Copyright (C) 2012 STFC
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+#   Copyright (C) 2012 STFC
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-   
-   @author: Konrad Jopek
-
-Main script for Apel Client.
-The order of execution is as follows:
- - fetch benchmark information from LDAP database
- - join EventRecords and BlahdRecords into JobRecords
- - summarise jobs
- - unload JobRecords or SummaryRecords into filesystem
- - send data to server using SSM
- 
+#   Main script for APEL client.
+#   The order of execution is as follows:
+#    - fetch benchmark information from LDAP database
+#    - join EventRecords and BlahdRecords into JobRecords
+#    - summarise jobs
+#    - unload JobRecords or SummaryRecords into filesystem
+#    - send data to server using SSM
+''' 
+   @author: Konrad Jopek, Will Rogers
 '''
     
 from optparse import OptionParser
@@ -35,7 +34,6 @@ import ldap
 
 from apel.db import ApelDb
 from apel import __version__
-from apel.db.records import JobRecord, SummaryRecord, SyncRecord
 from apel.ldap import fetch_specint
 from apel.db.unloader import DbUnloader
 from apel.common import set_up_logging
@@ -48,51 +46,61 @@ def run_ssm(ssm_cfg, log):
     cp = ConfigParser.ConfigParser()
     cp.read(ssm_cfg)
     
-    bg = StompBrokerGetter(cp.get('broker','bdii'))
-    brokers = bg.get_broker_hosts_and_ports(STOMP_SERVICE, cp.get('broker','network'))
+    try:
+        bg = StompBrokerGetter(cp.get('broker','bdii'))
+        brokers = bg.get_broker_hosts_and_ports(STOMP_SERVICE, cp.get('broker','network'))
+    except ldap.LDAPError, e:
+        log.error('Failed to retrieve brokers from LDAP: %s' % str(e))
+        log.error('Messages were not sent.')
+        return
     
     try:
         server_cert = cp.get('certificates','server')
     except ConfigParser.NoOptionError:
         server_cert = None
         
+    try:
+        ssm = Ssm2(brokers, 
+                   cp.get('messaging','path'),
+                   dest=cp.get('messaging','destination'),
+                   cert=cp.get('certificates','certificate'),
+                   key=cp.get('certificates','key'),
+                   enc_cert=server_cert)
+    except Ssm2Exception, e:
+        log.error('Failed to initialise SSM: %s' % str(e))
+        log.error('Messages have not been sent.')
+        return
     
-    ssm = Ssm2(brokers, 
-               cp.get('messaging','path'),
-               dest=cp.get('messaging','destination'),
-               cert=cp.get('certificates','certificate'),
-               key=cp.get('certificates','key'),
-               enc_cert=server_cert)
-    
-    ssm.handle_connect()
-    
-    ssm.send_all()
+    try:
+        ssm.handle_connect()
+        ssm.send_all()
+        ssm.close_connection()
+    except Ssm2Exception, e:
+        log.error('SSM failed to complete successfully: %s' % str(e))
+        return
     
     log.info('SSM run has finished.')
-    
-    ssm.close_connection()
-    
     log.info('Sending SSM has shut down.')
-    log.info('========================================')
+    
 
 def main():
-    
-    opt_parser = OptionParser(version=__version__, description=__doc__)
+    ver = "APEL client %s.%s.%s" % __version__
+    opt_parser = OptionParser(version=ver, description=__doc__)
     
     opt_parser.add_option('-c', '--config',
                           help='main configuration file for APEL',
                           default='/etc/apel/client.cfg')
     
-    opt_parser.add_option('-l', '--log_config', 
-                          help='the location of logging config file',
-                          default='/etc/apel/logging.cfg')
-    
     opt_parser.add_option('-s', '--ssm_config', 
-                          help='the location of SSM config file',
+                          help='location of SSM config file',
                           default='/etc/apel/sender.cfg')
     
-    options, _ = opt_parser.parse_args()
-    cp     = ConfigParser.ConfigParser()
+    opt_parser.add_option('-l', '--log_config', 
+                          help='location of logging config file (optional)',
+                          default='/etc/apel/logging.cfg')
+    
+    options, unused_args = opt_parser.parse_args()
+    cp = ConfigParser.ConfigParser()
     cp.read(options.config)
 
     # set up logging

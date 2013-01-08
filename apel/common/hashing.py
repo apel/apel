@@ -28,12 +28,10 @@ def calculate_hash(fname):
     
     data = 'initial'
     
-#    if gz:
-#        fp = gzip.open(fname, 'r')
-#    else:
-#        fp = open(fname, 'r')
     md = md5.new()
 
+    # try opening as a gzip file, and if it fails
+    # try as a regular file
     try:
         fp = gzip.open(fname, 'r')
         while data != '':
