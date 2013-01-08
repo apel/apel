@@ -15,11 +15,13 @@
 '''
 
 from apel.common import iso2seconds, parse_timestamp
-from xml_parser import XMLParser
+from xml_parser import XMLParser, XMLParserException
 from apel.db.records.job import JobRecord
 import logging
 
 log = logging.getLogger('loader')
+
+
 
 
 class CarParser(XMLParser):
@@ -29,13 +31,11 @@ class CarParser(XMLParser):
     For documentation please visit: 
     https://twiki.cern.ch/twiki/bin/view/EMI/ComputeAccountingRecord
     '''
-    
     # main namespace for records
     NAMESPACE = "http://eu-emi.eu/namespaces/2012/11/computerecord"
     
     # time format in CAR records
     TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-    
     
     def get_records(self):
         '''
@@ -45,21 +45,20 @@ class CarParser(XMLParser):
         structure of XML document, including namespace
         information and prefixes in XML tag (like urf:UsageRecord).
         '''
-        records = []
+        cars = self.doc.getElementsByTagNameNS(self.NAMESPACE, 'UsageRecord')
         
-        xml_storage_records = self.doc.getElementsByTagNameNS(self.NAMESPACE, 'UsageRecord')
+        if len(cars) == 0:
+            raise XMLParserException('File does not contain car records!') 
         
-        if len(xml_storage_records) == 0:
-            raise Exception('File does not contain car records!') 
-        
-        for xml_storage_record in xml_storage_records:
-            record = self.parseCarRecord(xml_storage_record)
-            records.append(record)
+        return [ self.parse_car(car) for car in cars ] 
+#        for xml_storage_record in xml_storage_records:
+#            record = self.parseCarRecord(xml_storage_record)
+#            records.append(record)
 
-        return records
+#        return records
     
     
-    def parseCarRecord(self, xml_record):
+    def parse_car(self, xml_record):
         '''
         Main function for parsing CAR record.
         
@@ -123,9 +122,7 @@ class CarParser(XMLParser):
         for field in functions:
             try:
                 data[field] = functions[field](nodes)
-            except IndexError, e:
-                log.debug('Failed to parse field %s: %s' % (field, e))
-            except KeyError, e:
+            except (IndexError, KeyError, AttributeError), e:
                 log.debug('Failed to parse field %s: %s' % (field, e))
             
         jr = JobRecord()

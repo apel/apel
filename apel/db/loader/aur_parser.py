@@ -78,7 +78,7 @@ class AurParser(XMLParser):
             'VO'               : lambda nodes: self.getText(nodes['Group'][0].childNodes),
             'VOGroup'          : lambda nodes: self.getText(
                                         self.getTagByAttr(nodes['GroupAttribute'], 
-                                                          'type', 'group')[0].childNodes),
+                                                          'type', 'vo-group')[0].childNodes, CarParser.NAMESPACE),
             'VORole'           : lambda nodes: self.getText(
                                         self.getTagByAttr(nodes['GroupAttribute'],
                                                           'type', 'role')[0].childNodes),

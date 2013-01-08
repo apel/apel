@@ -157,9 +157,10 @@ class SummaryRecord(Record):
             global_user_name.setAttribute('urf:type', 'opensslCompat')
             user_id.appendChild(global_user_name)
             
-        group = doc.createElement('urf:Group')
-        group.appendChild(doc.createTextNode(self.get_field('VO')))
-        user_id.appendChild(group)
+        if self.get_field('urf:Group') is not None:
+            group = doc.createElement('urf:Group')
+            group.appendChild(doc.createTextNode(self.get_field('VO')))
+            user_id.appendChild(group)
         
         if self.get_field('VOGroup') is not None:
             vogroup = doc.createElement('urf:GroupAttribute')

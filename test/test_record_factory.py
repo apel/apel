@@ -6,7 +6,8 @@ Created on 4 Jul 2011
 Tests for the RecordFactory.
 '''
 import unittest
-from apel.db.loader.record_factory import RecordFactory, RecordFactoryException
+from apel.db.loader.record_factory import RecordFactory, RecordFactoryException, \
+        get_main_ns
 from apel.db.records import JobRecord
 from apel.db.records import SummaryRecord
 
@@ -53,6 +54,12 @@ class Test(unittest.TestCase):
                     self.fail('Expected SummaryRecord object.')
         except Exception, e:
             self.fail('Exception thrown when creating records from object: ' + str(e))
+            
+    def test_xml_type(self):
+        test_xml = '<?xml version="1.0" ?><ur:UsageRecord xmlns:ur="booboob"/>'
+        ns = get_main_ns(test_xml)
+        self.assertEqual("booboob", ns)
+        
     
     
     def _get_msg_text(self):

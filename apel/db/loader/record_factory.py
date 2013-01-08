@@ -26,10 +26,9 @@ from apel.db.records.cloud import CloudRecord
 from apel.db.loader.car_parser import CarParser
 from apel.db.loader.aur_parser import AurParser
 from apel.db.loader.star_parser import StarParser
+from apel.db.loader.xml_parser import get_primary_ns
 
 import logging
-
-
 
 # Set up logging
 log = logging.getLogger(__name__)
@@ -50,9 +49,6 @@ class RecordFactory(object):
     SR_HEADER = 'APEL-summary-job-message'
     SYNC_HEADER = 'APEL-sync-message'
     CLOUD_HEADER = 'APEL-cloud-message'
-    # XML Tags
-    JR_TAG = 'urf:UsageRecord'
-    SR_TAG = 'aur:SummaryRecord'
 
     def create_records(self, msg_text):
         '''
@@ -60,15 +56,17 @@ class RecordFactory(object):
         return that list.
         '''    
         try:
-        
-        # XML format
-            if msg_text.startswith('<?xml'):
-                if RecordFactory.JR_TAG in msg_text:
+            # XML format
+            if msg_text.startswith('<'):
+                # Get the primary XML namespace
+                primary_ns = get_primary_ns(msg_text)
+                if primary_ns == CarParser.NAMESPACE:
                     created_records = self._create_cars(msg_text)
 #                    # Not available yet.
-                elif RecordFactory.SR_TAG in msg_text:
-                    created_records = self._create_aurs(msg_text)
-                elif StarParser.NAMESPACE in msg_text:
+                elif primary_ns == AurParser.NAMESPACE:
+                    #created_records = self._create_aurs(msg_text)
+                    raise RecordFactoryException('Aggregated usage record not yet supported.')
+                elif primary_ns == StarParser.NAMESPACE:
                     created_records = self._create_stars(msg_text)
                 else:
                     raise RecordFactoryException('XML format not recognised.')
@@ -213,4 +211,5 @@ class RecordFactory(object):
         parser = StarParser(msg_text)
         records = parser.get_records()
         return records 
+    
     

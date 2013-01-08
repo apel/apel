@@ -17,14 +17,18 @@
 '''
 import xml.dom.minidom
 
+class XMLParserException(Exception):
+    '''
+    Exception for use by the XMLParser classes.
+    '''
+    pass
+
 class XMLParser(object):
     '''
     Base class for CarParser and StarParser
     
     Implements general functionality for parsing XML files
     '''
-    
-    
     # for XMLParser NAMESPACE is empty
     NAMESPACE = ''
     
@@ -40,7 +44,6 @@ class XMLParser(object):
         '''
         Returns content of text nodes.
         '''
-        
         data = (''.join([ node.nodeType == node.TEXT_NODE and node.data or '' for node in nodes ]))
         return data       
     
@@ -50,18 +53,34 @@ class XMLParser(object):
         Returns attribute value for given node and attribute name
         '''
         if namespace is None:
+            print "Getting attr; namespace is %s" % self.NAMESPACE
+            print node.getAttributeNS(self.NAMESPACE, name)
             return node.getAttributeNS(self.NAMESPACE, name)
         else:
+            print "Getting attr; namespace is %s" % namespace
+            print node.getAttributeNS(namespace, name)
             return node.getAttributeNS(namespace, name)
     
     
-    def getTagByAttr(self, nodes, a_name, a_value):
+    def getTagByAttr(self, nodes, a_name, a_value, namespace=None):
         '''
         Looks for all tags having attribute 'a_name' with value 'a_value'
         '''
+        if namespace is None:
+            namespace = self.NAMESPACE
+            
         retList = []
         for node in nodes:
-            if (node.hasAttributeNS(self.NAMESPACE, a_name) and 
-                self.getAttr(node, a_name) == a_value):
+            if (node.hasAttributeNS(namespace, a_name) and 
+                self.getAttr(node, a_name, self.NAMESPACE) == a_value):
                 retList.append(node)
         return retList
+    
+
+def get_primary_ns(msg_text):
+    '''
+    Return the XML namespace value for the top-level element in the 
+    XML document.
+    '''
+    d = xml.dom.minidom.parseString(msg_text)
+    return d.firstChild.namespaceURI 

@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
    
-@author Will Rogers, Konrad Jopek
+   @author Will Rogers, Konrad Jopek
 
 Module containing the Loader class.
 '''
@@ -23,6 +23,7 @@ import logging
 import os
 
 from apel.db.records import InvalidRecordException
+from apel.db.loader.xml_parser import XMLParserException
 from record_factory import RecordFactory, RecordFactoryException
 
 from dirq.queue import Queue
@@ -43,8 +44,9 @@ class Loader(object):
     job records and load them into the appropriate database.
     '''
     def __init__(self, qpath, backend, host, port, db, user, pwd, pidfile):
-        '''Set up the database details.'''
-        
+        '''
+        Set up the database details.
+        '''
         self._db_host = host
         self._db_port = port
         self._db_name = db
@@ -65,18 +67,8 @@ class Loader(object):
         
         # Create a message factory
         self._rf = RecordFactory()
-        
         self._pidfile = pidfile
-        
         log.info("Loader created.")
-        
-        
-    def pidfile_exists(self):
-        """
-        Return True if the pidfile already exists.
-        """ 
-        return os.path.exists(self._pidfile)
-    
         
     def startup(self):
         """
@@ -95,7 +87,6 @@ class Loader(object):
         except IOError, e:
             log.warn("Failed to create pidfile %s: %s" % (self._pidfile, e))
                 
-    
     def shutdown(self):
         """
         Remove the pidfile.
@@ -112,16 +103,13 @@ class Loader(object):
             
         log.info("The loader has shut down.")
         
-        
     def load_all_msgs(self):
         '''
         Get all the messages from the MessageDB and attempt to put them 
         into the database.
         '''
-        
         log.debug("======================")
         log.debug("Starting loader run.")
-        
         log.info("Found %s messages" % self._inq.count())
 
         name = self._inq.first()
@@ -141,7 +129,8 @@ class Loader(object):
                 log.info("Loading message: ID = " + msg_id)
                 self.load_msg(msg_text, signer)
             except (RecordFactoryException, LoaderException,
-                    InvalidRecordException, apel.db.ApelDbException), err:
+                    InvalidRecordException, apel.db.ApelDbException,
+                    XMLParserException), err:
                 errmsg = "Message parsing unsuccessful: %s." % str(err)
                 log.warn('Message rejected: %s' % errmsg)
                 self._rejectq.add({"body": msg_text, 
