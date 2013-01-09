@@ -79,6 +79,10 @@ mkdir -p %{buildroot}%_defaultdocdir
 mkdir -p %{buildroot}%{_localstatedir}/log/apel
 mkdir -p %{buildroot}%{_localstatedir}/run/apel
 
+# Python libraries
+# Library
+cp -fr apel/* %{buildroot}%{python_sitelib}/apel
+
 # Scripts
 cp bin/client.py %{buildroot}%_bindir/apelclient
 cp bin/parser.py %{buildroot}%_bindir/apelparser
