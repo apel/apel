@@ -374,7 +374,9 @@ BEGIN
                              AND
                              SpecRecords.StartTime <= EventRecords.EndTime)
                              AND SpecRecords.SiteID = EventRecords.SiteID
-                             AND SpecRecords.CEID = EventRecords.MachineNameID
+    INNER JOIN MachineNames ON EventRecords.MachineNameID = MachineNames.id
+    INNER JOIN SubmitHosts ON SpecRecords.CEID = SubmitHosts.id 
+                             AND SubmitHosts.name = MachineNames.name
     WHERE
     
         Status = 0; 
