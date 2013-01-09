@@ -1,5 +1,5 @@
 Name:           apelserver
-Version:        0.0.2
+Version:        0.0.3
 Release:        0%{?dist}
 Summary:        Package with software for APEL Server
 

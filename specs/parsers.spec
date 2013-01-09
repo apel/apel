@@ -1,5 +1,5 @@
 Name:           apelparsers
-Version:        0.0.2
+Version:        0.0.3
 Release:        0%{?dist}
 Summary:        Parsers for APEL system
 

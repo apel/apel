@@ -28,12 +28,12 @@ Requires:       MySQL-python python-ldap
 Requires(pre):  shadow-utils
 
 %description lib
-apellib provides required libraries for the rest of APEL system. 
+apel-lib provides required libraries for the rest of APEL system. 
 
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apellib
+Requires:       apel-lib
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -43,7 +43,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:		APEL client package
 Group:          Development/Languages
-Requires:       apellib apelssm
+Requires:       apel-lib apelssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -54,7 +54,7 @@ SSM.
 %package server
 Summary:		APEL server package
 Group:          Development/Languages
-Requires:       apellib apelssm
+Requires:       apel-lib apelssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -71,6 +71,7 @@ rm -rf $RPM_BUILD_ROOT
 mkdir -p %{buildroot}%{apelconf}
 mkdir -p %{buildroot}%_bindir
 mkdir -p %{buildroot}%{python_sitelib}/apel
+mkdir -p %{buildroot}%{_initrddir}
 mkdir -p %{buildroot}%_sysconfdir/logrotate.d
 mkdir -p %{buildroot}%_datadir/apel
 mkdir -p %{buildroot}%_defaultdocdir

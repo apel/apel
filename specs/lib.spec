@@ -4,7 +4,7 @@
 %endif
 
 Name:           apellib
-Version:        0.0.2
+Version:        0.0.3
 Release:        0%{?dist}
 Summary:        Libraries required for Apel Client, Server and Parsers
 
@@ -35,9 +35,6 @@ mkdir -p %{buildroot}%_defaultdocdir
 
 # Library
 cp -fr apel/* %{buildroot}%{python_sitelib}/apel
-
-# Byte-compile python
-python -O -m  compileall %{buildroot}%{python_sitelib}/apel
 
 %clean 
 rm -rf $RPM_BUILD_ROOT
