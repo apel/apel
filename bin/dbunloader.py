@@ -74,7 +74,6 @@ if __name__ == '__main__':
         log.fatal('Error: %s' % str(e))
 
         sys.exit(1)
-    
     except Exception, e:
         log.fatal('Cannot get configuration: %s' % str(e))
         sys.exit(1)

@@ -108,7 +108,7 @@ class DbUnloader(object):
         log.info(end_datetime)
         query = self._get_base_query(record_type)
         query.EndTime_gt = start_datetime
-        query.EndTime_lt = end_datetime
+        query.EndTime_le = end_datetime
             
         msgs, records = self._write_messages(record_type, table_name, query, car)
         return msgs, records

@@ -32,7 +32,7 @@ import os
 import logging.config
 import ldap
 
-from apel.db import ApelDb
+from apel.db import ApelDb, ApelDbException
 from apel import __version__
 from apel.ldap import fetch_specint
 from apel.db.unloader import DbUnloader
@@ -228,10 +228,14 @@ def main():
             else:
                 log.warn('Unrecognised interval: %s' % interval)
                 log.warn('Will not start unloader.')
+        
+            log.info('Unloaded %d records in %d messages.' % (recs, msgs))
+        
         except KeyError:
-            log.warning('Invalid table name: %s, omitting' % table_name)
+            log.warn('Invalid table name: %s, omitting' % table_name)
+        except ApelDbException, e:
+            log.warn('Failed to unload records successfully: %s' % str(e))
             
-        log.info('Unloaded %d records in %d messages.' % (recs, msgs))
             
         # Always send sync messages
         msgs, recs = unloader.unload_all('VSyncRecords', False)

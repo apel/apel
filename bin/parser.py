@@ -105,7 +105,7 @@ def parse_file(log_type, cp, apel_db, batch_size, fp):
         log.warn('Failed to parse file.  Is it a %s log file?' % log_type)        
     else:
         log.info('Parsed %d lines' % parsed)
-        log.info('Ignored %d lines (incomplete jobs)' % parsed)
+        log.info('Ignored %d lines (incomplete jobs)' % ignored)
         log.info('Failed to parse %d lines' % failed)
         
         for error in exceptions:
