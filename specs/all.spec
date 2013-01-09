@@ -18,6 +18,7 @@ The project is written in Python.
 
 %package lib
 Summary:        Libraries required for Apel Client, Server and Parsers
+Group:          Development/Languages
 Requires:       MySQL-python python-ldap
 Requires(pre):  shadow-utils
 
@@ -26,6 +27,7 @@ apellib provides required libraries for the rest of APEL system.
 
 %package parsers
 Summary:        Parsers for APEL system
+Group:          Development/Languages
 Requires:       apellib
 Requires(pre):  shadow-utils
 
@@ -34,6 +36,8 @@ The apel parsers package contains parsers for all the batch systems
 supported by the APEL system: Torque, SGE and LSF. 
 
 %package client
+Summary:		APEL client package
+Group:          Development/Languages
 Requires:       apellib apelssm
 Requires(pre):  shadow-utils
 
@@ -43,6 +47,8 @@ the accounting database, process it and send it to the apel server using
 SSM.
 
 %package server
+Summary:		APEL server package
+Group:          Development/Languages
 Requires:       apellib apelssm
 Requires(pre):  shadow-utils
 
