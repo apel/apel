@@ -150,8 +150,8 @@ exit 0
 %_datadir/apel/cloud.sql
 %_datadir/apel/storage.sql
 # Directories for logs, PID files
-%dir %attr(644,apel,apel) %{_localstatedir}/log/apel
-%dir %attr(644,apel,apel) %{_localstatedir}/run/apel
+%dir %{_localstatedir}/log/apel
+%dir %{_localstatedir}/run/apel
 
 %attr(755,-,-) %_bindir/dbunloader
 %attr(755,-,-) %_bindir/dbloader
