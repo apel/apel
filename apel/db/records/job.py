@@ -192,24 +192,22 @@ class JobRecord(Record):
         
         user_id = doc.createElement('urf:UserIdentity')
 
-        if self.get_field('urf:GlobalUserName') is not None:
+        if self.get_field('GlobalUserName') is not None:
             global_user_name = doc.createElement('urf:GlobalUserName')
             global_user_name.appendChild(doc.createTextNode(self.get_field('GlobalUserName')))
             global_user_name.setAttribute('urf:type', 'opensslCompat')
             user_id.appendChild(global_user_name)
             
-        group = doc.createElement('urf:Group')
-        group.appendChild(doc.createTextNode(self.get_field('VO')))
-        user_id.appendChild(group)
+        if self.get_field('VO') is not None:
+            group = doc.createElement('urf:Group')
+            group.appendChild(doc.createTextNode(self.get_field('VO')))
+            user_id.appendChild(group)
         
-        local_user_id = doc.createElement('urf:LocalUserId')
-        local_user_id.appendChild(doc.createTextNode(self.get_field('LocalUserId')))
-        user_id.appendChild(local_user_id)
+        if self.get_field('LocalUserId') is not None:
+            local_user_id = doc.createElement('urf:LocalUserId')
+            local_user_id.appendChild(doc.createTextNode(self.get_field('LocalUserId')))
+            user_id.appendChild(local_user_id)
         
-        local_group = doc.createElement('urf:LocalGroup')
-        local_group.appendChild(doc.createTextNode(str(self.get_field('LocalGroup'))))
-        user_id.appendChild(local_group)
-
         if self.get_field('FQAN') is not None:
             fqan = doc.createElement('urf:GroupAttribute')
             fqan.setAttribute('type', 'FQAN')

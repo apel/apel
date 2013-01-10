@@ -220,8 +220,8 @@ def main():
             if interval == 'latest':
                 msgs, recs = unloader.unload_latest(table_name, send_ur)
             elif interval == 'gap':
-                start = cp.get('unloader', 'gap-start')
-                end = cp.get('unloader', 'gap-end')
+                start = cp.get('unloader', 'gap_start')
+                end = cp.get('unloader', 'gap_end')
                 msgs, recs = unloader.unload_gap(table_name, start, end, send_ur)
             elif interval == 'all':
                 msgs, recs = unloader.unload_all(table_name, send_ur)
