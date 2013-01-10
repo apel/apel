@@ -1,21 +1,37 @@
-APEL2
+APEL client and server source code
+==================================
 
-1. Purpose of project
+Project overview
+----------------
 
-The main aim of this project is to provide accounting data for EGI Accounting 
-Portal. Accounting data may be extracted from following batch systems:
+The APEL project provides grid accounting for EGI. It is written in 
+python and MySQL. It has the following
+components:
+
+  apel-parsers
+  ------------
+These extract data from the following batch systems:
  * SGE/OGE
  * LSF 5.x, 6.x, 7.x, 8.x
  * PBS
+and place in the client database.
 
-2. Structure of the project
+  apel-client
+  -----------
+This processes the data and sends it to the APEL server using SSM.
 
-Project was divided into several subdirectories. Here is the explanation:
- * bin - contains executable scripts
- * apel - codebase with all core functionalities
- * test - unit tests for the system
- * init.d - startup scripts for Scientific Linux
- * schemas - database schemas
- * specs - .spec files for creating RPM.
+  apel-server
+  -----------
+This processes data from all sites and sends it on to the accounting 
+portal using SSM.
 
- 
+  apel-lib
+  --------
+This contains all the library python code for apel-parsers, apel-client
+and apel-server
+
+  apel-ssm
+  --------
+This is a messaging system, which has its own github repository at 
+https://github.com/willrogers/ssm
+
