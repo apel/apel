@@ -43,7 +43,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:		APEL client package
 Group:          Development/Languages
-Requires:       apel-lib apelssm
+Requires:       apel-lib apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -54,7 +54,7 @@ SSM.
 %package server
 Summary:		APEL server package
 Group:          Development/Languages
-Requires:       apel-lib apelssm
+Requires:       apel-lib apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
