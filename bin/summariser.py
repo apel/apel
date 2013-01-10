@@ -1,23 +1,22 @@
 #!/usr/bin/env python
 
+#   Copyright (C) 2012 STFC
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+# Module used to start and run the APEL loader.
 '''
-   Copyright 2012 Will Rogers
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
 @author: Will Rogers
-
-Module used to start and run the APEL loader.
 '''
 
 from optparse import OptionParser
@@ -41,7 +40,6 @@ def runprocess(db_config_file, config_file, log_config_file):
         dbcp = ConfigParser.ConfigParser()
         dbcp.read(db_config_file)
         
-        # Expand any environment variables in the path, then tidy.
         db_backend = dbcp.get('db', 'backend')
         db_hostname = dbcp.get('db', 'hostname')
         db_port = int(dbcp.get('db', 'port'))
@@ -49,7 +47,6 @@ def runprocess(db_config_file, config_file, log_config_file):
         db_username = dbcp.get('db', 'username')
         db_password = dbcp.get('db', 'password')
 
-        
     except (ConfigParser.Error, ValueError, IOError), err:
         print 'Error in configuration file %s: %s' % (config_file, str(err))
         print 'The system will exit.'
@@ -63,7 +60,7 @@ def runprocess(db_config_file, config_file, log_config_file):
             set_up_logging(cp.get('logging', 'logfile'), 
                            cp.get('logging', 'level'),
                            cp.getboolean('logging', 'console'))
-        log = logging.getLogger('dbunloader')
+        log = logging.getLogger('summariser')
     except (ConfigParser.Error, ValueError, IOError), err:
         print 'Error configuring logging: %s' % str(err)
         print 'The system will exit.'
@@ -92,13 +89,14 @@ def runprocess(db_config_file, config_file, log_config_file):
 
 if __name__ == '__main__':
     # Main method for running the summariser.
-
-    opt_parser = OptionParser(description=__doc__)
+    
+    ver = "APEL summariser %s.%s.%s" % __version__
+    opt_parser = OptionParser(description=__doc__, version=ver)
     opt_parser.add_option('-d', '--db', help='the location of database config file',
                           default='/etc/apel/db.cfg')
     opt_parser.add_option('-c', '--config', help='the location of config file', 
                           default='/etc/apel/summariser.cfg')
-    opt_parser.add_option('-l', '--log_config', help='Location of logging configuration file for dbloader',
+    opt_parser.add_option('-l', '--log_config', help='Location of logging config file (optional)',
                           default='/etc/apel/logging.cfg')
     (options,args) = opt_parser.parse_args()
     

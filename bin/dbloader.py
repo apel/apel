@@ -1,23 +1,22 @@
 #!/usr/bin/env python
 
+#   Copyright (C) 2012 STFC
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+# Module used to start and run the APEL loader.
 '''
-   Copyright (C) 2012 STFC
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-   
 @author: Will Rogers
-
-Module used to start and run the APEL loader.
 '''
 
 import sys
@@ -146,7 +145,8 @@ def run_as_daemon(loader, interval):
 
 
 if __name__ == '__main__':   
-    opt_parser = OptionParser()
+    ver = "APEL summariser %s.%s.%s" % __version__
+    opt_parser = OptionParser(version=ver)
     opt_parser.add_option('-d', '--db', help='location of DB config file',
                           default='/etc/apel/db.cfg')
     opt_parser.add_option('-c', '--config', help='Location of config file',
