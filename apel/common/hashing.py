@@ -13,8 +13,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 '''
-
-import md5
+# hashlib only available in python2.5+
+try:
+    from hashlib import md5
+except ImportError:
+    from md5 import md5
 import gzip
 
 def calculate_hash(fname):
@@ -28,7 +31,7 @@ def calculate_hash(fname):
     
     data = 'initial'
     
-    md = md5.new()
+    md = md5()
 
     # try opening as a gzip file, and if it fails
     # try as a regular file
