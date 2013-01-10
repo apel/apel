@@ -310,7 +310,19 @@ DELIMITER //
 CREATE PROCEDURE LocalJobs()
 BEGIN
     DECLARE procstart DATETIME;
+    DECLARE submithostid INT;
+	DECLARE vogroupid INT;
+	DECLARE voroleid INT;
+	DECLARE dnnoneid INT;
+	DECLARE dnlocalid INT;
+	
     SET procstart = NOW();
+    SET submithostid = SubmitHostLookup("None");
+	SET vogroupid = VOGroupLookup("None");
+	SET voroleid = VORoleLookup("None");
+	SET dnnoneid = DNLookup("None");
+	SET dnlocalid = DNLookup("Local");
+	
     REPLACE INTO JobRecords (
       UpdateTime,
       SiteID,                -- Foreign key
@@ -340,18 +352,18 @@ BEGIN
       EndYear,
       EndMonth)
     SELECT 
-        NOW(),
-        EventRecords.SiteID as SiteID,
-        SubmitHostLookup("None") as SubmitHostID,       -- JobRecords.SubmitHost
-        EventRecords.MachineNameID as MachineNameID,    -- JobRecords.MachineName
-        EventRecords.QueueID as QueueID,                -- JobRecords.Queue
-        EventRecords.JobName as LocalJobId,             -- JobRecords.LocalJobId
-        EventRecords.LocalUserID as LocalUserId,        -- JobRecords.LocalUserId
-        DNLookup("None"),                               -- JobRecords.GlobalUserName 
+        procstart,
+        EventRecords.SiteID,
+        SubmitHostID,                                   -- JobRecords.SubmitHost
+        MachineNameID,                                  -- JobRecords.MachineName
+        QueueID,                                        -- JobRecords.Queue
+        JobName,                                        -- JobRecords.LocalJobId
+        LocalUserId,                                    -- JobRecords.LocalUserId
+        dnnoneid,                                       -- JobRecords.GlobalUserName 
         NULL,                                           -- JobRecords.FQAN
         VOLookup(IFNULL(EventRecords.LocalUserGroup, "None")),   -- JobRecords.VOID
-        VOGroupLookup("None"),                          -- JobRecords.VOGroup        
-        VORoleLookup("None"),                           -- JobRecords.VORole
+        vogroupid,                                      -- JobRecords.VOGroup        
+        voroleid,                                       -- JobRecords.VORole
         WallDuration,                                   -- JobRecords.WallDuration
         CpuDuration,                                    -- JobRecords.CpuDuration        
         Processors,                                     -- JobRecords.Processors
@@ -364,9 +376,9 @@ BEGIN
         MemoryVirtual,                                  -- JobRecords.MemoryVirtual
         SpecRecords.ServiceLevelType,
         SpecRecords.ServiceLevel,
-        DNLookup("Local"),                              -- JobRecords.PublisherDN
-        YEAR(EndTime),
-        MONTH(EndTime)
+        dnlocalid,                                      -- JobRecords.PublisherDN
+        YEAR(EventRecords.EndTime),
+        MONTH(EventRecords.EndTime)
 	FROM SpecRecords 
     INNER JOIN EventRecords ON ((SpecRecords.StopTime > EventRecords.EndTime
                              OR 
@@ -377,9 +389,7 @@ BEGIN
     INNER JOIN MachineNames ON EventRecords.MachineNameID = MachineNames.id
     INNER JOIN SubmitHosts ON SpecRecords.CEID = SubmitHosts.id 
                              AND SubmitHosts.name = MachineNames.name
-    WHERE
-    
-        Status = 0; 
+    WHERE Status = 0; 
 
     UPDATE EventRecords, JobRecords
     SET Status = 1 
@@ -387,7 +397,6 @@ BEGIN
         AND EventRecords.JobName = JobRecords.LocalJobId 
         AND EventRecords.EndTime = JobRecords.EndTime 
         AND JobRecords.UpdateTime >= procstart;
-
 END //
 DELIMITER ;
 
