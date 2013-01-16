@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        0.0.3
+Version:        0.0.4
 Release:        0%{?dist}
 Summary:        APEL packages
 
@@ -158,6 +158,9 @@ exit 0
 %config(noreplace) %{apelconf}/db.cfg
 
 %changelog
+ * Wed Jan 16 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.4-0
+ - Updated to use new cloud schema and message format
+
  * Thu Jan 10 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.3-0
  - Loader accepts StAR messages, database updated
  - Move to using one specfile, hyphenated rpm names
