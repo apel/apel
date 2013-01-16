@@ -311,17 +311,17 @@ CREATE PROCEDURE LocalJobs()
 BEGIN
     DECLARE procstart DATETIME;
     DECLARE submithostid INT;
-	DECLARE vogroupid INT;
-	DECLARE voroleid INT;
-	DECLARE dnnoneid INT;
-	DECLARE dnlocalid INT;
+    DECLARE vogroupid INT;
+    DECLARE voroleid INT;
+    DECLARE dnnoneid INT;
+    DECLARE dnlocalid INT;
 	
     SET procstart = NOW();
     SET submithostid = SubmitHostLookup("None");
-	SET vogroupid = VOGroupLookup("None");
-	SET voroleid = VORoleLookup("None");
-	SET dnnoneid = DNLookup("None");
-	SET dnlocalid = DNLookup("Local");
+    SET vogroupid = VOGroupLookup("None");
+    SET voroleid = VORoleLookup("None");
+    SET dnnoneid = DNLookup("None");
+    SET dnlocalid = DNLookup("Local");
 	
     REPLACE INTO JobRecords (
       UpdateTime,
