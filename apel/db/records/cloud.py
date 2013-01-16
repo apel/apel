@@ -34,12 +34,12 @@ class CloudRecord(Record):
         Record.__init__(self)
         
         # Fields which are required by the message format.
-        self._mandatory_fields = ["RecordId", "SiteName", "MachineName"]
+        self._mandatory_fields = ["VMUUID", "SiteName"]
             
         # This list allows us to specify the order of lines when we construct records.
-        self._msg_fields  = ["RecordId", "SiteName", "ZoneName", "MachineName", 
+        self._msg_fields  = ["VMUUID", "SiteName", "MachineName", 
                              "LocalUserId", "LocalGroupId", "GlobalUserName", "FQAN",
-                             "Status", "StartTime", "EndTime", "SuspendTime","TimeZone", 
+                             "Status", "StartTime", "EndTime", "SuspendDuration", 
                               "WallDuration",
                              "CpuDuration", "CpuCount", "NetworkType", "NetworkInbound", 
                              "NetworkOutbound",
@@ -52,11 +52,11 @@ class CloudRecord(Record):
         self._ignored_fields = [ "UpdateTime" ]
         
         # Fields which will have an integer stored in them
-        self._int_fields = ["WallDuration", "CpuDuration", "CpuCount", 
+        self._int_fields = [ "SuspendDuration", "WallDuration", "CpuDuration", "CpuCount", 
                             "NetworkInbound", 
                             "NetworkOutbound", "Memory", "Disk"]
         
-        self._datetime_fields = [ "StartTime", "EndTime", "SuspendTime"]
+        self._datetime_fields = [ "StartTime", "EndTime"]
     
     
     def _check_fields(self):

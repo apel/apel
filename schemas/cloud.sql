@@ -4,11 +4,10 @@
 CREATE TABLE CloudRecords ( 
   UpdateTime TIMESTAMP, 
 
-  RecordId VARCHAR(255) NOT NULL, 
+  VMUUID VARCHAR(255) NOT NULL, 
   SiteID INT NOT NULL,                -- Foreign key
 
-  ZoneName VARCHAR(255), 
-  MachineName VARCHAR(255) NOT NULL, 
+  MachineName VARCHAR(255), 
 
   LocalUserId VARCHAR(255),
   LocalGroupId VARCHAR(255),
@@ -20,8 +19,7 @@ CREATE TABLE CloudRecords (
 
   StartTime DATETIME, 
   EndTime DATETIME, 
-  SuspendTime DATETIME, 
-  TimeZone VARCHAR(255),
+  SuspendDuration INT, 
 
   WallDuration INT, 
   CpuDuration INT, 
@@ -39,12 +37,12 @@ CREATE TABLE CloudRecords (
 
   PublisherDNID INT NOT NULL,	    -- Foreign key
 
-  PRIMARY KEY (SiteID, MachineName),
+  PRIMARY KEY (VMUUID),
 
   INDEX (UpdateTime),
-  INDEX (EndTime),
   INDEX (GlobalUserNameID),
-  INDEX (SiteID)
+  INDEX (SiteID),
+  INDEX (ImageID)
 
 );
 
@@ -52,13 +50,13 @@ CREATE TABLE CloudRecords (
 DROP PROCEDURE IF EXISTS InsertCloudRecord;
 DELIMITER //
 CREATE PROCEDURE InsertCloudRecord(
-  recordId VARCHAR(255), site VARCHAR(255), 
-  zoneName VARCHAR(255), machineName VARCHAR(255), 
+  VMUUID VARCHAR(255), site VARCHAR(255), 
+  machineName VARCHAR(255), 
   localUserId VARCHAR(255),
   localGroupId VARCHAR(255), globalUserName VARCHAR(255), 
   fqan VARCHAR(255), status VARCHAR(255),
   startTime DATETIME, endTime DATETIME, 
-  suspendTime DATETIME, timeZone VARCHAR(255),
+  suspendDuration INT,
   wallDuration INT, cpuDuration INT, 
   cpuCount INT, networkType VARCHAR(255),  networkInbound INT, 
   networkOutbound INT, memory INT, 
@@ -66,14 +64,13 @@ CREATE PROCEDURE InsertCloudRecord(
   imageId VARCHAR(255), cloudType VARCHAR(255),
   publisherDN VARCHAR(255))
 BEGIN
-    REPLACE INTO CloudRecords(RecordId, SiteID, ZoneName, MachineName, LocalUserId, LocalGroupId,
-        GlobalUserNameID, FQAN, Status, StartTime, EndTime, SuspendTime, TimeZone,
-        WallDuration, CpuDuration, CpuCount, NetworkType, NetworkInbound, NetworkOutbound, Memory, Disk, StorageRecordId,
-        ImageId, CloudType, PublisherDNID)
+    REPLACE INTO CloudRecords(VMUUID, SiteID, MachineName, LocalUserId, LocalGroupId,
+        GlobalUserNameID, FQAN, Status, StartTime, EndTime, SuspendDuration,
+        WallDuration, CpuDuration, CpuCount, NetworkType, NetworkInbound, NetworkOutbound, Memory, Disk, StorageRecordId, ImageId, CloudType, PublisherDNID)
       VALUES (
-        recordId, SiteLookup(site), zoneName, machineName, localUserId, localGroupId, DNLookup(globalUserName), 
-        fqan, status, startTime, endTime, suspendTime, 
-        timeZone, wallDuration, cpuDuration, cpuCount, networkType, networkInbound, networkOutbound, memory,
+        VMUUID, SiteLookup(site), machineName, localUserId, localGroupId, DNLookup(globalUserName), 
+        fqan, status, startTime, endTime, suspendDuration, 
+        wallDuration, cpuDuration, cpuCount, networkType, networkInbound, networkOutbound, memory,
         disk, storageRecordId, imageId, cloudType, DNLookup(publisherDN)
         );
 END //
@@ -152,9 +149,9 @@ DELIMITER ;
 -- -----------------------------------------------------------------------------
 -- View on CloudRecords
 CREATE VIEW VCloudRecords AS
-    SELECT UpdateTime, RecordId, site.name SiteName, ZoneName, MachineName, 
+    SELECT UpdateTime, VMUUID, site.name SiteName, MachineName, 
            LocalUserId, LocalGroupId, userdn.name GlobalUserName, FQAN, Status, StartTime, EndTime,
-           SuspendTime, TimeZone, WallDuration, CpuDuration, CpuCount, NetworkType,
+           SuspendDuration, WallDuration, CpuDuration, CpuCount, NetworkType,
            NetworkInbound, NetworkOutbound, Memory, Disk, StorageRecordId, ImageId, CloudType
     FROM CloudRecords, Sites site, DNs userdn WHERE
         SiteID = site.id
@@ -163,9 +160,9 @@ CREATE VIEW VCloudRecords AS
 -- -----------------------------------------------------------------------------
 -- View on CloudRecords
 CREATE VIEW VAnonCloudRecords AS
-    SELECT UpdateTime, RecordId, site.name SiteName, ZoneName, MachineName,
+    SELECT UpdateTime, VMUUID, site.name SiteName, MachineName,
            LocalUserId, LocalGroupId, GlobalUserNameID, FQAN, Status, StartTime, EndTime,
-           SuspendTime, TimeZone, WallDuration, CpuDuration, CpuCount, NetworkType,
+           SuspendDuration, WallDuration, CpuDuration, CpuCount, NetworkType,
            NetworkInbound, NetworkOutbound, Memory, Disk, StorageRecordId, ImageId, CloudType
     FROM CloudRecords, Sites site, DNs userdn WHERE
         SiteID = site.id
