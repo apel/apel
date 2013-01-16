@@ -37,9 +37,8 @@ class CloudRecordTest(TestCase):
 
     def setUp(self):
         self._msg1 = '''
-RecordId: 2012-12-04 09:15:01+00:00 CESNET vm-0
+VMUUID: 2012-12-04 09:15:01+00:00 CESNET vm-0
 SiteName: CESNET
-ZoneName: EU
 MachineName: 'one-0'
 LocalUserId: 5
 LocalGroupId: 1
@@ -48,8 +47,7 @@ FQAN: NULL
 Status: completed
 StartTime: 1318840264
 EndTime: 1318848076
-SuspendTime: NULL
-TimeZone: CEST
+SuspendDuration: NULL
 WallDuration: NULL
 CpuDuration: NULL
 CpuCount: 1
@@ -63,7 +61,6 @@ ImageId: 'scilin6'
 CloudType: OpenNebula
 '''
         self._values1 = {'SiteName': 'CESNET',
-                        'ZoneName': 'EU',
                         'MachineName': '\'one-0\'',
                         'LocalUserId': '5',
                         'Status': 'completed',
@@ -74,9 +71,8 @@ CloudType: OpenNebula
                         }
         
         self._msg2 = '''
-RecordId: 2012-08-14 14:00:01+0200 FZJ Accounting Test
+VMUUID: 2012-08-14 14:00:01+0200 FZJ Accounting Test
 SiteName: FZJ
-ZoneName: EU
 MachineName: Accounting Test
 LocalUserId: 1189105086dc4959bc9889383afc43b5
 LocalGroupId: EGI FCTF
@@ -85,8 +81,7 @@ FQAN: NULL
 Status: started
 StartTime: 1343362725
 EndTime: NULL
-SuspendTime: NULL
-TimeZone: CEST
+SuspendDuration: NULL
 WallDuration: 1582876
 CpuDuration: 437
 CpuCount: 1
@@ -101,7 +96,6 @@ CloudType: Openstack
 '''
 
         self._values2 = {'SiteName': 'FZJ',
-                        'ZoneName': 'EU',
                         'MachineName': 'Accounting Test',
                         'LocalUserId': '1189105086dc4959bc9889383afc43b5',
                         'Status': 'started',
@@ -130,7 +124,7 @@ CloudType: Openstack
         
     def test_mandatory_fields(self):
         record = CloudRecord()
-        record.set_field('RecordId', 'host.example.org/cr/87912469269276')
+        record.set_field('VMUUID', 'host.example.org/cr/87912469269276')
         record.set_field('SiteName', 'MySite')
         record.set_field('MachineName', 'MyMachine')
         

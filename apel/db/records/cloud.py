@@ -1,5 +1,5 @@
 '''
-   Copyright 2011 Will Rogers
+   Copyright (C) 2011 STFC
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+   
 @author Will Rogers
 '''
 
@@ -49,14 +50,14 @@ class CloudRecord(Record):
         self._db_fields = self._msg_fields
         self._all_fields = self._msg_fields
         
-        self._ignored_fields = [ "UpdateTime" ]
+        self._ignored_fields = ["UpdateTime"]
         
         # Fields which will have an integer stored in them
         self._int_fields = [ "SuspendDuration", "WallDuration", "CpuDuration", "CpuCount", 
                             "NetworkInbound", 
                             "NetworkOutbound", "Memory", "Disk"]
         
-        self._datetime_fields = [ "StartTime", "EndTime"]
+        self._datetime_fields = ["StartTime", "EndTime"]
     
     
     def _check_fields(self):
