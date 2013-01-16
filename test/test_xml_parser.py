@@ -1,4 +1,4 @@
-from apel.db.loader.xml_parser import XMLParser
+from apel.db.loader.xml_parser import XMLParser, get_primary_ns
 from unittest import TestCase
 
 class XMLParserTest(TestCase):
@@ -38,4 +38,9 @@ class XMLParserTest(TestCase):
     def test_get_attr(self):
         attributes_tag = self.parser.doc.getElementsByTagNameNS(self.parser.NAMESPACE, 'attributes')[0]
         self.assertEqual(self.parser.getAttr(attributes_tag, 'attr'), 'value')
+
+    def test_get_primary_ns(self):
+        test_xml = '<?xml version="1.0" ?><ur:UsageRecord xmlns:ur="booboob"/>'
+        ns = get_primary_ns(test_xml)
+        self.assertEqual("booboob", ns)
         
