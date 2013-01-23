@@ -8,7 +8,7 @@ class ParserSGETest(TestCase):
     '''
     
     def setUp(self):
-        self.parser = SGEParser('testSite', 'testHost')
+        self.parser = SGEParser('testSite', 'testHost', True)
     
     def test_parse_line(self):
         

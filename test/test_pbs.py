@@ -1,6 +1,7 @@
 import datetime
 from unittest import TestCase
 from apel.parsers import PBSParser
+from apel.parsers.pbs import _parse_mpi
 
 class ParserPBSTest(TestCase):
     '''
@@ -8,7 +9,7 @@ class ParserPBSTest(TestCase):
     '''
     
     def setUp(self):
-        self.parser = PBSParser('testSite', 'testHost')
+        self.parser = PBSParser('testSite', 'testHost', True)
         
 
     def test_parse(self):
@@ -32,8 +33,29 @@ class ParserPBSTest(TestCase):
                         "Processors": 1
                         }
 
+        line2 = ('10/01/2011 01:05:30;E;21010040.lcgbatch01.gridpp.rl.ac.uk;user=plhcb010 group=prodlhcb jobname=cre09_655648918 '
+                'queue=gridWN ctime=1317427361 qtime=1317427361 etime=1317427361 start=1317427530 owner=plhcb010@lcgce09.gridpp.rl.ac.uk '
+                'exec_host=lcg0766.gridpp.rl.ac.uk/7+lcg0766.gridpp.rl.ac.uk/6+lcg0766.gridpp.rl.ac.uk/5+lcg0766.gridpp.rl.ac.uk/4+'
+                'lcg0766.gridpp.rl.ac.uk/3+lcg0766.gridpp.rl.ac.uk/2+lcg0766.gridpp.rl.ac.uk/1+lcg0766.gridpp.rl.ac.uk/0 '
+                'Resource_List.cput=800:00:00 Resource_List.neednodes=1:ppn=8 Resource_List.nodect=1 Resource_List.nodes=1:ppn=8 '
+                'Resource_List.opsys=sl5 Resource_List.pcput=96:00:00 Resource_List.walltime=96:00:00 session=7428 end=1317427530 '
+                'Exit_status=0 resources_used.cput=00:00:00 resources_used.mem=0kb resources_used.vmem=0kb resources_used.walltime=00:00:00')
+        
+        line2_values = {"JobName": "21010040.lcgbatch01.gridpp.rl.ac.uk", 
+                        "LocalUserID":"plhcb010", 
+                        "LocalUserGroup": "prodlhcb", 
+                        "WallDuration":0, 
+                        "CpuDuration": 0,
+                        "StartTime": datetime.datetime.utcfromtimestamp(1317427530),
+                        "StopTime": datetime.datetime.utcfromtimestamp(1317427530),
+                        "MemoryReal":0,
+                        "MemoryVirtual": 0,
+                        "NodeCount": 1,
+                        "Processors": 8
+                        }
         cases = {}
         cases[line1] = line1_values
+        cases[line2] = line2_values
         
         for line in cases.keys():
         
@@ -64,4 +86,14 @@ class ParserPBSTest(TestCase):
                 'end=1317534104 Exit_status=0 resources_used.cput=18:15:24 resources_used.mem=2031040kb resources_used.vmem=3335528kb resources_used.walltime=19:23:4')
 
         self.assertRaises(KeyError, self.parser.parse, line)
-    
+
+    def test_parse_mpi(self):
+        
+        exec_host = 'lcg0766.gridpp.rl.ac.uk/7+lcg0766.gridpp.rl.ac.uk/6+lcg0766.gridpp.rl.ac.uk/5+lcg0766.gridpp.rl.ac.uk/4+lcg0766.gridpp.rl.ac.uk/3+lcg0766.gridpp.rl.ac.uk/2+lcg0766.gridpp.rl.ac.uk/1+lcg0766.gridpp.rl.ac.uk/0'
+        nodecount, processors = _parse_mpi(exec_host)
+        
+        assert (nodecount, processors) == (1, 8)
+        
+        
+        
+        
