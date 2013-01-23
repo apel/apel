@@ -43,38 +43,42 @@ class PBSParser(Parser):
         Please notice, that we use two different separators: ';' and ' '
         '''
         data = {}
-        _, status, jobName, rest = line.split(';')
+        unused_date, status, jobName, rest = line.split(';')
         
-        if self.machineName == '':
-            self.machineName = jobName.split('.',1)[1]
+        if self.machine_name == '':
+            self.machine_name = jobName.split('.',1)[1]
         
         # we accept only 'E' status
         # be careful!: this parse can return None, and this is _valid_ situation
         if status != 'E':
             return None
         
-        mapping = {'Site'           : lambda x: self.siteName, # ?
-                   'JobName'        : lambda x: jobName, 
-                   'LocalUserID'    : lambda x: x['user'],
-                   'LocalUserGroup' : lambda x: x['group'],
-                   'WallDuration'   : lambda x: self._parse_time(x['resources_used.walltime']),
-                   'CpuDuration'    : lambda x: self._parse_time(x['resources_used.cput']),
-                   'StartTime'      : lambda x: int(x['start']),
-                   'StopTime'       : lambda x: int(x['end']),
-                   'Infrastructure' : lambda x: "APEL-CREAM-PBS",
-                   'MachineName'    : lambda x: self.machineName,
-                   # remove 'kb' string from the end
-                   'MemoryReal'     : lambda x: int(x['resources_used.mem'][:-2]),
-                   'MemoryVirtual'  : lambda x: int(x['resources_used.vmem'][:-2]),
-#                   'Processors'     : lambda x: self._parse_mpi(x)[0],
-                   'Processors'     : lambda x: 1,
-#                   'NodeCount'      : lambda x: self._parse_mpi(x)[1]}
-                   'NodeCount'      : lambda x: 1}
-    
         for item in rest.split():
             key, value = item.split('=', 1)
             data[key] = value
             
+        if self._mpi:
+            nodes, cores = _parse_mpi(data['exec_host'])
+        else:
+            nodes, cores = 1, 1
+        
+        # map each field to functions which will extract them
+        mapping = {'Site'           : lambda x: self.site_name, 
+                   'JobName'        : lambda x: jobName, 
+                   'LocalUserID'    : lambda x: x['user'],
+                   'LocalUserGroup' : lambda x: x['group'],
+                   'WallDuration'   : lambda x: _parse_time(x['resources_used.walltime']),
+                   'CpuDuration'    : lambda x: _parse_time(x['resources_used.cput']),
+                   'StartTime'      : lambda x: int(x['start']),
+                   'StopTime'       : lambda x: int(x['end']),
+                   'Infrastructure' : lambda x: "APEL-CREAM-PBS",
+                   'MachineName'    : lambda x: self.machine_name,
+                   # remove 'kb' string from the end
+                   'MemoryReal'     : lambda x: int(x['resources_used.mem'][:-2]),
+                   'MemoryVirtual'  : lambda x: int(x['resources_used.vmem'][:-2]),
+                   'NodeCount'      : lambda x: nodes,
+                   'Processors'     : lambda x: cores}
+        
         rc = {}
                 
         for key in mapping:
@@ -87,39 +91,29 @@ class PBSParser(Parser):
         record.set_all(rc)
         return record
 
-    def _parse_mpi(self, rec_dict):
-        '''
-        Return (nodes, total-cores) given a dict from a PBS record.
-        
-        This checks twice which is for testing purposes.
-        '''
-        # exec_host is of the form <hostname>/core_no[+<hostname>/core_no]
-        # e.g. wn1.rl.ac.uk/0+wn1.rl.ac.uk/1+wn2.rl.ac.uk/0+wn2.rl.ac.uk/1
-        core_info = rec_dict['exec_host'].split('+')
-        # remove /core_no and get the list of hostnames
-        hostnames = [ x.split('/')[0] for x in core_info ]
-        # get number of unique hostnames
-        nnodes = len(set(hostnames))
-        # total number of core details
-        ncores = len(core_info)
-        
-        # Check with the second MPI field
-        try:
-            # nodes is of the form x:ppn=y; ppn is processors per node
-            node_details = rec_dict['Resource_List.nodes']
-            nnodes2, ppn = node_details.split(':ppn=')
-            ncores2 = nnodes2 * ppn
-        except KeyError:  # Not present for non-MPI jobs
-            nnodes2 = 1
-            ncores2 = 1
-        
-        assert (nnodes, ncores) == (nnodes2, ncores2), "Inconsistent MPI values from PBS."
-                
-        return nnodes, ncores
+def _parse_mpi(exec_host):
+    '''
+    Return (nodes, total-cores) given a dict from a PBS record.
+    
+    There are two ways to derive this from the logs; the second is from
+    the field
+    Resource_List.nodes=x:ppn=y
+    The above would return x,y.
+    '''
+    # exec_host is of the form <hostname>/core_no[+<hostname>/core_no]
+    # e.g. wn1.rl.ac.uk/0+wn1.rl.ac.uk/1+wn2.rl.ac.uk/0+wn2.rl.ac.uk/1
+    core_info = exec_host.split('+')
+    # remove /core_no and get the list of hostnames
+    hostnames = [ x.split('/')[0] for x in core_info ]
+    # get number of unique hostnames
+    nnodes = len(set(hostnames))
+    # total number of core details
+    ncores = len(core_info)              
+    return nnodes, ncores
 
-    def _parse_time(self, time):
-        '''
-        Return seconds from times of the form xx:yy:zz.
-        '''
-        hours, minutes, seconds = time.split(':')
-        return 3600*int(hours) + 60*int(minutes) + int(seconds)
+def _parse_time(time):
+    '''
+    Return seconds from times of the form xx:yy:zz.
+    '''
+    hours, minutes, seconds = time.split(':')
+    return 3600*int(hours) + 60*int(minutes) + int(seconds)

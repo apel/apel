@@ -25,11 +25,11 @@ class SlurmParser(Parser):
     This is not yet implemented.
     '''
     
-    def __init__(self):
+    def __init__(self, site, machine_name, mpi):
         '''
         Not yet implemented.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('SLURM parser not yet implemented.')
     
     def parse(self, line):
         '''

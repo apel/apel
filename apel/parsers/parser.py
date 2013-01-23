@@ -16,9 +16,11 @@
    @author: Konrad Jopek
 '''
 import logging
-from apel.parsers import LOGGER_ID
 
-logger = logging.getLogger(LOGGER_ID)
+log = logging.getLogger(__name__)
+
+class ParserException(Exception):
+    pass
 
 class Parser(object):
     ''' The base class for all parsers '''
@@ -26,17 +28,21 @@ class Parser(object):
     UNPROCESSED = '0'
     PROCESSED = '1'
     
-    def __init__(self, siteName='', machineName=''):
+    def __init__(self, site, machine_name, mpi=False):
         '''
-        Sets machine name and site name.
+        Sets machine name and site name, and whether MPI information
+        will be retrieved.
         '''
-        self.siteName = siteName
-        self.machineName = machineName
-        logger.info('Site: %s; batch system: %s' % (self.siteName, self.machineName))
+        self.site_name = site
+        self.machine_name = machine_name
+        log.info('Site: %s; batch system: %s' % (self.site_name, self.machine_name))
+        self._mpi = mpi
+        if self._mpi:
+            log.info('Parser will retrieve per-processor accounting information.')
 
     def parse(self, line):
         '''
-        Main method for all parsers. It parses single line of log.
+        Main method for all parsers. It parses a single line from a log file.
 
         @param line: Line to be parsed
         @return: Filled EventRecord/BlahdRecord

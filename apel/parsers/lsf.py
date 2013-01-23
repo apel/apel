@@ -20,6 +20,9 @@ from apel.parsers import Parser
 from apel.db.records.event import EventRecord
 
 import re
+import logging
+
+log = logging.getLogger(__name__)
 
 class LSFParser(Parser):
     '''
@@ -58,7 +61,19 @@ class LSFParser(Parser):
         |
         ([-]?\d+(\.\d*)?)
         )''', re.VERBOSE)
+    
+    def __init__(self, site, machine_name, mpi):
+        Parser.__init__(self, site, machine_name, mpi)
+        self._scale_hf = False
 
+    def set_scaling(self, scale_hf):
+        '''
+        Set to true if you want to scale CPU duration and wall duration
+        according to the 'HostFactor' value in the log file.
+        '''
+        log.info('Will scale durations according to host factor specified in log file.')
+        self._scale_hf = scale_hf
+        
     def parse(self, line):
 
         # correct handling of double quotes
@@ -72,28 +87,40 @@ class LSFParser(Parser):
         if items[0] != 'JOB_FINISH':
             return None
         
+
         num_asked = int(items[22])
         num_exec = int(items[23 + num_asked])
         offset = num_asked + num_exec
         
-        # get unique values for the different hosts listed after num_exec
-        nnodes = len(set(items[24 + num_asked:24 + offset]))
+        # scale by host factor if option is chosen
+        if self._scale_hf:
+            host_factor = float(items[25 + num_asked + num_exec])
+        else:
+            host_factor = 1
+            
+        if self._mpi:
+            # get unique values for the different hosts listed after num_exec
+            nnodes = len(set(items[24 + num_asked:24 + offset]))
+            ncores = num_exec
+        else:
+            nnodes = 1
+            ncores = 1
         
         mapping_lsf_5678 = {
-                   'Site'           : lambda x: self.siteName,
+                   'Site'           : lambda x: self.site_name,
                    'JobName'        : lambda x: x[3],
                    'LocalUserID'    : lambda x: x[11],
                    'LocalUserGroup' : lambda x: "",
-                   'WallDuration'   : lambda x: int(x[2]) - int(x[10]),
-                   'CpuDuration'    : lambda x: int(round(float(x[28+offset]) + float(x[29+offset]))),
+                   'WallDuration'   : lambda x: int(host_factor * (int(x[2]) - int(x[10]))),
+                   'CpuDuration'    : lambda x: int(round(host_factor * (float(x[28+offset]) + float(x[29+offset])))),
                    'StartTime'      : lambda x: int(x[10]),
                    'StopTime'       : lambda x: int(x[2]),
                    'Infrastructure' : lambda x: "APEL-CREAM-LSF",
                    'Queue'          : lambda x: x[12],
-                   'MachineName'    : lambda x: self.machineName,
+                   'MachineName'    : lambda x: self.machine_name,
                    'MemoryReal'     : lambda x: int(x[54+offset]) > 0 and int(x[54+offset]) or 0,
                    'MemoryVirtual'  : lambda x: int(x[55+offset]) > 0 and int(x[55+offset]) or 0,
-                   'Processors'     : lambda x: num_exec,
+                   'Processors'     : lambda x: ncores,
                    'NodeCount'      : lambda x: nnodes
                    }
         

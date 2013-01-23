@@ -65,7 +65,7 @@ class BlahParser(Parser):
             'CE'             : lambda x: x['ceID'],
             'GlobalJobId'    : lambda x: x['jobID'],
             'LrmsId'         : lambda x: x['lrmsID'],
-            'Site'           : lambda x: self.siteName,
+            'Site'           : lambda x: self.site_name,
             'ValidFrom'      : lambda x: valid_from(parse_timestamp(x['timestamp'])),
             'ValidUntil'     : lambda x: valid_until(parse_timestamp(x['timestamp'])),
             'Processed'      : lambda x: Parser.UNPROCESSED}
