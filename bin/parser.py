@@ -34,39 +34,56 @@ from optparse import OptionParser
 
 from apel import __version__
 from apel.db import ApelDb, ApelDbException
+from apel.db.records import ProcessedRecord
 from apel.common import calculate_hash, set_up_logging
+from apel.common.exceptions import install_exc_handler, default_handler
 from apel.parsers.blah import BlahParser
 from apel.parsers.lsf import LSFParser
 from apel.parsers.sge import SGEParser
 from apel.parsers.pbs import PBSParser
 from apel.parsers.slurm import SlurmParser
-from apel.db.records import ProcessedRecord
 
 log = None
 
-def parse_file(log_type, cp, apel_db, batch_size, fp):
+# How many records should be put/fetched to/from database 
+# in single query
+BATCH_SIZE = 1000
+PARSERS = {
+           'PBS': PBSParser,
+           'LSF': LSFParser,
+           'SGE': SGEParser,
+           'SLURM': SlurmParser,
+           'blah' : BlahParser
+           }
+
+class ParserConfigException(Exception):
+    '''
+    Exception raised when parser is misconfigured.
+    '''
+    pass
+
+def find_sub_dirs(dirpath):
+    '''
+    Given a directory path, return a list of paths of any subdirectories, 
+    including the directory itself.
+    '''
+    alldirs = []
+    for root, unused_dirs, unused_files in os.walk(dirpath):
+        alldirs.append(root)
+    
+    return alldirs
+    
+
+def parse_file(parser, apel_db, fp):
     '''
     Parses file from blah/batch system
     
-    @param log_type: type of system (Blah, PBS, LSF, SGE)
-    @param db_config: database configuration
-    @param config: dictionary with config
+    @param parser: parser object of correct type
     @param apel_db: object to access APEL database
     @param fp: file object with log
     @return: number of correctly parsed files from file, 
              total number of lines in file 
     '''
-    
-    parsers = {
-               'PBS': PBSParser,
-               'LSF': LSFParser,
-               'SGE': SGEParser,
-               'SLURM': SlurmParser,
-               'Blah' : BlahParser
-               }
-    parser = parsers[log_type](siteName=cp.get('HostInfo', 'sitename'),
-                        machineName=cp.get('HostInfo', 'lrmsserver'))
-    
     records = []
     
     # we will save information about errors
@@ -94,7 +111,7 @@ def parse_file(log_type, cp, apel_db, batch_size, fp):
                 parsed += 1
             else:
                 ignored += 1
-            if len(records) % batch_size == 0 and len(records) != 0:
+            if len(records) % BATCH_SIZE == 0 and len(records) != 0:
                 apel_db.load_records(records)
                 del records
                 records = []
@@ -102,7 +119,7 @@ def parse_file(log_type, cp, apel_db, batch_size, fp):
     apel_db.load_records(records)
         
     if parsed == 0:
-        log.warn('Failed to parse file.  Is it a %s log file?' % log_type)        
+        log.warn('Failed to parse file.  Is it %s correct?' % str(parser))        
     else:
         log.info('Parsed %d lines' % parsed)
         log.info('Ignored %d lines (incomplete jobs)' % ignored)
@@ -113,39 +130,26 @@ def parse_file(log_type, cp, apel_db, batch_size, fp):
     
     return parsed, i
 
-def scan_dir(log_type, dir_location, apel_db,
-             batch_size, cp, processed_files,
-             new_processed_db, hostname):
-    # regular expressions for blah log files and for batch log files
-    try:
-        if log_type == 'Blah':
-            expr = re.compile(cp.get('Blah', 'pattern'))
-        else:
-            expr = re.compile(cp.get('Batch', 'pattern'))
-    except ConfigParser.NoOptionError:
-        log.warning('No pattern specified for %s log file names.' % log_type)
-        log.warning('Parser will try to parse all files in directory')
-        expr = re.compile('(.*)')
         
+def scan_dir(parser, dir_location, expr, apel_db, processed):
+
+    updated = []
     try:
-        log.info('Parsing %s files' % log_type)
         log.info('Directory: %s' % dir_location)
         
         for item in os.listdir(dir_location):
             abs_file = os.path.join(dir_location, item)
             if os.path.isfile(abs_file) and expr.match(item):
-                gz = abs_file.endswith('.gz')
-                
                 # first, calculate the hash of the file:
                 file_hash = calculate_hash(abs_file)
                 found = False
                 # next, try to find corresponding entry
                 # in database
-                for pf in processed_files:
+                for pf in processed:
                     if pf.get_field('Hash') == file_hash:
                         # we found corresponding record
                         # we will leave this record unmodified
-                        new_processed_db.append(pf)
+                        updated.append(pf)
                         found = True
                         log.info('File: %s already parsed, omitting' % abs_file)
                         
@@ -156,10 +160,10 @@ def scan_dir(log_type, dir_location, apel_db,
                         # a regular file
                         try:
                             fp = gzip.open(abs_file)
-                            parsed, total = parse_file(log_type, cp, apel_db, batch_size, fp)
+                            parsed, total = parse_file(parser, apel_db, fp)
                         except IOError, e: # not a gzipped file
                             fp = open(abs_file, 'r')
-                            parsed, total = parse_file(log_type, cp, apel_db, batch_size, fp)
+                            parsed, total = parse_file(parser, apel_db, fp)
                             fp.close()
                     except IOError, e:
                         log.error('Cannot open file %s due to: %s' % 
@@ -168,34 +172,108 @@ def scan_dir(log_type, dir_location, apel_db,
                         log.error('Failed to parse %s due to a database problem: %s' % (item, e))
                     else:
                         pr = ProcessedRecord()
-                        pr.set_field('HostName', hostname)
+                        pr.set_field('HostName', parser.machine_name)
                         pr.set_field('Hash',file_hash)
                         pr.set_field('FileName', abs_file)
                         pr.set_field('StopLine', total)
                         pr.set_field('Parsed', parsed)
-                        new_processed_db.append(pr)
+                        updated.append(pr)
                         
             else:
                 log.info('Not a regular file: %s [omitting]' % item)
-                
-        log.info('Finished parsing %s log files.' % log_type)
+        
+        return updated
+    
     except KeyError, e:
         log.fatal('Improperly configured.')
-        log.fatal('Check the section for %s parser, %s' % (log_type, str(e)))
+        log.fatal('Check the section for %s , %s' % (str(parser), str(e)))
         sys.exit(1)
     
-
-def main():
-    ver = "APEL client %s.%s.%s" % __version__
-    opt_parser = OptionParser(description=__doc__, version=ver)
-    opt_parser.add_option("-c", "--config", help="the location of config file", 
-                          default="/etc/apel/parser.cfg")
-    opt_parser.add_option("-l", "--log_config", help="the location of logging config file", 
-                          default="/etc/apel/parserlog.cfg")
-    (options,_) = opt_parser.parse_args()
+def handle_parsing(log_type, apel_db, cp):
+    '''
+    Create the appropriate parser, and scan the configured directory
+    for log files, parsing them.
     
-    config = None
-    blah_dir, batch_dir = '', ''
+    Update the database with the parsed files.
+    '''
+    log.info('Setting up parser for %s files' % log_type)
+    if log_type == 'blah':
+        section = 'blah'
+    else:
+        section = 'batch'
+        
+    site = cp.get('site_info', 'site_name')
+    if site is None or site == '':
+        raise ParserConfigException('Site name must be configured.')
+        
+    machine_name = cp.get('site_info', 'lrms_server')
+    if machine_name is None or machine_name == '':
+        raise ParserConfigException('LRMS hostname must be configured.')
+    
+    processed_files = []
+    updated_files = []
+    # get all processed records from generator
+    for record_list in apel_db.get_records(ProcessedRecord):
+        processed_files.extend([record for record in record_list if record.get_field('HostName') == machine_name])
+        
+    root_dir = cp.get(section, 'dir')
+    
+    try:
+        mpi = cp.getboolean(section, 'parallel')
+    except ConfigParser.NoOptionError:
+        mpi = False
+        
+    try:
+        parser = PARSERS[log_type](site, machine_name, mpi)
+    except NotImplementedError, e:
+        raise ParserConfigException(e)
+    
+    if log_type == 'LSF':
+        try:
+            parser.set_scaling(cp.getboolean('batch', 'scale_host_factor'))
+        except ConfigParser.NoOptionError:
+            pass
+        
+    # regular expressions for blah log files and for batch log files
+    try:
+        prefix = cp.get(section, 'filename_prefix')
+        expr = re.compile('^' + prefix + '.*')
+    except ConfigParser.NoOptionError:
+        try:
+            expr = re.compile(cp.get(section, 'filename_pattern'))
+        except ConfigParser.NoOptionError:
+            log.warning('No pattern specified for %s log file names.' % log_type)
+            log.warning('Parser will try to parse all files in directory')
+            expr = re.compile('(.*)')
+    
+    if os.path.isdir(root_dir):
+        if cp.getboolean(section, 'subdirs'):
+            to_scan = find_sub_dirs(root_dir)
+        else:
+            to_scan = [root_dir]
+        for directory in to_scan:
+            updated_files.extend(scan_dir(parser, directory, expr, apel_db, processed_files))
+    else:
+        log.warn('Directory for %s logs was not set correctly, omitting' % log_type)
+    
+    apel_db.load_records(updated_files, None)
+    log.info('Finished parsing %s log files.' % log_type)
+    
+    
+def main():
+    '''
+    Parse command line arguments, do initial setup, then initiate 
+    parsing process.
+    '''
+    install_exc_handler(default_handler)
+    
+    ver = "APEL parser %s.%s.%s" % __version__
+    opt_parser = OptionParser(description=__doc__, version=ver)
+    opt_parser.add_option("-c", "--config", help="location of config file", 
+                          default="/etc/apel/parser.cfg")
+    opt_parser.add_option("-l", "--log_config", help="location of logging config file (optional)", 
+                          default="/etc/apel/parserlog.cfg")
+    options, unused_args = opt_parser.parse_args()
     
     # Read configuration from file 
     try:
@@ -235,61 +313,35 @@ def main():
         apel_db.test_connection()
         log.info('Connection to DB established')
     except KeyError, e:
-        log.fatal('Improperly configured.');
+        log.fatal('Database configured incorrectly.')
         log.fatal('Check the database section for option: %s' % str(e))
         sys.exit(1)
     except Exception, e:
         log.fatal("Database exception: %s" % str(e))
+        log.fatal('Parser will exit.')
+        log.info('=====================================')
         sys.exit(1)
 
+    # blah parsing 
     try:
-        site = cp.get('HostInfo', 'sitename')
-        hostname = cp.get('HostInfo', 'lrmsserver')
-        slt = cp.get('HostInfo', 'serviceleveltype')
-        sl = cp.getfloat('HostInfo', 'servicelevel')
-        
-        apel_db.update_spec(site, hostname, slt, sl)
-        log.info("Updating benchmark information for local jobs:") 
-        log.info("%s, %s, %s, %s." % (site, hostname, slt, sl))
-    except KeyError, e:
-        log.fatal('Cannot find submithost in configuration file')
-        log.fatal('Check the HostInfo section for option: %s' % str(e))
+        if cp.getboolean('blah', 'enabled'):
+            handle_parsing('blah', apel_db, cp)
+    except (ParserConfigException, ConfigParser.NoOptionError), e:
+        log.fatal('Parser misconfigured: %s' % str(e))    
+        log.fatal('Parser will exit.')
+        log.info('=====================================')
         sys.exit(1)
-
-    # find files which have been already parsed    
-    processed_files = []
-    new_db = []
-    for record_list in apel_db.get_records(ProcessedRecord):
-        processed_files += filter(lambda record: record.get_field('HostName') == hostname, 
-                                  record_list)
+    # batch parsing
+    try:
+        if cp.getboolean('batch', 'enabled'):
+            handle_parsing(cp.get('batch', 'type'), apel_db, cp)
+    except (ParserConfigException, ConfigParser.NoOptionError), e:
+        log.fatal('Parser misconfigured: %s' % str(e))    
+        log.fatal('Parser will exit.')
+        log.info('=====================================')
+        sys.exit(1)
         
-    # No of records inserted in one go.
-    batch_size = 1000
-        
-    if cp.getboolean('Blah', 'enabled'):
-        if os.path.isdir(cp.get('Blah', 'dir')):
-            blah_dir = cp.get('Blah', 'dir')
-            scan_dir('Blah', blah_dir, apel_db,
-                     batch_size, cp, processed_files,
-                     new_db, hostname)
-    # parse batch files
-        else:
-            log.warn('Directory with BLAH logs was not set correctly, omitting')
-
-    if cp.getboolean('Batch', 'enabled'):
-        if os.path.isdir(cp.get('Batch', 'dir')):
-            batch_dir = cp.get('Batch', 'dir')
-            scan_dir(cp.get('Batch', 'type'), batch_dir, apel_db,
-                     batch_size, cp, processed_files,
-                     new_db, hostname)
-        else:
-            log.warn('Directory with batch logs was not set correctly, omitting')    
-    
-    
-    # save the current state
-    apel_db.clean_processed_files(hostname)
-    apel_db.load_records(new_db, None)
-    
+    log.info('Parser has completed.')
     log.info('=====================================')
     sys.exit(0)
     
