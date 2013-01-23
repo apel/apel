@@ -694,7 +694,7 @@ CREATE PROCEDURE InsertProcessedFile(
   stopLine INT,
   parsed   INT)
 BEGIN
-  INSERT INTO ProcessedFiles(HostName, FileName, Hash, StopLine, Parsed)
+  REPLACE INTO ProcessedFiles(HostName, FileName, Hash, StopLine, Parsed)
   VALUES (hostName, fileName, hash, stopLine, parsed);
 END //
 DELIMITER ;
