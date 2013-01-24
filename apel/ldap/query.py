@@ -17,11 +17,10 @@
 '''
 
 import ldap
-from apel.ldap import LOGGER_ID
 import logging
 from decimal import Decimal
 
-log = logging.getLogger(LOGGER_ID)
+log = logging.getLogger(__name__)
 
 def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):    
     '''
@@ -68,7 +67,7 @@ def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):
 
         for capability in ce_capabilities:
             if capability.startswith(cpu_scaling_reference):
-                log.info('Found value in first query: '+
+                log.debug('Found value in first query: '+
                          str(capability.split('=')[1]))
                 values.append((ce_name, 
                                Decimal(capability.split('=')[1])))

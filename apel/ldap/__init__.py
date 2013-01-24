@@ -14,5 +14,4 @@
    limitations under the License.
 '''
 
-LOGGER_ID = 'apelldap'
 from query import fetch_specint

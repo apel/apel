@@ -38,7 +38,7 @@ def default_handler(exc_type, value, traceback):
     '''
     
     log.critical('Unhandled exception raised!')
-    log.critical('Please send the bug report with following information:')
+    log.critical('Please send a bug report with following information:')
     log.critical('%s: %s' % (exc_type.__name__, str(value)))
     
     tbstack = []
