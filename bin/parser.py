@@ -48,6 +48,7 @@ log = None
 # How many records should be put/fetched to/from database 
 # in single query
 BATCH_SIZE = 1000
+DB_BACKEND = 'mysql'
 PARSERS = {
            'PBS': PBSParser,
            'LSF': LSFParser,
@@ -304,7 +305,7 @@ def main():
 
     # database connection
     try:
-        apel_db = ApelDb(cp.get('db', 'backend'),
+        apel_db = ApelDb(DB_BACKEND,
                          cp.get('db', 'hostname'),
                          cp.getint('db', 'port'),
                          cp.get('db', 'username'),
