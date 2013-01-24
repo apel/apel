@@ -95,7 +95,7 @@ CREATE PROCEDURE InsertEventRecord(
   processors     INT,
   nodeCount      INT)
 BEGIN
-        REPLACE INTO EventRecords(SiteID, JobName, LocalUserID, LocalUserGroup, WallDuration,
+        INSERT IGNORE INTO EventRecords(SiteID, JobName, LocalUserID, LocalUserGroup, WallDuration,
                                   CpuDuration, StartTime, EndTime, Infrastructure, MachineNameID, QueueID, MemoryReal, MemoryVirtual, Processors, NodeCount, Status)
         VALUES (SiteLookup(site), jobName, localUserId, localUserGroup, wallDuration, cpuDuration, 
           startTime, endTime, infrastructure, MachineNameLookup(machineName), QueueLookup(queue), memoryReal, memoryVirtual, processors, nodeCount, 0);
@@ -141,7 +141,7 @@ CREATE PROCEDURE InsertBlahdRecord(
   validUntil                  DATETIME, 
   processed                   INT)
 BEGIN
-  REPLACE INTO BlahdRecords (TimeStamp , GlobalUserNameID, FQAN, VOID, VOGroupID, 
+  INSERT IGNORE INTO BlahdRecords (TimeStamp , GlobalUserNameID, FQAN, VOID, VOGroupID, 
                              VORoleID, CEID, GlobalJobId, LrmsId, SiteID, ValidFrom, ValidUntil,
                              Processed)
   VALUES (timeStamp, DNLookup(globalUserName), fullyQualifiedAttributeName, VOLookup(vo), VOGroupLookup(VOGroup), 
@@ -222,7 +222,10 @@ DELIMITER //
 CREATE PROCEDURE JoinJobRecords()
 BEGIN
     DECLARE procstart DATETIME;
+    DECLARE apeldn INT;
+    
     SET procstart = NOW();
+    SET apeldn = DNLookup("apelclient");
 
     REPLACE INTO JobRecords (
       UpdateTime,
@@ -255,7 +258,7 @@ BEGIN
 -- as long as we are not joining records from external databases we can do it with
 -- raw IDs
     SELECT         
-        NOW(),                                             -- JobRecord.UpdateTime
+        procstart,                                         -- JobRecord.UpdateTime
         EventRecords.SiteID as SiteID,                     -- JobRecord.Site
         BlahdRecords.CEID as SubmitHostID,                 -- JobRecord.SubmitHost
         EventRecords.MachineNameID as MachineNameID,       -- JobRecord.MachineName
@@ -279,9 +282,9 @@ BEGIN
         EventRecords.MemoryVirtual as MemoryVirtual,       -- JobRecord.MemoryVirtual
         SpecRecords.ServiceLevelType as ServiceLevelType,  
         SpecRecords.ServiceLevel as ServiceLevel,          
-        DNLookup("apelclient"),                            -- JobRecords.PublisherDN
-        YEAR(EndTime),
-        MONTH(EndTime)
+        apeldn,                            -- JobRecords.PublisherDN
+        YEAR(EventRecords.EndTime),
+        MONTH(EventRecords.EndTime)
     FROM SpecRecords 
     INNER JOIN EventRecords ON ((SpecRecords.StopTime > EventRecords.EndTime
                              OR 
@@ -321,7 +324,7 @@ BEGIN
     SET vogroupid = VOGroupLookup("None");
     SET voroleid = VORoleLookup("None");
     SET dnnoneid = DNLookup("None");
-    SET dnlocalid = DNLookup("Local");
+    SET dnlocalid = DNLookup("local");
 	
     REPLACE INTO JobRecords (
       UpdateTime,
@@ -354,7 +357,7 @@ BEGIN
     SELECT 
         procstart,
         EventRecords.SiteID,
-        SubmitHostID,                                   -- JobRecords.SubmitHost
+        submithostid,                                   -- JobRecords.SubmitHostID
         MachineNameID,                                  -- JobRecords.MachineName
         QueueID,                                        -- JobRecords.Queue
         JobName,                                        -- JobRecords.LocalJobId
@@ -390,13 +393,14 @@ BEGIN
     INNER JOIN SubmitHosts ON SpecRecords.CEID = SubmitHosts.id 
                              AND SubmitHosts.name = MachineNames.name
     WHERE Status = 0; 
-
+    
     UPDATE EventRecords, JobRecords
     SET Status = 1 
     WHERE EventRecords.MachineNameID = JobRecords.MachineNameID
         AND EventRecords.JobName = JobRecords.LocalJobId 
         AND EventRecords.EndTime = JobRecords.EndTime 
         AND JobRecords.UpdateTime >= procstart;
+        
 END //
 DELIMITER ;
 
