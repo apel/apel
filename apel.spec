@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        0.0.4
+Version:        0.0.5
 Release:        0%{?dist}
 Summary:        APEL packages
 
@@ -158,6 +158,12 @@ exit 0
 %config(noreplace) %{apelconf}/db.cfg
 
 %changelog
+ * Thu Jan 24 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.5-0
+ - Client and parser scripts rewritten to be more logical and simpler
+ - Use INSERT IGNORE for log file records instead of REPLACE
+ - Change sync records to reflect any VO or local job filtering
+ - Make MPI parsing optional
+
  * Wed Jan 16 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.4-0
  - Updated to use new cloud schema and message format
 
