@@ -32,15 +32,23 @@ import os
 import logging.config
 import ldap
 
-from apel.db import ApelDb, ApelDbException
 from apel import __version__
-from apel.ldap import fetch_specint
+from apel.db import ApelDb, ApelDbException
 from apel.db.unloader import DbUnloader
+from apel.ldap import fetch_specint
 from apel.common import set_up_logging
+from apel.common.exceptions import install_exc_handler, default_handler
 
 from ssm.brokers import StompBrokerGetter, STOMP_SERVICE
 from ssm.ssm2 import Ssm2, Ssm2Exception
 
+DB_BACKEND = 'mysql'
+
+class ClientConfigException(Exception):
+    '''
+    Exception raised if client is misconfigured.
+    '''
+    pass
 
 def run_ssm(ssm_cfg, log):
     cp = ConfigParser.ConfigParser()
@@ -84,7 +92,9 @@ def run_ssm(ssm_cfg, log):
     
 
 def main():
-    ver = "APEL client %s.%s.%s" % __version__
+    
+    install_exc_handler(default_handler)
+    ver = 'APEL client %s.%s.%s' % __version__
     opt_parser = OptionParser(version=ver, description=__doc__)
     
     opt_parser.add_option('-c', '--config',
@@ -116,15 +126,26 @@ def main():
         print 'Error configuring logging: %s' % str(err)
         print 'The system will exit.'
         sys.exit(1)
-        
+    
     try:
         spec_updater_enabled = cp.getboolean('spec_updater', 'enabled')
         if spec_updater_enabled:
-            sitename         = cp.get('spec_updater', 'site_name')
+            site_name         = cp.get('spec_updater', 'site_name')
+            if site_name == '':
+                raise ClientConfigException('Site name must be configured.')
             ldap_host        = cp.get('spec_updater', 'ldap_host')
             ldap_port        = int(cp.get('spec_updater', 'ldap_port'))
         joiner_enabled       = cp.getboolean('joiner', 'enabled')
         local_jobs           = cp.getboolean('joiner', 'local_jobs')
+        if local_jobs:
+            hostname = cp.get('spec_updater', 'lrms_server')
+            if hostname == '':
+                raise ClientConfigException('LRMS server hostname must be configured\
+                    if local jobs are enabled.')
+                
+            slt = cp.get('spec_updater', 'spec_type')
+            sl = cp.getfloat('spec_updater', 'spec_value')
+        
         unloader_enabled     = cp.getboolean('unloader', 'enabled')
         
         include_vos = None
@@ -149,7 +170,7 @@ def main():
         if ssm_enabled:
             ssm_conf_file    = options.ssm_config
             
-    except ConfigParser.Error, err:
+    except (ClientConfigException, ConfigParser.Error), err:
         log.error('Error in configuration file: ' + str(err))
         sys.exit(1)
    
@@ -157,7 +178,6 @@ def main():
         
     # Log into the database
     try:
-        db_backend  = cp.get('db', 'backend')
         db_hostname = cp.get('db', 'hostname')
         db_port     = cp.getint('db', 'port')
         db_name     = cp.get('db', 'name')
@@ -165,7 +185,8 @@ def main():
         db_password = cp.get('db', 'password')
         
         log.info('Connecting to the database ... ')
-        db = ApelDb(db_backend, db_hostname, db_port, db_username, db_password, db_name) 
+        db = ApelDb(DB_BACKEND, db_hostname, db_port, db_username, db_password, db_name) 
+        db.test_connection()
         log.info('Connected.')
 
     except (ConfigParser.Error, Exception), err:
@@ -177,25 +198,31 @@ def main():
         log.info('=====================')#
         log.info('Starting spec updater.')
         try:
-            spec_values = fetch_specint(sitename, ldap_host, ldap_port)
+            spec_values = fetch_specint(site_name, ldap_host, ldap_port)
             for value in spec_values:
-                db.update_spec(sitename, value[0], 'si2k', value[1])
+                db.update_spec(site_name, value[0], 'si2k', value[1])
             log.info('Spec updater finished.')
         except ldap.SERVER_DOWN, e:
             log.warn('Failed to fetch spec info: %s' % e)
             log.warn('Spec updater failed.')
         except ldap.NO_SUCH_OBJECT, e:
             log.warn('Found no spec values in BDII: %s' % e)
-            log.warn('Is the site name %s correct?' % sitename)
+            log.warn('Is the site name %s correct?' % site_name)
+        
         log.info('=====================')
         
     if joiner_enabled:
         log.info('=====================')
         log.info('Starting joiner.')
         # This contains all the joining logic, contained in ApelMysqlDb() and the stored procedures.
-        db.join_records()
         if local_jobs:
+            log.info('Updating benchmark information for local jobs:') 
+            log.info('%s, %s, %s, %s.' % (site_name, hostname, slt, sl))
+            db.update_spec(site_name, hostname, slt, sl)
+            log.info('Creating local jobs.')
             db.create_local_jobs()
+            
+        db.join_records()
         log.info('Joining complete.')
         log.info('=====================')
     
@@ -238,14 +265,14 @@ def main():
             
             
         # Always send sync messages
-        msgs, recs = unloader.unload_all('VSyncRecords', False)
+        msgs, recs = unloader.unload_sync()
         
         log.info('Unloaded %d sync records in %d messages.' % (recs, msgs))
         
         log.info('Unloading complete.')
         log.info('=====================')
         
-
+    # Send unloaded messages
     if ssm_enabled:
         log.info('=====================')
         log.info('Starting SSM.')
