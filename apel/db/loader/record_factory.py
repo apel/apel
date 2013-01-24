@@ -55,6 +55,8 @@ class RecordFactory(object):
         Given the text from a message, create a list of record objects and 
         return that list.
         '''    
+        # remove any whitespace
+        msg_text = msg_text.strip()
         try:
             # XML format
             if msg_text.startswith('<'):
