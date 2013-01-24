@@ -66,7 +66,7 @@ class ApelDb(object):
         loads them into the database.'''
         pass
     
-    def get_records(self, record_class, query):
+    def get_records(self, record_class, query=None):
         '''Returns records from database with given record type.
         Query object specifies which rows from database should be loaded.'''
         pass

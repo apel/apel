@@ -320,7 +320,7 @@ class Record(object):
             # check if we have an integer in this field
             try:
                 value = int(value)
-            except (ValueError, TypeError), e:
+            except (ValueError, TypeError):
                 if key in self._mandatory_fields:
                     raise InvalidRecordException("Mandatory int field " + key + 
                                     " doesn't contain an integer.")

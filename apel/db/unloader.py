@@ -57,7 +57,7 @@ class DbUnloader(object):
         ''' 
         query = Query()
         
-        if record_type == JobRecord or record_type == SummaryRecord:
+        if record_type in (JobRecord, SummaryRecord, SyncRecord):
             if self._inc_vos is not None:
                 query.VO_in = self._inc_vos
                 log.info('Sending only these VOs: ')
@@ -82,6 +82,18 @@ class DbUnloader(object):
         query = self._get_base_query(record_type)
         msgs, records = self._write_messages(record_type, table_name, query, car)
         return msgs, records
+        
+    def unload_sync(self):
+        log.info('Writing sync messages.')
+        query = self._get_base_query(SyncRecord)
+        msgs = 0
+        records = 0
+        for batch in self._db.get_sync_records(query=query):
+            records += len(batch)
+            self._write_apel(batch)
+            msgs += 1
+        return msgs, records
+        
         
     def unload_gap(self, table_name, start, end, car=False):
         '''
@@ -163,12 +175,12 @@ class DbUnloader(object):
             XML_HEADER = '<?xml version="1.0" ?>'
             UR_OPEN = '<urf:UsageRecords xmlns:urf="http://eu-emi.eu/namespaces/2012/11/computerecord" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://eu-emi.eu/namespaces/2012/11/computerecord car_v1.2.xsd">'
             UR_CLOSE = '</urf:UsageRecords>'
-        elif type(records[0]) == SummaryRecord:
-            XML_HEADER = '<?xml version="1.0" ?>'
-            UR_OPEN = '<aur:SummaryRecords xmlns:aur="http://eu-emi.eu/namespaces/2012/11/aggregatedcomputerecord" xmlns:urf="http://eu-emi.eu/namespaces/2012/11/computerecord" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://eu-emi.eu/namespaces/2012/11/aggregatedcomputerecord ">'
-            UR_CLOSE = '</aur:SummaryRecords>'
+#        elif type(records[0]) == SummaryRecord:
+#            XML_HEADER = '<?xml version="1.0" ?>'
+#            UR_OPEN = '<aur:SummaryRecords xmlns:aur="http://eu-emi.eu/namespaces/2012/11/aggregatedcomputerecord" xmlns:urf="http://eu-emi.eu/namespaces/2012/11/computerecord" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://eu-emi.eu/namespaces/2012/11/aggregatedcomputerecord ">'
+#            UR_CLOSE = '</aur:SummaryRecords>'
         else:
-            raise Exception('No URs here!')
+            raise ApelDbException('Can only send URs for JobRecords.')
             
         buf.write(XML_HEADER + '\n')
         buf.write(UR_OPEN + '\n')

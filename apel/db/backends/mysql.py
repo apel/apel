@@ -19,7 +19,7 @@ Created on 27 Oct 2011
 '''
 
 
-from apel.db import ApelDbException, LOGGER_ID
+from apel.db import ApelDbException
 from apel.db.records import BlahdRecord, \
                             CloudRecord, \
                             EventRecord, \
@@ -35,7 +35,7 @@ import logging
 import decimal
 
 # set up the logger 
-log = logging.getLogger(LOGGER_ID)
+log = logging.getLogger(__name__)
 # treat MySQL warnings as exceptions
 #warnings.simplefilter("error", category=MySQLdb.Warning)
 
@@ -43,7 +43,6 @@ class ApelMysqlDb(object):
     '''
     MySQL implementation of the general ApelDb interface.
     '''
-    
     MYSQL_TABLES = {EventRecord : 'EventRecords',
                     JobRecord   : 'VJobRecords',
                     BlahdRecord : 'BlahdRecords',
@@ -69,7 +68,6 @@ class ApelMysqlDb(object):
         '''
         Initialise variables, and define stored procedures.
         '''
-
         self._db_host = host
         self._db_port = port
         self._db_username = username
@@ -99,7 +97,6 @@ class ApelMysqlDb(object):
         Tests the DB connection - if it fails a MySQLdb.OperationalError will be
         thrown.
         '''
-        
         try:
             db =  MySQLdb.connect(host=self._db_host, port=self._db_port, 
                                   user=self._db_username, passwd=self._db_pwd, 
@@ -111,14 +108,12 @@ class ApelMysqlDb(object):
         except MySQLdb.OperationalError, e:
             raise ApelDbException("Failed to connect to database: " + str(e))
 
-                
     def load_records(self, record_list, source=None):
         '''
         Loads the records in the list into the DB.  This is transactional - 
         either all or no records will be loaded.  Includes the DN of the 
         sender.
         '''
-
         try:
             # prevent MySQLdb from raising
             # 'MySQL server has gone' exception
@@ -137,51 +132,53 @@ class ApelMysqlDb(object):
             self.db.rollback()
             raise ApelDbException(err)
         
-    #def get_records(self, record_type, table_name=None, VOs=None, since=None, local=False, rec_number=1000):
     def get_records(self, record_type, table_name=None, query=None, rec_number=1000):
         '''
-        Yields lists of records fetched from database.
+        Yields lists of records fetched from database of the given type.  This is used
+        if the records are coming directly from a table or view.
         '''
         
         if table_name is None:
             table_name = self.MYSQL_TABLES[record_type]
       
         select_query = 'SELECT * FROM %s' % (table_name)
-#        
-#        clauses = []
-#        
-#        if VOs is not None and len(VOs) > 0:
-#            vos = '("%s"' + ', "%s"' * (len(VOs) - 1) + ')'
-#            vos = vos % VOs
-#            clauses.append('VO in %s' % vos)
-#        
-#        if since is not None:
-#            clauses.append('UpdateTime > "%s"' % since)
-#        
-#        if not local:
-#            clauses.append('InfrastructureType = \"grid\"')
-#            
-#        if clauses:
-#            select_query += " WHERE %s" % clauses.pop()
-#            
-#        for clause in clauses:
-#            select_query += " AND %s" % clause
 
         if query is not None:
-            
             select_query += query.get_where() 
             
         log.debug(select_query)
+        
+        for batch in self._get_records(record_type, select_query, rec_number):
+            yield batch
+
+    def get_sync_records(self, query=None, rec_number=1000):
+        '''
+        Get sync records from the SuperSummaries table.  Filter by the 
+        provided query.
+        '''
+        if query is not None:
+            where = query.get_where()
+        else:
+            where = ''
+        
+        select_query = '''SELECT Site, SubmitHost, sum(NumberOfJobs) as NumberOfJobs, 
+        Month, Year FROM VSuperSummaries %s GROUP BY Site, SubmitHost, Month, Year''' % where
+        
+        log.debug(select_query)
+    
+        for batch in self._get_records(SyncRecord, select_query, rec_number):
+            yield batch
+        
+    def _get_records(self, record_type, query_string, rec_number=1000):
 
         record_list = []
-
         try:
             # prevent MySQLdb from raising
             # 'MySQL server has gone' exception
             self._mysql_reconnect()
             
             c = self.db.cursor(cursorclass=MySQLdb.cursors.SSDictCursor)
-            c.execute(select_query)
+            c.execute(query_string)
             while True:
                 for row in c.fetchmany(size=rec_number):
                     record = record_type()
@@ -206,6 +203,9 @@ class ApelMysqlDb(object):
         
         
     def get_last_updated(self):
+        '''
+        Find the last time that messages were sent.
+        '''
         query = 'select UpdateTime from LastUpdated where Type = "sent"'
         c = self.db.cursor()
         c.execute(query)
@@ -217,6 +217,9 @@ class ApelMysqlDb(object):
             return result[0]
         
     def set_updated(self):
+        '''
+        Set the current time as the last time messages were sent.
+        '''
         log.info('Updating timestamp.')
         query = 'call UpdateTimestamp("sent")'
         c = self.db.cursor()
@@ -236,7 +239,6 @@ class ApelMysqlDb(object):
         Any failure will result in the entire transaction being rolled 
         back.
         '''
-                
         try:
             # prevent MySQLdb from raising
             # 'MySQL server has gone' exception
@@ -255,7 +257,7 @@ class ApelMysqlDb(object):
             log.info("Summarising job records...")
             c.callproc(self._summarise_jobs_proc, ())
             log.info("Done.")
-         
+            
 #            log.info("Copying summaries...")
 #            c.callproc(self._copy_summaries_proc)
 #            log.info("Done.")
@@ -277,14 +279,12 @@ class ApelMysqlDb(object):
         For exact implementantion please read the code of JoinJobRecords procedure
         from client.sql in apeldb/schema folder.
         '''
-        
         try:
             # prevent MySQLdb from raising
             # 'MySQL server has gone' exception
             self._mysql_reconnect()
             
             c = self.db.cursor()
-            
             log.info("Creating JobRecords")
             c.callproc(self._join_records_proc)
             log.info("Done.")
@@ -295,7 +295,6 @@ class ApelMysqlDb(object):
             
             if not self.db is None:
                 self.db.rollback()
-                
             raise e
         
     def create_local_jobs(self):
@@ -379,17 +378,14 @@ class ApelMysqlDb(object):
         except MySQLdb.Error, e:
             log.error("A mysql error occurred: %s" % e)
             log.error("Any transaction will be rolled back.")
-            
             if not self.db is None:
                 self.db.rollback()
-    
     
     def _mysql_reconnect(self):
         '''
         Checks if current connection is active and
         reconnects if necessary
         '''
-        
         try:
             self.db.ping()
         except MySQLdb.Error:
