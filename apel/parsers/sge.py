@@ -57,7 +57,7 @@ class SGEParser(Parser):
         if self._mpi:
             procs = int(values[34])
         else:
-            procs = 1
+            procs = 0
             
         mapping = {'Site'           : lambda x: self.site_name,
                   'JobName'         : lambda x: x[5],
@@ -74,7 +74,7 @@ class SGEParser(Parser):
                   'MemoryVirtual'   : lambda x: int(float(x[42])),
                   'Processors'      : lambda x: procs,
                   # Apparently can't get the number of WNs.
-                  'NodeCount'       : lambda x: 1}
+                  'NodeCount'       : lambda x: 0}
     
         record = EventRecord()
         data = {}

@@ -45,9 +45,6 @@ class PBSParser(Parser):
         data = {}
         unused_date, status, jobName, rest = line.split(';')
         
-        if self.machine_name == '':
-            self.machine_name = jobName.split('.',1)[1]
-        
         # we accept only 'E' status
         # be careful!: this parse can return None, and this is _valid_ situation
         if status != 'E':
@@ -60,7 +57,7 @@ class PBSParser(Parser):
         if self._mpi:
             nodes, cores = _parse_mpi(data['exec_host'])
         else:
-            nodes, cores = 1, 1
+            nodes, cores = 0, 0
         
         # map each field to functions which will extract them
         mapping = {'Site'           : lambda x: self.site_name, 

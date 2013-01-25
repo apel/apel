@@ -103,8 +103,8 @@ class LSFParser(Parser):
             nnodes = len(set(items[24 + num_asked:24 + offset]))
             ncores = num_exec
         else:
-            nnodes = 1
-            ncores = 1
+            nnodes = 0
+            ncores = 0
         
         mapping_lsf_5678 = {
                    'Site'           : lambda x: self.site_name,
