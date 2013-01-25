@@ -202,29 +202,29 @@ class JobRecord(Record):
             group = doc.createElement('urf:Group')
             group.appendChild(doc.createTextNode(self.get_field('VO')))
             user_id.appendChild(group)
-        
-        if self.get_field('LocalUserId') is not None:
-            local_user_id = doc.createElement('urf:LocalUserId')
-            local_user_id.appendChild(doc.createTextNode(self.get_field('LocalUserId')))
-            user_id.appendChild(local_user_id)
-        
+            
         if self.get_field('FQAN') is not None:
             fqan = doc.createElement('urf:GroupAttribute')
-            fqan.setAttribute('type', 'FQAN')
+            fqan.setAttribute('urf:type', 'FQAN')
             fqan.appendChild(doc.createTextNode(self.get_field('FQAN')))
             user_id.appendChild(fqan)
             
         if self.get_field('VOGroup') is not None:
             vogroup = doc.createElement('urf:GroupAttribute')
-            vogroup.setAttribute('type', 'vo-group')
+            vogroup.setAttribute('urf:type', 'vo-group')
             vogroup.appendChild(doc.createTextNode(self.get_field('VOGroup')))
             user_id.appendChild(vogroup)
             
         if self.get_field('VORole') is not None:
             vorole = doc.createElement('urf:GroupAttribute')
-            vorole.setAttribute('type', 'vo-role')
+            vorole.setAttribute('urf:type', 'vo-role')
             vorole.appendChild(doc.createTextNode(self.get_field('VORole')))
             user_id.appendChild(vorole)
+        
+        if self.get_field('LocalUserId') is not None:
+            local_user_id = doc.createElement('urf:LocalUserId')
+            local_user_id.appendChild(doc.createTextNode(self.get_field('LocalUserId')))
+            user_id.appendChild(local_user_id)
             
         ur.appendChild(user_id)
         
