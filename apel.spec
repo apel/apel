@@ -120,7 +120,7 @@ exit 0
 
 %files parsers
 %defattr(-,root,root,-)
-%attr(755,-,-) %_bindir/apelparser
+%attr(755,root,root) %_bindir/apelparser
 %config(noreplace) %{apelconf}/parser.cfg
 
 %files client
@@ -131,7 +131,7 @@ exit 0
 %dir %{_localstatedir}/log/apel
 %dir %{_localstatedir}/run/apel
 
-%attr(755,-,-) %_bindir/apelclient
+%attr(755,root,root) %_bindir/apelclient
 
 %config(noreplace) %{apelconf}/client.cfg
 
@@ -145,9 +145,9 @@ exit 0
 %dir %{_localstatedir}/log/apel
 %dir %{_localstatedir}/run/apel
 
-%attr(755,-,-) %_bindir/apeldbunloader
-%attr(755,-,-) %_bindir/apeldbloader
-%attr(755,-,-) %_bindir/apelsummariser
+%attr(755,root,root) %_bindir/apeldbunloader
+%attr(755,root,root) %_bindir/apeldbloader
+%attr(755,root,root) %_bindir/apelsummariser
 
 # Init script
 %attr(755,root,root) %{_initrddir}/dbld
