@@ -145,7 +145,7 @@ BEGIN
                              VORoleID, CEID, GlobalJobId, LrmsId, SiteID, ValidFrom, ValidUntil,
                              Processed)
   VALUES (timeStamp, DNLookup(globalUserName), fullyQualifiedAttributeName, VOLookup(vo), VOGroupLookup(VOGroup), 
-          VORoleLookup(VORole), SubmitHostLookup(ce), DNLookup(globalJobId), lrmsId, SiteLookup(site), 
+          VORoleLookup(VORole), SubmitHostLookup(ce), globalJobId, lrmsId, SiteLookup(site), 
           validFrom, validUntil, processed);
 END //
 DELIMITER ;
