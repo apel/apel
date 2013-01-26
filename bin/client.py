@@ -39,7 +39,7 @@ from apel.ldap import fetch_specint
 from apel.common import set_up_logging
 from apel.common.exceptions import install_exc_handler, default_handler
 
-from ssm.brokers import StompBrokerGetter, STOMP_SERVICE
+from ssm.brokers import StompBrokerGetter, STOMP_SERVICE, STOMP_SSL_SERVICE
 from ssm.ssm2 import Ssm2, Ssm2Exception
 
 DB_BACKEND = 'mysql'
@@ -56,7 +56,12 @@ def run_ssm(ssm_cfg, log):
     
     try:
         bg = StompBrokerGetter(cp.get('broker','bdii'))
-        brokers = bg.get_broker_hosts_and_ports(STOMP_SERVICE, cp.get('broker','network'))
+        use_ssl = cp.getboolean('broker', 'use_ssl')
+        if use_ssl:
+            service = STOMP_SSL_SERVICE
+        else:
+            service = STOMP_SERVICE
+        brokers = bg.get_broker_hosts_and_ports(service, cp.get('broker','network'))
     except ldap.LDAPError, e:
         log.error('Failed to retrieve brokers from LDAP: %s' % str(e))
         log.error('Messages were not sent.')
@@ -68,11 +73,19 @@ def run_ssm(ssm_cfg, log):
         server_cert = None
         
     try:
+        try:
+            destination = cp.get('messaging', 'destination')
+            if destination == '':
+                raise Ssm2Exception('No destination queue is configured.')
+        except ConfigParser.NoOptionError, e:
+            raise Ssm2Exception(e)
+        
         ssm = Ssm2(brokers, 
                    cp.get('messaging','path'),
                    dest=cp.get('messaging','destination'),
                    cert=cp.get('certificates','certificate'),
                    key=cp.get('certificates','key'),
+                   use_ssl=cp.getboolean('broker','use_ssl'),
                    enc_cert=server_cert)
     except Ssm2Exception, e:
         log.error('Failed to initialise SSM: %s' % str(e))
