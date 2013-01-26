@@ -62,6 +62,7 @@ def run_ssm(ssm_cfg, log):
         else:
             service = STOMP_SERVICE
         brokers = bg.get_broker_hosts_and_ports(service, cp.get('broker','network'))
+        log.info('Found %s brokers.' % len(brokers))
     except ConfigParser.NoOptionError, e:
         try:
             host = cp.get('broker', 'host')
