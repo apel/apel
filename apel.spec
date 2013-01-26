@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        0.0.5
+Version:        1.0.0
 Release:        0%{?dist}
 Summary:        APEL packages
 
@@ -158,6 +158,10 @@ exit 0
 %config(noreplace) %{apelconf}/db.cfg
 
 %changelog
+ * Sat Jan 26 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.0-0
+ - More defensive handling of configuration
+ - First release of new apel
+
  * Thu Jan 24 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.5-0
  - Client and parser scripts rewritten to be more logical and simpler
  - Use INSERT IGNORE for log file records instead of REPLACE
@@ -176,7 +180,5 @@ exit 0
  - Correct database logic.  Improve logging.
  
  * Tue Nov 13 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.1-0
- - First release
-
-
+ - First tag
 
