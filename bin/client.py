@@ -62,17 +62,32 @@ def run_ssm(ssm_cfg, log):
         else:
             service = STOMP_SERVICE
         brokers = bg.get_broker_hosts_and_ports(service, cp.get('broker','network'))
+    except ConfigParser.NoOptionError, e:
+        try:
+            host = cp.get('broker', 'host')
+            port = cp.get('broker', 'port')
+            brokers = [(host, int(port))]
+        except ConfigParser.NoOptionError:
+            log.error('Options incorrectly supplied for either single broker or \
+                    broker network.  Please check configuration')
+            log.error('System will exit.')
+            log.info('========================================')
+            print 'SSM failed to start.  See log file for details.'
+            sys.exit(1)
     except ldap.LDAPError, e:
         log.error('Failed to retrieve brokers from LDAP: %s' % str(e))
         log.error('Messages were not sent.')
         return
     
     try:
-        server_cert = cp.get('certificates','server')
-    except ConfigParser.NoOptionError:
-        server_cert = None
-        
-    try:
+        try:
+            server_cert = cp.get('certificates','server')
+            if not os.path.isfile(server_cert):
+                raise Ssm2Exception('Server cerficate location incorrect.')
+        except ConfigParser.NoOptionError:
+            log.info('No server certificate supplied.  Will not encrypt messages.')
+            server_cert = None
+            
         try:
             destination = cp.get('messaging', 'destination')
             if destination == '':
