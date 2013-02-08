@@ -8,7 +8,7 @@ class ParserLSFTest(TestCase):
     '''
     
     def setUp(self):
-        self.parser = LSFParser('testSite', 'testHost')
+        self.parser = LSFParser('testSite', 'testHost', True)
         
 
     def test_parse(self):

@@ -26,7 +26,7 @@ class ParserSGETest(TestCase):
                         "StopTime": datetime.utcfromtimestamp(1200093295),
                         "MemoryReal":223,
                         "MemoryVirtual": 30171136,
-                        "NodeCount": 1,
+                        "NodeCount": 0,
                         "Processors": 1
                         }
         
@@ -47,7 +47,7 @@ class ParserSGETest(TestCase):
                         "StopTime": datetime.utcfromtimestamp(1318740255),
                         "MemoryReal":63131849389,
                         "MemoryVirtual": 821923840,
-                        "NodeCount": 1,
+                        "NodeCount": 0,
                         "Processors": 9
                         }
         cases[line2] = line2_values

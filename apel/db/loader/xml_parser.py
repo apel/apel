@@ -53,12 +53,8 @@ class XMLParser(object):
         Returns attribute value for given node and attribute name
         '''
         if namespace is None:
-            print "Getting attr; namespace is %s" % self.NAMESPACE
-            print node.getAttributeNS(self.NAMESPACE, name)
             return node.getAttributeNS(self.NAMESPACE, name)
         else:
-            print "Getting attr; namespace is %s" % namespace
-            print node.getAttributeNS(namespace, name)
             return node.getAttributeNS(namespace, name)
     
     

@@ -115,7 +115,6 @@ class StarParser(XMLParser):
         nodes = {}.fromkeys( map (lambda f: f == 'RecordId' and 'RecordIdentity' or f, 
                                   [S for S in functions]) )
        #nodes = {}.fromkeys(functions.keys())
-        print nodes
         data = {}
 
         for node in nodes:
