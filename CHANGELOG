@@ -1,6 +1,10 @@
 Changelog for apel
 ==================
 
+ * Thu Feb 14 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.1-0
+ - Remove unnecessary dbld file
+ - Handle incorrect BDII value for CPUScalingReference
+
  * Sat Jan 26 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.0-0
  - More defensive handling of configuration
  - First release of new apel

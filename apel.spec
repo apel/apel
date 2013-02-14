@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.0.0
+Version:        1.0.1
 Release:        0%{?dist}
 Summary:        APEL packages
 
@@ -71,7 +71,6 @@ rm -rf $RPM_BUILD_ROOT
 mkdir -p %{buildroot}%{apelconf}
 mkdir -p %{buildroot}%_bindir
 mkdir -p %{buildroot}%{python_sitelib}/apel
-mkdir -p %{buildroot}%{_initrddir}
 mkdir -p %{buildroot}%_sysconfdir/logrotate.d
 mkdir -p %{buildroot}%_datadir/apel
 mkdir -p %{buildroot}%_defaultdocdir
@@ -89,7 +88,6 @@ cp bin/parser.py %{buildroot}%_bindir/apelparser
 cp bin/dbloader.py %{buildroot}%_bindir/apeldbloader
 cp bin/dbunloader.py %{buildroot}%_bindir/apeldbunloader
 cp bin/summariser.py %{buildroot}%_bindir/apelsummariser
-cp init.d/dbld %{buildroot}%{_initrddir}
 
 # Configuration files
 cp conf/client.cfg %{buildroot}%{apelconf}
@@ -149,15 +147,16 @@ exit 0
 %attr(755,root,root) %_bindir/apeldbloader
 %attr(755,root,root) %_bindir/apelsummariser
 
-# Init script
-%attr(755,root,root) %{_initrddir}/dbld
-
 %config(noreplace) %{apelconf}/summariser.cfg
 %config(noreplace) %{apelconf}/unloader.cfg
 %config(noreplace) %{apelconf}/loader.cfg
 %config(noreplace) %{apelconf}/db.cfg
 
 %changelog
+ * Thu Feb 14 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.1-0
+ - Remove unnecessary dbld file
+ - Handle incorrect BDII value for CPUScalingReference
+
  * Sat Jan 26 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.0-0
  - More defensive handling of configuration
  - First release of new apel
