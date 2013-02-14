@@ -18,9 +18,36 @@
 
 import ldap
 import logging
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 log = logging.getLogger(__name__)
+
+# Constants used in BDII
+GLUE_CE_CAPABILITY = 'GlueCECapability'
+CPU_SCALING_REFERENCE = 'CPUScalingReferenceSI00'
+GLUE_CE_UNIQUE_ID = 'GlueCEUniqueID'
+GLUE_CLUSTER_UNIQUE_ID = 'GlueClusterUniqueID'
+GLUE_CHUNK_KEY = 'GlueChunkKey'
+GLUE_HOST_BENCHMARK = 'GlueHostBenchmarkSI00'
+GLUE_FOREIGN_KEY = 'GlueForeignKey'
+
+def parse_ce_capability(capability_string):
+    '''
+    We expect a value of the form:
+    CPUScalingReferenceSI00=<value>
+    where <value> is a decimal number.
+    Return value as a decimal.
+    '''
+    decimal_value = None
+    try:
+        if capability_string.startswith(CPU_SCALING_REFERENCE):
+            value = capability_string.split('=')[1]
+            decimal_value = Decimal(value)
+    except (InvalidOperation, IndexError):
+        log.info('Failed to parse scaling reference: %s' % capability_string)
+        
+    return decimal_value
+    
 
 def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):    
     '''
@@ -29,15 +56,8 @@ def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):
     
     https://svn.esc.rl.ac.uk/trac/apel-dev/wiki/KonradNotes/TaskEight
     '''
-    glue_ce_capability = 'GlueCECapability'
-    glue_ce_unique_id = 'GlueCEUniqueID'
-    glue_cluster_unique_id = 'GlueClusterUniqueID'
-    cpu_scaling_reference = 'CPUScalingReferenceSI00'
-    glue_chunk_key = 'GlueChunkKey'
-    glue_host_benchmark = 'GlueHostBenchmarkSI00'
-    glue_foreign_key = 'GlueForeignKey'
     
-    attrs = [glue_ce_capability, glue_ce_unique_id, glue_cluster_unique_id]
+    attrs = [GLUE_CE_CAPABILITY, GLUE_CE_UNIQUE_ID, GLUE_CLUSTER_UNIQUE_ID]
     values = []
     ldap_conn = ldap.initialize('ldap://%s:%d' % (host, port))
     
@@ -59,21 +79,22 @@ def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):
     for entry in data:
         
         try:
-            ce_name = entry[1][glue_ce_unique_id][0]
-            ce_capabilities=entry[1][glue_ce_capability]
+            ce_name = entry[1][GLUE_CE_UNIQUE_ID][0]
+            ce_capabilities=entry[1][GLUE_CE_CAPABILITY]
         except (KeyError, IndexError), e:
             log.error('Error during fetching Spec values: '+str(e))
             continue
 
         for capability in ce_capabilities:
-            if capability.startswith(cpu_scaling_reference):
+            si2k = parse_ce_capability(capability)
+            if si2k is not None:
                 log.debug('Found value in first query: '+
                          str(capability.split('=')[1]))
                 values.append((ce_name, 
-                               Decimal(capability.split('=')[1])))
-                        
+                           Decimal(capability.split('=')[1])))
+                
     # not found? we have also second way to do this
-    attrs = [glue_chunk_key, glue_host_benchmark]
+    attrs = [GLUE_CHUNK_KEY, GLUE_HOST_BENCHMARK]
     data = ldap_conn.search_s(top_level,
                               ldap.SCOPE_SUBTREE,
                               '(objectclass=GlueSubcluster)',
@@ -81,8 +102,8 @@ def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):
     
     for item in data:
         try:
-            cluster_name = item[1][glue_chunk_key][0].split('=')[1]
-            value = Decimal(item[1][glue_host_benchmark][0])
+            cluster_name = item[1][GLUE_CHUNK_KEY][0].split('=')[1]
+            value = Decimal(item[1][GLUE_HOST_BENCHMARK][0])
         except (KeyError, IndexError), e:
             log.error('Error during fetching Spec values: '+str(e))
             continue
@@ -90,16 +111,16 @@ def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):
         subdata = ldap_conn.search_s(top_level,
                                      ldap.SCOPE_SUBTREE,
                                      '(GlueClusterName=%s)' % cluster_name,
-                                     [glue_foreign_key])
+                                     [GLUE_FOREIGN_KEY])
         for cluster in subdata:
             try:
-                fks = cluster[1][glue_foreign_key]
+                fks = cluster[1][GLUE_FOREIGN_KEY]
             except (KeyError, IndexError), e:
                 log.error('Error during fetching Spec values: '+str(e))
                 continue
             
             for fk in fks:
-                if fk.startswith(glue_ce_unique_id):
+                if fk.startswith(GLUE_CE_UNIQUE_ID):
                     name = fk.split('=')[1]
                     # do not overwrite values from first query
                     if len(filter(lambda x: x[0] == name, values)) == 0:
