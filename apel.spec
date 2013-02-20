@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.0.1
+Version:        1.0.2
 Release:        0%{?dist}
 Summary:        APEL packages
 
@@ -153,6 +153,10 @@ exit 0
 %config(noreplace) %{apelconf}/db.cfg
 
 %changelog
+ * Wed Feb 20 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.2-0
+ - Correct VHepSpecHistory view
+ - Correct handling of omitted Processors, NodeCount info
+ 
  * Thu Feb 14 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.1-0
  - Remove unnecessary dbld file
  - Handle incorrect BDII value for CPUScalingReference
