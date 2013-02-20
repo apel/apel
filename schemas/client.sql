@@ -21,8 +21,8 @@ CREATE TABLE JobRecords (
 
   WallDuration BIGINT UNSIGNED, 
   CpuDuration BIGINT UNSIGNED, 
-  NodeCount INT UNSIGNED, 
-  Processors INT UNSIGNED, 
+  NodeCount INT UNSIGNED NOT NULL DEFAULT 0,  
+  Processors INT UNSIGNED NOT NULL DEFAULT 0, 
   
   MemoryReal BIGINT UNSIGNED,
   MemoryVirtual BIGINT UNSIGNED,

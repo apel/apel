@@ -21,8 +21,8 @@ CREATE TABLE JobRecords (
 
   WallDuration BIGINT UNSIGNED, 
   CpuDuration BIGINT UNSIGNED,
-  NodeCount INT UNSIGNED,  
-  Processors INT UNSIGNED, 
+  NodeCount INT UNSIGNED NOT NULL DEFAULT 0,  
+  Processors INT UNSIGNED NOT NULL DEFAULT 0, 
   
   MemoryReal BIGINT UNSIGNED,
   MemoryVirtual BIGINT UNSIGNED,
@@ -78,7 +78,7 @@ BEGIN
         QueueLookup(queue), localJobId, localUserId,
         DNLookup(globalUserName), fullyQualifiedAttributeName, VOLookup(vo),
         VOGroupLookup(voGroup), VORoleLookup(voRole), wallDuration, cpuDuration,
-        processors, nodeCount, startTime, endTime, 
+        IFNULL(processors, 0), IFNULL(nodeCount, 0), startTime, endTime, 
         YEAR(endTime), MONTH(endTime), infrastructureDescription, infrastructureType, memoryReal,
         memoryVirtual, serviceLevelType, serviceLevel, DNLookup(publisherDN)
         );
@@ -587,13 +587,13 @@ CREATE VIEW VUserSummaries AS
 DROP VIEW IF EXISTS VHepSpecHistory;
 CREATE VIEW VHepSpecHistory AS
     SELECT 
-        site.name,
+        site.name AS Site,
         IF(ServiceLevelType='HEPSPEC', ServiceLevel, ServiceLevel/250) AS HepSpec06,
         SUM(NumberOfJobs) AS NumberOfJobs,
         Year,
         Month,
-        DATE(MIN(EarliestEndTime)) AS EarliestEndTime,
-        DATE(MAX(LatestEndTime)) AS LatestEndTime
+        DATE(MIN(EarliestEndTime)) AS EarliestEndDate,
+        DATE(MAX(LatestEndTime)) AS LatestEndDate
     FROM
         SuperSummaries
     INNER JOIN Sites site ON SiteID=site.id
