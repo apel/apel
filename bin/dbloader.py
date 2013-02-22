@@ -145,7 +145,7 @@ def run_as_daemon(loader, interval):
 
 
 if __name__ == '__main__':   
-    ver = "APEL summariser %s.%s.%s" % __version__
+    ver = "Starting APEL dbloader %s.%s.%s" % __version__
     opt_parser = OptionParser(version=ver)
     opt_parser.add_option('-d', '--db', help='location of DB config file',
                           default='/etc/apel/db.cfg')

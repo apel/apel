@@ -92,15 +92,16 @@ def parse_file(parser, apel_db, fp):
     # how many times given error was raised
     exceptions = {}
     
+    line_no = 0
     parsed = 0
     failed = 0
     ignored = 0
     
-    for i, line in enumerate(fp):
+    for line_no, line in enumerate(fp):
         try:
             record = parser.parse(line)
         except Exception, e:
-            log.debug('Error %s on line %d' % (str(e), i))
+            log.debug('Error %s on line %d' % (str(e), line_no))
             failed += 1
             if exceptions.has_key(str(e)):
                 exceptions[str(e)] += 1
@@ -118,9 +119,11 @@ def parse_file(parser, apel_db, fp):
                 records = []
         
     apel_db.load_records(records)
-        
-    if parsed == 0:
-        log.warn('Failed to parse file.  Is it %s correct?' % str(parser))        
+    
+    if line_no == 0:
+        log.info('Ignored empty file.')
+    elif parsed == 0:
+        log.warn('Failed to parse file.  Is %s correct?' % parser.__class__.__name__)        
     else:
         log.info('Parsed %d lines' % parsed)
         log.info('Ignored %d lines (incomplete jobs)' % ignored)
@@ -129,7 +132,7 @@ def parse_file(parser, apel_db, fp):
         for error in exceptions:
             log.error('%s raised %d times' % (error, exceptions[error]))
     
-    return parsed, i
+    return parsed, line_no
 
         
 def scan_dir(parser, dir_location, expr, apel_db, processed):
@@ -180,8 +183,8 @@ def scan_dir(parser, dir_location, expr, apel_db, processed):
                         pr.set_field('Parsed', parsed)
                         updated.append(pr)
                         
-            else:
-                log.info('Not a regular file: %s [omitting]' % item)
+            elif os.path.isfile(abs_file):
+                log.info('Filename does not match configuration: %s' % item)
         
         return updated
     
