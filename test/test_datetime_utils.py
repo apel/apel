@@ -20,13 +20,22 @@ class DateTimeUtilsTest(TestCase):
         self.assertEqual(result, valid_until(now))
     
     def test_parse_timestamp(self):
-        result = parse_timestamp('2010-01-01 10:01:02')
-        self.assertEqual(result.year, 2010)
-        self.assertEqual(result.month, 1)
-        self.assertEqual(result.day, 1)
-        self.assertEqual(result.hour, 10)
-        self.assertEqual(result.minute, 1)
-        self.assertEqual(result.second, 2)
+        '''
+        Checks that the different time formats that we might have to parse
+        are handled correctly.  Note that we convert into datetime objects
+        with no timezone information for internal use.
+        '''
+        
+        valid_dates = ['2010-01-01 10:01:02','2010-01-01T10:01:02Z','2010-01-01T11:01:02+01:00']
+        dts = [ parse_timestamp(date) for date in valid_dates ]
+        for dt in dts:
+            self.assertEqual(dt.year, 2010)
+            self.assertEqual(dt.month, 1)
+            self.assertEqual(dt.day, 1)
+            self.assertEqual(dt.hour, 10)
+            self.assertEqual(dt.minute, 1)
+            self.assertEqual(dt.second, 2)
+            self.assertEqual(dt.tzinfo, None)
         
     def test_iso2seconds(self):
         txt1, txt2, txt3 = 'P1Y', 'P1M', 'P1D'

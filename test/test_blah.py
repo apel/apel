@@ -1,6 +1,7 @@
 import datetime
 from unittest import TestCase
 from apel.parsers import BlahParser
+from apel.db.records.record import InvalidRecordException
 
 class ParserBlahTest(TestCase):
     '''
@@ -57,7 +58,8 @@ class ParserBlahTest(TestCase):
                 +'"ceID=cream-2-fzk.gridka.de:8443/cream-pbs-atlasXL" ' 
                 +'"jobID=CREAM410741480" "lrmsID=9575064.lrms1" "localUser=11999"')
         # should raise InvalidValue error - we have 'A' between date and time
-        self.assertRaises(ValueError, self.parser.parse, line_invalidtimestamp)
+        #self.assertRaises(ValueError, self.parser.parse, line_invalidtimestamp)
+        self.assertRaises(InvalidRecordException, self.parser.parse, line_invalidtimestamp)
         
     def test_invalid_record_line(self):
         line_invalid = ('"timestamp=2012-05-20 23:59:47" ' 

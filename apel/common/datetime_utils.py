@@ -1,5 +1,5 @@
 '''
-   Copyright 2012 Konrad Jopek
+   Copyright (C) 2012 STFC
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -12,10 +12,12 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+   
+   @author Konrad Jopek, Will Rogers
 '''
 
+import iso8601
 import datetime
-import time
 import re
 
 def valid_from(date, days=1):
@@ -40,13 +42,15 @@ def valid_until(date, days=28):
     return date+delta
 
 
-def parse_timestamp(string, format="%Y-%m-%d %H:%M:%S"):
+def parse_timestamp(datetime_string):
     '''
     Method for parsing timestamp encoded as a string in various forms.
-    Used in many parts of code, especially in parsers. 
     '''
-    return datetime.datetime(*time.strptime(string, format)[:-2])
-
+    dt = iso8601.parse_date(datetime_string)
+    utcdt = dt.astimezone(iso8601.iso8601.UTC)
+    # internal representation of datetimes is UTC without timezones
+    return utcdt.replace(tzinfo=None)
+    
 
 def iso2seconds(isoduration):
     '''

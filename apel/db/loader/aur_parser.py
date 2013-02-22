@@ -36,10 +36,6 @@ class AurParser(XMLParser):
     # main namespace for records
     NAMESPACE = "http://eu-emi.eu/namespaces/2012/11/aggregatedcomputerecord"
     
-    # time format in CAR records
-    TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-    
-    
     def get_records(self):
         '''
         Returns list of parsed records from CAR file.
@@ -88,9 +84,9 @@ class AurParser(XMLParser):
                                             nodes['Infrastructure'][0], 'type',
                                             CarParser.NAMESPACE),
             'EarliestEndTime'  : lambda nodes: parse_timestamp(self.getText(
-                                        nodes['EarliestEndTime'][0].childNodes), self.TIME_FORMAT),
+                                        nodes['EarliestEndTime'][0].childNodes)),
             'LatestEndTime'  : lambda nodes: parse_timestamp(self.getText(
-                                        nodes['LatestEndTime'][0].childNodes), self.TIME_FORMAT),
+                                        nodes['LatestEndTime'][0].childNodes)),
             'WallDuration'     : lambda nodes: iso2seconds(self.getText(
                                         nodes['WallDuration'][0].childNodes)),
             'CpuDuration'      : lambda nodes: iso2seconds(self.getText(

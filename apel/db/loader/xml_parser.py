@@ -58,17 +58,17 @@ class XMLParser(object):
             return node.getAttributeNS(namespace, name)
     
     
-    def getTagByAttr(self, nodes, a_name, a_value, namespace=None):
+    def getTagByAttr(self, nodes, name, value, namespace=None):
         '''
-        Looks for all tags having attribute 'a_name' with value 'a_value'
+        Looks for all tags having attribute 'name' with value 'value'
         '''
         if namespace is None:
             namespace = self.NAMESPACE
             
         retList = []
         for node in nodes:
-            if (node.hasAttributeNS(namespace, a_name) and 
-                self.getAttr(node, a_name, self.NAMESPACE) == a_value):
+            if (node.hasAttributeNS(namespace, name) and 
+                self.getAttr(node, name, self.NAMESPACE) == value):
                 retList.append(node)
         return retList
     
@@ -77,6 +77,9 @@ def get_primary_ns(msg_text):
     '''
     Return the XML namespace value for the top-level element in the 
     XML document.
+    Note that this has to load the XML document.
     '''
     d = xml.dom.minidom.parseString(msg_text)
     return d.firstChild.namespaceURI 
+
+    

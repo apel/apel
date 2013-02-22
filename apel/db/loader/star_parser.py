@@ -33,9 +33,6 @@ class StarParser(XMLParser):
     
     NAMESPACE = "http://eu-emi.eu/namespaces/2011/02/storagerecord"
     
-    # time format in CAR records (iso timestamp)
-    TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-    
     def get_records(self):
         '''
         Returns list of parsed records from STAR file.
@@ -72,8 +69,7 @@ class StarParser(XMLParser):
                                                                  'recordId'),
             'CreateTime'            : lambda nodes: parse_timestamp(
                                                         self.getAttr(nodes['RecordIdentity'][0],
-                                                                     'createTime'), 
-                                                        self.TIME_FORMAT),
+                                                                     'createTime')),
             'StorageSystem'         : lambda nodes: self.getText(
                                                         nodes['StorageSystem'][0].childNodes),
             'Site'                  : lambda nodes: self.getText(
@@ -97,8 +93,8 @@ class StarParser(XMLParser):
                                                         nodes['UserIdentity'][0].childNodes),
             'Group'                 : lambda nodes: self.getText(
                                                         nodes['Group'][0].childNodes),
-            'StartTime'             : lambda nodes: parse_timestamp(self.getText(nodes['StartTime'][0].childNodes), self.TIME_FORMAT),
-            'EndTime'               : lambda nodes: parse_timestamp(self.getText(nodes['EndTime'][0].childNodes), self.TIME_FORMAT),
+            'StartTime'             : lambda nodes: parse_timestamp(self.getText(nodes['StartTime'][0].childNodes)),
+            'EndTime'               : lambda nodes: parse_timestamp(self.getText(nodes['EndTime'][0].childNodes)),
             'ResourceCapacityUsed'  : lambda nodes: self.getText(
                                                         nodes['ResourceCapacityUsed'][0]
                                                           .childNodes),
