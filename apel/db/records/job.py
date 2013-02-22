@@ -241,6 +241,7 @@ class JobRecord(Record):
         ur.appendChild(wall)
         
         cpu = doc.createElement('urf:CpuDuration')
+        cpu.setAttribute('urf:usageType', 'all')
         cpu.appendChild(doc.createTextNode('PT'+str(self.get_field('CpuDuration'))+'S'))
         ur.appendChild(cpu)
         
@@ -252,22 +253,26 @@ class JobRecord(Record):
         if self.get_field('MemoryReal') > 0:
             pmem = doc.createElement('urf:Memory')
             pmem.setAttribute('urf:type', 'Physical')
+            pmem.setAttribute('urf:storageUnit', 'kB')
             pmem.appendChild(doc.createTextNode(str(self.get_field('MemoryReal'))))
             ur.appendChild(pmem)
         
         if self.get_field('MemoryVirtual') > 0:
             vmem = doc.createElement('urf:Memory')
-            vmem.setAttribute('urf:type', 'Virtual')
+            vmem.setAttribute('urf:type', 'Shared')
+            vmem.setAttribute('urf:storageUnit', 'kB')
             vmem.appendChild(doc.createTextNode(str(self.get_field('MemoryVirtual'))))
             ur.appendChild(vmem)
         
-        ncount = doc.createElement('urf:NodeCount')
-        ncount.appendChild(doc.createTextNode(str(self.get_field('NodeCount'))))
-        ur.appendChild(ncount)
+        if self.get_field('NodeCount') > 0:
+            ncount = doc.createElement('urf:NodeCount')
+            ncount.appendChild(doc.createTextNode(str(self.get_field('NodeCount'))))
+            ur.appendChild(ncount)
         
-        procs = doc.createElement('urf:Processors')
-        procs.appendChild(doc.createTextNode(str(self.get_field('Processors'))))
-        ur.appendChild(procs)
+        if self.get_field('Processors') > 0:
+            procs = doc.createElement('urf:Processors')
+            procs.appendChild(doc.createTextNode(str(self.get_field('Processors'))))
+            ur.appendChild(procs)
                            
         end = doc.createElement('urf:EndTime')
         end_text = time.strftime('%Y-%m-%dT%H:%M:%SZ', self.get_field('EndTime').timetuple())
