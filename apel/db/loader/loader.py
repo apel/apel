@@ -43,7 +43,7 @@ class Loader(object):
     Designed to read apel messages containing summary records or individual
     job records and load them into the appropriate database.
     '''
-    def __init__(self, qpath, backend, host, port, db, user, pwd, pidfile):
+    def __init__(self, qpath, save_msgs, backend, host, port, db, user, pwd, pidfile):
         '''
         Set up the database details.
         '''
@@ -64,6 +64,11 @@ class Loader(object):
         rejectqpath = os.path.join(qpath, "reject")
         self._inq = Queue(inqpath, schema=QSCHEMA)
         self._rejectq = Queue(rejectqpath, schema=REJECT_SCHEMA)
+        
+        self._save_msgs = save_msgs
+        if self._save_msgs:
+            acceptqpath = os.path.join(qpath, "accept")
+            self._acceptq = Queue(acceptqpath, schema=QSCHEMA)
         
         # Create a message factory
         self._rf = RecordFactory()
@@ -128,6 +133,12 @@ class Loader(object):
             try:
                 log.info("Loading message: ID = " + msg_id)
                 self.load_msg(msg_text, signer)
+                
+                if self._save_msgs:
+                    self._acceptq.add({"body": msg_text,
+                                       "signer": signer,
+                                       "empaid": msg_id})
+                    
             except (RecordFactoryException, LoaderException,
                     InvalidRecordException, apel.db.ApelDbException,
                     XMLParserException), err:

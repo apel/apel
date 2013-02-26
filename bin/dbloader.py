@@ -74,10 +74,7 @@ def runprocess(db_config_file, config_file, log_config_file):
         
         pidfile = cp.get('loader', 'pidfile')
         
-        if (cp.get('loader', 'test').lower() == 'true'):
-            test = True
-        else:
-            test = False
+        save_msgs =  cp.getboolean('loader', 'save_messages')
         
     except Exception, err:
         print "Error in configuration file: " + str(err)
@@ -88,14 +85,13 @@ def runprocess(db_config_file, config_file, log_config_file):
         if os.path.exists(pidfile):
             error = "Cannot start loader.  Pidfile %s already exists." % pidfile
             raise LoaderException(error)
-        loader = Loader(qpath, db_backend, db_hostname, db_port, db_name, db_username, db_password, pidfile)
+        loader = Loader(qpath, save_msgs, db_backend, db_hostname, db_port, db_name, db_username, db_password, pidfile)
     except Exception, err:
         print "Error initialising loader: " + str(err)
         sys.exit(1)
         
     # Once it's initialised correctly, set it going.
     run_as_daemon(loader, interval)
-    
 
         
 def run_as_daemon(loader, interval):
