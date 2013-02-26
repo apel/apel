@@ -135,14 +135,20 @@ def parse_file(parser, apel_db, fp):
     return parsed, line_no
 
         
-def scan_dir(parser, dir_location, expr, apel_db, processed):
-
+def scan_dir(parser, dirpath, expr, apel_db, processed):
+    '''
+    Check all files in a directory and parse them if:
+     - the names match the regular expression
+     - the file is not already in the list of processed files
+     
+     Add newly parsed files to the processed files list and return it.
+    '''
     updated = []
     try:
-        log.info('Directory: %s' % dir_location)
+        log.info('Scanning directory: %s' % dirpath)
         
-        for item in os.listdir(dir_location):
-            abs_file = os.path.join(dir_location, item)
+        for item in os.listdir(dirpath):
+            abs_file = os.path.join(dirpath, item)
             if os.path.isfile(abs_file) and expr.match(item):
                 # first, calculate the hash of the file:
                 file_hash = calculate_hash(abs_file)
@@ -155,7 +161,7 @@ def scan_dir(parser, dir_location, expr, apel_db, processed):
                         # we will leave this record unmodified
                         updated.append(pf)
                         found = True
-                        log.info('File: %s already parsed, omitting' % abs_file)
+                        log.info('%s already parsed, omitting' % abs_file)
                         
                 if not found:
                     try:
@@ -177,7 +183,7 @@ def scan_dir(parser, dir_location, expr, apel_db, processed):
                     else:
                         pr = ProcessedRecord()
                         pr.set_field('HostName', parser.machine_name)
-                        pr.set_field('Hash',file_hash)
+                        pr.set_field('Hash', file_hash)
                         pr.set_field('FileName', abs_file)
                         pr.set_field('StopLine', total)
                         pr.set_field('Parsed', parsed)
@@ -218,7 +224,9 @@ def handle_parsing(log_type, apel_db, cp):
     updated_files = []
     # get all processed records from generator
     for record_list in apel_db.get_records(ProcessedRecord):
-        processed_files.extend([record for record in record_list if record.get_field('HostName') == machine_name])
+        processed_files.extend(
+                [record for record in record_list 
+                 if record.get_field('HostName') == machine_name])
         
     root_dir = cp.get(section, 'dir')
     
@@ -326,6 +334,7 @@ def main():
         log.info('=====================================')
         sys.exit(1)
 
+    log.info('=====================================')
     # blah parsing 
     try:
         if cp.getboolean('blah', 'enabled'):
@@ -335,6 +344,8 @@ def main():
         log.fatal('Parser will exit.')
         log.info('=====================================')
         sys.exit(1)
+        
+    log.info('=====================================')
     # batch parsing
     try:
         if cp.getboolean('batch', 'enabled'):
