@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.0.2
+Version:        1.0.3
 Release:        0%{?dist}
 Summary:        APEL packages
 
@@ -153,6 +153,13 @@ exit 0
 %config(noreplace) %{apelconf}/db.cfg
 
 %changelog
+ * Wed Feb 27 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.3-0
+ - Enable saving accepted messages in dbloader
+ - Use python-iso8601 for parsing datetimes
+ - Fixed crash when parsing empty files
+ - Corrections to CAR syntax
+ - Fix include_vos and exclude_vos in dbunloader
+ 
  * Wed Feb 20 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.2-0
  - Correct VHepSpecHistory view
  - Correct handling of omitted Processors, NodeCount info
