@@ -1,6 +1,5 @@
 from unittest import TestCase
 import datetime
-from iso8601.iso8601 import UTC
 from apel.db.loader import CarParser
 
 
@@ -44,6 +43,17 @@ class CarParserTest(TestCase):
   <urf:Site>urf:Site</urf:Site>
 </urf:UsageRecord>
 '''
+        
+        values1 = {'Site': 'urf:Site', 
+                        'MachineName':'MachineName',
+                        'LocalJobId':'urf:LocalJobId', 
+                        'LocalUserId': 'urf:LocalUserId', 
+                        'WallDuration': 86400,
+                        'CpuDuration': 86400,
+                        'StartTime': datetime.datetime(2001, 12, 31, 12, 00, 00),
+                        'EndTime': datetime.datetime(2001, 12, 31, 12, 00, 00),
+                        }
+        
         car2 = '''<?xml version="1.0"?>
 <UsageRecords xmlns="http://eu-emi.eu/namespaces/2012/11/computerecord">
   <UsageRecord xmlns:urf="http://eu-emi.eu/namespaces/2012/11/computerecord" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -77,21 +87,7 @@ class CarParserTest(TestCase):
     <Host urf:primary="true">pgs03</Host>
     <Host>pgs03.grid.upjs.sk</Host></UsageRecord>
 </UsageRecords>'''
-    #<UsageRecord xmlns:urf="http://eu-emi.eu/namespaces/2012/11/computerecord" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><RecordIdentity urf:createTime="2013-02-09T15:39:16Z" urf:recordId="ur-pgs03-5XHKDmQlQOhnyOkhppswXjgoABFKDmABFKDmPSIKDmABFKDmANxl3m"/><JobIdentity><GlobalJobId>gsiftp://pgs03.grid.upjs.sk:2811/jobs/5XHKDmQlQOhnyOkhppswXjgoABFKDmABFKDmPSIKDmABFKDmANxl3m</GlobalJobId><LocalJobId></LocalJobId></JobIdentity><UserIdentity><GlobalUserName urf:type="opensslCompat">/DC=eu/DC=KnowARC/O=nagios/CN=demo1</GlobalUserName><LocalUserId>gridtest</LocalUserId></UserIdentity><Status>completed</Status><ExitStatus>0</ExitStatus><Infrastructure urf:description="pbs" urf:type="grid"/><Middleware urf:name="arc" urf:version="3.0.0rc5" urf:description="nordugrid-arc 3.0.0rc5"></Middleware><WallDuration>PT0S</WallDuration><CpuDuration urf:usageType="user">PT0S</CpuDuration><CpuDuration urf:usageType="system">PT0S</CpuDuration><CpuDuration urf:usageType="all">PT0S</CpuDuration><ServiceLevel urf:type="Si2K" urf:description="">1.0</ServiceLevel><NodeCount>2</NodeCount><EndTime>2013-02-09T14:43:17Z</EndTime><StartTime>2013-02-09T14:39:16Z</StartTime><MachineName>pgs03.grid.upjs.sk</MachineName><SubmitHost>gsiftp://pgs03.grid.upjs.sk:2811/jobs</SubmitHost><Queue urf:description="execution">gridlong</Queue><Site urf:type="arc">PGS03-GRID-UPJS-SK</Site><Host urf:primary="true">pgs03</Host><Host>pgs03.grid.upjs.sk</Host></UsageRecord></UsageRecords>'''
-
-    
-
-        
-        values1 = {"Site": "urf:Site", 
-                        "MachineName":"MachineName",
-                        "LocalJobId":"urf:LocalJobId", 
-                        "LocalUserId": "urf:LocalUserId", 
-                        "WallDuration":86400,
-                        "CpuDuration": 86400,
-                        "StartTime": datetime.datetime(2001, 12, 31, 12, 00, 00),
-                        "EndTime": datetime.datetime(2001, 12, 31, 12, 00, 00),
-                        }
-        
+            
         values2 = {"Site": "PGS03-GRID-UPJS-SK", 
                         "MachineName":"pgs03.grid.upjs.sk", 
                         "LocalJobId":"jobid10", 
@@ -108,10 +104,68 @@ class CarParserTest(TestCase):
                         }
         
         
-        # test CarRecord fields
+        car3 = '''<com:UsageRecord xmlns:com="http://eu-emi.eu/namespaces/2012/11/computerecord">
+        <com:RecordIdentity com:recordId="62991a08-909b-4516-aa30-3732ab3d8998" com:createTime="2013-02-22T15:58:44.567+01:00"/>
+        <com:JobIdentity>
+          <com:GlobalJobId>ac2b1157-7aff-42d9-945e-389aa9bbb19a</com:GlobalJobId>
+          <com:LocalJobId>7005</com:LocalJobId>
+        </com:JobIdentity>
+        <com:UserIdentity>
+          <com:GlobalUserName com:type="rfc2253">CN=Bjoern Hagemeier,OU=Forschungszentrum Juelich GmbH,O=GridGermany,C=DE</com:GlobalUserName>
+          <com:LocalUserId>bjoernh</com:LocalUserId>
+          <com:LocalGroup>users</com:LocalGroup>
+        </com:UserIdentity>
+        <com:JobName>HiLA</com:JobName>
+        <com:Status>completed</com:Status>
+        <com:ExitStatus>0</com:ExitStatus>
+        <com:Infrastructure com:type="grid"/>
+        <com:Middleware com:name="unicore">unicore</com:Middleware>
+        <com:WallDuration>PT0S</com:WallDuration>
+        <com:CpuDuration>PT0S</com:CpuDuration>
+        <com:ServiceLevel com:type="HEPSPEC">1.0</com:ServiceLevel>
+        <com:Memory com:metric="total" com:storageUnit="KB" com:type="physical">0</com:Memory>
+        <com:Memory com:metric="total" com:storageUnit="KB" com:type="shared">0</com:Memory>
+        <com:TimeInstant com:type="uxToBssSubmitTime">2013-02-22T15:58:44.568+01:00</com:TimeInstant>
+        <com:TimeInstant com:type="uxStartTime">2013-02-22T15:58:46.563+01:00</com:TimeInstant>
+        <com:TimeInstant com:type="uxEndTime">2013-02-22T15:58:49.978+01:00</com:TimeInstant>
+        <com:TimeInstant com:type="etime">2013-02-22T15:58:44+01:00</com:TimeInstant>
+        <com:TimeInstant com:type="ctime">2013-02-22T15:58:44+01:00</com:TimeInstant>
+        <com:TimeInstant com:type="qtime">2013-02-22T15:58:44+01:00</com:TimeInstant>
+        <com:TimeInstant com:type="maxWalltime">2013-02-22T16:58:45+01:00</com:TimeInstant>
+        <com:NodeCount>1</com:NodeCount>
+        <com:Processors>2</com:Processors>
+        <com:EndTime>2013-02-22T15:58:45+01:00</com:EndTime>
+        <com:StartTime>2013-02-22T15:58:45+01:00</com:StartTime>
+        <com:MachineName>zam052v15.zam.kfa-juelich.de</com:MachineName>
+        <com:SubmitHost>zam052v02</com:SubmitHost>
+        <com:Queue com:description="execution">batch</com:Queue>
+        <com:Site>zam052v15.zam.kfa-juelich.de</com:Site>
+        <com:Host com:primary="false" com:description="CPUS=2;SLOTS=1,0">zam052v15</com:Host>
+        </com:UsageRecord>'''
+        
+        values3 = {
+                        "LocalJobId":"7005", 
+                        "GlobalUserName": "CN=Bjoern Hagemeier,OU=Forschungszentrum Juelich GmbH,O=GridGermany,C=DE",
+                        "LocalUserId": "bjoernh", 
+                        "InfrastructureType": "grid",
+                        'WallDuration': 0,
+                        'CpuDuration': 0,
+                        'ServiceLevelType': 'HEPSPEC',
+                        'ServiceLevel': 1,
+                        'NodeCount': 1,
+                        'Processors': 2,
+                        'StartTime': datetime.datetime(2013, 2, 22, 14, 58, 45),
+                        'EndTime': datetime.datetime(2013, 2, 22, 14, 58, 45),
+                        'MachineName':'zam052v15.zam.kfa-juelich.de', 
+                        'SubmitHost': 'zam052v02',
+                        'Queue': 'batch',
+                        'Site': 'zam052v15.zam.kfa-juelich.de' 
+                        }
+
         cases = {}
         cases[car1] = values1
         cases[car2] = values2
+        cases[car3] = values3
         
         for car in cases:
             
@@ -120,13 +174,13 @@ class CarParserTest(TestCase):
             cont = record._record_content
             
             #  Mandatory fields - need checking.
-            self.assertTrue(cont.has_key("Site"))
-            self.assertTrue(cont.has_key("Queue"))
-            self.assertTrue(cont.has_key("LocalJobId"))
-            self.assertTrue(cont.has_key("WallDuration"))
-            self.assertTrue(cont.has_key("CpuDuration"))
-            self.assertTrue(cont.has_key("StartTime"))
-            self.assertTrue(cont.has_key("EndTime"))
+            self.assertTrue(cont.has_key('Site'))
+            self.assertTrue(cont.has_key('Queue'))
+            self.assertTrue(cont.has_key('LocalJobId'))
+            self.assertTrue(cont.has_key('WallDuration'))
+            self.assertTrue(cont.has_key('CpuDuration'))
+            self.assertTrue(cont.has_key('StartTime'))
+            self.assertTrue(cont.has_key('EndTime'))
         
         
             for key in cases[car].keys():
@@ -134,4 +188,4 @@ class CarParserTest(TestCase):
                     if not datetimes_equal(cont[key], cases[car][key]):
                         self.fail("Datetimes don't match for key %s: %s, %s" % (key, cont[key], cases[car][key]))
                 else:
-                    self.assertEqual(cont[key], cases[car][key], "%s != %s for key %s" % (cont[key], cases[car][key], key))
+                    self.assertEqual(cont[key], cases[car][key], '%s != %s for key %s' % (cont[key], cases[car][key], key))
