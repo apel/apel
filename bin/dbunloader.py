@@ -85,17 +85,18 @@ if __name__ == '__main__':
     table_name       = cp.get('unloader', 'table_name')
     send_ur          = cp.getboolean('unloader', 'send_ur')
     local_jobs       = cp.getboolean('unloader', 'local_jobs')
+    include_vos      = None
+    exclude_vos      = None
     try:
         include      = cp.get('unloader', 'include_vos')
         include_vos  = [ vo.strip() for vo in include.split(',') ]
     except ConfigParser.NoOptionError:
         # Only exclude VOs if we haven't specified the ones to include.
-        include_vos = None
         try:
             exclude      = cp.get('unloader', 'exclude_vos')
             exclude_vos  = [ vo.strip() for vo in exclude.split(',') ]
         except ConfigParser.NoOptionError:
-            exclude_vos = None
+            pass
     
     unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs)
     try:
