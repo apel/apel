@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.0.3
+Version:        1.0.4
 Release:        0%{?dist}
 Summary:        APEL packages
 
@@ -153,6 +153,10 @@ exit 0
 %config(noreplace) %{apelconf}/db.cfg
 
 %changelog
+
+ * Thu Mar 07 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.4-0
+ - Change primary key on server JobRecords
+
  * Wed Feb 27 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.3-0
  - Enable saving accepted messages in dbloader
  - Use python-iso8601 for parsing datetimes
