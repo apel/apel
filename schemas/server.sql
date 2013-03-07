@@ -40,7 +40,7 @@ CREATE TABLE JobRecords (
 
   PublisherDNID INT NOT NULL,        -- Foreign key
 
-  PRIMARY KEY (MachineNameID, LocalJobID, EndTime),
+  PRIMARY KEY (SiteID, LocalJobId, EndTime),
   
   -- index for SummariseJobs() procedure. 
   -- Try to reuse this index as much as you can
