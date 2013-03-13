@@ -84,6 +84,9 @@ class DbUnloader(object):
         return msgs, records
         
     def unload_sync(self):
+        '''
+        Unload all records from the SyncRecords table or view.
+        '''
         log.info('Writing sync messages.')
         query = self._get_base_query(SyncRecord)
         msgs = 0
@@ -95,7 +98,7 @@ class DbUnloader(object):
         return msgs, records
         
         
-    def unload_gap(self, table_name, start, end, car=False):
+    def unload_gap(self, table_name, start, end, ur=False):
         '''
         Unload all records from the JobRecords table whose EndTime falls
         within the provided dates (inclusive).
@@ -122,10 +125,10 @@ class DbUnloader(object):
         query.EndTime_gt = start_datetime
         query.EndTime_le = end_datetime
             
-        msgs, records = self._write_messages(record_type, table_name, query, car)
+        msgs, records = self._write_messages(record_type, table_name, query, ur)
         return msgs, records
     
-    def unload_latest(self, table_name, car=False):
+    def unload_latest(self, table_name, ur=False):
         '''
         Unloads records from database to file.
         
@@ -140,13 +143,13 @@ class DbUnloader(object):
         if since is not None:
             query.UpdateTime_gt = str(since)
             
-        msgs, records = self._write_messages(record_type, table_name, query, car)
+        msgs, records = self._write_messages(record_type, table_name, query, ur)
         
         self._db.set_updated()
         
         return msgs, records
             
-    def _write_messages(self, record_type, table_name, query, car):
+    def _write_messages(self, record_type, table_name, query, ur):
         '''
         Write messsages for all the records found in the specified table,
         according to the logic contained in the query object.
@@ -155,7 +158,7 @@ class DbUnloader(object):
         records = 0
         for batch in self._db.get_records(record_type, table_name, query=query):
             records += len(batch)
-            if car:
+            if ur:
                 self._write_xml(batch)
             else:
                 self._write_apel(batch)

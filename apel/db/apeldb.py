@@ -29,7 +29,6 @@ class ApelDb(object):
     Interface for any database used by the record loader.  Implementations
     should implement the methods.
     '''
-
     def __new__(cls, backend, host, port, username, pwd, db):
         '''
         Constructs backend object.

@@ -137,7 +137,6 @@ class ApelMysqlDb(object):
         Yields lists of records fetched from database of the given type.  This is used
         if the records are coming directly from a table or view.
         '''
-        
         if table_name is None:
             table_name = self.MYSQL_TABLES[record_type]
       

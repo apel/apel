@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 
 class CarParser(XMLParser):
     '''
-    Parser for Computing Accounting Records
+    Parser for Compute Accounting Records
     
     For documentation please visit: 
     https://twiki.cern.ch/twiki/bin/view/EMI/ComputeAccountingRecord
