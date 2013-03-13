@@ -42,7 +42,11 @@ from apel.common.exceptions import install_exc_handler, default_handler
 from ssm.brokers import StompBrokerGetter, STOMP_SERVICE, STOMP_SSL_SERVICE
 from ssm.ssm2 import Ssm2, Ssm2Exception
 
+
 DB_BACKEND = 'mysql'
+LOGGER_ID = 'client'
+LOG_BREAK = '====================='
+
 
 class ClientConfigException(Exception):
     '''
@@ -50,29 +54,31 @@ class ClientConfigException(Exception):
     '''
     pass
 
-def run_ssm(ssm_cfg, log):
-    cp = ConfigParser.ConfigParser()
-    cp.read(ssm_cfg)
-    
+
+def run_ssm(scp):
+    '''
+    Run the SSM according to the values in the ConfigParser object.
+    '''
+    log = logging.getLogger(LOGGER_ID)
     try:
-        bg = StompBrokerGetter(cp.get('broker','bdii'))
-        use_ssl = cp.getboolean('broker', 'use_ssl')
+        bg = StompBrokerGetter(scp.get('broker','bdii'))
+        use_ssl = scp.getboolean('broker', 'use_ssl')
         if use_ssl:
             service = STOMP_SSL_SERVICE
         else:
             service = STOMP_SERVICE
-        brokers = bg.get_broker_hosts_and_ports(service, cp.get('broker','network'))
+        brokers = bg.get_broker_hosts_and_ports(service, scp.get('broker','network'))
         log.info('Found %s brokers.' % len(brokers))
     except ConfigParser.NoOptionError, e:
         try:
-            host = cp.get('broker', 'host')
-            port = cp.get('broker', 'port')
+            host = scp.get('broker', 'host')
+            port = scp.get('broker', 'port')
             brokers = [(host, int(port))]
         except ConfigParser.NoOptionError:
             log.error('Options incorrectly supplied for either single broker or \
                     broker network.  Please check configuration')
             log.error('System will exit.')
-            log.info('========================================')
+            log.info()
             print 'SSM failed to start.  See log file for details.'
             sys.exit(1)
     except ldap.LDAPError, e:
@@ -82,7 +88,7 @@ def run_ssm(ssm_cfg, log):
     
     try:
         try:
-            server_cert = cp.get('certificates','server')
+            server_cert = scp.get('certificates','server')
             if not os.path.isfile(server_cert):
                 raise Ssm2Exception('Server cerficate location incorrect.')
         except ConfigParser.NoOptionError:
@@ -90,18 +96,18 @@ def run_ssm(ssm_cfg, log):
             server_cert = None
             
         try:
-            destination = cp.get('messaging', 'destination')
+            destination = scp.get('messaging', 'destination')
             if destination == '':
                 raise Ssm2Exception('No destination queue is configured.')
         except ConfigParser.NoOptionError, e:
             raise Ssm2Exception(e)
         
         ssm = Ssm2(brokers, 
-                   cp.get('messaging','path'),
-                   dest=cp.get('messaging','destination'),
-                   cert=cp.get('certificates','certificate'),
-                   key=cp.get('certificates','key'),
-                   use_ssl=cp.getboolean('broker','use_ssl'),
+                   scp.get('messaging','path'),
+                   dest=scp.get('messaging','destination'),
+                   cert=scp.get('certificates','certificate'),
+                   key=scp.get('certificates','key'),
+                   use_ssl=scp.getboolean('broker','use_ssl'),
                    enc_cert=server_cert)
     except Ssm2Exception, e:
         log.error('Failed to initialise SSM: %s' % str(e))
@@ -118,10 +124,164 @@ def run_ssm(ssm_cfg, log):
     
     log.info('SSM run has finished.')
     log.info('Sending SSM has shut down.')
+
+
+def run_client(ccp):
+    '''
+    Run the client according to the configuration in the ConfigParser
+    object.
+    '''
+    log = logging.getLogger(LOGGER_ID)
     
+    try:
+        spec_updater_enabled = ccp.getboolean('spec_updater', 'enabled')
+        if spec_updater_enabled:
+            site_name         = ccp.get('spec_updater', 'site_name')
+            if site_name == '':
+                raise ClientConfigException('Site name must be configured.')
+            ldap_host        = ccp.get('spec_updater', 'ldap_host')
+            ldap_port        = int(ccp.get('spec_updater', 'ldap_port'))
+        joiner_enabled       = ccp.getboolean('joiner', 'enabled')
+        local_jobs           = ccp.getboolean('joiner', 'local_jobs')
+        if local_jobs:
+            hostname = ccp.get('spec_updater', 'lrms_server')
+            if hostname == '':
+                raise ClientConfigException('LRMS server hostname must be configured\
+                    if local jobs are enabled.')
+                
+            slt = ccp.get('spec_updater', 'spec_type')
+            sl = ccp.getfloat('spec_updater', 'spec_value')
+        
+        unloader_enabled     = ccp.getboolean('unloader', 'enabled')
+        
+        include_vos = None
+        exclude_vos = None
+        if unloader_enabled:
+            unload_dir       = ccp.get('unloader', 'dir_location')
+            if ccp.getboolean('unloader', 'send_summaries'):
+                table_name = 'VSuperSummaries'
+            else:
+                table_name = 'VJobRecords'
+            send_ur          = ccp.getboolean('unloader', 'send_ur')
+            try:
+                include      = ccp.get('unloader', 'include_vos')
+                include_vos  = [ vo.strip() for vo in include.split(',') ]
+            except ConfigParser.NoOptionError:
+                # Only exclude VOs if we haven't specified the ones to include.
+                include_vos = None
+                try:
+                    exclude      = ccp.get('unloader', 'exclude_vos')
+                    exclude_vos  = [ vo.strip() for vo in exclude.split(',') ]
+                except ConfigParser.NoOptionError:
+                    exclude_vos = None
+                    
+    except (ClientConfigException, ConfigParser.Error), err:
+        log.error('Error in configuration file: ' + str(err))
+        sys.exit(1)
+   
+    log.info('Starting apel client version %s.%s.%s' % __version__)
+        
+    # Log into the database
+    try:
+        db_hostname = ccp.get('db', 'hostname')
+        db_port     = ccp.getint('db', 'port')
+        db_name     = ccp.get('db', 'name')
+        db_username = ccp.get('db', 'username')
+        db_password = ccp.get('db', 'password')
+        
+        log.info('Connecting to the database ... ')
+        db = ApelDb(DB_BACKEND, db_hostname, db_port, db_username, db_password, db_name) 
+        db.test_connection()
+        log.info('Connected.')
+
+    except (ConfigParser.Error, ApelDbException), err:
+        log.error('Error during connecting to database: ' + str(err))
+        log.info(LOG_BREAK)
+        sys.exit(1)
+
+    if spec_updater_enabled:
+        log.info(LOG_BREAK)#
+        log.info('Starting spec updater.')
+        try:
+            spec_values = fetch_specint(site_name, ldap_host, ldap_port)
+            for value in spec_values:
+                db.update_spec(site_name, value[0], 'si2k', value[1])
+            log.info('Spec updater finished.')
+        except ldap.SERVER_DOWN, e:
+            log.warn('Failed to fetch spec info: %s' % e)
+            log.warn('Spec updater failed.')
+        except ldap.NO_SUCH_OBJECT, e:
+            log.warn('Found no spec values in BDII: %s' % e)
+            log.warn('Is the site name %s correct?' % site_name)
+        
+        log.info(LOG_BREAK)
+        
+    if joiner_enabled:
+        log.info(LOG_BREAK)
+        log.info('Starting joiner.')
+        # This contains all the joining logic, contained in ApelMysqlDb() and the stored procedures.
+        if local_jobs:
+            log.info('Updating benchmark information for local jobs:') 
+            log.info('%s, %s, %s, %s.' % (site_name, hostname, slt, sl))
+            db.update_spec(site_name, hostname, slt, sl)
+            log.info('Creating local jobs.')
+            db.create_local_jobs()
+            
+        db.join_records()
+        log.info('Joining complete.')
+        log.info(LOG_BREAK)
+    
+    # Always summarise - we need the summaries for the sync messages.
+    log.info(LOG_BREAK)
+    log.info('Starting summariser.')
+    # This contains all the summarising logic, contained in ApelMysqlDb() and the stored procedures.
+    db.summarise()
+    log.info('Summarising complete.')
+    log.info(LOG_BREAK)
+    
+    if unloader_enabled:
+        log.info(LOG_BREAK)
+        log.info('Starting unloader.')
+        
+        log.info('Will unload from %s.' % table_name)
+        
+        interval = ccp.get('unloader', 'interval')
+        
+        unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs)
+        try:
+            if interval == 'latest':
+                msgs, recs = unloader.unload_latest(table_name, send_ur)
+            elif interval == 'gap':
+                start = ccp.get('unloader', 'gap_start')
+                end = ccp.get('unloader', 'gap_end')
+                msgs, recs = unloader.unload_gap(table_name, start, end, send_ur)
+            elif interval == 'all':
+                msgs, recs = unloader.unload_all(table_name, send_ur)
+            else:
+                log.warn('Unrecognised interval: %s' % interval)
+                log.warn('Will not start unloader.')
+        
+            log.info('Unloaded %d records in %d messages.' % (recs, msgs))
+        
+        except KeyError:
+            log.warn('Invalid table name: %s, omitting' % table_name)
+        except ApelDbException, e:
+            log.warn('Failed to unload records successfully: %s' % str(e))
+            
+        # Always send sync messages
+        msgs, recs = unloader.unload_sync()
+        
+        log.info('Unloaded %d sync records in %d messages.' % (recs, msgs))
+        
+        log.info('Unloading complete.')
+        log.info(LOG_BREAK)
+        
 
 def main():
-    
+    '''
+    Parse command line arguments, set up logging and begin the client 
+    workflow.
+    '''
     install_exc_handler(default_handler)
     ver = 'APEL client %s.%s.%s' % __version__
     opt_parser = OptionParser(version=ver, description=__doc__)
@@ -139,175 +299,35 @@ def main():
                           default='/etc/apel/logging.cfg')
     
     options, unused_args = opt_parser.parse_args()
-    cp = ConfigParser.ConfigParser()
-    cp.read(options.config)
+    ccp = ConfigParser.ConfigParser()
+    ccp.read(options.config)
+    
+    scp = ConfigParser.ConfigParser()
+    scp.read(options.ssm_config)
 
     # set up logging
     try:
         if os.path.exists(options.log_config):
             logging.config.fileConfig(options.log_config)
         else:
-            set_up_logging(cp.get('logging', 'logfile'), 
-                           cp.get('logging', 'level'),
-                           cp.getboolean('logging', 'console'))
-        log = logging.getLogger('client')
+            set_up_logging(ccp.get('logging', 'logfile'), 
+                           ccp.get('logging', 'level'),
+                           ccp.getboolean('logging', 'console'))
+        log = logging.getLogger(LOGGER_ID)
     except (ConfigParser.Error, ValueError, IOError), err:
         print 'Error configuring logging: %s' % str(err)
         print 'The system will exit.'
         sys.exit(1)
     
-    try:
-        spec_updater_enabled = cp.getboolean('spec_updater', 'enabled')
-        if spec_updater_enabled:
-            site_name         = cp.get('spec_updater', 'site_name')
-            if site_name == '':
-                raise ClientConfigException('Site name must be configured.')
-            ldap_host        = cp.get('spec_updater', 'ldap_host')
-            ldap_port        = int(cp.get('spec_updater', 'ldap_port'))
-        joiner_enabled       = cp.getboolean('joiner', 'enabled')
-        local_jobs           = cp.getboolean('joiner', 'local_jobs')
-        if local_jobs:
-            hostname = cp.get('spec_updater', 'lrms_server')
-            if hostname == '':
-                raise ClientConfigException('LRMS server hostname must be configured\
-                    if local jobs are enabled.')
-                
-            slt = cp.get('spec_updater', 'spec_type')
-            sl = cp.getfloat('spec_updater', 'spec_value')
-        
-        unloader_enabled     = cp.getboolean('unloader', 'enabled')
-        
-        include_vos = None
-        exclude_vos = None
-        if unloader_enabled:
-            unload_dir       = cp.get('unloader', 'dir_location')
-            table_name       = cp.get('unloader', 'table_name')
-            send_ur          = cp.getboolean('unloader', 'send_ur')
-            try:
-                include      = cp.get('unloader', 'include_vos')
-                include_vos  = [ vo.strip() for vo in include.split(',') ]
-            except ConfigParser.NoOptionError:
-                # Only exclude VOs if we haven't specified the ones to include.
-                include_vos = None
-                try:
-                    exclude      = cp.get('unloader', 'exclude_vos')
-                    exclude_vos  = [ vo.strip() for vo in exclude.split(',') ]
-                except ConfigParser.NoOptionError:
-                    exclude_vos = None
-                    
-        ssm_enabled          = cp.getboolean('ssm', 'enabled')
-        if ssm_enabled:
-            ssm_conf_file    = options.ssm_config
-            
-    except (ClientConfigException, ConfigParser.Error), err:
-        log.error('Error in configuration file: ' + str(err))
-        sys.exit(1)
-   
-    log.info('Starting apel client version %s.%s.%s' % __version__)
-        
-    # Log into the database
-    try:
-        db_hostname = cp.get('db', 'hostname')
-        db_port     = cp.getint('db', 'port')
-        db_name     = cp.get('db', 'name')
-        db_username = cp.get('db', 'username')
-        db_password = cp.get('db', 'password')
-        
-        log.info('Connecting to the database ... ')
-        db = ApelDb(DB_BACKEND, db_hostname, db_port, db_username, db_password, db_name) 
-        db.test_connection()
-        log.info('Connected.')
-
-    except (ConfigParser.Error, Exception), err:
-        log.error('Error during connecting to database: ' + str(err))
-        log.info('=====================')
-        sys.exit(1)
-
-    if spec_updater_enabled:
-        log.info('=====================')#
-        log.info('Starting spec updater.')
-        try:
-            spec_values = fetch_specint(site_name, ldap_host, ldap_port)
-            for value in spec_values:
-                db.update_spec(site_name, value[0], 'si2k', value[1])
-            log.info('Spec updater finished.')
-        except ldap.SERVER_DOWN, e:
-            log.warn('Failed to fetch spec info: %s' % e)
-            log.warn('Spec updater failed.')
-        except ldap.NO_SUCH_OBJECT, e:
-            log.warn('Found no spec values in BDII: %s' % e)
-            log.warn('Is the site name %s correct?' % site_name)
-        
-        log.info('=====================')
-        
-    if joiner_enabled:
-        log.info('=====================')
-        log.info('Starting joiner.')
-        # This contains all the joining logic, contained in ApelMysqlDb() and the stored procedures.
-        if local_jobs:
-            log.info('Updating benchmark information for local jobs:') 
-            log.info('%s, %s, %s, %s.' % (site_name, hostname, slt, sl))
-            db.update_spec(site_name, hostname, slt, sl)
-            log.info('Creating local jobs.')
-            db.create_local_jobs()
-            
-        db.join_records()
-        log.info('Joining complete.')
-        log.info('=====================')
+    run_client(ccp)
     
-    # Always summarise - we need the summaries for the sync messages.
-    log.info('=====================')
-    log.info('Starting summariser.')
-    # This contains all the summarising logic, contained in ApelMysqlDb() and the stored procedures.
-    db.summarise()
-    log.info('Summarising complete.')
-    log.info('=====================')
-    
-    if unloader_enabled:
-        log.info('=====================')
-        log.info('Starting unloader.')
-        
-        log.info('Will unload from %s.' % table_name)
-        
-        interval = cp.get('unloader', 'interval')
-        
-        unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs)
-        try:
-            if interval == 'latest':
-                msgs, recs = unloader.unload_latest(table_name, send_ur)
-            elif interval == 'gap':
-                start = cp.get('unloader', 'gap_start')
-                end = cp.get('unloader', 'gap_end')
-                msgs, recs = unloader.unload_gap(table_name, start, end, send_ur)
-            elif interval == 'all':
-                msgs, recs = unloader.unload_all(table_name, send_ur)
-            else:
-                log.warn('Unrecognised interval: %s' % interval)
-                log.warn('Will not start unloader.')
-        
-            log.info('Unloaded %d records in %d messages.' % (recs, msgs))
-        
-        except KeyError:
-            log.warn('Invalid table name: %s, omitting' % table_name)
-        except ApelDbException, e:
-            log.warn('Failed to unload records successfully: %s' % str(e))
-            
-            
-        # Always send sync messages
-        msgs, recs = unloader.unload_sync()
-        
-        log.info('Unloaded %d sync records in %d messages.' % (recs, msgs))
-        
-        log.info('Unloading complete.')
-        log.info('=====================')
-        
-    # Send unloaded messages
-    if ssm_enabled:
-        log.info('=====================')
+    if ccp.getboolean('ssm', 'enabled'):
+        # Send unloaded messages
+        log.info(LOG_BREAK)
         log.info('Starting SSM.')
-        run_ssm(ssm_conf_file, log)
+        run_ssm(scp)
         log.info('SSM stopped.')
-        log.info('=====================')
+        log.info(LOG_BREAK)
     
     log.info('Client finished')
 
