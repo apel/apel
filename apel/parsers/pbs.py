@@ -18,6 +18,7 @@
 
 from apel.db.records.event import EventRecord
 from apel.parsers import Parser
+from apel.common import parse_time
 
 import logging
 
@@ -64,8 +65,8 @@ class PBSParser(Parser):
                    'JobName'        : lambda x: jobName, 
                    'LocalUserID'    : lambda x: x['user'],
                    'LocalUserGroup' : lambda x: x['group'],
-                   'WallDuration'   : lambda x: _parse_time(x['resources_used.walltime']),
-                   'CpuDuration'    : lambda x: _parse_time(x['resources_used.cput']),
+                   'WallDuration'   : lambda x: parse_time(x['resources_used.walltime']),
+                   'CpuDuration'    : lambda x: parse_time(x['resources_used.cput']),
                    'StartTime'      : lambda x: int(x['start']),
                    'StopTime'       : lambda x: int(x['end']),
                    'Infrastructure' : lambda x: "APEL-CREAM-PBS",
@@ -107,10 +108,3 @@ def _parse_mpi(exec_host):
     # total number of core details
     ncores = len(core_info)              
     return nnodes, ncores
-
-def _parse_time(time):
-    '''
-    Return seconds from times of the form xx:yy:zz.
-    '''
-    hours, minutes, seconds = time.split(':')
-    return 3600*int(hours) + 60*int(minutes) + int(seconds)

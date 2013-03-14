@@ -20,6 +20,7 @@ import iso8601
 import datetime
 import re
 
+
 def valid_from(date, days=1):
     '''
     Method for BlahParser
@@ -39,7 +40,7 @@ def valid_until(date, days=28):
     By default it returns Timestamp + 28 days
     '''
     delta = datetime.timedelta(days=days)
-    return date+delta
+    return date + delta
 
 
 def parse_timestamp(datetime_string):
@@ -51,10 +52,18 @@ def parse_timestamp(datetime_string):
     # internal representation of datetimes is UTC without timezones
     return utcdt.replace(tzinfo=None)
     
+    
+def parse_time(timestring):
+    '''
+    Return seconds from times of the form xx:yy:zz.
+    '''
+    hours, minutes, seconds = timestring.split(':')
+    return 3600*int(hours) + 60*int(minutes) + int(seconds)
+
 
 def iso2seconds(isoduration):
     '''
-    Parses time interval encoded as ISO string.
+    Parses time interval encoded as ISO string.  Returns time in seconds.
     '''
     pattern = "(^P)" # P required at the beginning
     pattern += "([0-9]+Y)?" # years

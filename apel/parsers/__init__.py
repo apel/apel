@@ -25,3 +25,4 @@ from blah import BlahParser
 from lsf import LSFParser
 from pbs import PBSParser
 from sge import SGEParser
+from slurm import SlurmParser
