@@ -135,7 +135,7 @@ class JobRecord(Record):
             if end > tomorrow:
                 raise InvalidRecordException("Epoch time " + str(end) + " is in the future.")
             
-        except ValueError, e:
+        except ValueError:
             raise InvalidRecordException("Cannot parse an integer from StartTime or EndTime.")
         
         

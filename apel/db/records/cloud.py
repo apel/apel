@@ -17,6 +17,7 @@
 '''
 
 from apel.db.records import Record, InvalidRecordException
+from apel.common import parse_fqan
 from datetime import datetime, timedelta
 
 
@@ -28,7 +29,6 @@ class CloudRecord(Record):
     It stores its information in a dictionary self._record_content.  The keys 
     are in the same format as in the messages, and are case-sensitive.
     '''
-    
     def __init__(self):
         '''Provide the necessary lists containing message information.'''
         
@@ -47,8 +47,8 @@ class CloudRecord(Record):
                              "Memory", "Disk", "StorageRecordId", "ImageId", "CloudType"]
         
         # This list specifies the information that goes in the database.
-        self._db_fields = self._msg_fields
-        self._all_fields = self._msg_fields
+        self._db_fields = self._msg_fields[:7] + ['VO', 'VOGroup', 'VORole'] + self._msg_fields[7:]
+        self._all_fields = self._db_fields
         
         self._ignored_fields = ["UpdateTime"]
         
@@ -59,7 +59,6 @@ class CloudRecord(Record):
         
         self._datetime_fields = ["StartTime", "EndTime"]
     
-    
     def _check_fields(self):
         '''
         Add extra checks to those made in every record.
@@ -67,32 +66,23 @@ class CloudRecord(Record):
         # First, call the parent's version.
         Record._check_fields(self)
         
-#        # Extract the relevant information from the user fqan.
-#        # Keep the fqan itself as other methods in the class use it.
-#        role, group, vo = self._parse_fqan(self._record_content['FQAN'])
-#        # We can't / don't put NULL in the database, so we use 'None'
-#        if role == None:
-#            role = 'None'
-#        if group == None:
-#            group = 'None'
-#        if vo == None:
-#            vo = 'None'
-#            
-#        self._record_content['VORole'] = role
-#        self._record_content['VOGroup'] = group
-#        self._record_content['Group'] = vo
-#        
-#        
-#        # Check the ScalingFactor.
-#        slt = self._record_content['ServiceLevelType']
-#        sl = self._record_content['ServiceLevel']
-#        
-#        (slt, sl) = self._check_factor(slt, sl)
-#        self._record_content['ServiceLevelType'] = slt
-#        self._record_content['ServiceLevel'] = sl
+        # Extract the relevant information from the user fqan.
+        # Keep the fqan itself as other methods in the class use it.
+        role, group, vo = parse_fqan(self._record_content['FQAN'])
+        # We can't / don't put NULL in the database, so we use 'None'
+        if role == None:
+            role = 'None'
+        if group == None:
+            group = 'None'
+        if vo == None:
+            vo = 'None'
+            
+        self._record_content['VORole'] = role
+        self._record_content['VOGroup'] = group
+        self._record_content['VO'] = vo
         
         # Check the values of StartTime and EndTime
-#        self._check_start_end_times()
+        #self._check_start_end_times()
 
         
     def _check_start_end_times(self):
@@ -103,7 +93,6 @@ class CloudRecord(Record):
         
         This is merely factored out for simplicity.
         '''
-        
         try:
             start = int(self._record_content['StartTime'])
             end = int(self._record_content['EndTime'])

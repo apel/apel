@@ -14,6 +14,9 @@ CREATE TABLE CloudRecords (
 
   GlobalUserNameID INT NOT NULL,      -- Foreign key
   FQAN VARCHAR(255),
+  VOID INT NOT NULL,                  -- Foreign key
+  VOGroupID INT NOT NULL,             -- Foreign key
+  VORoleID INT NOT NULL,              -- Foreign key
 
   Status VARCHAR(255),
 
@@ -54,7 +57,8 @@ CREATE PROCEDURE InsertCloudRecord(
   machineName VARCHAR(255), 
   localUserId VARCHAR(255),
   localGroupId VARCHAR(255), globalUserName VARCHAR(255), 
-  fqan VARCHAR(255), status VARCHAR(255),
+  fqan VARCHAR(255), vo VARCHAR(255), 
+  voGroup VARCHAR(255), voRole VARCHAR(255), status VARCHAR(255),
   startTime DATETIME, endTime DATETIME, 
   suspendDuration INT,
   wallDuration INT, cpuDuration INT, 
@@ -65,11 +69,12 @@ CREATE PROCEDURE InsertCloudRecord(
   publisherDN VARCHAR(255))
 BEGIN
     REPLACE INTO CloudRecords(VMUUID, SiteID, MachineName, LocalUserId, LocalGroupId,
-        GlobalUserNameID, FQAN, Status, StartTime, EndTime, SuspendDuration,
+        GlobalUserNameID, FQAN, VOID, VOGroupID, VORoleID, Status, StartTime, EndTime, SuspendDuration,
         WallDuration, CpuDuration, CpuCount, NetworkType, NetworkInbound, NetworkOutbound, Memory, Disk, StorageRecordId, ImageId, CloudType, PublisherDNID)
       VALUES (
         VMUUID, SiteLookup(site), machineName, localUserId, localGroupId, DNLookup(globalUserName), 
-        fqan, status, startTime, endTime, suspendDuration, 
+        fqan, VOLookup(vo),
+        VOGroupLookup(voGroup), VORoleLookup(voRole), status, startTime, endTime, suspendDuration, 
         wallDuration, cpuDuration, cpuCount, networkType, networkInbound, networkOutbound, memory,
         disk, storageRecordId, imageId, cloudType, DNLookup(publisherDN)
         );
@@ -145,23 +150,104 @@ RETURN result;
 END //
 DELIMITER ;
 
+-- -----------------------------------------------------------------------------
+-- VOs
+DROP TABLE IF EXISTS VOs;
+CREATE TABLE VOs (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+    
+  INDEX(name)
+) ;
+
+
+DROP FUNCTION IF EXISTS VOLookup;
+DELIMITER //
+CREATE FUNCTION VOLookup(lookup VARCHAR(255)) RETURNS INTEGER DETERMINISTIC
+BEGIN
+    DECLARE result INTEGER;
+    SELECT id FROM VOs WHERE name=lookup INTO result;
+    IF result IS NULL THEN
+        INSERT INTO VOs(name) VALUES (lookup);
+        SET result=LAST_INSERT_ID();
+    END IF;
+RETURN result;
+END //
+DELIMITER ;
+
+
+-- -----------------------------------------------------------------------------
+-- VORoles
+DROP TABLE IF EXISTS VORoles;
+CREATE TABLE VORoles (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+    
+  INDEX(name)
+) ;
+
+
+DROP FUNCTION IF EXISTS VORoleLookup;
+DELIMITER //
+CREATE FUNCTION VORoleLookup(lookup VARCHAR(255)) RETURNS INTEGER DETERMINISTIC
+BEGIN
+    DECLARE result INTEGER;
+    SELECT id FROM VORoles WHERE name=lookup INTO result;
+    IF result IS NULL THEN
+        INSERT INTO VORoles(name) VALUES (lookup);
+        SET result=LAST_INSERT_ID();
+    END IF;
+RETURN result;
+END //
+DELIMITER ;
+
+
+-- -----------------------------------------------------------------------------
+-- VOGroups
+DROP TABLE IF EXISTS VOGroups;
+CREATE TABLE VOGroups (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  
+  INDEX(name)
+) ;
+
+
+DROP FUNCTION IF EXISTS VOGroupLookup;
+DELIMITER //
+CREATE FUNCTION VOGroupLookup(lookup VARCHAR(255)) RETURNS INTEGER DETERMINISTIC
+BEGIN
+    DECLARE result INTEGER;
+    SELECT id FROM VOGroups WHERE name=lookup INTO result;
+    IF result IS NULL THEN
+        INSERT INTO VOGroups(name) VALUES (lookup);
+        SET result=LAST_INSERT_ID();
+    END IF;
+RETURN result;
+END //
+DELIMITER ;
 
 -- -----------------------------------------------------------------------------
 -- View on CloudRecords
 CREATE VIEW VCloudRecords AS
     SELECT UpdateTime, VMUUID, site.name SiteName, MachineName, 
-           LocalUserId, LocalGroupId, userdn.name GlobalUserName, FQAN, Status, StartTime, EndTime,
+           LocalUserId, LocalGroupId, userdn.name GlobalUserName, FQAN, vo.name VO, 
+           vogroup.name VOGroup, vorole.name VORole,
+           Status, StartTime, EndTime,
            SuspendDuration, WallDuration, CpuDuration, CpuCount, NetworkType,
            NetworkInbound, NetworkOutbound, Memory, Disk, StorageRecordId, ImageId, CloudType
-    FROM CloudRecords, Sites site, DNs userdn WHERE
+    FROM CloudRecords, Sites site, DNs userdn, VOs vo, VOGroups vogroup, VORoles vorole WHERE
         SiteID = site.id
-        AND GlobalUserNameID = userdn.id;
+        AND GlobalUserNameID = userdn.id
+        AND VOID = vo.id
+        AND VOGroupID = vogroup.id
+        AND VORoleID = vorole.id;
 
 -- -----------------------------------------------------------------------------
 -- View on CloudRecords
 CREATE VIEW VAnonCloudRecords AS
     SELECT UpdateTime, VMUUID, site.name SiteName, MachineName,
-           LocalUserId, LocalGroupId, GlobalUserNameID, FQAN, Status, StartTime, EndTime,
+           LocalUserId, LocalGroupId, GlobalUserNameID, FQAN, VO,  Status, StartTime, EndTime,
            SuspendDuration, WallDuration, CpuDuration, CpuCount, NetworkType,
            NetworkInbound, NetworkOutbound, Memory, Disk, StorageRecordId, ImageId, CloudType
     FROM CloudRecords, Sites site, DNs userdn WHERE

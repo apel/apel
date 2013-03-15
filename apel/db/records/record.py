@@ -49,7 +49,6 @@ class Record(object):
     one.  There is some logic which is a little tricky used to convert
     the contents of a message into a sensible python format.
     '''
-    
     def __init__(self):
         '''
         Just defines the required lists which give content and order
@@ -109,7 +108,6 @@ class Record(object):
         @params: name Name of the field
         @return: Value of the field
         '''
-
         try:
             value = self._record_content[name]
             return value
@@ -187,13 +185,12 @@ class Record(object):
         This uses the lists defined as part of any subclass to know 
         how to deal with any part of a message.
         '''
-        
         if (text == "") or text.isspace():
 #           log.info("Empty record: can't load.")
             return
             
         text = text.strip()
-        lines = text.split('\n')
+        lines = text.strip().splitlines()
                 
         # remove the bit before ': '
         self._record_content = {}

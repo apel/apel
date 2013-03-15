@@ -66,10 +66,18 @@ class ApelDb(object):
         pass
     
     def get_records(self, record_class, query=None):
-        '''Returns records from database with given record type.
-        Query object specifies which rows from database should be loaded.'''
+        '''
+        Returns records from database with given record type.
+        Query object specifies which rows from database should be loaded.
+        '''
         pass
-
+    
+    def summarise(self):
+        '''
+        Run the SummariseJobs stored procedure to convert JobRecords into
+        SuperSummaries.
+        '''
+        pass
 
 class Query(object):
     '''

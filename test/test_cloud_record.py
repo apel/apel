@@ -76,8 +76,8 @@ SiteName: FZJ
 MachineName: Accounting Test
 LocalUserId: 1189105086dc4959bc9889383afc43b5
 LocalGroupId: EGI FCTF
-GlobalUserName: NULL
-FQAN: NULL
+GlobalUserName: /DC=es/DC=irisgrid/O=cesga/CN=javier-lopez
+FQAN: /ops/Role=NULL/Capability=NULL
 Status: started
 StartTime: 1343362725
 EndTime: NULL
@@ -98,6 +98,11 @@ CloudType: Openstack
         self._values2 = {'SiteName': 'FZJ',
                         'MachineName': 'Accounting Test',
                         'LocalUserId': '1189105086dc4959bc9889383afc43b5',
+                        'GlobalUserName': '/DC=es/DC=irisgrid/O=cesga/CN=javier-lopez',
+                        'FQAN': '/ops/Role=NULL/Capability=NULL',
+                        'VO': 'ops',
+                        'VOGroup': '/ops',
+                        'VORole': 'Role=NULL',
                         'Status': 'started',
                         'CpuCount': 1,
                         'Memory': 512,
