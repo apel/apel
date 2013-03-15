@@ -31,7 +31,7 @@ def check_dir(root):
     messages.
     ''' 
     print 'Starting message status script.' 
-    print 'Root directory: %s' % root
+    print 'Root directory: %s\n' % root
     queues = []
     incoming = os.path.join(root, 'incoming')
     if os.path.isdir(incoming):
@@ -49,9 +49,9 @@ def check_dir(root):
     
     for q in queues:
         msgs, locked = check_queue(q)
+        #check_empty_dirs(q)
         print '    Messages: %s' % msgs 
-        print '    Locked:   %s' % locked
-        print 
+        print '    Locked:   %s\n' % locked
         if locked > 0:
             question = 'Unlock %s messages?' % locked
             if ask_user(question):
@@ -80,6 +80,23 @@ def check_queue(q):
             name = q.next()
     
     return q.count(), locked
+
+def check_empty_dirs(q):
+    empty_dirs = []
+    path = q.path
+    print "Checking path %s " % path
+    for item in os.listdir(path):
+        ipath = os.path.join(path, item)
+        if os.path.isdir(ipath):
+            print item
+            if len(os.listdir(ipath)) == 0:
+                #empty_dirs.append(ipath)
+                os.rmdir(ipath)
+                
+                
+    print empty_dirs
+                
+   
     
     
 def clear_locks(q):

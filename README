@@ -33,5 +33,5 @@ and apel-server
   apel-ssm
   --------
 This is a messaging system, which has its own github repository at 
-https://github.com/willrogers/ssm
+https://github.com/apel/ssm
 
