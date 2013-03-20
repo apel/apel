@@ -154,7 +154,8 @@ exit 0
 
 %changelog
 
- * Mon Mar 18 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.5-0
+ * Wed Mar 20 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.5-0
+ - Create, send and receive cloud summaries
  - Parse FQAN information and add to CloudRecords table
  - Refactor client script and simplify configuration
  - First version of SLURM parser (thanks to Lisa Zangrando)
