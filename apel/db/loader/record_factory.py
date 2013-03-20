@@ -22,6 +22,9 @@ from apel.db.records.job import JobRecord
 from apel.db.records.summary import SummaryRecord
 from apel.db.records.sync import SyncRecord
 from apel.db.records.cloud import CloudRecord
+from apel.db.records.cloud_summary import CloudSummaryRecord
+from apel.db import JOB_MSG_HEADER, SUMMARY_MSG_HEADER, SYNC_MSG_HEADER, \
+        CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER
 
 from apel.db.loader.car_parser import CarParser
 from apel.db.loader.aur_parser import AurParser
@@ -44,11 +47,12 @@ class RecordFactory(object):
     expect to make JobRecord and SummaryRecord objects, but this shouldn't
     restrict the capability to make more.
     '''
-    # Message headers
-    JR_HEADER = 'APEL-individual-job-message'
-    SR_HEADER = 'APEL-summary-job-message'
-    SYNC_HEADER = 'APEL-sync-message'
-    CLOUD_HEADER = 'APEL-cloud-message'
+    # Message headers; remove version numbers from the end.
+    JR_HEADER = JOB_MSG_HEADER.split(':')[0].strip()
+    SR_HEADER = SUMMARY_MSG_HEADER.split(':')[0].strip()
+    SYNC_HEADER = SYNC_MSG_HEADER.split(':')[0].strip()
+    CLOUD_HEADER = CLOUD_MSG_HEADER.split(':')[0].strip()
+    CLOUD_SUMMARY_HEADER = CLOUD_SUMMARY_MSG_HEADER.split(':')[0].strip()
 
     def create_records(self, msg_text):
         '''
@@ -93,6 +97,8 @@ class RecordFactory(object):
                     created_records = self._create_syncs(msg_text)
                 elif (header == RecordFactory.CLOUD_HEADER):
                     created_records = self._create_clouds(msg_text)
+                elif (header == RecordFactory.CLOUD_SUMMARY_HEADER):
+                    created_records = self._create_cloud_summaries(msg_text)
                 else:
                     raise RecordFactoryException('Message type %s not recognised.' % header)
                 
@@ -168,7 +174,7 @@ class RecordFactory(object):
                 
     def _create_clouds(self, msg_text):
         '''
-        Given the text from a sync message, create a list of 
+        Given the text from a cloud message, create a list of 
         SyncRecord objects and return it.
         '''
         
@@ -185,6 +191,24 @@ class RecordFactory(object):
         
         return msgs
     
+    def _create_cloud_summaries(self, msg_text):
+        '''
+        Given the text from a cloud summary message, create a list of 
+        SyncRecord objects and return it.
+        '''
+        
+        msg_text = msg_text.strip()
+
+        records = msg_text.split('%%')
+        msgs = []
+        for record in records:
+            # unnecessary hack?
+            if (record != '') and not (record.isspace()):
+                c = CloudSummaryRecord()
+                c.load_from_msg(record)
+                msgs.append(c)
+        
+        return msgs
     
     def _create_cars(self, msg_text):
         '''

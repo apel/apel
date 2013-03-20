@@ -189,7 +189,6 @@ class Record(object):
 #           log.info("Empty record: can't load.")
             return
             
-        text = text.strip()
         lines = text.strip().splitlines()
                 
         # remove the bit before ': '

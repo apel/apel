@@ -81,6 +81,96 @@ BEGIN
 END //
 DELIMITER ;
 
+
+-- ------------------------------------------------------------------------------
+-- CloudSummaries
+
+DROP TABLE IF EXISTS CloudSummaries;
+CREATE TABLE CloudSummaries (
+  UpdateTime TIMESTAMP,
+
+  SiteID INT NOT NULL, -- Foreign key
+
+  Month INT NOT NULL,
+  Year INT NOT NULL,
+
+  GlobalUserNameID INT NOT NULL, -- Foreign key
+  VOID INT NOT NULL, -- Foreign key
+  VOGroupID INT NOT NULL, -- Foreign key
+  VORoleID INT NOT NULL, -- Foreign key
+
+  Status VARCHAR(255),
+  CloudType VARCHAR(255),
+  ImageId VARCHAR(255),
+
+  EarliestStartTime DATETIME,
+  LatestStartTime DATETIME,
+  WallDuration BIGINT,
+  CpuDuration BIGINT,
+
+  NetworkInbound BIGINT,
+  NetworkOutbound BIGINT,
+  Memory BIGINT,
+  Disk BIGINT,
+ 
+  NumberOfVMs INT,
+  
+  PublisherDNID VARCHAR(255),
+
+  PRIMARY KEY (SiteID, GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId)
+
+);
+
+DROP PROCEDURE IF EXISTS InsertCloudSummaryRecord;
+DELIMITER //
+CREATE PROCEDURE InsertCloudSummaryRecord(
+  site VARCHAR(255), month INT, year INT, globalUserName VARCHAR(255), 
+  vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255), status VARCHAR(255),
+  cloudType VARCHAR(255), imageId VARCHAR(255), 
+  earliestStartTime DATETIME, latestStartTime DATETIME, 
+  wallDuration BIGINT, cpuDuration BIGINT, 
+  networkInbound BIGINT, networkOutbound BIGINT, memory BIGINT, 
+  disk BIGINT, numberOfVMs BIGINT,
+  
+  publisherDN VARCHAR(255))
+BEGIN
+    REPLACE INTO CloudSummaries(SiteID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId, EarliestStartTime, LatestStartTime, 
+        WallDuration, CpuDuration, NetworkInbound, NetworkOutbound, Memory, Disk, NumberOfVMs,  PublisherDNID)
+      VALUES (
+        SiteLookup(site), month, year, DNLookup(globalUserName), VOLookup(vo),
+        VOGroupLookup(voGroup), VORoleLookup(voRole), status, cloudType, imageId, earliestStartTime, latestStartTime, 
+        wallDuration, cpuDuration, networkInbound, networkOutbound, memory,
+        disk, numberOfVMs, DNLookup(publisherDN)
+        );
+END //
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS SummariseVMs;
+DELIMITER //
+CREATE PROCEDURE SummariseVMs()
+BEGIN
+    REPLACE INTO CloudSummaries(SiteID, Month, Year, GlobalUserNameID, VOID,
+        VOGroupID, VORoleID, Status, CloudType, ImageId, EarliestStartTime, LatestStartTime, WallDuration, CpuDuration, NetworkInbound,
+        NetworkOutbound, Memory, Disk, NumberOfVMs, PublisherDNID)
+    SELECT SiteID,
+    MONTH(EndTime) AS Month, YEAR(EndTime) AS Year,
+    GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId,
+    MIN(StartTime) AS EarliestStartTime,
+    MAX(StartTime) AS LatestStartTime,
+    SUM(WallDuration) AS SumWCT,
+    SUM(CpuDuration) AS SumCPU,
+    SUM(NetworkInbound),
+    SUM(NetworkOutbound),
+    SUM(Memory),
+    SUM(Disk),
+    COUNT(*),
+    'summariser'
+    FROM CloudRecords
+    GROUP BY SiteID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId;
+END //
+DELIMITER ;
+
 -- ------------------------------------------------------------------------------
 -- LastUpdated
 DROP TABLE IF EXISTS LastUpdated;
@@ -247,10 +337,27 @@ CREATE VIEW VCloudRecords AS
 -- View on CloudRecords
 CREATE VIEW VAnonCloudRecords AS
     SELECT UpdateTime, VMUUID, site.name SiteName, MachineName,
-           LocalUserId, LocalGroupId, GlobalUserNameID, FQAN, VO,  Status, StartTime, EndTime,
+           LocalUserId, LocalGroupId, GlobalUserNameID, FQAN, vo.name VO,  Status, StartTime, EndTime,
            SuspendDuration, WallDuration, CpuDuration, CpuCount, NetworkType,
            NetworkInbound, NetworkOutbound, Memory, Disk, StorageRecordId, ImageId, CloudType
-    FROM CloudRecords, Sites site, DNs userdn WHERE
+    FROM CloudRecords, Sites site, DNs userdn, VOs vo WHERE
         SiteID = site.id
-        AND GlobalUserNameID = userdn.id;
+        AND GlobalUserNameID = userdn.id
+        AND VOID = vo.id;
+        
+-- -----------------------------------------------------------------------------
+-- View on CloudSummaries
+CREATE VIEW VCloudSummaries AS
+    SELECT UpdateTime, site.name SiteName, Month, Year,
+           userdn.name GlobalUserName, vo.name VO, 
+           vogroup.name VOGroup, vorole.name VORole,
+           Status, CloudType, ImageId, EarliestStartTime, LatestStartTime,
+           WallDuration, CpuDuration, NetworkInbound, NetworkOutbound, Memory, Disk, 
+           NumberOfVMs
+    FROM CloudSummaries, Sites site, DNs userdn, VOs vo, VOGroups vogroup, VORoles vorole WHERE
+        SiteID = site.id
+        AND GlobalUserNameID = userdn.id
+        AND VOID = vo.id
+        AND VOGroupID = vogroup.id
+        AND VORoleID = vorole.id;
 

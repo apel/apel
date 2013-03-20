@@ -25,7 +25,7 @@ import logging.config
 import os
 import sys
 
-from apel.db import ApelDb
+from apel.db import ApelDb, ApelDbException
 from apel.common import set_up_logging
 from apel import __version__
 
@@ -51,6 +51,11 @@ def runprocess(db_config_file, config_file, log_config_file):
         print 'Error in configuration file %s: %s' % (config_file, str(err))
         print 'The system will exit.'
         sys.exit(1)
+    
+    try:
+        db_type = dbcp.get('db', 'type')
+    except ConfigParser.Error:
+        db_type = 'cpu'
 
     # set up logging
     try:
@@ -76,7 +81,13 @@ def runprocess(db_config_file, config_file, log_config_file):
    
         log.info('Connected.')
         # This is all the summarising logic, contained in ApelMysqlDb() and the stored procedures.
-        db.summarise()
+        if db_type == 'cpu':
+            db.summarise()
+        elif db_type == 'cloud':
+            db.summarise_cloud()
+        else:
+            raise ApelDbException('Unknown database type: %s' % db_type)
+        
         log.info('Summarising complete.')
         log.info('=====================')
 

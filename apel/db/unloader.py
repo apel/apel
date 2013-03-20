@@ -16,8 +16,9 @@
    @author: Konrad Jopek, Will Rogers
 '''
 from apel.db import Query, ApelDbException, LOGGER_ID,\
-    JOB_MSG_HEADER, SUMMARY_MSG_HEADER, SYNC_MSG_HEADER, CLOUD_MSG_HEADER
-from apel.db.records import JobRecord, SummaryRecord, SyncRecord, CloudRecord
+    JOB_MSG_HEADER, SUMMARY_MSG_HEADER, SYNC_MSG_HEADER, CLOUD_MSG_HEADER, \
+    CLOUD_SUMMARY_MSG_HEADER
+from apel.db.records import JobRecord, SummaryRecord, SyncRecord, CloudRecord, CloudSummaryRecord
 from dirq.QueueSimple import QueueSimple
 try:
     import cStringIO as StringIO
@@ -34,13 +35,15 @@ class DbUnloader(object):
     APEL_HEADERS = {JobRecord: JOB_MSG_HEADER, 
                     SummaryRecord: SUMMARY_MSG_HEADER,
                     SyncRecord: SYNC_MSG_HEADER,
-                    CloudRecord: CLOUD_MSG_HEADER}
+                    CloudRecord: CLOUD_MSG_HEADER,
+                    CloudSummaryRecord: CLOUD_SUMMARY_MSG_HEADER}
     
     RECORD_TYPES = {'VJobRecords': JobRecord,
                     'VSummaries': SummaryRecord,
                     'VSuperSummaries': SummaryRecord,
                     'VSyncRecords': SyncRecord,
-                    'VCloudRecords': CloudRecord}
+                    'VCloudRecords': CloudRecord,
+                    'VCloudSummaries': CloudSummaryRecord}
     
     def __init__(self, db, qpath, inc_vos=None, exc_vos=None, local=False):
         self._db = db
@@ -154,6 +157,7 @@ class DbUnloader(object):
         Write messsages for all the records found in the specified table,
         according to the logic contained in the query object.
         '''
+        log.info('writing messages')
         msgs = 0
         records = 0
         for batch in self._db.get_records(record_type, table_name, query=query):

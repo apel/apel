@@ -22,6 +22,7 @@ Created on 27 Oct 2011
 from apel.db import ApelDbException
 from apel.db.records import BlahdRecord, \
                             CloudRecord, \
+                            CloudSummaryRecord, \
                             EventRecord, \
                             GroupAttributeRecord, \
                             JobRecord, \
@@ -48,6 +49,7 @@ class ApelMysqlDb(object):
                     BlahdRecord : 'BlahdRecords',
                     SyncRecord  : 'SyncRecords',
                     CloudRecord : 'CloudRecords',
+                    CloudSummaryRecord : 'VCloudSummaries',
                     ProcessedRecord : 'VProcessedFiles',
                     SummaryRecord : 'VSummaries'}
     
@@ -58,6 +60,7 @@ class ApelMysqlDb(object):
               BlahdRecord : "CALL InsertBlahdRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               SyncRecord  : "CALL InsertSyncRecord(%s, %s, %s, %s, %s, %s)",
               CloudRecord : "CALL InsertCloudRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              CloudSummaryRecord : "CALL InsertCloudSummaryRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               SummaryRecord: "CALL InsertSummary(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               StorageRecord: "CALL InsertStarRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               GroupAttributeRecord: "CALL InsertGroupAttribute(%s, %s, %s)",
@@ -75,6 +78,7 @@ class ApelMysqlDb(object):
         self._db_name = db
         
         self._summarise_jobs_proc = "SummariseJobs"
+        self._summarise_vms_proc = "SummariseVMs"
         self._copy_summaries_proc = "CopySummaries"
         self._hep_spec_hist_proc = "CreateHepSpecHistory"
         self._join_records_proc = "JoinJobRecords"
@@ -124,6 +128,7 @@ class ApelMysqlDb(object):
             for record in record_list:
                 proc = self.MYSQL_PROCEDURES[type(record)]
                 values = record.get_db_tuple(source)
+                log.debug('Values: %s' % str(values))
                 c.execute(proc, values)
             self.db.commit()
         except (MySQLdb.Warning, MySQLdb.Error), err:
@@ -261,6 +266,35 @@ class ApelMysqlDb(object):
 #            c.callproc(self._copy_summaries_proc)
 #            log.info("Done.")
 
+            self.db.commit()
+        except MySQLdb.Error, e:
+            log.error("A mysql error occurred: %s" % e)
+            log.error("Any transaction will be rolled back.")
+            
+            if not self.db is None:
+                self.db.rollback()
+            raise
+        
+    def summarise_cloud(self):
+        '''
+        Aggregate the CloudRecords table and put the results in the 
+        CloudSummaries table.  This method does this by calling the 
+        SummariseVMs() stored procedure.
+        
+        Any failure will result in the entire transaction being rolled 
+        back.
+        '''
+        try:
+            # prevent MySQLdb from raising
+            # 'MySQL server has gone' exception
+            self._mysql_reconnect()
+            
+            c = self.db.cursor()
+            
+            log.info("Summarising cloud records...")
+            c.callproc(self._summarise_vms_proc, ())
+            log.info("Done.")
+            
             self.db.commit()
         except MySQLdb.Error, e:
             log.error("A mysql error occurred: %s" % e)

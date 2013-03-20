@@ -25,6 +25,7 @@ import datetime
 from record import Record, InvalidRecordException
 from blahd import BlahdRecord
 from cloud import CloudRecord
+from cloud_summary import CloudSummaryRecord
 from event import EventRecord
 from group_attribute import GroupAttributeRecord
 from job import JobRecord
