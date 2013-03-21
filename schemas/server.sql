@@ -53,9 +53,9 @@ CREATE TABLE JobRecords (
 );
  
  
-DROP PROCEDURE IF EXISTS InsertJobRecord;
+DROP PROCEDURE IF EXISTS ReplaceJobRecord;
 DELIMITER //
-CREATE PROCEDURE InsertJobRecord(
+CREATE PROCEDURE ReplaceJobRecord(
   site VARCHAR(255), submitHost VARCHAR(255), machineName VARCHAR(255), 
   queue VARCHAR(100), localJobId VARCHAR(255),
   localUserId VARCHAR(255), globalUserName VARCHAR(255),
@@ -116,9 +116,9 @@ CREATE TABLE Summaries (
 );
 
 
-DROP PROCEDURE IF EXISTS InsertSummary;
+DROP PROCEDURE IF EXISTS ReplaceSummary;
 DELIMITER //
-CREATE PROCEDURE InsertSummary(
+CREATE PROCEDURE ReplaceSummary(
   site VARCHAR(255),  month INT,  year INT, 
   globalUserName VARCHAR(255), vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255), 
   submitHost VARCHAR(255), infrastructureType VARCHAR(50), serviceLevelType VARCHAR(50), serviceLevel DECIMAL(10,3),
@@ -231,9 +231,9 @@ CREATE TABLE SyncRecords (
 );
 
 
-DROP PROCEDURE IF EXISTS InsertSyncRecord;
+DROP PROCEDURE IF EXISTS ReplaceSyncRecord;
 DELIMITER //
-CREATE PROCEDURE InsertSyncRecord(
+CREATE PROCEDURE ReplaceSyncRecord(
   site VARCHAR(255),  submitHost VARCHAR(255), njobs INT, month INT,  year INT, publisherDN VARCHAR(255))
 BEGIN
     REPLACE INTO SyncRecords(SiteID, SubmitHostID, NumberOfJobs, Month, Year, PublisherDNID)

@@ -173,9 +173,9 @@ CREATE TABLE GroupAttributes (
     PRIMARY KEY(StarRecordID, AttributeType)
     );
 
-DROP PROCEDURE IF EXISTS InsertGroupAttribute;
+DROP PROCEDURE IF EXISTS ReplaceGroupAttribute;
 DELIMITER //
-CREATE PROCEDURE InsertGroupAttribute(
+CREATE PROCEDURE ReplaceGroupAttribute(
     starRecordID            VARCHAR(255),
     attributeType           VARCHAR(255),
     attributeValue          VARCHAR(255)
@@ -221,9 +221,9 @@ CREATE TABLE StarRecords (
 
 -- WORK IN PROGRESS !!!
 
-DROP PROCEDURE IF EXISTS InsertStarRecord;
+DROP PROCEDURE IF EXISTS ReplaceStarRecord;
 DELIMITER //
-CREATE PROCEDURE InsertStarRecord(
+CREATE PROCEDURE ReplaceStarRecord(
     recordId                VARCHAR(255),
     createTime              DATETIME,
     storageSystem           VARCHAR(255),

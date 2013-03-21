@@ -35,7 +35,7 @@ from optparse import OptionParser
 from apel import __version__
 from apel.db import ApelDb, ApelDbException
 from apel.db.records import ProcessedRecord
-from apel.common import calculate_hash, set_up_logging
+from apel.common import calculate_hash, set_up_logging, LOG_BREAK
 from apel.common.exceptions import install_exc_handler, default_handler
 from apel.parsers.blah import BlahParser
 from apel.parsers.lsf import LSFParser
@@ -43,8 +43,8 @@ from apel.parsers.sge import SGEParser
 from apel.parsers.pbs import PBSParser
 from apel.parsers.slurm import SlurmParser
 
-log = None
 
+LOGGER_ID = 'parser'
 # How many records should be put/fetched to/from database 
 # in single query
 BATCH_SIZE = 1000
@@ -75,7 +75,7 @@ def find_sub_dirs(dirpath):
     return alldirs
     
 
-def parse_file(parser, apel_db, fp):
+def parse_file(parser, apel_db, fp, replace):
     '''
     Parses file from blah/batch system
     
@@ -85,6 +85,7 @@ def parse_file(parser, apel_db, fp):
     @return: number of correctly parsed files from file, 
              total number of lines in file 
     '''
+    log = logging.getLogger(LOGGER_ID)
     records = []
     
     # we will save information about errors
@@ -114,11 +115,11 @@ def parse_file(parser, apel_db, fp):
             else:
                 ignored += 1
             if len(records) % BATCH_SIZE == 0 and len(records) != 0:
-                apel_db.load_records(records)
+                apel_db.load_records(records, replace=replace)
                 del records
                 records = []
         
-    apel_db.load_records(records)
+    apel_db.load_records(records, replace=replace)
     
     if line_no == 0:
         log.info('Ignored empty file.')
@@ -135,7 +136,7 @@ def parse_file(parser, apel_db, fp):
     return parsed, line_no
 
         
-def scan_dir(parser, dirpath, expr, apel_db, processed):
+def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
     '''
     Check all files in a directory and parse them if:
      - the names match the regular expression
@@ -143,6 +144,7 @@ def scan_dir(parser, dirpath, expr, apel_db, processed):
      
      Add newly parsed files to the processed files list and return it.
     '''
+    log = logging.getLogger(LOGGER_ID)
     updated = []
     try:
         log.info('Scanning directory: %s' % dirpath)
@@ -163,17 +165,17 @@ def scan_dir(parser, dirpath, expr, apel_db, processed):
                         found = True
                         log.info('%s already parsed, omitting' % abs_file)
                         
-                if not found:
+                if reparse or not found:
                     try:
                         log.info('Parsing file: %s' % abs_file)
                         # try to open as a gzip file, and if it fails try as 
                         # a regular file
                         try:
                             fp = gzip.open(abs_file)
-                            parsed, total = parse_file(parser, apel_db, fp)
+                            parsed, total = parse_file(parser, apel_db, fp, reparse)
                         except IOError, e: # not a gzipped file
                             fp = open(abs_file, 'r')
-                            parsed, total = parse_file(parser, apel_db, fp)
+                            parsed, total = parse_file(parser, apel_db, fp, reparse)
                             fp.close()
                     except IOError, e:
                         log.error('Cannot open file %s due to: %s' % 
@@ -206,6 +208,7 @@ def handle_parsing(log_type, apel_db, cp):
     
     Update the database with the parsed files.
     '''
+    log = logging.getLogger(LOGGER_ID)
     log.info('Setting up parser for %s files' % log_type)
     if log_type == 'blah':
         section = 'blah'
@@ -229,6 +232,11 @@ def handle_parsing(log_type, apel_db, cp):
                  if record.get_field('HostName') == machine_name])
         
     root_dir = cp.get(section, 'dir')
+    
+    try:
+        reparse = cp.getboolean(section, 'reparse')
+    except ConfigParser.NoOptionError:
+        reparse = False
     
     try:
         mpi = cp.getboolean(section, 'parallel')
@@ -264,11 +272,11 @@ def handle_parsing(log_type, apel_db, cp):
         else:
             to_scan = [root_dir]
         for directory in to_scan:
-            updated_files.extend(scan_dir(parser, directory, expr, apel_db, processed_files))
+            updated_files.extend(scan_dir(parser, directory, reparse, expr, apel_db, processed_files))
     else:
         log.warn('Directory for %s logs was not set correctly, omitting' % log_type)
     
-    apel_db.load_records(updated_files, None)
+    apel_db.load_records(updated_files)
     log.info('Finished parsing %s log files.' % log_type)
     
     
@@ -309,9 +317,8 @@ def main():
         print 'The system will exit.'
         sys.exit(1)
 
-    global log
-    log = logging.getLogger('parser')
-    log.info('=====================================')
+    log = logging.getLogger(LOGGER_ID)
+    log.info(LOG_BREAK)
     log.info('Starting apel parser version %s.%s.%s' % __version__)
 
     # database connection
@@ -331,10 +338,10 @@ def main():
     except Exception, e:
         log.fatal("Database exception: %s" % str(e))
         log.fatal('Parser will exit.')
-        log.info('=====================================')
+        log.info(LOG_BREAK)
         sys.exit(1)
 
-    log.info('=====================================')
+    log.info(LOG_BREAK)
     # blah parsing 
     try:
         if cp.getboolean('blah', 'enabled'):
@@ -342,10 +349,10 @@ def main():
     except (ParserConfigException, ConfigParser.NoOptionError), e:
         log.fatal('Parser misconfigured: %s' % str(e))    
         log.fatal('Parser will exit.')
-        log.info('=====================================')
+        log.info(LOG_BREAK)
         sys.exit(1)
         
-    log.info('=====================================')
+    log.info(LOG_BREAK)
     # batch parsing
     try:
         if cp.getboolean('batch', 'enabled'):
@@ -353,11 +360,11 @@ def main():
     except (ParserConfigException, ConfigParser.NoOptionError), e:
         log.fatal('Parser misconfigured: %s' % str(e))    
         log.fatal('Parser will exit.')
-        log.info('=====================================')
+        log.info(LOG_BREAK)
         sys.exit(1)
         
     log.info('Parser has completed.')
-    log.info('=====================================')
+    log.info(LOG_BREAK)
     sys.exit(0)
     
 if __name__ == '__main__':

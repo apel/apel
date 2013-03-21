@@ -50,9 +50,9 @@ CREATE TABLE CloudRecords (
 );
 
 
-DROP PROCEDURE IF EXISTS InsertCloudRecord;
+DROP PROCEDURE IF EXISTS ReplaceCloudRecord;
 DELIMITER //
-CREATE PROCEDURE InsertCloudRecord(
+CREATE PROCEDURE ReplaceCloudRecord(
   VMUUID VARCHAR(255), site VARCHAR(255), 
   machineName VARCHAR(255), 
   localUserId VARCHAR(255),
@@ -121,9 +121,9 @@ CREATE TABLE CloudSummaries (
 
 );
 
-DROP PROCEDURE IF EXISTS InsertCloudSummaryRecord;
+DROP PROCEDURE IF EXISTS ReplaceCloudSummaryRecord;
 DELIMITER //
-CREATE PROCEDURE InsertCloudSummaryRecord(
+CREATE PROCEDURE ReplaceCloudSummaryRecord(
   site VARCHAR(255), month INT, year INT, globalUserName VARCHAR(255), 
   vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255), status VARCHAR(255),
   cloudType VARCHAR(255), imageId VARCHAR(255), 
@@ -131,7 +131,6 @@ CREATE PROCEDURE InsertCloudSummaryRecord(
   wallDuration BIGINT, cpuDuration BIGINT, 
   networkInbound BIGINT, networkOutbound BIGINT, memory BIGINT, 
   disk BIGINT, numberOfVMs BIGINT,
-  
   publisherDN VARCHAR(255))
 BEGIN
     REPLACE INTO CloudSummaries(SiteID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId, EarliestStartTime, LatestStartTime, 
@@ -154,12 +153,12 @@ BEGIN
         VOGroupID, VORoleID, Status, CloudType, ImageId, EarliestStartTime, LatestStartTime, WallDuration, CpuDuration, NetworkInbound,
         NetworkOutbound, Memory, Disk, NumberOfVMs, PublisherDNID)
     SELECT SiteID,
-    MONTH(EndTime) AS Month, YEAR(EndTime) AS Year,
+    MONTH(StartTime) AS Month, YEAR(StartTime) AS Year,
     GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId,
-    MIN(StartTime) AS EarliestStartTime,
-    MAX(StartTime) AS LatestStartTime,
-    SUM(WallDuration) AS SumWCT,
-    SUM(CpuDuration) AS SumCPU,
+    MIN(StartTime),
+    MAX(StartTime),
+    SUM(WallDuration),
+    SUM(CpuDuration),
     SUM(NetworkInbound),
     SUM(NetworkOutbound),
     SUM(Memory),

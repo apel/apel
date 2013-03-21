@@ -54,17 +54,21 @@ class ApelMysqlDb(object):
                     SummaryRecord : 'VSummaries'}
     
     # These simply need to have the same number of arguments as the stored procedures defined in the database schemas.
-    MYSQL_PROCEDURES = {
+    INSERT_PROCEDURES = {
               EventRecord : 'CALL InsertEventRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
-              JobRecord   : "CALL InsertJobRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               BlahdRecord : "CALL InsertBlahdRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-              SyncRecord  : "CALL InsertSyncRecord(%s, %s, %s, %s, %s, %s)",
-              CloudRecord : "CALL InsertCloudRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-              CloudSummaryRecord : "CALL InsertCloudSummaryRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-              SummaryRecord: "CALL InsertSummary(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-              StorageRecord: "CALL InsertStarRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-              GroupAttributeRecord: "CALL InsertGroupAttribute(%s, %s, %s)",
-              ProcessedRecord : "CALL InsertProcessedFile(%s, %s, %s, %s, %s)"
+              }
+    
+    REPLACE_PROCEDURES = {
+              EventRecord : 'CALL ReplaceEventRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+              JobRecord   : "CALL ReplaceJobRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              SummaryRecord: "CALL ReplaceSummary(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              SyncRecord  : "CALL ReplaceSyncRecord(%s, %s, %s, %s, %s, %s)",
+              ProcessedRecord : "CALL ReplaceProcessedFile(%s, %s, %s, %s, %s)",
+              CloudRecord : "CALL ReplaceCloudRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              CloudSummaryRecord : "CALL ReplaceCloudSummaryRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              StorageRecord: "CALL ReplaceStarRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              GroupAttributeRecord: "CALL ReplaceGroupAttribute(%s, %s, %s)"
               }
     
     def __init__(self, host, port, username, pwd, db):
@@ -112,12 +116,25 @@ class ApelMysqlDb(object):
         except MySQLdb.OperationalError, e:
             raise ApelDbException("Failed to connect to database: " + str(e))
 
-    def load_records(self, record_list, source=None):
+    def load_records(self, record_list, replace=True, source=None):
         '''
         Loads the records in the list into the DB.  This is transactional - 
         either all or no records will be loaded.  Includes the DN of the 
         sender.
         '''
+        # all records in the list are the same type
+        try:
+            record_type = type(record_list[0])
+            if replace:
+                proc = self.REPLACE_PROCEDURES[record_type]
+            else:
+                proc = self.INSERT_PROCEDURES[record_type]
+        except KeyError:
+            raise ApelDbException('No procedure found for %s; replace = %s' % (record_type, replace))
+        except IndexError:
+            # no records to load
+            return
+            
         try:
             # prevent MySQLdb from raising
             # 'MySQL server has gone' exception
@@ -126,12 +143,11 @@ class ApelMysqlDb(object):
             c = self.db.cursor(cursorclass=MySQLdb.cursors.DictCursor)
             
             for record in record_list:
-                proc = self.MYSQL_PROCEDURES[type(record)]
                 values = record.get_db_tuple(source)
                 log.debug('Values: %s' % str(values))
                 c.execute(proc, values)
             self.db.commit()
-        except (MySQLdb.Warning, MySQLdb.Error), err:
+        except (MySQLdb.Warning, MySQLdb.Error, KeyError), err:
             log.error("Error loading records: %s" % str(err))
             log.error("Transaction will be rolled back.")
             self.db.rollback()

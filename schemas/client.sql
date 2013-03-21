@@ -102,6 +102,32 @@ BEGIN
 END //
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS ReplaceEventRecord;
+DELIMITER //
+CREATE PROCEDURE ReplaceEventRecord(
+  site       VARCHAR(255),
+  jobName        VARCHAR(60),
+  localUserId    VARCHAR(20),
+  localUserGroup VARCHAR(20),
+  wallDuration   INT,
+  cpuDuration    INT,
+  startTime      DATETIME,
+  endTime        DATETIME,
+  infrastructure VARCHAR(100),
+  machineName    VARCHAR(255),
+  queue          VARCHAR(100),
+  memoryReal     BIGINT,
+  memoryVirtual  BIGINT,
+  processors     INT,
+  nodeCount      INT)
+BEGIN
+        REPLACE INTO EventRecords(SiteID, JobName, LocalUserID, LocalUserGroup, WallDuration,
+                                  CpuDuration, StartTime, EndTime, Infrastructure, MachineNameID, QueueID, MemoryReal, MemoryVirtual, Processors, NodeCount, Status)
+        VALUES (SiteLookup(site), jobName, localUserId, localUserGroup, wallDuration, cpuDuration, 
+          startTime, endTime, infrastructure, MachineNameLookup(machineName), QueueLookup(queue), memoryReal, memoryVirtual, processors, nodeCount, 0);
+END //
+DELIMITER ;
+
 -- ------------------------------------------------------------------------------
 -- BlahdRecords
 DROP TABLE IF EXISTS BlahdRecords;
@@ -689,9 +715,9 @@ BEGIN
 END //
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS InsertProcessedFile;
+DROP PROCEDURE IF EXISTS ReplaceProcessedFile;
 DELIMITER // 
-CREATE PROCEDURE InsertProcessedFile(
+CREATE PROCEDURE ReplaceProcessedFile(
   hostName VARCHAR(255),
   fileName VARCHAR(255),
   hash     VARCHAR(64),
