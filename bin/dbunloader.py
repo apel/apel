@@ -85,6 +85,7 @@ if __name__ == '__main__':
     table_name       = cp.get('unloader', 'table_name')
     send_ur          = cp.getboolean('unloader', 'send_ur')
     local_jobs       = cp.getboolean('unloader', 'local_jobs')
+    withhold_dns     = cp.getboolean('unloader', 'withhold_dns')
     include_vos      = None
     exclude_vos      = None
     try:
@@ -98,7 +99,7 @@ if __name__ == '__main__':
         except ConfigParser.NoOptionError:
             pass
     
-    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs)
+    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns)
     try:
         msgs, recs = unloader.unload_latest(table_name, send_ur)
         log.info('%d records in %d messages unloaded from %s' % (recs, msgs, table_name))

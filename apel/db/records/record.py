@@ -27,7 +27,6 @@ import logging
 
 log = logging.getLogger(LOGGER_ID)
 
-
 class InvalidRecordException(Exception):
     pass
 
@@ -49,6 +48,10 @@ class Record(object):
     one.  There is some logic which is a little tricky used to convert
     the contents of a message into a sensible python format.
     '''
+    # used to protect user DN information
+    DN_FIELD = 'GlobalUserName'
+    WITHHELD_DN = 'withheld'
+    
     def __init__(self):
         '''
         Just defines the required lists which give content and order
@@ -208,7 +211,7 @@ class Record(object):
         self._check_fields()
         
     
-    def get_msg(self):
+    def get_msg(self, withhold_dns=False):
         '''
         Get the information about the record as a string in the format used
         for APEL's messages.  self._record_content holds the appropriate
@@ -219,6 +222,12 @@ class Record(object):
         # _check_fields method may also check the internal logic inside the
         # record
         self._check_fields() 
+        # for certain records, we can replace GlobalUserName with 'withheld'
+        # to protect private data
+        dn = self.get_field(Record.DN_FIELD)
+        if dn is not None and withhold_dns:
+            self.set_field(Record.DN_FIELD, Record.WITHHELD_DN)
+            
         msg = ""
         for key in self._msg_fields:
             try:

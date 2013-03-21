@@ -15,7 +15,7 @@
    
    @author: Konrad Jopek, Will Rogers
 '''
-from apel.db import Query, ApelDbException, LOGGER_ID,\
+from apel.db import Query, ApelDbException, \
     JOB_MSG_HEADER, SUMMARY_MSG_HEADER, SYNC_MSG_HEADER, CLOUD_MSG_HEADER, \
     CLOUD_SUMMARY_MSG_HEADER
 from apel.db.records import JobRecord, SummaryRecord, SyncRecord, CloudRecord, CloudSummaryRecord
@@ -28,7 +28,7 @@ import datetime
 import os
 import logging
 
-log = logging.getLogger(LOGGER_ID)
+log = logging.getLogger(__name__)
 
 class DbUnloader(object):
     
@@ -45,13 +45,17 @@ class DbUnloader(object):
                     'VCloudRecords': CloudRecord,
                     'VCloudSummaries': CloudSummaryRecord}
     
-    def __init__(self, db, qpath, inc_vos=None, exc_vos=None, local=False):
+    # all record types for which withholding DNs is a valid option
+    MAY_WITHHOLD_DNS = [JobRecord, SyncRecord, CloudRecord]
+    
+    def __init__(self, db, qpath, inc_vos=None, exc_vos=None, local=False, withhold_dns=False):
         self._db = db
         outpath = os.path.join(qpath, "outgoing")
         self._msgq = QueueSimple(outpath)
         self._inc_vos = inc_vos
         self._exc_vos = exc_vos
         self._local = local
+        self._withhold_dns = withhold_dns
         
     def _get_base_query(self, record_type):
         '''
@@ -133,22 +137,52 @@ class DbUnloader(object):
     
     def unload_latest(self, table_name, ur=False):
         '''
-        Unloads records from database to file.
+        Unloads any records whose UpdateTime is less than the value 
+        in the LastUpdated table.
         
-        Returns the number of created files.
+        Returns (number of files, number of records)
         '''
+        # special case for SuperSummaries
+        if table_name == 'VSuperSummaries':
+            msgs, records = self.unload_latest_super_summaries()
+        else:
+            record_type = self.RECORD_TYPES[table_name]
+            
+            query = self._get_base_query(record_type)
+            since = self._db.get_last_updated()
+            
+            log.info('Getting records updated since: %s' % since)
+            if since is not None:
+                query.UpdateTime_gt = str(since)
+                
+            msgs, records = self._write_messages(record_type, table_name, query, ur)
+            
+            self._db.set_updated()
+        
+        return msgs, records
+        
+    def unload_latest_super_summaries(self, ur=False):
+        '''
+        Special case for the SuperSummaries table.  Since it is generally
+        updated by the SummariseJobs() procedure, all records will 
+        have been updated.  Instead, send all records for the current
+        month and the preceding month.
+        ''' 
+        table_name = 'VSuperSummaries'
+        
         record_type = self.RECORD_TYPES[table_name]
         
         query = self._get_base_query(record_type)
-        since = self._db.get_last_updated()
         
-        log.info('Getting records updated since: %s' % since)
+        # It's actually simpler to use EarliestEndTime or LatestEndTime
+        # to deduce the correct records.
+        since = get_start_of_previous_month(datetime.datetime.now())
+        
+        log.info('Getting summaries for months since: %s' % since.date())
         if since is not None:
-            query.UpdateTime_gt = str(since)
+            query.EarliestEndTime_gt = str(since)
             
         msgs, records = self._write_messages(record_type, table_name, query, ur)
-        
-        self._db.set_updated()
         
         return msgs, records
             
@@ -157,7 +191,9 @@ class DbUnloader(object):
         Write messsages for all the records found in the specified table,
         according to the logic contained in the query object.
         '''
-        log.info('writing messages')
+        if self._withhold_dns and record_type not in self.MAY_WITHHOLD_DNS:
+            raise ApelDbException('Cannot withhold DNs for %s' % record_type)
+        
         msgs = 0
         records = 0
         for batch in self._db.get_records(record_type, table_name, query=query):
@@ -175,7 +211,7 @@ class DbUnloader(object):
         Write one message in the appropriate XML format to the outgoing 
         message queue.
         
-        This currently works only for CAR.
+        This is currently enabled only for CAR.
         '''
         buf = StringIO.StringIO()
         if type(records[0]) == JobRecord:
@@ -191,7 +227,7 @@ class DbUnloader(object):
             
         buf.write(XML_HEADER + '\n')
         buf.write(UR_OPEN + '\n')
-        buf.write('\n'.join( [ record.get_ur() for record in records ] ))
+        buf.write('\n'.join( [ record.get_ur(self._withhold_dns) for record in records ] ))
         buf.write('\n' + UR_CLOSE + '\n')
         
         self._msgq.add(buf.getvalue())
@@ -207,10 +243,21 @@ class DbUnloader(object):
     
         buf = StringIO.StringIO()
         buf.write(self.APEL_HEADERS[record_type] + ' \n')
-        buf.write('%%\n'.join( [ record.get_msg() for record in records ] ))
+        buf.write('%%\n'.join( [ record.get_msg(self._withhold_dns) for record in records ] ))
         buf.write('%%\n')
         
         self._msgq.add(buf.getvalue())
         buf.close()
         del buf
             
+def get_start_of_previous_month(dt):
+    '''
+    Return the datetime corresponding to the start of the month
+    before the provided datetime.
+    '''
+    # get into the previous month by subtracting a day from the first day of the month
+    previous = dt.date().replace(day=1) - datetime.timedelta(days=1)
+    # get the first day of that month
+    first = previous.replace(day=1)
+    # get midnight on that day
+    return datetime.datetime.combine(first, datetime.time.min)

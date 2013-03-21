@@ -246,8 +246,9 @@ def run_client(ccp):
         log.info('Will unload from %s.' % table_name)
         
         interval = ccp.get('unloader', 'interval')
+        withhold_dns = ccp.getboolean('unloader', 'withhold_dns')
         
-        unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs)
+        unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns)
         try:
             if interval == 'latest':
                 msgs, recs = unloader.unload_latest(table_name, send_ur)

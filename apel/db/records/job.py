@@ -22,6 +22,8 @@ from xml.dom.minidom import Document
 from apel.common import parse_fqan
 import time
 
+WITHHELD_DN = 'withheld'
+
 
 class JobRecord(Record):
     '''
@@ -163,15 +165,13 @@ class JobRecord(Record):
                     
         return (sfu, sf)
     
-    
-    def get_ur(self):
+    def get_ur(self, withhold_dns=False):
         '''
         Returns the JobRecord in CAR format. See
         https://twiki.cern.ch/twiki/bin/view/EMI/ComputeAccounting
         
         Namespace information is written only once per record, by dbunloader.
         '''
-        
         record_id = self.get_field('MachineName') + ' ' + self.get_field('LocalJobId') + ' ' + str(self.get_field('EndTime'))
         
         # Create the document directly
@@ -193,8 +193,12 @@ class JobRecord(Record):
         user_id = doc.createElement('urf:UserIdentity')
 
         if self.get_field('GlobalUserName') is not None:
+            if withhold_dns:
+                dn = WITHHELD_DN
+            else:
+                dn = self.get_field('GlobalUserName')
             global_user_name = doc.createElement('urf:GlobalUserName')
-            global_user_name.appendChild(doc.createTextNode(self.get_field('GlobalUserName')))
+            global_user_name.appendChild(doc.createTextNode(dn))
             global_user_name.setAttribute('urf:type', 'opensslCompat')
             user_id.appendChild(global_user_name)
             
