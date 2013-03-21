@@ -21,9 +21,10 @@ from exceptions import install_exc_handler, default_handler
 from parsing_utils import parse_fqan
 from hashing import calculate_hash
 
-
 import logging
 import sys
+
+LOG_BREAK = '========================================'
 
 def set_up_logging(logfile, level, console):
     

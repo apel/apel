@@ -109,7 +109,7 @@ def run_as_daemon(loader, interval):
         # with dc:
         # here - we need to call the open() and close() methods 
         # manually.
-        dc.open()
+        #dc.open()
         loader.startup()
 
         # every <interval> seconds, process the records in the incoming 

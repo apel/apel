@@ -25,14 +25,13 @@ class TestJobRecord(unittest.TestCase):
             try:
                 record._check_factor(factor, 1)
             except:
-                self.fatal('Unsupported service level type: %s' % factor)
+                self.fail('Unsupported service level type: %s' % factor)
     
     
     def test_check_start_end_times(self):
         '''
         Tests _check_start_end_times method.
         '''
-        
         record = JobRecord()
         record.set_field('StartTime', 10)
         record.set_field('EndTime', 5)
@@ -51,7 +50,7 @@ class TestJobRecord(unittest.TestCase):
         # empty record
         self.assertRaises(InvalidRecordException, record._check_fields)
         
-        # minimal record mu be accepted
+        # minimal record must be accepted
         record.set_field('Site', 'some_site')
         record.set_field('SubmitHost', 'submithost.pl')
         record.set_field('LocalJobId', 'localjob')
@@ -63,5 +62,5 @@ class TestJobRecord(unittest.TestCase):
         try:
             record._check_fields()
         except:
-            self.fatal('Minimal record was not accepted!')
+            self.fail('Minimal record was not accepted!')
         

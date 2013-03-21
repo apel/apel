@@ -167,7 +167,7 @@ class Loader(object):
         records = self._rf.create_records(msg_text)
         log.info('Message contains '+ str(len(records)) + ' records.')
         # Use the DB to load the records
-        self._apeldb.load_records(records, signer)
+        self._apeldb.load_records(records, source=signer)
         
         log.debug('Message successfully loaded.')
  
