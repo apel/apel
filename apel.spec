@@ -41,7 +41,7 @@ The apel-parsers package contains parsers for all the batch systems
 supported by the APEL system: Torque, SGE and LSF. 
 
 %package client
-Summary:		APEL client package
+Summary:        APEL client package
 Group:          Development/Languages
 Requires:       apel-lib apel-ssm
 Requires(pre):  shadow-utils
@@ -52,7 +52,7 @@ the accounting database, process it and send it to the apel server using
 SSM.
 
 %package server
-Summary:		APEL server package
+Summary:        APEL server package
 Group:          Development/Languages
 Requires:       apel-lib apel-ssm
 Requires(pre):  shadow-utils

@@ -45,14 +45,18 @@ def valid_until(date, days=28):
 
 def parse_timestamp(datetime_string):
     '''
-    Method for parsing timestamp encoded as a string in various forms.
+    Parse timestamp encoded as a string in various forms.  Return
+    a TZ-unaware datetime object, which is in UTC.
+    
+    If timezone information is not present in the string, it
+    assumes that the timezone is UTC.  
     '''
     dt = iso8601.parse_date(datetime_string)
     utcdt = dt.astimezone(iso8601.iso8601.UTC)
     # internal representation of datetimes is UTC without timezones
     return utcdt.replace(tzinfo=None)
-    
-    
+
+ 
 def parse_time(timestring):
     '''
     Return seconds from times of the form xx:yy:zz.
