@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.0.5
+Version:        1.0.6
 Release:        0%{?dist}
 Summary:        APEL packages
 
@@ -153,6 +153,11 @@ exit 0
 %config(noreplace) %{apelconf}/db.cfg
 
 %changelog
+ * Thu Mar 28 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.6-0
+ - Option to withhold DNs when sending messages
+ - Update and enable SLURM parser
+ - Enable parser to reprocess event records
+ - Fixes to cloud summaries
 
  * Wed Mar 20 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.5-0
  - Create, send and receive cloud summaries
