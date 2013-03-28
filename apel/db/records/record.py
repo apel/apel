@@ -234,9 +234,6 @@ class Record(object):
         for key in self._msg_fields:
             # reset value each time.
             value = None
-            if self._record_content[key] == 'scilin6':
-                print self._record_content[key]
-                pass
             try:
                 if key in self._datetime_fields:
                     # convert datetime to epoch time for the message

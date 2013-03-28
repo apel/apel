@@ -43,8 +43,6 @@ class SlurmParser(Parser):
     '''
     def __init__(self, site, machine_name, mpi):
         Parser.__init__(self, site, machine_name, mpi)
-        if self._mpi:
-            log.warn('SLURM MPI accounting may be incomplete.')
         log.info('Site: %s; batch system: %s' % (self.site_name, self.machine_name))
     
     def parse(self, line):

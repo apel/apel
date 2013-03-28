@@ -163,7 +163,6 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         # we will leave this record unmodified
                         updated.append(pf)
                         found = True
-                        log.info('%s already parsed, omitting' % abs_file)
                         
                 if reparse or not found:
                     try:
@@ -190,7 +189,8 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         pr.set_field('StopLine', total)
                         pr.set_field('Parsed', parsed)
                         updated.append(pr)
-                        
+                else:
+                    log.info('%s already parsed, omitting' % abs_file)
             elif os.path.isfile(abs_file):
                 log.info('Filename does not match configuration: %s' % item)
         
@@ -235,6 +235,8 @@ def handle_parsing(log_type, apel_db, cp):
     
     try:
         reparse = cp.getboolean(section, 'reparse')
+        if reparse:
+            log.warn('Parser will reparse all logfiles found.')
     except ConfigParser.NoOptionError:
         reparse = False
     
@@ -245,8 +247,10 @@ def handle_parsing(log_type, apel_db, cp):
         
     try:
         parser = PARSERS[log_type](site, machine_name, mpi)
-    except NotImplementedError, e:
+    except (NotImplementedError), e:
         raise ParserConfigException(e)
+    except KeyError, e:
+        raise ParserConfigException("Not a valid parser type: %s" % e)
     
     if log_type == 'LSF':
         try:

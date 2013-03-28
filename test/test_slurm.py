@@ -19,7 +19,6 @@ class ParserSlurmTest(TestCase):
         # Not yet implemented
         pass
         
-    
     def test_parse_line(self):
         
         line1 = ('1000|cream_176801680|dteam005|dteam|2013-03-27T17:13:24|2013-03-27T17:13:26|00:00:02|2|prod|1|1|cert-40|||COMPLETED')
