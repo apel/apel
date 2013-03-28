@@ -32,8 +32,7 @@ class CloudSummaryRecord(Record):
         Record.__init__(self)
         
         # Fields which are required by the message format.
-        self._mandatory_fields = ['SiteName', 'Month', 'Year', 'GlobalUserName', 'VO', 'VOGroup', 
-                                  'VORole', 'Status', 'CloudType', 'ImageId', 'NumberOfVMs']
+        self._mandatory_fields = ['SiteName', 'Month', 'Year', 'NumberOfVMs']
             
         # This list allows us to specify the order of lines when we construct records.
         self._msg_fields  = ['SiteName', 'Month', 'Year', 

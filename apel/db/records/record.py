@@ -216,11 +216,13 @@ class Record(object):
         Get the information about the record as a string in the format used
         for APEL's messages.  self._record_content holds the appropriate
         keys and values.
+        
+        If there is no relevant information for the key, its value should be
+        None.  In this case, no line is included in the message unless
+        it is a mandatory field.  If the field is mandatory, an 
+        exception is raised.
         '''
-        # firstly, we must ensure, that record is completed 
-        # and no field is missing
-        # _check_fields method may also check the internal logic inside the
-        # record
+        # Check that the record is consistent.
         self._check_fields() 
         # for certain records, we can replace GlobalUserName with 'withheld'
         # to protect private data
@@ -230,6 +232,11 @@ class Record(object):
             
         msg = ""
         for key in self._msg_fields:
+            # reset value each time.
+            value = None
+            if self._record_content[key] == 'scilin6':
+                print self._record_content[key]
+                pass
             try:
                 if key in self._datetime_fields:
                     # convert datetime to epoch time for the message
@@ -239,6 +246,8 @@ class Record(object):
                 else:    
                     value = str(self._record_content[key]) # make sure we have a string
             except (KeyError, AttributeError):
+                # It's only a problem if a mandatory field is missing; 
+                # otherwise just don't write the line to the message.
                 if key in self._mandatory_fields:
                     raise InvalidRecordException('No mandatory key: %s found' % key)
             if value == None or value.isspace() or value == "":
