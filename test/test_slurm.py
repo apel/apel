@@ -1,6 +1,7 @@
 from datetime import datetime
 from unittest import TestCase
 from apel.parsers import SlurmParser
+from apel.parsers.slurm import parse_local_timestamp
 
 class ParserSlurmTest(TestCase):
     '''
@@ -9,22 +10,31 @@ class ParserSlurmTest(TestCase):
     
     def setUp(self):
         self.parser = SlurmParser('testSite', 'testHost', True)
+        
+    def test_parse_local_timestamp(self):
+        '''
+        The output of this function depends on the timezone of the testing 
+        computer.
+        '''
+        # Not yet implemented
+        pass
+        
     
     def test_parse_line(self):
         
-        line1 = ('667|sleep|root|root|2013-03-11T12:47:37|2013-03-11T12:47:40|00:00:03|12|debug|4|2|cloud-vm-[03-04]|560K|100904K ')
+        line1 = ('1000|cream_176801680|dteam005|dteam|2013-03-27T17:13:24|2013-03-27T17:13:26|00:00:02|2|prod|1|1|cert-40|||COMPLETED')
         
-        line1_values = {"JobName": "667", 
-                        "LocalUserID":"root", 
-                        "LocalUserGroup": "root", 
-                        "WallDuration":3,
-                        "CpuDuration": 12,
-                        "StartTime": datetime(2013, 3, 11, 12, 47, 37),
-                        "StopTime": datetime(2013, 3, 11, 12, 47, 40),
-                        "MemoryReal": 560,
-                        "MemoryVirtual": 100904,
-                        "NodeCount": 2,
-                        "Processors": 4
+        line1_values = {"JobName": "1000", 
+                        "LocalUserID":"dteam005", 
+                        "LocalUserGroup": "dteam", 
+                        "WallDuration": 2,
+                        "CpuDuration": 2,
+                        "StartTime": datetime(2013, 3, 27, 17, 13, 24),
+                        "StopTime": datetime(2013, 3, 27, 17, 13, 26),
+                        "MemoryReal": None,
+                        "MemoryVirtual": None,
+                        "NodeCount": 1,
+                        "Processors": 1
                         }
         
         cases = {line1:line1_values}
