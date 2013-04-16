@@ -192,7 +192,7 @@ class DbUnloader(object):
         according to the logic contained in the query object.
         '''
         if self._withhold_dns and record_type not in self.MAY_WITHHOLD_DNS:
-            raise ApelDbException('Cannot withhold DNs for %s' % record_type)
+            raise ApelDbException('Cannot withhold DNs for %s' % record_type.__name__)
         
         msgs = 0
         records = 0

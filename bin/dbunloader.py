@@ -21,7 +21,6 @@ import logging.config
 import sys
 import os
 from apel.common import set_up_logging
-from apel.db.records import JobRecord, SummaryRecord
 from apel.db import ApelDb, ApelDbException
 from apel.db.unloader import DbUnloader
 from apel import __version__
@@ -71,11 +70,10 @@ if __name__ == '__main__':
                     dbcp.get('db', 'name'))
         
     except ApelDbException, e:
-        log.fatal('Error: %s' % str(e))
-
+        log.fatal('Error: %s' % e)
         sys.exit(1)
     except Exception, e:
-        log.fatal('Cannot get configuration: %s' % str(e))
+        log.fatal('Cannot get configuration: %s' % e)
         sys.exit(1)
     
     log.info('=====================')
@@ -83,9 +81,22 @@ if __name__ == '__main__':
     
     unload_dir       = cp.get('unloader', 'dir_location')
     table_name       = cp.get('unloader', 'table_name')
-    send_ur          = cp.getboolean('unloader', 'send_ur')
-    local_jobs       = cp.getboolean('unloader', 'local_jobs')
-    withhold_dns     = cp.getboolean('unloader', 'withhold_dns')
+    
+    try:
+        send_ur = cp.getboolean('unloader', 'send_ur')
+    except ConfigParser.NoOptionError:
+        send_ur = False
+        
+    try:
+        local_jobs = cp.getboolean('unloader', 'local_jobs')
+    except ConfigParser.NoOptionError:
+        local_jobs = False
+        
+    try:
+        withhold_dns     = cp.getboolean('unloader', 'withhold_dns')
+    except ConfigParser.NoOptionError:
+        withhold_dns = False
+        
     include_vos      = None
     exclude_vos      = None
     try:
@@ -104,9 +115,9 @@ if __name__ == '__main__':
         msgs, recs = unloader.unload_latest(table_name, send_ur)
         log.info('%d records in %d messages unloaded from %s' % (recs, msgs, table_name))
     except KeyError:
-        log.warning('Invalid table name: %s, omitting' % table_name)
+        log.error('Invalid table name: %s, omitting' % table_name)
+    except ApelDbException, e:
+        log.error('Unloading failed: %s' % e)
         
-        
-    
     log.info('Unloading complete.')
     log.info('=====================') 
