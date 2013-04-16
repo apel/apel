@@ -88,7 +88,7 @@ def run_ssm(scp):
     
     try:
         try:
-            server_cert = scp.get('certificates','server')
+            server_cert = scp.get('certificates','server_cert')
             if not os.path.isfile(server_cert):
                 raise Ssm2Exception('Server cerficate location incorrect.')
         except ConfigParser.NoOptionError:
@@ -106,6 +106,7 @@ def run_ssm(scp):
                    scp.get('messaging','path'),
                    dest=scp.get('messaging','destination'),
                    cert=scp.get('certificates','certificate'),
+                   capath=scp.get('certificates','capath'),
                    key=scp.get('certificates','key'),
                    use_ssl=scp.getboolean('broker','use_ssl'),
                    enc_cert=server_cert)
