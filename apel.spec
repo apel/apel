@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.0.6
+Version:        1.1.0
 Release:        0%{?dist}
 Summary:        APEL packages
 
@@ -63,6 +63,8 @@ from clients, to process and to send the results elsewhere using SSM.
 
 %prep
 %setup -q -n %{name}-%{version}
+
+%build
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -153,7 +155,8 @@ exit 0
 %config(noreplace) %{apelconf}/db.cfg
 
 %changelog
- * Thu Mar 28 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.6-0
+
+ * Tue Apr 16 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.1.0-0
  - Option to withhold DNs when sending messages
  - Update and enable SLURM parser
  - Enable parser to reprocess event records
