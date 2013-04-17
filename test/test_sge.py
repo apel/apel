@@ -42,7 +42,7 @@ class ParserSGETest(TestCase):
                         "LocalUserID":"csfiylfl", 
                         "LocalUserGroup": "csic", 
                         "WallDuration": 180001, 
-                        "CpuDuration": 1026706,
+                        "CpuDuration": 1026707,
                         "StartTime": datetime.utcfromtimestamp(1318560254),
                         "StopTime": datetime.utcfromtimestamp(1318740255),
                         "MemoryReal":63131849389,
@@ -51,6 +51,23 @@ class ParserSGETest(TestCase):
                         "Processors": 9
                         }
         cases[line2] = line2_values
+        
+        line3 = 'lcg_analysis:cn446.htc.esc.qmul:pilatl:pilatl10:cream_297073580:1630912:sge:5:1358189999:1358190002:1358210574:0:1:20365.78:1211.1274098:61.49143143:385648.000000:0:0:0:0:2236317:1450:0:0.000000:0:0:0:0:245899:291449:pilatl.p:defaultdepartment:NONE:1:0:1272.61884123:430.743820:37.845289:-q lcg_analysis:0.000000:NONE:1546682368.000000:0:0'
+        
+        line3_values = {"JobName": "1630912", 
+                        "LocalUserID":"pilatl10", 
+                        "LocalUserGroup": "pilatl", 
+                        "WallDuration": 20366, 
+                        "CpuDuration": 1273,
+                        "StartTime": datetime.utcfromtimestamp(1358190002),
+                        "StopTime": datetime.utcfromtimestamp(1358210574),
+                        "MemoryReal":451667631,
+                        "MemoryVirtual": 1546682368,
+                        "NodeCount": 0,
+                        "Processors": 1
+                        }
+        
+        cases[line3] = line3_values
         
         for line in cases.keys():
             record = self.parser.parse(line)

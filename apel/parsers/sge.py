@@ -63,9 +63,9 @@ class SGEParser(Parser):
                   'JobName'         : lambda x: x[5],
                   'LocalUserID'     : lambda x: x[3],
                   'LocalUserGroup'  : lambda x: x[2],
-                  'WallDuration'    : lambda x: int(x[13]),
-                  # some kind of hack - int() can't parse strings like '1.000'
-                  'CpuDuration'     : lambda x: int(float(x[36])), 
+                  # int() can't parse strings like '1.000'
+                  'WallDuration'    : lambda x: int(round(float(x[13]))),
+                  'CpuDuration'     : lambda x: int(round(float(x[36]))), 
                   'StartTime'       : lambda x: int(x[9]),
                   'StopTime'        : lambda x: int(x[10]),
                   'Infrastructure'  : lambda x: "APEL-CREAM-SGE",
