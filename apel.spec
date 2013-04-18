@@ -125,7 +125,7 @@ exit 0
 %defattr(-,root,root,-)
 %attr(755,root,root) %_bindir/apelparser
 %config(noreplace) %{apelconf}/parser.cfg
-%_datadir/apel/slurm_acc.sh
+%attr(755,root,root) %_datadir/apel/slurm_acc.sh
 
 %files client
 %defattr(-,root,root,-)
