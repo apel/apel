@@ -90,7 +90,7 @@ def run_ssm(scp):
         try:
             server_cert = scp.get('certificates','server_cert')
             if not os.path.isfile(server_cert):
-                raise Ssm2Exception('Server cerficate location incorrect.')
+                raise Ssm2Exception('Server certificate location incorrect.')
         except ConfigParser.NoOptionError:
             log.info('No server certificate supplied.  Will not encrypt messages.')
             server_cert = None
