@@ -105,6 +105,9 @@ cp schemas/server.sql %{buildroot}%_datadir/apel/
 cp schemas/cloud.sql %{buildroot}%_datadir/apel/
 cp schemas/storage.sql %{buildroot}%_datadir/apel/
 
+# slurm accounting script
+cp scripts/slurm_acc.sh %{buildroot}%_datadir/apel/
+
 %clean 
 rm -rf $RPM_BUILD_ROOT
 
@@ -122,6 +125,7 @@ exit 0
 %defattr(-,root,root,-)
 %attr(755,root,root) %_bindir/apelparser
 %config(noreplace) %{apelconf}/parser.cfg
+%_datadir/apel/slurm_acc.sh
 
 %files client
 %defattr(-,root,root,-)
