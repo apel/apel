@@ -257,14 +257,14 @@ class JobRecord(Record):
         if self.get_field('MemoryReal') > 0:
             pmem = doc.createElement('urf:Memory')
             pmem.setAttribute('urf:type', 'Physical')
-            pmem.setAttribute('urf:storageUnit', 'kB')
+            pmem.setAttribute('urf:storageUnit', 'KB')
             pmem.appendChild(doc.createTextNode(str(self.get_field('MemoryReal'))))
             ur.appendChild(pmem)
         
         if self.get_field('MemoryVirtual') > 0:
             vmem = doc.createElement('urf:Memory')
             vmem.setAttribute('urf:type', 'Shared')
-            vmem.setAttribute('urf:storageUnit', 'kB')
+            vmem.setAttribute('urf:storageUnit', 'KB')
             vmem.appendChild(doc.createTextNode(str(self.get_field('MemoryVirtual'))))
             ur.appendChild(vmem)
         
