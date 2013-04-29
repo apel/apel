@@ -236,7 +236,7 @@ def run_client(ccp):
     log.info(LOG_BREAK)
     log.info('Starting summariser.')
     # This contains all the summarising logic, contained in ApelMysqlDb() and the stored procedures.
-    db.summarise() 
+    db.summarise_jobs() 
     log.info('Summarising complete.')
     log.info(LOG_BREAK)
     

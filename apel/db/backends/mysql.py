@@ -248,13 +248,37 @@ class ApelMysqlDb(object):
         self.db.commit()
         return True
     
-    def summarise(self):
+    def check_duplicate_sites(self):
         '''
-        The summarising process has two parts: copying summaries from
-        the Summaries table to the SuperSummaries table; and aggregating 
-        the JobRecords table and putting the results in the 
+        Check that records from the same site are not in both the 
+        JobRecords table and the Summaries table.
+        '''
+        try:
+            # prevent MySQLdb from raising
+            # 'MySQL server has gone' exception
+            self._mysql_reconnect()
+            
+            c = self.db.cursor()
+            
+            c.execute("select count(*) from JobRecords j inner join Summaries s using (SiteID)")
+            conflict = c.fetchone()[0] > 0
+            
+            if conflict:
+                raise ApelDbException("Records exist in both job and summary tables for the same site.")
+            self.db.commit()
+        except MySQLdb.Error, e:
+            log.error("A mysql error occurred: %s" % e)
+            log.error("Any transaction will be rolled back.")
+            
+            if not self.db is None:
+                self.db.rollback()
+            raise
+            
+    def summarise_jobs(self):
+        '''
+        Aggregate the data from the JobRecords table and put the results in the 
         SuperSummaries table.  This method does this by calling the 
-        two stored procedures which have these effects.
+        SummariseJobs stored procedure.
         
         Any failure will result in the entire transaction being rolled 
         back.
@@ -265,22 +289,32 @@ class ApelMysqlDb(object):
             self._mysql_reconnect()
             
             c = self.db.cursor()
-            
-            # Preliminary check that we don't have data from the same site
-            # in both job and summary tables
-#            c.execute("select count(*) from JobRecords j inner join Summaries s using (SiteID)")
-#            conflict = c.fetchone()[0] > 0
-#            
-#            if conflict:
-#                raise ApelDbException("Records exist in both job and summary tables for the same site.")
 
             log.info("Summarising job records...")
             c.callproc(self._summarise_jobs_proc, ())
             log.info("Done.")
+            self.db.commit()
+        except MySQLdb.Error, e:
+            log.error("A mysql error occurred: %s" % e)
+            log.error("Any transaction will be rolled back.")
             
-#            log.info("Copying summaries...")
-#            c.callproc(self._copy_summaries_proc)
-#            log.info("Done.")
+            if not self.db is None:
+                self.db.rollback()
+            raise
+    
+    def copy_summaries(self):
+        '''
+        Copy summaries from the Summaries table to the SuperSummaries table.
+        ''' 
+        try:
+            # prevent MySQLdb from raising
+            # 'MySQL server has gone' exception
+            self._mysql_reconnect()
+            
+            c = self.db.cursor()
+            log.info("Copying summaries...")
+            c.callproc(self._copy_summaries_proc)
+            log.info("Done.")
 
             self.db.commit()
         except MySQLdb.Error, e:

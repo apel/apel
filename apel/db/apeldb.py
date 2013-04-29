@@ -72,12 +72,6 @@ class ApelDb(object):
         '''
         pass
     
-    def summarise(self):
-        '''
-        Run the SummariseJobs stored procedure to convert JobRecords into
-        SuperSummaries.
-        '''
-        pass
 
 class Query(object):
     '''

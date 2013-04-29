@@ -82,7 +82,10 @@ def runprocess(db_config_file, config_file, log_config_file):
         log.info('Connected.')
         # This is all the summarising logic, contained in ApelMysqlDb() and the stored procedures.
         if db_type == 'cpu':
-            db.summarise()
+            # Make sure that records are not coming from the same site by two different routes
+            db.check_duplicate_sites()
+            db.summarise_jobs()
+            db.copy_summaries()
         elif db_type == 'cloud':
             db.summarise_cloud()
         else:
@@ -91,7 +94,7 @@ def runprocess(db_config_file, config_file, log_config_file):
         log.info('Summarising complete.')
         log.info('=====================')
 
-    except Exception, err:
+    except ApelDbException, err:
         log.error('Error summarising: ' + str(err))
         log.error('Summarising has been cancelled.')
         log.info('=====================')
