@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.1.0
+Version:        1.1.1
 Release:        0%{?dist}
 Summary:        APEL packages
 
@@ -159,6 +159,9 @@ exit 0
 %config(noreplace) %{apelconf}/db.cfg
 
 %changelog
+ * Mon Apr 29 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.1.1-0
+ - Separate summarising procedure into component parts and use
+   relevant parts for client.py and summariser.py scripts
 
  * Tue Apr 16 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.1.0-0
  - Option to withhold DNs when sending messages
