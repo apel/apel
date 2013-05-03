@@ -14,14 +14,23 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 '''
-   @author: Will Rogers
+    This is a simple script to check the status of the APEL messages 
+    on the filesystem.  It uses the python-dirq library.  If any messages
+    are locked, it gives the option to remove the lock.
+    @author: Will Rogers
 '''
 
 import sys
 import os
 from dirq.queue import Queue
 from dirq.QueueSimple import QueueSimple
-from apel.db.loader.loader import QSCHEMA
+
+try:
+    from apel.db.loader.loader import QSCHEMA
+except ImportError:
+    print 'The apel package must be in the PYTHONPATH.'
+    print 'Exiting.'
+    sys.exit(1)
     
     
 def check_dir(root):
@@ -30,7 +39,7 @@ def check_dir(root):
     or accept directories.  If they exist, check them for 
     messages.
     ''' 
-    print 'Starting message status script.' 
+    print '\nStarting message status script.' 
     print 'Root directory: %s\n' % root
     queues = []
     incoming = os.path.join(root, 'incoming')
@@ -70,11 +79,8 @@ def check_queue(q):
     while name:
         if not q.lock(name):
             locked += 1
-            #print "Locked message: ID = %s" % name
             name = q.next()
-            #q.unlock(name)
             continue
-        #print "# reading element %s" % name
         else:
             q.unlock(name)
             name = q.next()

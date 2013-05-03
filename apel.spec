@@ -90,6 +90,7 @@ cp bin/parser.py %{buildroot}%_bindir/apelparser
 cp bin/dbloader.py %{buildroot}%_bindir/apeldbloader
 cp bin/dbunloader.py %{buildroot}%_bindir/apeldbunloader
 cp bin/summariser.py %{buildroot}%_bindir/apelsummariser
+cp bin/retrieve_dns.py %{buildroot}%_bindir/apelauth
 
 # Configuration files
 cp conf/client.cfg %{buildroot}%{apelconf}
@@ -98,6 +99,7 @@ cp conf/unloader.cfg %{buildroot}%{apelconf}/
 cp conf/loader.cfg %{buildroot}%{apelconf}/
 cp conf/db.cfg %{buildroot}%{apelconf}/
 cp conf/parser.cfg %{buildroot}%{apelconf}/
+cp conf/auth.cfg %{buildroot}%{apelconf}/
 
 # database schemas
 cp schemas/client.sql %{buildroot}%_datadir/apel/
@@ -107,6 +109,9 @@ cp schemas/storage.sql %{buildroot}%_datadir/apel/
 
 # slurm accounting script
 cp scripts/slurm_acc.sh %{buildroot}%_datadir/apel/
+
+# message status script
+cp scripts/msg_status.py %{buildroot}%_datadir/apel/
 
 %clean 
 rm -rf $RPM_BUILD_ROOT
@@ -145,6 +150,8 @@ exit 0
 %_datadir/apel/server.sql
 %_datadir/apel/cloud.sql
 %_datadir/apel/storage.sql
+%attr(755,root,root) %_datadir/apel/msg_status.py
+
 # Directories for logs, PID files
 %dir %{_localstatedir}/log/apel
 %dir %{_localstatedir}/run/apel
@@ -152,11 +159,13 @@ exit 0
 %attr(755,root,root) %_bindir/apeldbunloader
 %attr(755,root,root) %_bindir/apeldbloader
 %attr(755,root,root) %_bindir/apelsummariser
+%attr(755,root,root) %_bindir/apelauth
 
 %config(noreplace) %{apelconf}/summariser.cfg
 %config(noreplace) %{apelconf}/unloader.cfg
 %config(noreplace) %{apelconf}/loader.cfg
 %config(noreplace) %{apelconf}/db.cfg
+%config(noreplace) %{apelconf}/auth.cfg
 
 %changelog
  * Mon Apr 29 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.1.1-0
