@@ -23,7 +23,7 @@
 '''
 @author: Will Rogers
 '''
-from apel.common import set_up_logging
+from apel.common import set_up_logging, LOG_BREAK
 from apel import __version__
 
 from optparse import OptionParser
@@ -93,7 +93,6 @@ def get_config(config_file):
             set_up_logging(cp.get('logging', 'logfile'), 
                            cp.get('logging', 'level'),
                            cp.getboolean('logging', 'console'))
-        log = logging.getLogger('auth')
     except (ConfigParser.Error, ValueError, IOError), err:
         print 'Error configuring logging: %s' % str(err)
         print 'The system will exit.'
@@ -115,7 +114,7 @@ def get_xml(url, proxy):
     except IOError:
         # Try with a proxy
         if not proxy is None:
-            proxy= {"http": proxy}
+            proxy = {"http": proxy}
             conn = urllib.urlopen(url, proxies=proxy)
             dn_xml = conn.read()
             conn.close()
@@ -131,10 +130,9 @@ def dns_from_xml(xml_string):
     a list of strings.
     '''
     dom = xml.dom.minidom.parseString(xml_string)
-    
     dn_nodes = dom.getElementsByTagName('HOSTDN')
     
-    log.debug('Found ' + str(len(dn_nodes)) + ' HOSTDN tags.' )
+    log.info('Found ' + str(len(dn_nodes)) + ' HOSTDN tags.' )
     
     dns = []
     for dn in dn_nodes:
@@ -164,16 +162,15 @@ def dns_from_file(path):
 
 
 def verify_dn(dn):
-    '''Simplistically check that the DN is of the /-separated format'''
-    
+    '''
+    Simplistically check that the DN is of the /-separated format.
+    '''
     # there shouldn't be a comma in there
     if dn.find(', ') != -1:
         return False
-    
     # it should begin with a slash
     if dn.find('/') != 0:
         return False
-    
     # Check there are at least two bits
     parts = dn.split('/')
     if len(parts) < 2:
@@ -181,21 +178,14 @@ def verify_dn(dn):
      
     return True
 
-def remove_from_list(list, to_remove):
-    """Remove all items from list which are in to_remove."""
-    result = [ item for item in list if item not in to_remove ]
-    return result
-
 
 def runprocess(config_file, log_config_file):
     '''Get DNs both from the URL and the additional file.'''
     cfg = get_config(config_file)
-    
 
-        
+    log = logging.getLogger('auth')
+    log.info(LOG_BREAK)
     log.info('Starting apel auth version %s.%s.%s' % __version__)
-    
-    log.info("======================")
     log.info("Starting auth ...")
     
     # We'll fill this list with DNs.
@@ -220,7 +210,7 @@ def runprocess(config_file, log_config_file):
     # get the DNs from the additional file
     try:
         extra_dns = dns_from_file(cfg.extra_dns)
-        log.debug("Fetched %s DNs from file %s." % (len(extra_dns), cfg.extra_dns))
+        log.info("Fetched %s extra DNs from file %s." % (len(extra_dns), cfg.extra_dns))
         dns.extend(extra_dns)
     except IOError:
         log.warn("Failed to retrieve extra DNs from file %s." % cfg.extra_dns)
@@ -229,12 +219,13 @@ def runprocess(config_file, log_config_file):
     dns_to_remove = []
     try:
         dns_to_remove = dns_from_file(cfg.banned_dns)
-        log.debug("Fetched %s DNs from file %s." % (len(dns_to_remove), cfg.banned_dns))
+        log.info("Fetched %s banned DNs from file %s." % (len(dns_to_remove), cfg.banned_dns))
     except IOError:
         log.warn("Failed to retrieve banned DNs from file %s." % cfg.banned_dns)
         log.warn("Check the configuration.")
     
-    dns = remove_from_list(dns, dns_to_remove)
+    # remove all items from the list dns which are in the list dns_to_remove
+    dns = [ dn for dn in dns if dn not in dns_to_remove ]
     
     # print all the the dns to a file, with the discarded ones to a second file
     try:
@@ -244,7 +235,7 @@ def runprocess(config_file, log_config_file):
         log.warn("Check the configuration.")
         log.warn("auth will exit.")
         sys.exit(1)
-        log.info("======================")
+        log.info(LOG_BREAK)
         
     added = 0
     for dn in dns:
@@ -261,18 +252,16 @@ def runprocess(config_file, log_config_file):
     log.info("%s DNs have been written to %s." % (added, cfg.dn_file))
     
     log.info("auth has finished.")
-    log.info("======================")
+    log.info(LOG_BREAK)
     
     
 if __name__ == '__main__':
-    # Main method for running the summariser.
-    
-    ver = "APEL summariser %s.%s.%s" % __version__
+    ver = "APEL auth %s.%s.%s" % __version__
     opt_parser = OptionParser(description=__doc__, version=ver)
     opt_parser.add_option('-c', '--config', help='location of the config file', 
                           default='/etc/apel/auth.cfg')
     opt_parser.add_option('-l', '--log_config', help='Location of logging config file (optional)',
                           default='/etc/apel/logging.cfg')
-    (options,args) = opt_parser.parse_args()
+    (options, args) = opt_parser.parse_args()
     
     runprocess(options.config, options.log_config)
