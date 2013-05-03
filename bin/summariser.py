@@ -26,7 +26,7 @@ import os
 import sys
 
 from apel.db import ApelDb, ApelDbException
-from apel.common import set_up_logging
+from apel.common import set_up_logging, LOG_BREAK
 from apel import __version__
 
 def runprocess(db_config_file, config_file, log_config_file):
@@ -92,12 +92,12 @@ def runprocess(db_config_file, config_file, log_config_file):
             raise ApelDbException('Unknown database type: %s' % db_type)
         
         log.info('Summarising complete.')
-        log.info('=====================')
+        log.info(LOG_BREAK)
 
     except ApelDbException, err:
         log.error('Error summarising: ' + str(err))
         log.error('Summarising has been cancelled.')
-        log.info('=====================')
+        log.info(LOG_BREAK)
         sys.exit(1)
 
 
