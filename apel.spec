@@ -33,7 +33,7 @@ apel-lib provides required libraries for the rest of APEL system.
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apel-lib
+Requires:       apel-lib>=1.1.2
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -43,7 +43,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib apel-ssm
+Requires:       apel-lib>=1.1.2 apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -54,7 +54,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib apel-ssm
+Requires:       apel-lib>=1.1.2 apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -130,7 +130,7 @@ exit 0
 %defattr(-,root,root,-)
 %attr(755,root,root) %_bindir/apelparser
 %config(noreplace) %{apelconf}/parser.cfg
-%attr(600,apel,apel) %{apelconf}/parser.cfg
+%attr(600,-,-) %{apelconf}/parser.cfg
 %attr(755,root,root) %_datadir/apel/slurm_acc.sh
 
 %files client
@@ -144,7 +144,7 @@ exit 0
 %attr(755,root,root) %_bindir/apelclient
 
 %config(noreplace) %{apelconf}/client.cfg
-%attr(600,apel,apel) %{apelconf}/client.cfg
+%attr(600,-,-) %{apelconf}/client.cfg
 
 %files server
 %defattr(-,root,root,-)
@@ -164,20 +164,16 @@ exit 0
 %attr(755,root,root) %_bindir/apelauth
 
 %config(noreplace) %{apelconf}/summariser.cfg
-%attr(600,apel,apel) %{apelconf}/summariser.cfg
 %config(noreplace) %{apelconf}/unloader.cfg
-%attr(600,apel,apel) %{apelconf}/unloader.cfg
 %config(noreplace) %{apelconf}/loader.cfg
-%attr(600,apel,apel) %{apelconf}/loader.cfg
 %config(noreplace) %{apelconf}/db.cfg
 %attr(600,apel,apel) %{apelconf}/db.cfg
 %config(noreplace) %{apelconf}/auth.cfg
-%attr(600,apel,apel) %{apelconf}/auth.cfg
 
 %changelog
  * Fri May 31 2013 Stuart Pullinger <stuart.pullinger@stfc.ac.uk> - 1.1.2-0
- - Changed file permissions for all config files to 0600, 
-   owner and group to apel:apel, in apel.spec
+ - Changed file permissions for parser.cfg, client.cfg and db.cfg 
+   to 0600, owner and group of db.cfg to apel:apel, in apel.spec
 
  * Mon Apr 29 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.1.1-0
  - Separate summarising procedure into component parts and use

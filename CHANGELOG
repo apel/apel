@@ -2,8 +2,8 @@ Changelog for apel
 ==================
 
  * Fri May 31 2013 Stuart Pullinger <stuart.pullinger@stfc.ac.uk> - 1.1.2-0
- - Changed file permissions for all config files to 0600,
-   owner and group to apel:apel, in apel.spec
+ - Changed file permissions for parser.cfg, client.cfg and db.cfg
+   to 0600, owner and group of db.cfg to apel:apel, in apel.spec
 
  * Mon Apr 29 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.1.1-0
  - Separate summarising procedure into component parts and use
