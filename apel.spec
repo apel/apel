@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.1.1
+Version:        1.1.2
 Release:        0%{?dist}
 Summary:        APEL packages
 
@@ -130,6 +130,7 @@ exit 0
 %defattr(-,root,root,-)
 %attr(755,root,root) %_bindir/apelparser
 %config(noreplace) %{apelconf}/parser.cfg
+%attr(600,apel,apel) %{apelconf}/parser.cfg
 %attr(755,root,root) %_datadir/apel/slurm_acc.sh
 
 %files client
@@ -143,6 +144,7 @@ exit 0
 %attr(755,root,root) %_bindir/apelclient
 
 %config(noreplace) %{apelconf}/client.cfg
+%attr(600,apel,apel) %{apelconf}/client.cfg
 
 %files server
 %defattr(-,root,root,-)
@@ -162,12 +164,21 @@ exit 0
 %attr(755,root,root) %_bindir/apelauth
 
 %config(noreplace) %{apelconf}/summariser.cfg
+%attr(600,apel,apel) %{apelconf}/summariser.cfg
 %config(noreplace) %{apelconf}/unloader.cfg
+%attr(600,apel,apel) %{apelconf}/unloader.cfg
 %config(noreplace) %{apelconf}/loader.cfg
+%attr(600,apel,apel) %{apelconf}/loader.cfg
 %config(noreplace) %{apelconf}/db.cfg
+%attr(600,apel,apel) %{apelconf}/db.cfg
 %config(noreplace) %{apelconf}/auth.cfg
+%attr(600,apel,apel) %{apelconf}/auth.cfg
 
 %changelog
+ * Fri May 31 2013 Stuart Pullinger <stuart.pullinger@stfc.ac.uk> - 1.1.2-0
+ - Changed file permissions for all config files to 0600, 
+   owner and group to apel:apel, in apel.spec
+
  * Mon Apr 29 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.1.1-0
  - Separate summarising procedure into component parts and use
    relevant parts for client.py and summariser.py scripts
