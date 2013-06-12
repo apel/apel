@@ -51,7 +51,10 @@ class DbUnloader(object):
     def __init__(self, db, qpath, inc_vos=None, exc_vos=None, local=False, withhold_dns=False):
         self._db = db
         outpath = os.path.join(qpath, "outgoing")
-        self._msgq = QueueSimple(outpath)
+	if os.access(outpath, os.W_OK):
+		self._msgq = QueueSimple(outpath)
+	else
+		raise ApelDbException("Could not access %s. Write permission is required" % outpath)
         self._inc_vos = inc_vos
         self._exc_vos = exc_vos
         self._local = local
