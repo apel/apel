@@ -53,7 +53,7 @@ class DbUnloader(object):
         outpath = os.path.join(qpath, "outgoing")
 	if os.access(outpath, os.W_OK):
 		self._msgq = QueueSimple(outpath)
-	else
+	else:
 		raise ApelDbException("Could not access %s. Write permission is required" % outpath)
         self._inc_vos = inc_vos
         self._exc_vos = exc_vos
