@@ -48,7 +48,7 @@ class DbUnloader(object):
     # all record types for which withholding DNs is a valid option
     MAY_WITHHOLD_DNS = [JobRecord, SyncRecord, CloudRecord]
     
-    def __init__(self, db, qpath, inc_vos=None, exc_vos=None, local=False, withhold_dns=False):
+    def __init__(self, db, qpath, inc_vos=None, exc_vos=None, local=False, withhold_dns=False, inc_sites=None, exc_sites=None):
         self._db = db
         outpath = os.path.join(qpath, "outgoing")
 	if os.access(outpath, os.W_OK):
@@ -59,6 +59,8 @@ class DbUnloader(object):
         self._exc_vos = exc_vos
         self._local = local
         self._withhold_dns = withhold_dns
+	self._inc_sites = inc_sites
+	self._exc_sites = exc_sites
         
     def _get_base_query(self, record_type):
         '''
@@ -78,6 +80,15 @@ class DbUnloader(object):
                 query.VO_notin = self._exc_vos
             if not self._local:
                 query.InfrastructureType = 'grid'
+
+            if self._inc_sites is not None:
+                query.Site_in = self._inc_sites
+                log.info('Sending only these Sites: ')
+                log.info(self._inc_sites)
+            elif self._exc_sites is not None:
+                log.info('Excluding these Sites: ')
+                log.info(self._exc_sites)
+                query.Site_notin = self._exc_sites
             
         return query
         
