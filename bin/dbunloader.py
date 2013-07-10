@@ -85,7 +85,7 @@ if __name__ == '__main__':
     try:
         unloader_id = cp.getboolean('unloader', 'unloader_id')
     except ConfigParser.NoOptionError:
-        unloader_id = 'Sent'  #If the option is not defined we use the value that was used pre 1.1.3 for backwards compatibility
+        unloader_id = 'sent'  #If the option is not defined we use the value that was used pre 1.1.3 for backwards compatibility
         
     try:
         send_ur = cp.getboolean('unloader', 'send_ur')

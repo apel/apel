@@ -48,7 +48,7 @@ class DbUnloader(object):
     # all record types for which withholding DNs is a valid option
     MAY_WITHHOLD_DNS = [JobRecord, SyncRecord, CloudRecord]
     
-    def __init__(self, db, qpath, inc_vos=None, exc_vos=None, local=False, withhold_dns=False, inc_sites=None, exc_sites=None, unloader_id='Sent'):
+    def __init__(self, db, qpath, inc_vos=None, exc_vos=None, local=False, withhold_dns=False, inc_sites=None, exc_sites=None, unloader_id='sent'):
         self._db = db
         outpath = os.path.join(qpath, "outgoing")
 	if os.access(outpath, os.W_OK):

@@ -222,11 +222,11 @@ class ApelMysqlDb(object):
             log.warn('Warning from MySQL: %s' % str(warning))
         
         
-    def get_last_updated(self):
+    def get_last_updated(self, unloader_id='sent'):
         '''
         Find the last time that messages were sent.
         '''
-        query = 'select UpdateTime from LastUpdated where Type = "sent"'
+        query = 'select UpdateTime from LastUpdated where Type = "%s"' % unloader_id
         c = self.db.cursor()
         c.execute(query)
         result = c.fetchone()
@@ -236,12 +236,12 @@ class ApelMysqlDb(object):
         else:
             return result[0]
         
-    def set_updated(self):
+    def set_updated(self, unloader_id='sent'):
         '''
         Set the current time as the last time messages were sent.
         '''
         log.info('Updating timestamp.')
-        query = 'call UpdateTimestamp("sent")'
+        query = 'call UpdateTimestamp("%s")' % unloader_id
         c = self.db.cursor()
         c.execute(query)
         c.fetchone()
