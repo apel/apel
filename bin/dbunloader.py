@@ -83,6 +83,11 @@ if __name__ == '__main__':
     table_name       = cp.get('unloader', 'table_name')
     
     try:
+        unloader_id = cp.getboolean('unloader', 'unloader_id')
+    except ConfigParser.NoOptionError:
+        unloader_id = 'Sent'  #If the option is not defined we use the value that was used pre 1.1.3 for backwards compatibility
+        
+    try:
         send_ur = cp.getboolean('unloader', 'send_ur')
     except ConfigParser.NoOptionError:
         send_ur = False
@@ -123,7 +128,7 @@ if __name__ == '__main__':
         except ConfigParser.NoOptionError:
             pass
     
-    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns, include_sites, exclude_sites)
+    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns, include_sites, exclude_sites, unloader_id)
     try:
         msgs, recs = unloader.unload_latest(table_name, send_ur)
         log.info('%d records in %d messages unloaded from %s' % (recs, msgs, table_name))
