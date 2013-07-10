@@ -48,7 +48,7 @@ class DbUnloader(object):
     # all record types for which withholding DNs is a valid option
     MAY_WITHHOLD_DNS = [JobRecord, SyncRecord, CloudRecord]
     
-    def __init__(self, db, qpath, inc_vos=None, exc_vos=None, local=False, withhold_dns=False, inc_sites=None, exc_sites=None):
+    def __init__(self, db, qpath, inc_vos=None, exc_vos=None, local=False, withhold_dns=False, inc_sites=None, exc_sites=None, unloader_id='Sent'):
         self._db = db
         outpath = os.path.join(qpath, "outgoing")
 	if os.access(outpath, os.W_OK):
@@ -61,6 +61,7 @@ class DbUnloader(object):
         self._withhold_dns = withhold_dns
 	self._inc_sites = inc_sites
 	self._exc_sites = exc_sites
+	self._unloader_id = unloader_id
         
     def _get_base_query(self, record_type):
         '''
@@ -163,7 +164,7 @@ class DbUnloader(object):
             record_type = self.RECORD_TYPES[table_name]
             
             query = self._get_base_query(record_type)
-            since = self._db.get_last_updated()
+            since = self._db.get_last_updated(self._unloader_id)
             
             log.info('Getting records updated since: %s' % since)
             if since is not None:
@@ -171,7 +172,7 @@ class DbUnloader(object):
                 
             msgs, records = self._write_messages(record_type, table_name, query, ur)
             
-            self._db.set_updated()
+            self._db.set_updated(self._unloader_id)
         
         return msgs, records
         
