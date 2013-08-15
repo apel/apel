@@ -27,14 +27,15 @@ log = logging.getLogger('loader')
 
 class AurParser(XMLParser):
     '''
-    Parser for Computing Accounting Records
+    Parser for Aggregated Usage Records
     
     For documentation please visit: 
     https://twiki.cern.ch/twiki/bin/view/EMI/ComputeAccountingRecord
     The record format now conforms to the Normalised Summary format here:
     https://wiki.egi.eu/wiki/APEL/MessageFormat#Summary_Job_Records
     - it includes NormalisedCpuDuration and NormalisedWallDuration and 
-    omits ServiceLevel and ServiceLevelType.
+    omits ServiceLevel and ServiceLevelType. The field formerly called
+    InfrastructureType is now called Infrastructure.
     '''
     
     # main namespace for records
@@ -84,9 +85,7 @@ class AurParser(XMLParser):
                                                           'type', 'role')[0].childNodes),
             'MachineName'      : lambda nodes: self.getText(nodes['MachineName'][0].childNodes),
             'SubmitHost'       : lambda nodes: self.getText(nodes['SubmitHost'][0].childNodes),
-            'InfrastructureType' : lambda nodes: self.getAttr(
-                                            nodes['Infrastructure'][0], 'type',
-                                            CarParser.NAMESPACE),
+            'Infrastructure'   : lambda nodes: self.getText(nodes['Infrastructure'][0].childNodes),
             'EarliestEndTime'  : lambda nodes: parse_timestamp(self.getText(
                                         nodes['EarliestEndTime'][0].childNodes)),
             'LatestEndTime'  : lambda nodes: parse_timestamp(self.getText(

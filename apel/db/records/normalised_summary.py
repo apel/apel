@@ -145,7 +145,7 @@ class NormalisedSummaryRecord(Record):
         '''
         # Create the document directly
         doc = Document()
-        ur = doc.createElement('aur:NormalisedSummaryRecord')
+        ur = doc.createElement('aur:SummaryRecord')
         
         site = doc.createElement('aur:Site')
         site.appendChild(doc.createTextNode(self.get_field('Site')))
