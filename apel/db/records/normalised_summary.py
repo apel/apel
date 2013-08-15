@@ -46,8 +46,8 @@ class NormalisedSummaryRecord(Record):
         # records.
 	# We use the field "Infrastructure" rather than the previously used "InfrastructureType"
         self._msg_fields = ["Site", "Month", "Year", "GlobalUserName", "VO", 
-                            "VOGroup", "VORole", "SubmitHost", "Infrastructure", "NodeCount", 
-			    "Processors", "EarliestEndTime", "LatestEndTime",
+                            "VOGroup", "VORole", "SubmitHost", "Infrastructure", 
+			    "Processors", "NodeCount", "EarliestEndTime", "LatestEndTime",
                             "WallDuration", "CpuDuration", "NormalisedWallDuration", "NormalisedCpuDuration",
 			    "NumberOfJobs"]
 
@@ -224,16 +224,16 @@ class NormalisedSummaryRecord(Record):
         cpu.appendChild(doc.createTextNode(str(self.get_field('NumberOfJobs'))))
         ur.appendChild(cpu)
 
-        if self.get_field('NodeCount') > 0:
-            ncount = doc.createElement('aur:NodeCount')
-            ncount.appendChild(doc.createTextNode(str(self.get_field('NodeCount'))))
-            ur.appendChild(ncount)
-        
         if self.get_field('Processors') > 0:
             procs = doc.createElement('aur:Processors')
             procs.appendChild(doc.createTextNode(str(self.get_field('Processors'))))
             ur.appendChild(procs)
                            
+        if self.get_field('NodeCount') > 0:
+            ncount = doc.createElement('aur:NodeCount')
+            ncount.appendChild(doc.createTextNode(str(self.get_field('NodeCount'))))
+            ur.appendChild(ncount)
+        
         doc.appendChild(ur)
         # We don't want the XML declaration, because the whole XML
         # document will be assembled by another part of the program.
