@@ -44,8 +44,9 @@ class NormalisedSummaryRecord(Record):
         
         # This list allows us to specify the order of lines when we construct 
         # records.
+	# We use the field "Infrastructure" rather than the previously used "InfrastructureType"
         self._msg_fields = ["Site", "Month", "Year", "GlobalUserName", "VO", 
-                            "VOGroup", "VORole", "SubmitHost", "InfrastructureType", "NodeCount", 
+                            "VOGroup", "VORole", "SubmitHost", "Infrastructure", "NodeCount", 
 			    "Processors", "EarliestEndTime", "LatestEndTime",
                             "WallDuration", "CpuDuration", "NormalisedWallDuration", "NormalisedCpuDuration",
 			    "NumberOfJobs"]
@@ -190,7 +191,7 @@ class NormalisedSummaryRecord(Record):
         ur.appendChild(subhost)
         
         infra = doc.createElement('aur:Infrastructure')
-        infra.setAttribute('urf:type', self.get_field('InfrastructureType'))
+        infra.setAttribute('urf:type', self.get_field('Infrastructure'))
         ur.appendChild(infra)
 
         earliest = doc.createElement('aur:EarliestEndTime')
