@@ -47,7 +47,7 @@ class NormalisedSummaryRecord(Record):
 	# We use the field "Infrastructure" rather than the previously used "InfrastructureType"
         self._msg_fields = ["Site", "Month", "Year", "GlobalUserName", "VO", 
                             "VOGroup", "VORole", "SubmitHost", "Infrastructure", 
-			    "Processors", "NodeCount", "EarliestEndTime", "LatestEndTime",
+			    "NodeCount", "Processors", "EarliestEndTime", "LatestEndTime",
                             "WallDuration", "CpuDuration", "NormalisedWallDuration", "NormalisedCpuDuration",
 			    "NumberOfJobs"]
 
