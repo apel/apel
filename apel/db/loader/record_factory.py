@@ -50,8 +50,8 @@ class RecordFactory(object):
     '''
     # Message headers; remove version numbers from the end.
     JR_HEADER = JOB_MSG_HEADER.split(':')[0].strip()
-    SR_HEADER = SUMMARY_MSG_HEADER.split(':')[0].strip()
-    NSR_HEADER = NORMALISED_SUMMARY_MSG_HEADER.split(':')[0].strip()
+    SR_HEADER = SUMMARY_MSG_HEADER
+    NSR_HEADER = NORMALISED_SUMMARY_MSG_HEADER
     SYNC_HEADER = SYNC_MSG_HEADER.split(':')[0].strip()
     CLOUD_HEADER = CLOUD_MSG_HEADER.split(':')[0].strip()
     CLOUD_SUMMARY_HEADER = CLOUD_SUMMARY_MSG_HEADER.split(':')[0].strip()
