@@ -276,9 +276,9 @@ BEGIN
 END //
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS SummariseSummaries;
+DROP PROCEDURE IF EXISTS NormaliseSummaries;
 DELIMITER //
-CREATE PROCEDURE SummariseSummaries()
+CREATE PROCEDURE NormaliseSummaries()
 BEGIN
     REPLACE INTO NormalisedSuperSummaries(SiteID, Month, Year, GlobalUserNameID, VOID, 
         VOGroupID, VORoleID, SubmitHostID, InfrastructureType, 
