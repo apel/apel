@@ -141,7 +141,7 @@ DELIMITER ;
 -- -----------------------------------------------------------------------------
 -- NormalisedSummaries
 DROP TABLE IF EXISTS NormalisedSummaries;
-CREATE TABLE Summaries (
+CREATE TABLE NormalisedSummaries (
   UpdateTime TIMESTAMP,
   SiteID INT NOT NULL,                  -- Foreign key
   Month INT NOT NULL,
