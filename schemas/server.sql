@@ -246,8 +246,7 @@ CREATE TABLE NormalisedSuperSummaries (
   NumberOfJobs BIGINT UNSIGNED NOT NULL,
 
   PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VORoleID, VOGroupID, 
-               SubmitHostId, InfrastructureType, ServiceLevelType, ServiceLevel,
-               NodeCount, Processors)
+               SubmitHostId, InfrastructureType, NodeCount, Processors)
 );
 
 DROP PROCEDURE IF EXISTS SummariseJobs;
@@ -627,8 +626,6 @@ CREATE VIEW VNormalisedSummaries AS
         vorole.name VORole, 
         submithost.name SubmitHost,
         InfrastructureType,
-        ServiceLevelType, 
-        ServiceLevel,  
         NodeCount,
         Processors,
         EarliestEndTime, 
@@ -709,8 +706,6 @@ CREATE VIEW VNormalisedSuperSummaries AS
         vorole.name VORole, 
         submithost.name SubmitHost,
         InfrastructureType,
-        ServiceLevelType, 
-        ServiceLevel,  
         NodeCount,
         Processors,
         EarliestEndTime, 
