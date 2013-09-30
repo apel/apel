@@ -33,5 +33,6 @@ from processed import ProcessedRecord
 
 from storage import StorageRecord
 from summary import SummaryRecord
+from normalised_summary import NormalisedSummaryRecord
 from sync import SyncRecord
 
