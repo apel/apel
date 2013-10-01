@@ -92,9 +92,9 @@ class RecordFactory(object):
                 index = header.index(':')
                 if (header[0:index].strip() == RecordFactory.JR_HEADER):
                     created_records = self._create_jrs(msg_text)
-                elif (header == RecordFactory.SR_HEADER):
+                elif (header.strip() == RecordFactory.SR_HEADER):
                     created_records = self._create_srs(msg_text)
-                elif (header == RecordFactory.NSR_HEADER):
+                elif (header.strip() == RecordFactory.NSR_HEADER):
                     created_records = self._create_nsrs(msg_text)
                 elif (header[0:index].strip() == RecordFactory.SYNC_HEADER):
                     created_records = self._create_syncs(msg_text)
