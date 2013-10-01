@@ -90,18 +90,17 @@ class RecordFactory(object):
             
                 # crop the string to before the first ':'
                 index = header.index(':')
-                header = header[0:index].strip()
-                if (header == RecordFactory.JR_HEADER):
+                if (header[0:index].strip() == RecordFactory.JR_HEADER):
                     created_records = self._create_jrs(msg_text)
                 elif (header == RecordFactory.SR_HEADER):
                     created_records = self._create_srs(msg_text)
                 elif (header == RecordFactory.NSR_HEADER):
                     created_records = self._create_nsrs(msg_text)
-                elif (header == RecordFactory.SYNC_HEADER):
+                elif (header[0:index].strip() == RecordFactory.SYNC_HEADER):
                     created_records = self._create_syncs(msg_text)
-                elif (header == RecordFactory.CLOUD_HEADER):
+                elif (header[0:index].strip() == RecordFactory.CLOUD_HEADER):
                     created_records = self._create_clouds(msg_text)
-                elif (header == RecordFactory.CLOUD_SUMMARY_HEADER):
+                elif (header[0:index].strip() == RecordFactory.CLOUD_SUMMARY_HEADER):
                     created_records = self._create_cloud_summaries(msg_text)
                 else:
                     raise RecordFactoryException('Message type %s not recognised.' % header)
