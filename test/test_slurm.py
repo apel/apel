@@ -1,8 +1,9 @@
 from datetime import datetime
+from time import mktime
 import unittest
 
 from apel.parsers import SlurmParser
-from apel.parsers.slurm import parse_local_timestamp
+#from apel.parsers.slurm import parse_local_timestamp
 
 
 class ParserSlurmTest(unittest.TestCase):
@@ -32,8 +33,10 @@ class ParserSlurmTest(unittest.TestCase):
                         "LocalUserGroup": "dteam",
                         "WallDuration": 2,
                         "CpuDuration": 2,
-                        "StartTime": datetime(2013, 3, 27, 17, 13, 24),
-                        "StopTime": datetime(2013, 3, 27, 17, 13, 26),
+                        "StartTime": datetime.utcfromtimestamp(
+                            mktime((2013, 3, 27, 17, 13, 24, 0, 1, -1))),
+                        "StopTime": datetime.utcfromtimestamp(
+                            mktime((2013, 3, 27, 17, 13, 26, 0, 1, -1))),
                         "MemoryReal": None,
                         "MemoryVirtual": None,
                         "NodeCount": 1,
@@ -45,9 +48,11 @@ class ParserSlurmTest(unittest.TestCase):
                         "LocalUserGroup": None,
                         "WallDuration": 95053,
                         "CpuDuration": 95053,
-                        "StartTime": datetime(2013, 10, 23, 21, 37, 24),
-                        "StopTime": datetime(2013, 10, 25, 00, 01, 37),
-                        "MemoryReal": 438500,
+                        "StartTime": datetime.utcfromtimestamp(
+                            mktime((2013, 10, 23, 21, 37, 24, 0, 1, -1))),
+                        "StopTime": datetime.utcfromtimestamp(
+                            mktime((2013, 10, 25, 00, 01, 37, 0, 1, -1))),
+                        "MemoryReal": 449024,
                         "MemoryVirtual": 1567524,
                         "NodeCount": 1,
                         "Processors": 1
@@ -58,8 +63,10 @@ class ParserSlurmTest(unittest.TestCase):
                         "LocalUserGroup": None,
                         "WallDuration": 16,
                         "CpuDuration": 16,
-                        "StartTime": datetime(2013, 10, 25, 12, 11, 20),
-                        "StopTime": datetime(2013, 10, 25, 12, 11, 36),
+                        "StartTime": datetime.utcfromtimestamp(
+                            mktime((2013, 10, 25, 12, 11, 20, 0, 1, -1))),
+                        "StopTime": datetime.utcfromtimestamp(
+                            mktime((2013, 10, 25, 12, 11, 36, 0, 1, -1))),
                         "MemoryReal": 3228,
                         "MemoryVirtual": 23820,
                         "NodeCount": 1,
