@@ -38,16 +38,15 @@ class AppAccParser(Parser):
         data = json.loads(line)
 
         # Simple mapping between keys in a log file and a table's columns
-        mapping =
-            { 'BinaryPath'     : lambda x: x['binary path']
-            , 'ExitInfo'       : lambda x: x['exit_info']
-            , 'User'           : lambda x: x['user']
-            , 'StartTime'      : lambda x: datetime.strptime(x['start_time'], '%c')
-            , 'EndTime'        : lambda x: datetime.strptime(x['end'], '%c')
-            }
-
+        mapping = { 'BinaryPath'     : lambda x: x['binary path']
+                  , 'ExitInfo'       : lambda x: x['exit_info']
+                  , 'User'           : lambda x: x['user']
+                  , 'StartTime'      : lambda x: datetime.strptime(x['start_time'], '%c')
+                  , 'EndTime'        : lambda x: datetime.strptime(x['end_time'], '%c')
+                  }
+        rc = {}
         for key in mapping:
             rc[key] = mapping[key](data)
 
-        return Record(**rc)
+        return AppAccRecord(**rc)
 
