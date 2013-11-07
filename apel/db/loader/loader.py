@@ -18,25 +18,29 @@
 Module containing the Loader class.
 '''
 
-import apel.db 
 import logging
 import os
-
-from apel.db.records import InvalidRecordException
-from apel.db.loader.xml_parser import XMLParserException
-from record_factory import RecordFactory, RecordFactoryException
+from xml.parsers.expat import ExpatError
 
 from dirq.queue import Queue
 
-# set up the logger 
+import apel.db
+from apel.db.loader.xml_parser import XMLParserException
+from apel.db.records import InvalidRecordException
+from record_factory import RecordFactory, RecordFactoryException
+
+
+# set up the logger
 log = logging.getLogger('loader')
 
 QSCHEMA = {"body": "string", "signer":"string", "empaid":"string?", "error": "string?"}
 REJECT_SCHEMA = {"body": "string", "signer":"string?", "empaid":"string?", "error": "string"}
 
+
 class LoaderException(Exception):
     ''' Exception for use by loader class.'''
     pass
+
 
 class Loader(object):
     '''
@@ -141,7 +145,7 @@ class Loader(object):
                     
             except (RecordFactoryException, LoaderException,
                     InvalidRecordException, apel.db.ApelDbException,
-                    XMLParserException), err:
+                    XMLParserException, ExpatError), err:
                 errmsg = "Message parsing unsuccessful: %s." % str(err)
                 log.warn('Message rejected: %s' % errmsg)
                 self._rejectq.add({"body": msg_text, 
