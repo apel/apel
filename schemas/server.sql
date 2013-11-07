@@ -186,7 +186,8 @@ BEGIN
     COUNT(*) AS Njobs
     FROM JobRecords 
     GROUP BY SiteID, VOID, GlobalUserNameID, VOGroupID, VORoleID, EndYear, EndMonth, InfrastructureType, 
-             SubmitHostID, ServiceLevelType, ServiceLevel, NodeCount, Processors;
+             SubmitHostID, ServiceLevelType, ServiceLevel, NodeCount, Processors
+    ORDER BY NULL;
 END //
 DELIMITER ;
 
@@ -578,7 +579,8 @@ CREATE VIEW VUserSummaries AS
         summary.VOGroupID,
         summary.VORoleID,
         summary.Year,
-        summary.Month;
+        summary.Month
+    ORDER BY NULL;
 
 
 -- -----------------------------------------------------------------------------
@@ -597,7 +599,8 @@ CREATE VIEW VHepSpecHistory AS
     FROM
         SuperSummaries
     INNER JOIN Sites site ON SiteID=site.id
-    GROUP BY SiteID, HepSpec06, Year, Month;
+    GROUP BY SiteID, HepSpec06, Year, Month
+    ORDER BY NULL;
 
 
 -- -----------------------------------------------------------------------------
