@@ -99,8 +99,14 @@ class SlurmParser(Parser):
                 mem = int(mem[:-1])
             elif mem[-1:] == 'M':
                 mem = int(float(mem[:-1])*1024)
+            elif mem[-1:] == 'G':
+                mem = int(float(mem[:-1])*1024**2)
+            elif mem[-1:] == 'T':
+                mem = int(float(mem[:-1])*1024**3)
+            elif mem[-1:] == 'P':
+                mem = int(float(mem[:-1])*1024**4)
             else:
-                raise ValueError("Unsupported unit prefix '%s'. Expected 'K' or 'M'." % mem[-1:])
+                raise ValueError("Unsupported unit prefix '%s'. Expected one of [KMGTP]." % mem[-1:])
         else:
             mem = None
         return mem
