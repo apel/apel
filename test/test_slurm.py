@@ -78,21 +78,15 @@ class ParserSlurmTest(unittest.TestCase):
             self.assertEqual(cont['MachineName'], 'testHost')
             self.assertEqual(cont['Infrastructure'], 'APEL-CREAM-SLURM')
 
-            self.assertTrue("JobName" in cont)
-            self.assertTrue("LocalUserID" in cont)
-            self.assertTrue("LocalUserGroup" in cont)
-            self.assertTrue("WallDuration" in cont)
-            self.assertTrue("CpuDuration" in cont)
-            self.assertTrue("StartTime" in cont)
-            self.assertTrue("StopTime" in cont)
-            self.assertTrue("Queue" in cont)
-            self.assertTrue("Processors" in cont)
-            self.assertTrue("NodeCount" in cont)
-            self.assertTrue("MemoryReal" in cont)
-            self.assertTrue("MemoryVirtual" in cont)
+            # Queue is a special case as it gets deleted on parsing if empty.
+            if 'Queue' not in cont:
+                del cases[line]['Queue']
 
             for key in cases[line].keys():
-                self.assertEqual(cont[key], cases[line][key], "%s != %s for key %s" % (cont[key], cases[line][key], key))
+                self.assertTrue(key in cont, "Key '%s' not in record." % key)
+
+            for key in cases[line].keys():
+                self.assertEqual(cont[key], cases[line][key], "%s != %s for key %s." % (cont[key], cases[line][key], key))
 
         for line in value_fails:
             self.assertRaises(ValueError, self.parser.parse, line)

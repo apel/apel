@@ -85,6 +85,11 @@ class SlurmParser(Parser):
         for key in mapping:
             rc[key] = mapping[key](values)
 
+        # Delete the Queue key if empty and let the Record class handle it
+        # (usually by inserting the string 'None').
+        if rc['Queue'] == '':
+            del rc['Queue']
+
         assert rc['CpuDuration'] >= 0, 'Negative CpuDuration value'
         assert rc['WallDuration'] >= 0, 'Negative WallDuration value'
 
