@@ -73,7 +73,7 @@ class SlurmParser(Parser):
                    # SLURM gives timestamps which are in system time.
                    'StartTime'       : lambda x: parse_local_timestamp(x[4]),
                    'StopTime'        : lambda x: parse_local_timestamp(x[5]),
-                   'Queue'           : lambda x: x[9],
+                   'Queue'           : lambda x: x[8],
                    'MemoryReal'      : lambda x: rmem,  # KB
                    'MemoryVirtual'   : lambda x: vmem,  # KB
                    'Processors'      : lambda x: int(x[9]),
@@ -94,19 +94,18 @@ class SlurmParser(Parser):
 
     def _normalise_memory(self, mem):
         """Strip unit prefix and return memory size as int in KB."""
+
+        # Accepted prefixes and their power of 1024 relative to KB.
+        unit_prefixes = {'K': 0, 'M': 1, 'G': 2, 'T': 3, 'P': 4}
+
         if mem:
-            if mem[-1:] == 'K':
-                mem = int(mem[:-1])
-            elif mem[-1:] == 'M':
-                mem = int(float(mem[:-1])*1024)
-            elif mem[-1:] == 'G':
-                mem = int(float(mem[:-1])*1024**2)
-            elif mem[-1:] == 'T':
-                mem = int(float(mem[:-1])*1024**3)
-            elif mem[-1:] == 'P':
-                mem = int(float(mem[:-1])*1024**4)
+            if mem[-1:] in unit_prefixes:
+                mem = int(float(mem[:-1]) * 1024**unit_prefixes[mem[-1:]])
+            elif mem == '0':
+                raise ValueError("Incorrect memory value of 0. Should be blank or non-zero.")
             else:
                 raise ValueError("Unsupported unit prefix '%s'. Expected one of [KMGTP]." % mem[-1:])
         else:
             mem = None
+
         return mem
