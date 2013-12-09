@@ -133,16 +133,19 @@ def run_client(ccp):
     object.
     '''
     log = logging.getLogger(LOGGER_ID)
-    
+
     try:
         spec_updater_enabled = ccp.getboolean('spec_updater', 'enabled')
-        if spec_updater_enabled:
+        joiner_enabled = ccp.getboolean('joiner', 'enabled')
+
+        if spec_updater_enabled or joiner_enabled:
             site_name         = ccp.get('spec_updater', 'site_name')
             if site_name == '':
                 raise ClientConfigException('Site name must be configured.')
+
+        if spec_updater_enabled:
             ldap_host        = ccp.get('spec_updater', 'ldap_host')
             ldap_port        = int(ccp.get('spec_updater', 'ldap_port'))
-        joiner_enabled       = ccp.getboolean('joiner', 'enabled')
         local_jobs           = ccp.getboolean('joiner', 'local_jobs')
         if local_jobs:
             hostname = ccp.get('spec_updater', 'lrms_server')
