@@ -17,14 +17,14 @@
 from apel.db.records.record import Record
 
 
-class AppAccRecord(Record):
+class ApplicationRecord(Record):
     """
     Class to represent an Application Accounting Record
     """
 
     def __init__(self, **kwargs):
         '''
-        Initializer for AppAccRecord
+        Initializer for ApplicationRecord
         '''
 
         Record.__init__(self)

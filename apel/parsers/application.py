@@ -15,12 +15,12 @@
 '''
 
 from datetime import datetime
-from apel.db.records.app_acc_record import AppAccRecord
+from apel.db.records.application import ApplicationRecord
 from apel.parsers import Parser
 
 import json
 
-class AppAccParser(Parser):
+class ApplicationParser(Parser):
     '''
     Application Accounting parser.
     '''
@@ -48,5 +48,5 @@ class AppAccParser(Parser):
         for key in mapping:
             rc[key] = mapping[key](data)
 
-        return AppAccRecord(**rc)
+        return ApplicationRecord(**rc)
 
