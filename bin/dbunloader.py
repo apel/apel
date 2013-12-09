@@ -100,17 +100,30 @@ if __name__ == '__main__':
     include_vos      = None
     exclude_vos      = None
     try:
-        include      = cp.get('unloader', 'include_vos')
-        include_vos  = [ vo.strip() for vo in include.split(',') ]
+        include_vos_parameter      = cp.get('unloader', 'include_vos')
+        include_vos  = [ vo.strip() for vo in include_vos_parameter.split(',') ]
     except ConfigParser.NoOptionError:
         # Only exclude VOs if we haven't specified the ones to include.
         try:
-            exclude      = cp.get('unloader', 'exclude_vos')
-            exclude_vos  = [ vo.strip() for vo in exclude.split(',') ]
+            exclude_vos_parameter      = cp.get('unloader', 'exclude_vos')
+            exclude_vos  = [ vo.strip() for vo in exclude_vos_parameter.split(',') ]
         except ConfigParser.NoOptionError:
             pass
     
-    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns)
+    include_sites      = None
+    exclude_sites      = None
+    try:
+        include_sites_parameter      = cp.get('unloader', 'include_sites')
+        include_sites  = [ site.strip() for site in include_sites_parameter.split(',') ]
+    except ConfigParser.NoOptionError:
+        # Only exclude Sites if we haven't specified the ones to include.
+        try:
+            exclude_sites_parameter      = cp.get('unloader', 'exclude_sites')
+            exclude_sites  = [ site.strip() for site in exclude_sites_parameter.split(',') ]
+        except ConfigParser.NoOptionError:
+            pass
+    
+    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns, include_sites, exclude_sites)
     try:
         msgs, recs = unloader.unload_latest(table_name, send_ur)
         log.info('%d records in %d messages unloaded from %s' % (recs, msgs, table_name))
