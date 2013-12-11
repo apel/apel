@@ -56,13 +56,17 @@ def parse_timestamp(datetime_string):
     # internal representation of datetimes is UTC without timezones
     return utcdt.replace(tzinfo=None)
 
- 
+
 def parse_time(timestring):
     '''
-    Return seconds from times of the form xx:yy:zz.
+    Return seconds from times of the form d-h:m:s or h:m:s.
     '''
-    hours, minutes, seconds = timestring.split(':')
-    return 3600*int(hours) + 60*int(minutes) + int(seconds)
+    if '-' in timestring:
+        days, sub_days = timestring.split('-')
+    else:
+        days, sub_days = 0, timestring
+    hours, minutes, seconds = sub_days.split(':')
+    return 86400*int(days) + 3600*int(hours) + 60*int(minutes) + int(seconds)
 
 
 def iso2seconds(isoduration):

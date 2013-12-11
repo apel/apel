@@ -166,7 +166,8 @@ BEGIN
     COUNT(*),
     'summariser'
     FROM CloudRecords
-    GROUP BY SiteID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId;
+    GROUP BY SiteID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId
+    ORDER BY NULL;
 END //
 DELIMITER ;
 
