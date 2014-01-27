@@ -31,10 +31,13 @@ class ParserSlurmTest(unittest.TestCase):
         # sacct output:
         # JobID|JobName|User|Group|Start|End|Elapsed|CPUTimeRAW|Partition|NCPUS|NNodes|NodeList|MaxRSS|MaxVMSize|State
 
-        # Examples for zero memory sizes and incorrect unit prefixes
-        value_fails = ('324543.batch|batch|||2013-10-28T04:27:26|2013-10-28T04:27:27|00:00:01|1||1|1|wn65|0|0|COMPLETED',
-                       '324554.batch|batch|||2013-10-28T04:28:30|2013-10-28T04:28:33|00:00:03|3||1|1|wn65|0|0|COMPLETED',
-                       '324554.batch|batch|||2013-10-28T04:28:30|2013-10-28T04:28:33|00:00:03|3||1|1|wn65|20H|54J|COMPLETED')
+        # Examples for lines that should raise ValueError
+        value_fails = ('324543.batch|batch|||2013-10-28T04:27:26|2013-10-28T04:27:27|00:00:01|1||1|1|wn65|0|0|COMPLETED',  # Zero memory
+                       '324554.batch|batch|||2013-10-28T04:28:30|2013-10-28T04:28:33|00:00:03|3||1|1|wn65|0|0|COMPLETED',  # Zero memory
+                       '324554.batch|batch|||2013-10-28T04:28:30|2013-10-28T04:28:33|00:00:03|3||1|1|wn65|20H|54J|COMPLETED',  # Invalid unit prefix
+                       '324554.batch|batch|||2013-10-28T04:28:33|2013-10-28T04:28:30|00:00:03|3||1|1|wn65|28K|80K|COMPLETED',  # StopTime < StartTime
+                       '297720.batch|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|-00:00:16|16||1|1|wn37|3228K|23820K|COMPLETED',  # -ve WallDuration
+                       '297720.batch|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|-16||1|1|wn37|3228K|23820K|COMPLETED',)  # -ve CpuDuration
 
         # Examples for correct lines
         lines = (
