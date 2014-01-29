@@ -14,13 +14,13 @@ class ParserSlurmTest(unittest.TestCase):
     def setUp(self):
         self.parser = SlurmParser('testSite', 'testHost', True)
 
-    def test_parse_local_timestamp(self):
-        '''
-        The output of this function depends on the timezone of the testing
-        computer.
-        '''
-        # Test not implemented
-        pass
+    #def test_parse_local_timestamp(self):
+    #    '''
+    #    The output of this function depends on the timezone of the testing
+    #    computer.
+    #    '''
+    #    # Test not implemented
+    #    pass
 
     def test_parse_line(self):
 
