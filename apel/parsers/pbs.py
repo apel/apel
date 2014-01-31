@@ -13,7 +13,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-@author: Konrad Jopek, Will Rogers
 '''
 
 from apel.db.records.event import EventRecord
@@ -62,29 +61,35 @@ class PBSParser(Parser):
             nodes, cores = 0, 0
 
         # map each field to functions which will extract them
-        mapping = {'Site'           : lambda x: self.site_name, 
-                   'JobName'        : lambda x: jobName, 
-                   'LocalUserID'    : lambda x: x['user'],
-                   'LocalUserGroup' : lambda x: x['group'],
-                   'WallDuration'   : lambda x: parse_time(x['resources_used.walltime']),
-                   'CpuDuration'    : lambda x: parse_time(x['resources_used.cput']),
-                   'StartTime'      : lambda x: int(x['start']),
-                   'StopTime'       : lambda x: int(x['end']),
-                   'Infrastructure' : lambda x: "APEL-CREAM-PBS",
-                   'MachineName'    : lambda x: self.machine_name,
+        mapping = {'Site'          : lambda x: self.site_name,
+                   'JobName'       : lambda x: jobName,
+                   'LocalUserID'   : lambda x: x['user'],
+                   'LocalUserGroup': lambda x: x['group'],
+                   'WallDuration'  : lambda x: parse_time(x['resources_used.walltime']),
+                   'CpuDuration'   : lambda x: parse_time(x['resources_used.cput']),
+                   'StartTime'     : lambda x: int(x['start']),
+                   'StopTime'      : lambda x: int(x['end']),
+                   'Infrastructure': lambda x: "APEL-CREAM-PBS",
+                   'MachineName'   : lambda x: self.machine_name,
                    # remove 'kb' string from the end
-                   'MemoryReal'     : lambda x: int(x['resources_used.mem'][:-2]),
-                   'MemoryVirtual'  : lambda x: int(x['resources_used.vmem'][:-2]),
-                   'NodeCount'      : lambda x: nodes,
-                   'Processors'     : lambda x: cores}
+                   'MemoryReal'    : lambda x: int(x['resources_used.mem'][:-2]),
+                   'MemoryVirtual' : lambda x: int(x['resources_used.vmem'][:-2]),
+                   'NodeCount'     : lambda x: nodes,
+                   'Processors'    : lambda x: cores
+                   }
 
         rc = {}
 
         for key in mapping:
             rc[key] = mapping[key](data)
 
-        assert rc['CpuDuration'] >= 0, 'Negative CpuDuration value'
-        assert rc['WallDuration'] >= 0, 'Negative WallDuration value'
+        # Input checking
+        if rc['CpuDuration'] < 0:
+            raise ValueError("Negative 'cput' value")
+        if rc['WallDuration'] < 0:
+            raise ValueError("Negative 'walltime' value")
+        if rc['StopTime'] < rc['StartTime']:
+            raise ValueError("'end' time less than 'start' time")
 
         record = EventRecord()
         record.set_all(rc)
