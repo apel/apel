@@ -123,16 +123,13 @@ def run_as_daemon(loader, interval):
         loader.shutdown()
         dc.close()
     except LoaderException, e:
-        log.error("An unrecoverable exception was thrown:")
-        log.error(str(e))
-        log.error("The loader will exit.")  
+        log.error("An unrecoverable exception was thrown: " + str(e))
+        log.info("The loader will exit.")
         loader.shutdown()
         dc.close()
     except Exception, e:
-        log.error(type(e))
-        log.error(str(e))
-        log.error("Unexpected exception: " + str(e))
-        log.error("The loader will exit.")  
+        log.exception("Unexpected exception. Traceback follows...")
+        log.info("The loader will exit.")
         loader.shutdown()
         dc.close()
         
