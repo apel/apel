@@ -98,8 +98,14 @@ class Loader(object):
                 
     def shutdown(self):
         """
-        Remove the pidfile.
+        Unlock current msg queue element and remove pidfile.
         """
+        if self.name:
+            try:
+                self._inq.unlock(self.name)
+            except OSError, e:
+                log.error('Unable to remove lock: %s' % e)
+
         pidfile = self._pidfile
         try:
             if os.path.exists(pidfile):
@@ -107,7 +113,7 @@ class Loader(object):
             else:
                 log.warn("pidfile %s not found." % pidfile)
         except IOError, e:
-            log.warn("Failed to remove pidfile %s: %e" % (pidfile, e))
+            log.warn("Failed to remove pidfile %s: %s" % (pidfile, e))
             log.warn("The loader may not start again until it is removed.")
             
         log.info("The loader has shut down.")
@@ -123,15 +129,15 @@ class Loader(object):
         num_msgs = self._inq.count()
         log.info("Found %s messages" % num_msgs)
 
-        name = self._inq.first()
+        self.name = self._inq.first()
         # loop until there are no messages left
-        while name:
-            if not self._inq.lock(name):
-                log.warn("Skipping locked message: ID = %s" % name)
-                name = self._inq.next()
+        while self.name:
+            if not self._inq.lock(self.name):
+                log.warn("Skipping locked message: ID = %s" % self.name)
+                self.name = self._inq.next()
                 continue
-            log.debug("# reading element %s" % name)
-            data = self._inq.get(name)
+            log.debug("# reading element %s" % self.name)
+            data = self._inq.get(self.name)
             msg_id = data['empaid']
             signer = data['signer']
             msg_text = data['body']
@@ -156,15 +162,18 @@ class Loader(object):
                                    "error": errmsg})
                 
             log.info("Removing message: ID = " + msg_id)
-            self._inq.remove(name)
-            name = self._inq.next()
+            self._inq.remove(self.name)
+            self.name = self._inq.next()
 
         if num_msgs:  # Only tidy up if messages found
             log.info('Tidying message queues.')
-            # Remove empty dirs and unlock msgs older than 5 min (default)
-            self._acceptq.purge()
-            self._inq.purge()
-            self._rejectq.purge()
+            try:
+                # Remove empty dirs and unlock msgs older than 5 min (default)
+                self._acceptq.purge()
+                self._inq.purge()
+                self._rejectq.purge()
+            except OSError, e:
+                log.error('OSError raised while purging message queues: %s' % e)
 
         log.debug("Loader run finished.")
         log.debug("======================")
