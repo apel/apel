@@ -119,7 +119,9 @@ class Loader(object):
         '''
         log.debug("======================")
         log.debug("Starting loader run.")
-        log.info("Found %s messages" % self._inq.count())
+
+        num_msgs = self._inq.count()
+        log.info("Found %s messages" % num_msgs)
 
         name = self._inq.first()
         # loop until there are no messages left
@@ -156,7 +158,14 @@ class Loader(object):
             log.info("Removing message: ID = " + msg_id)
             self._inq.remove(name)
             name = self._inq.next()
-            
+
+        if num_msgs:  # Only tidy up if messages found
+            log.info('Tidying message queues.')
+            # Remove empty dirs and unlock msgs older than 5 min (default)
+            self._acceptq.purge()
+            self._inq.purge()
+            self._rejectq.purge()
+
         log.debug("Loader run finished.")
         log.debug("======================")
         
