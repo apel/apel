@@ -216,7 +216,7 @@ def delete_duplicates(db):
     sys.stdout.write('    Deleting duplicates\n')
     c.execute(DELETE_DUPLICATES_STMT)
     num_deleted = db.affected_rows()
-    sys.stdout.write('    Deleted %d duplicate entries\n' % num_deleted)
+    sys.stdout.write('    Deleted %d duplicate entries\n\n\n' % num_deleted)
 
     db.commit()
 
@@ -266,6 +266,7 @@ def main():
     sys.stdout.write("\n    Deleting all records older than %s\n" % cutoff)
     sys.stdout.write("    from %s:%s ...\n" % (host2, dbname2))
     delete_old_records(db2, cutoff)
+    sys.stdout.write("    Done.\n\n\n")
 
     # delete duplicates
     delete_duplicates(db2)
