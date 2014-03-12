@@ -215,7 +215,7 @@ def delete_duplicates(db):
 
     sys.stdout.write('Deleting duplicates\n')
     c.execute(DELETE_DUPLICATES_STMT)
-    num_deleted = c.fetchone()[0]
+    num_deleted = c.execute('SELECT ROW_COUNT()')[0]
     sys.stdout.write('Deleted %d duplicate entries\n' % num_deleted)
 
     db.commit()
