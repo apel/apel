@@ -211,12 +211,12 @@ def delete_duplicates(db):
 
     c.execute(COUNT_DUPLICATES_STMT)
     num_duplicates = c.fetchone()[0]
-    sys.stdout.write('Found %d duplicate entries\n' % num_duplicates)
+    sys.stdout.write('    Found %d duplicate entries\n' % num_duplicates)
 
-    sys.stdout.write('Deleting duplicates\n')
+    sys.stdout.write('    Deleting duplicates\n')
     c.execute(DELETE_DUPLICATES_STMT)
-    num_deleted = c.execute('SELECT ROW_COUNT()')[0]
-    sys.stdout.write('Deleted %d duplicate entries\n' % num_deleted)
+    num_deleted = db.affected_rows()
+    sys.stdout.write('    Deleted %d duplicate entries\n' % num_deleted)
 
     db.commit()
 
