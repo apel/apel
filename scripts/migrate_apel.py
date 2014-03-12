@@ -57,6 +57,21 @@ SELECT_STMT = '''SELECT ExecutingSite, LocalJobID, LocalUserID, LCGUserVO, LcgUs
 CALLPROC_STMT = """CALL InsertJobRecord(%s, %s, %s, 'None', %s, %s, %s, %s, %s, %s, %s, 
                   %s, %s, NULL, NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
+DUPLICATES_JOIN = """ FROM JobRecords AS t 
+                      LEFT JOIN MachineNames as m 
+		      on (t.MachineNameID = m.id) 
+		      INNER JOIN (SELECT LocalJobId, 
+		                  EndTime 
+				  FROM JobRecords 
+				  LEFT JOIN MachineNames 
+				  on (JobRecords.MachineNameID = MachineNames.id) 
+				  WHERE MachineNames.name = 'MachineName' ) 
+				  AS u 
+                      ON (m.name = 'MachineName' AND t.LocalJobId = u.LocalJobId AND t.EndTime = u.EndTime); """
+
+COUNT_DUPLICATES_STMT = "SELECT count(*) " + DUPLICATES_JOIN
+
+DELETE_DUPLICATES_STMT = "DELETE t " + DUPLICATES_JOIN
 
 def parse_timestamp(string, format="%Y-%m-%dT%H:%M:%SZ"):
     '''
@@ -187,6 +202,23 @@ def delete_old_records(db, cutoff):
     c.execute(REMOVE_PROC)
     db.commit()
     
+def delete_duplicates(db):
+    '''
+    Delete all records that have been migrated but are duplicates of records
+    that are in the database already
+    '''
+    c = db.cursor()
+
+    c.execute(COUNT_DUPLICATES_STMT)
+    num_duplicates = c.fetchone()[0]
+    sys.stdout.write('Found %d duplicate entries\n' % num_duplicates)
+
+    sys.stdout.write('Deleting duplicates\n')
+    c.execute(DELETE_DUPLICATES_STMT)
+    num_deleted = c.fetchone()[0]
+    sys.stdout.write('Deleted %d duplicate entries\n' % num_deleted)
+
+    db.commit()
 
 def main():
     '''
@@ -234,6 +266,9 @@ def main():
     sys.stdout.write("\n    Deleting all records older than %s\n" % cutoff)
     sys.stdout.write("    from %s:%s ...\n" % (host2, dbname2))
     delete_old_records(db2, cutoff)
+
+    # delete duplicates
+    delete_duplicates(db2)
     sys.stdout.write("    Complete.\n\n\n")
 
 
