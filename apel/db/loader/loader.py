@@ -133,17 +133,17 @@ class Loader(object):
         # loop until there are no messages left
         while self.name:
             if not self._inq.lock(self.name):
-                log.warn("Skipping locked message: ID = %s" % self.name)
+                log.warn("Skipping locked message %s" % self.name)
                 self.name = self._inq.next()
                 continue
-            log.debug("# reading element %s" % self.name)
+            log.debug("Reading message %s" % self.name)
             data = self._inq.get(self.name)
             msg_id = data['empaid']
             signer = data['signer']
             msg_text = data['body']
             
             try:
-                log.info("Loading message: ID = " + msg_id)
+                log.info("Loading message %s. ID = %s" % (self.name, msg_id))
                 self.load_msg(msg_text, signer)
                 
                 if self._save_msgs:
@@ -154,19 +154,19 @@ class Loader(object):
             except (RecordFactoryException, LoaderException,
                     InvalidRecordException, apel.db.ApelDbException,
                     XMLParserException, ExpatError), err:
-                errmsg = "Message parsing unsuccessful: %s." % str(err)
-                log.warn('Message rejected: %s' % errmsg)
+                errmsg = "Parsing unsuccessful: %s" % str(err)
+                log.warn('Message rejected. %s' % errmsg)
                 self._rejectq.add({"body": msg_text, 
                                    "signer": signer, 
                                    "empaid": msg_id,
                                    "error": errmsg})
                 
-            log.info("Removing message: ID = " + msg_id)
+            log.info("Removing message %s. ID = %s" % (self.name, msg_id))
             self._inq.remove(self.name)
             self.name = self._inq.next()
 
         if num_msgs:  # Only tidy up if messages found
-            log.info('Tidying message queues.')
+            log.info('Tidying message directories')
             try:
                 # Remove empty dirs and unlock msgs older than 5 min (default)
                 self._acceptq.purge()
@@ -183,13 +183,14 @@ class Loader(object):
         Load one message (i.e. one file; many records)
         from its text content into the database.
         '''
-        log.info('Loading message from ' + signer + '.')
+        log.info('Loading message from %s' % signer)
 
         # Create the record objects, using the RecordFactory
         records = self._rf.create_records(msg_text)
-        log.info('Message contains '+ str(len(records)) + ' records.')
+        log.info('Message contains %i records' % len(records))
         # Use the DB to load the records
+        log.debug('Loading records...')
         self._apeldb.load_records(records, source=signer)
         
-        log.debug('Message successfully loaded.')
+        log.debug('Records successfully loaded')
  
