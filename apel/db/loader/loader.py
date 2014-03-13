@@ -119,10 +119,10 @@ class Loader(object):
         log.info("The loader has shut down.")
         
     def load_all_msgs(self):
-        '''
-        Get all the messages from the MessageDB and attempt to put them 
-        into the database.
-        '''
+        """
+        Get all the messages from the incoming queue and attempt to put them
+        into the database, then purge the accept, incoming, and reject queues.
+        """
         log.debug("======================")
         log.debug("Starting loader run.")
 
