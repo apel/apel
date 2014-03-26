@@ -6,15 +6,10 @@ import unittest
 
 from apel.parsers.application import ApplicationParser
 
-  #{"binary path": "/bin/ls", "exit_info": {"exited_normally": "true", "signal": "0"}, "user": {"uid": "501", "gid": "20"}, "start_time": "Tue Mar 25 17:43:58 2014", "end_time": "Tue Mar 25 17:43:58 2014"}
-  #{"binary path": "/bin/sleep", "exit_info": {"exited_normally": "true", "signal": "0"}, "user": {"uid": "501", "gid": "20"}, "start_time": "Tue Mar 25 17:44:12 2014", "end_time": "Tue Mar 25 17:44:12 2014"}
-  #{"binary path": "/bin/sleep", "exit_info": {"exited_normally": "false", "signal": "2", "signal_str": "Interrupt: 2"}, "user": {"uid": "501", "gid": "20"}, "start_time": "Tue Mar 25 17:44:38 2014", "end_time": "Tue Mar 25 17:44:38 2014"}
-  #{"binary path": "/usr/bin/uptime", "exit_info": {"exited_normally": "true", "signal": "0"}, "user": {"uid": "501", "gid": "20"}, "start_time": "Tue Nov  5 15:05:01 2013", "end_time": "Tue Nov  5 15:05:01 2013"}
-
 
 def convert_time(*time):
     if len(time) != 6:
-        raise ValueError('Wrong number of arguments')
+        raise ValueError('Wrong number of arguments: 6 required, %i provided' % len(time))
     time += (0, 1, -1)
     return datetime.utcfromtimestamp(mktime(time))
 

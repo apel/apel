@@ -26,6 +26,14 @@ except ImportError:
     except ImportError:
         raise ImportError('Python 2.7, 2.6, 2.5 with simplejson, or 2.4 with simplejson 2.0.9 required')
 
+if hasattr(datetime, 'strptime'):
+    # Python 2.5 +
+    strptime = datetime.strptime
+else:
+    # Python 2.4 compatible
+    import time
+    strptime = lambda date_string, format: datetime(*(time.strptime(date_string, format)[0:6]))
+
 
 class ApplicationParser(Parser):
     '''
@@ -48,8 +56,8 @@ class ApplicationParser(Parser):
         mapping = { 'BinaryPath'     : lambda x: x['binary path']
                   , 'ExitInfo'       : lambda x: x['exit_info']
                   , 'User'           : lambda x: x['user']
-                  , 'StartTime'      : lambda x: datetime.strptime(x['start_time'], '%c')
-                  , 'EndTime'        : lambda x: datetime.strptime(x['end_time'], '%c')
+                  , 'StartTime'      : lambda x: strptime(x['start_time'], '%c')
+                  , 'EndTime'        : lambda x: strptime(x['end_time'], '%c')
                   }
         rc = {}
         for key in mapping:
