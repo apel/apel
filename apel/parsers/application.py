@@ -18,7 +18,14 @@ from datetime import datetime
 from apel.db.records.application import ApplicationRecord
 from apel.parsers import Parser
 
-import json
+try:
+    import json
+except ImportError:
+    try:
+        import simplejson as json
+    except ImportError:
+        raise ImportError('Python 2.7, 2.6, 2.5 with simplejson, or 2.4 with simplejson 2.0.9 required')
+
 
 class ApplicationParser(Parser):
     '''
