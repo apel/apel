@@ -266,8 +266,8 @@ BEGIN
     MAX(EndTime) AS LatestEndTime,
     SUM(WallDuration) AS SumWCT, 
     SUM(CpuDuration) AS SumCPU, 
-    ROUND(SUM(IF(WallDuration > 0, WallDuration, 0) * IF(ServiceLevelType = "HEPSPEC", ServiceLevel, ServiceLevel / 250) / 3600)) AS NormSumWCT, 
-    ROUND(SUM(IF(CpuDuration > 0, CpuDuration, 0) * IF(ServiceLevelType = "HEPSPEC", ServiceLevel, ServiceLevel / 250) / 3600)) AS NormSumCPU, 
+    ROUND(SUM(IF(WallDuration > 0, WallDuration, 0) * IF(ServiceLevelType = "HEPSPEC", ServiceLevel, ServiceLevel / 250))) AS NormSumWCT, 
+    ROUND(SUM(IF(CpuDuration > 0, CpuDuration, 0) * IF(ServiceLevelType = "HEPSPEC", ServiceLevel, ServiceLevel / 250))) AS NormSumCPU, 
     COUNT(*) AS Njobs
     FROM JobRecords 
     GROUP BY SiteID, VOID, GlobalUserNameID, VOGroupID, VORoleID, EndYear, EndMonth, InfrastructureType, 
@@ -287,8 +287,8 @@ BEGIN
     SELECT SiteID, 
     Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID, SubmitHostID, InfrastructureType, 
         NodeCount, Processors, EarliestEndTime, LatestEndTime, WallDuration, CpuDuration, 
-    ROUND(SUM(IF(WallDuration > 0, WallDuration, 0) * IF(ServiceLevelType = "HEPSPEC", ServiceLevel, ServiceLevel / 250) / 3600)) AS NormSumWCT, 
-    ROUND(SUM(IF(CpuDuration > 0, CpuDuration, 0) * IF(ServiceLevelType = "HEPSPEC", ServiceLevel, ServiceLevel / 250) / 3600)) AS NormSumCPU, 
+    ROUND(SUM(IF(WallDuration > 0, WallDuration, 0) * IF(ServiceLevelType = "HEPSPEC", ServiceLevel, ServiceLevel / 250))) AS NormSumWCT, 
+    ROUND(SUM(IF(CpuDuration > 0, CpuDuration, 0) * IF(ServiceLevelType = "HEPSPEC", ServiceLevel, ServiceLevel / 250))) AS NormSumCPU, 
     NumberOfJobs
     FROM Summaries
     GROUP BY SiteID, VOID, GlobalUserNameID, VOGroupID, VORoleID, Year, Month, InfrastructureType, 
