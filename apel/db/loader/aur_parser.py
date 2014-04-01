@@ -31,10 +31,12 @@ class AurParser(XMLParser):
     
     For documentation please visit: 
     https://twiki.cern.ch/twiki/bin/view/EMI/ComputeAccountingRecord
+
     The record format now conforms to the Normalised Summary format here:
     https://wiki.egi.eu/wiki/APEL/MessageFormat#Summary_Job_Records
-    - it includes NormalisedCpuDuration and NormalisedWallDuration and 
-    omits ServiceLevel and ServiceLevelType. The field formerly called
+
+    It includes NormalisedCpuDuration and NormalisedWallDuration and omits
+    ServiceLevel and ServiceLevelType. The field formerly called
     InfrastructureType is now called Infrastructure.
     '''
     
@@ -106,7 +108,7 @@ class AurParser(XMLParser):
         tags = ['Site', 'Month', 'Year', 'GlobalUserName', 'Group', 
                 'GroupAttribute', 'SubmitHost', 'Infrastructure',
                 'EarliestEndTime', 'LatestEndTime', 'WallDuration', 'CpuDuration', 
-		'NormalisedWallDuration', 'NormalisedCpuDuration',
+                'NormalisedWallDuration', 'NormalisedCpuDuration',
                 'NumberOfJobs', 'NodeCount', 'Processors']
 
         nodes = {}.fromkeys(tags)

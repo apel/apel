@@ -24,8 +24,9 @@ from apel.db.records.normalised_summary import NormalisedSummaryRecord
 from apel.db.records.sync import SyncRecord
 from apel.db.records.cloud import CloudRecord
 from apel.db.records.cloud_summary import CloudSummaryRecord
-from apel.db import JOB_MSG_HEADER, SUMMARY_MSG_HEADER, NORMALISED_SUMMARY_MSG_HEADER, \
-		SYNC_MSG_HEADER, CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER
+from apel.db import (JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
+                     NORMALISED_SUMMARY_MSG_HEADER, SYNC_MSG_HEADER,
+                     CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER)
 
 from apel.db.loader.car_parser import CarParser
 from apel.db.loader.aur_parser import AurParser
@@ -156,24 +157,23 @@ class RecordFactory(object):
                 
 
     def _create_nsrs(self, msg_text):
-        '''
-        Given the text from a normalised summary record message, create a list of 
-        JobRecord objects and return it.
-        '''
-        
+        """
+        Given the text from a normalised summary record message, create a list
+        of JobRecord objects and return it.
+        """
+
         msg_text = msg_text.strip()
 
         records = msg_text.split('%%')
         msgs = []
         for record in records:
             # unnecessary hack?
-            if (record != '') and not (record.isspace()):
+            if record != '' and not record.isspace():
                 ns = NormalisedSummaryRecord()
                 ns.load_from_msg(record)
                 msgs.append(ns)
-        
+
         return msgs
-                
 
     def _create_syncs(self, msg_text):
         '''

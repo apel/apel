@@ -26,7 +26,7 @@ from apel.db.records import BlahdRecord, \
                             EventRecord, \
                             GroupAttributeRecord, \
                             JobRecord, \
-			    NormalisedSummaryRecord, \
+                            NormalisedSummaryRecord, \
                             ProcessedRecord, \
                             StorageRecord, \
                             SummaryRecord, \
@@ -51,7 +51,7 @@ class ApelMysqlDb(object):
                     SyncRecord  : 'SyncRecords',
                     CloudRecord : 'CloudRecords',
                     CloudSummaryRecord : 'VCloudSummaries',
-		    NormalisedSummaryRecord : 'NormalisedSummaries',
+                    NormalisedSummaryRecord : 'NormalisedSummaries',
                     ProcessedRecord : 'VProcessedFiles',
                     SummaryRecord : 'VSummaries'}
     
@@ -307,20 +307,22 @@ class ApelMysqlDb(object):
             raise
     
     def normalise_summaries(self):
-        '''
-        Normalise the data from the Summaries table (calculate the normalised 
-	wall clock and cpu duration values from the ServiceLevel fields) 
-	and put the results in the NormalisedSuperSummaries table.
-	This method does this by calling the NormaliseSummaries stored procedure.
-        
+        """
+        Normalise data from Summaries and insert into NormalisedSuperSummaries.
+
+        Normalise the data from the Summaries table (calculate the normalised
+        wall clock and cpu duration values from the ServiceLevel fields) and put
+        the results in the NormalisedSuperSummaries table. This is done by
+        calling the NormaliseSummaries stored procedure.
+
         Any failure will result in the entire transaction being rolled 
         back.
-        '''
+        """
         try:
             # prevent MySQLdb from raising
             # 'MySQL server has gone' exception
             self._mysql_reconnect()
-            
+
             c = self.db.cursor()
 
             log.info("Normalising the Summary records...")
@@ -330,7 +332,7 @@ class ApelMysqlDb(object):
         except MySQLdb.Error, e:
             log.error("A mysql error occurred: %s" % e)
             log.error("Any transaction will be rolled back.")
-            
+
             if not self.db is None:
                 self.db.rollback()
             raise
