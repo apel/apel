@@ -51,7 +51,7 @@ CREATE VIEW VUserCPU AS
         Year,
         CAST(MIN(EarliestEndTime) AS DATE) AS RecordStart,
         CAST(MAX(LatestEndTime) AS DATE) AS RecordEnd
-    FROM 
+    FROM
         NormalisedSuperSummaries,
         Sites,
         VOs,
