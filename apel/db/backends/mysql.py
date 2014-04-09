@@ -330,10 +330,10 @@ class ApelMysqlDb(object):
             log.info("Done.")
             self.db.commit()
         except MySQLdb.Error, e:
-            log.error("A mysql error occurred: %s" % e)
+            log.error("A MySQL error occurred: %s" % e)
             log.error("Any transaction will be rolled back.")
 
-            if not self.db is None:
+            if self.db is not None:
                 self.db.rollback()
             raise
     

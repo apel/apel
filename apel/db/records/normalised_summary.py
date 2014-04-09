@@ -96,11 +96,7 @@ class NormalisedSummaryRecord(Record):
             month_start = datetime(int(rc['Year']), int(rc['Month']), 1)
             month_end = datetime(next_month_year, next_month, 1)
 
-        except KeyError:
-            raise InvalidRecordException("Invalid values for month and/or year.")
-        except TypeError:
-            raise InvalidRecordException("Invalid values for month and/or year.")
-        except ValueError:
+        except (KeyError, TypeError, ValueError):
             raise InvalidRecordException("Invalid values for month and/or year.")
 
         # Check that the EarliestEndTime and LatestEndTime fall within the right

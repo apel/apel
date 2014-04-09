@@ -87,7 +87,8 @@ class AurParser(XMLParser):
                                                           'type', 'role')[0].childNodes),
             'MachineName'      : lambda nodes: self.getText(nodes['MachineName'][0].childNodes),
             'SubmitHost'       : lambda nodes: self.getText(nodes['SubmitHost'][0].childNodes),
-            'Infrastructure'   : lambda nodes: self.getText(nodes['Infrastructure'][0].childNodes),
+            'Infrastructure': lambda nodes: self.getText(
+                nodes['Infrastructure'][0].childNodes),
             'EarliestEndTime'  : lambda nodes: parse_timestamp(self.getText(
                                         nodes['EarliestEndTime'][0].childNodes)),
             'LatestEndTime'  : lambda nodes: parse_timestamp(self.getText(
@@ -96,10 +97,10 @@ class AurParser(XMLParser):
                                         nodes['WallDuration'][0].childNodes)),
             'CpuDuration'      : lambda nodes: iso2seconds(self.getText(
                                         nodes['CpuDuration'][0].childNodes)),
-            'NormalisedWallDuration'     : lambda nodes: iso2seconds(self.getText(
-                                        nodes['NormalisedWallDuration'][0].childNodes)),
-            'NormalisedCpuDuration'      : lambda nodes: iso2seconds(self.getText(
-                                        nodes['NormalisedCpuDuration'][0].childNodes)),
+            'NormalisedWallDuration': lambda nodes: iso2seconds(self.getText(
+                nodes['NormalisedWallDuration'][0].childNodes)),
+            'NormalisedCpuDuration': lambda nodes: iso2seconds(self.getText(
+                nodes['NormalisedCpuDuration'][0].childNodes)),
             'NumberOfJobs'     : lambda nodes: self.getText(nodes['NumberOfJobs'][0].childNodes),
             'NodeCount'        : lambda nodes: self.getText(nodes['NodeCount'][0].childNodes),
             'Processors'       : lambda nodes: self.getText(nodes['Processors'][0].childNodes),
