@@ -29,10 +29,10 @@ class TestApplicationParser(unittest.TestCase):
                       '{"binary path": "/usr/bin/uptime", "exit_info": {"exited_normally": "true", "signal": "0"}, "user": {"uid": "501", "gid": "20"}, "start_time": "Tue Nov  5 15:05:01 2013", "end_time": "Tue Nov  5 15:05:01 2013"}',)
 
         good_values = (
-            ('/bin/ls', '"exited_normally": "true", "signal": "0"', '"uid": "501", "gid": "20"', convert_time(2014, 3, 25, 17, 43, 58), convert_time(2014, 3, 25, 17, 43, 58)),
-            ('/bin/sleep', '"exited_normally": "true", "signal": "0"', '"uid": "501", "gid": "20"', convert_time(2014, 3, 25, 17, 44, 12), convert_time(2014, 3, 25, 17, 44, 12)),
-            ('/bin/sleep', '"exited_normally": "false", "signal": "2", "signal_str": "Interrupt: 2"', '"uid": "501", "gid": "20"', convert_time(2014, 3, 25, 17, 44, 38), convert_time(2014, 3, 25, 17, 44, 38)),
-            ('/usr/bin/uptime', '"exited_normally": "true", "signal": "0"', '"uid": "501", "gid": "20"', convert_time(2013, 11, 5, 15, 05, 01), convert_time(2013, 11, 5, 15, 05, 01)),
+            ('/bin/ls', {"exited_normally": "true", "signal": "0"}, {"uid": "501", "gid": "20"}, convert_time(2014, 3, 25, 17, 43, 58), convert_time(2014, 3, 25, 17, 43, 58)),
+            ('/bin/sleep', {"exited_normally": "true", "signal": "0"}, {"uid": "501", "gid": "20"}, convert_time(2014, 3, 25, 17, 44, 12), convert_time(2014, 3, 25, 17, 44, 12)),
+            ('/bin/sleep', {"exited_normally": "false", "signal": "2", "signal_str": "Interrupt: 2"}, {"uid": "501", "gid": "20"}, convert_time(2014, 3, 25, 17, 44, 38), convert_time(2014, 3, 25, 17, 44, 38)),
+            ('/usr/bin/uptime', {"exited_normally": "true", "signal": "0"}, {"uid": "501", "gid": "20"}, convert_time(2013, 11, 5, 15, 05, 01), convert_time(2013, 11, 5, 15, 05, 01)),
             )
 
         cases = {}

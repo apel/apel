@@ -53,15 +53,14 @@ class ApplicationParser(Parser):
         data = json.loads(line)
 
         # Simple mapping between keys in a log file and a table's columns
-        mapping = { 'BinaryPath'     : lambda x: x['binary path']
-                  , 'ExitInfo'       : lambda x: x['exit_info']
-                  , 'User'           : lambda x: x['user']
-                  , 'StartTime'      : lambda x: strptime(x['start_time'], '%c')
-                  , 'EndTime'        : lambda x: strptime(x['end_time'], '%c')
-                  }
+        mapping = {'BinaryPath': lambda x: x['binary path'],
+                   'ExitInfo'  : lambda x: x['exit_info'],
+                   'User'      : lambda x: x['user'],
+                   'StartTime' : lambda x: strptime(x['start_time'], '%a %b %d %H:%M:%S %Y'),
+                   'EndTime'   : lambda x: strptime(x['end_time'], '%a %b %d %H:%M:%S %Y')
+                   }
         rc = {}
         for key in mapping:
             rc[key] = mapping[key](data)
 
         return ApplicationRecord(**rc)
-
