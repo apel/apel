@@ -98,11 +98,13 @@ class Loader(object):
                 
     def shutdown(self):
         """
-        Unlock current msg queue element and remove pidfile.
+        Unlock current messsage queue element and remove pidfile.
         """
-        if self.name:
+        # Check if self.current_msg is assigned as it may not have been before
+        # shutdown is called.
+        if hasattr(self, 'current_msg') and self.current_msg:
             try:
-                self._inq.unlock(self.name)
+                self._inq.unlock(self.current_msg)
             except OSError, e:
                 log.error('Unable to remove lock: %s' % e)
 
@@ -129,21 +131,21 @@ class Loader(object):
         num_msgs = self._inq.count()
         log.info("Found %s messages" % num_msgs)
 
-        self.name = self._inq.first()
+        self.current_msg = self._inq.first()
         # loop until there are no messages left
-        while self.name:
-            if not self._inq.lock(self.name):
-                log.warn("Skipping locked message %s" % self.name)
-                self.name = self._inq.next()
+        while self.current_msg:
+            if not self._inq.lock(self.current_msg):
+                log.warn("Skipping locked message %s" % self.current_msg)
+                self.current_msg = self._inq.next()
                 continue
-            log.debug("Reading message %s" % self.name)
-            data = self._inq.get(self.name)
+            log.debug("Reading message %s" % self.current_msg)
+            data = self._inq.get(self.current_msg)
             msg_id = data['empaid']
             signer = data['signer']
             msg_text = data['body']
             
             try:
-                log.info("Loading message %s. ID = %s" % (self.name, msg_id))
+                log.info("Loading message %s. ID = %s" % (self.current_msg, msg_id))
                 self.load_msg(msg_text, signer)
                 
                 if self._save_msgs:
@@ -161,9 +163,9 @@ class Loader(object):
                                    "empaid": msg_id,
                                    "error": errmsg})
                 
-            log.info("Removing message %s. ID = %s" % (self.name, msg_id))
-            self._inq.remove(self.name)
-            self.name = self._inq.next()
+            log.info("Removing message %s. ID = %s" % (self.current_msg, msg_id))
+            self._inq.remove(self.current_msg)
+            self.current_msg = self._inq.next()
 
         if num_msgs:  # Only tidy up if messages found
             log.info('Tidying message directories')
