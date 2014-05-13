@@ -20,17 +20,11 @@ Created on 27 Oct 2011
 
 
 from apel.db import ApelDbException
-from apel.db.records import BlahdRecord, \
-                            CloudRecord, \
-                            CloudSummaryRecord, \
-                            EventRecord, \
-                            GroupAttributeRecord, \
-                            JobRecord, \
-                            NormalisedSummaryRecord, \
-                            ProcessedRecord, \
-                            StorageRecord, \
-                            SummaryRecord, \
-                            SyncRecord
+from apel.db.records import (BlahdRecord, CloudRecord, CloudSummaryRecord,
+                             EventRecord, GroupAttributeRecord, JobRecord,
+                             NormalisedSummaryRecord, ProcessedRecord,
+                             StorageRecord, SummaryRecord, SyncRecord,
+                             ApplicationRecord)
 import MySQLdb.cursors
 import datetime
 import logging
@@ -53,12 +47,14 @@ class ApelMysqlDb(object):
                     CloudSummaryRecord : 'VCloudSummaries',
                     NormalisedSummaryRecord : 'VNormalisedSummaries',
                     ProcessedRecord : 'VProcessedFiles',
-                    SummaryRecord : 'VSummaries'}
+                    SummaryRecord : 'VSummaries',
+                    ApplicationRecord: 'ApplicationRecords'}
     
     # These simply need to have the same number of arguments as the stored procedures defined in the database schemas.
     INSERT_PROCEDURES = {
               EventRecord : 'CALL InsertEventRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
               BlahdRecord : "CALL InsertBlahdRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              ApplicationRecord: "CALL InsertApplicationRecord(%s, %s, %s, %s, %s, %s)"
               }
     
     REPLACE_PROCEDURES = {
@@ -71,7 +67,8 @@ class ApelMysqlDb(object):
               CloudRecord : "CALL ReplaceCloudRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               CloudSummaryRecord : "CALL ReplaceCloudSummaryRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               StorageRecord: "CALL ReplaceStarRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-              GroupAttributeRecord: "CALL ReplaceGroupAttribute(%s, %s, %s)"
+              GroupAttributeRecord: "CALL ReplaceGroupAttribute(%s, %s, %s)",
+              ApplicationRecord: "CALL ReplaceApplicationRecord(%s, %s, %s, %s, %s, %s)"
               }
     
     def __init__(self, host, port, username, pwd, db):
