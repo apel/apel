@@ -40,8 +40,8 @@ class ApplicationParser(Parser):
     Application Accounting parser.
     '''
 
-    def __init__(self, site, machine_name, mpi):
-        super(ApplicationParser, self).__init__(site, machine_name, mpi)
+    def __init__(self, site, machine_name, mpi=False):
+        super(ApplicationParser, self).__init__(site, machine_name, False)
 
     def parse(self, line):
         '''
