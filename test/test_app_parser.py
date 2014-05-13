@@ -18,7 +18,7 @@ class TestApplicationParser(unittest.TestCase):
     """Test case for Application parser."""
 
     def setUp(self):
-        self.parser = ApplicationParser('unusedSite', 'unusedHost')  # These don't seem to be used by the parser
+        self.parser = ApplicationParser('testSite', 'testHost', False)
 
     def test_parser(self):
         keys = ('BinaryPath', 'ExitInfo', 'User', 'StartTime', 'EndTime')
@@ -43,6 +43,9 @@ class TestApplicationParser(unittest.TestCase):
         for line in cases.keys():
             record = self.parser.parse(line)
             content = record._record_content
+
+            self.assertEqual(content['Site'], 'testSite')
+            self.assertEqual(content['MachineName'], 'testHost')
 
             for key in cases[line].keys():
                 self.assertTrue(key in content, "Key '%s' not in record." % key)

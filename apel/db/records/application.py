@@ -28,9 +28,8 @@ class ApplicationRecord(Record):
         '''
 
         Record.__init__(self)
-        self._mandatory_fields = []
-        self._db_fields = ["BinaryPath", "ExitInfo", "User", "StartTime", "EndTime"]
-        self._int_fields = []
+        self._db_fields = ["Site", "MachineName", "BinaryPath", "ExitInfo",
+                           "User", "StartTime", "EndTime"]
+        self._datetime_fields = ["StartTime", "EndTime"]
         self._all_fields = self._db_fields
         self.set_all(kwargs)
-

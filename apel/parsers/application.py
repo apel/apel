@@ -40,6 +40,9 @@ class ApplicationParser(Parser):
     Application Accounting parser.
     '''
 
+    def __init__(self, site, machine_name, mpi):
+        super(ApplicationParser, self).__init__(site, machine_name, mpi)
+
     def parse(self, line):
         '''
         Parses single line from accounting log file.
@@ -53,7 +56,9 @@ class ApplicationParser(Parser):
         data = json.loads(line)
 
         # Simple mapping between keys in a log file and a table's columns
-        mapping = {'BinaryPath': lambda x: x['binary path'],
+        mapping = {'Site': lambda x: self.site_name,
+                   'MachineName': lambda x: self.machine_name,
+                   'BinaryPath': lambda x: x['binary path'],
                    'ExitInfo'  : lambda x: x['exit_info'],
                    'User'      : lambda x: x['user'],
                    'StartTime' : lambda x: strptime(x['start_time'], '%a %b %d %H:%M:%S %Y'),
