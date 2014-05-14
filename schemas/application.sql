@@ -12,7 +12,7 @@ CREATE TABLE ApplicationRecords (
   EndTime       DATETIME     NOT NULL,
   Status        INT,                   -- 0 for unprocessed, 1 for local job, 2 for grid job
   
-  PRIMARY KEY(MachineNameID, BinaryPath, EndTime),
+  PRIMARY KEY(MachineNameID, BinaryPath, EndTime)
 );
 
 DROP PROCEDURE IF EXISTS InsertApplicationRecord;
@@ -23,7 +23,7 @@ CREATE PROCEDURE InsertApplicationRecord(
   binaryPath     VARCHAR(255),
   localUserId    VARCHAR(20),
   startTime      DATETIME,
-  endTime        DATETIME,
+  endTime        DATETIME)
 BEGIN
         INSERT IGNORE INTO ApplicationRecords(SiteID, MachineNameID, BinaryPath, LocalUserID, StartTime, EndTime, Status)
         VALUES (SiteLookup(site), MachineNameLookup(machineName), binaryPath, localUserId, startTime, endTime, 0);
@@ -38,7 +38,7 @@ CREATE PROCEDURE ReplaceApplicationRecord(
   binaryPath     VARCHAR(255),
   localUserId    VARCHAR(20),
   startTime      DATETIME,
-  endTime        DATETIME,
+  endTime        DATETIME)
 BEGIN
         REPLACE INTO ApplicationRecords(SiteID, MachineNameID, BinaryPath, LocalUserID, StartTime, EndTime, Status)
         VALUES (SiteLookup(site), MachineNameLookup(machineName), binaryPath, localUserId, startTime, endTime, 0);
@@ -46,16 +46,16 @@ END //
 DELIMITER ;
 
 -- View on ApplicationRecords
-DROP VIEW IF EXISTS VApplicationRecords;
+/*DROP VIEW IF EXISTS VApplicationRecords;
 CREATE VIEW VApplicationRecords AS
     SELECT site.name Site, subhost.name SubmitHost, machine.name MachineName,
            LocalJobId, LocalUserId,
-           StartTime, EndTime,
+           StartTime, EndTime
     FROM ApplicationRecords, Sites site, SubmitHosts subhost, MachineNames machine
    	WHERE
         SiteID = site.id
         AND SubmitHostID = subhost.id
 	    AND MachineNameID = machine.id
-	    AND QueueID = queue.id;
+	    AND QueueID = queue.id;*/
 
 -- -----------------------------------------------------------------------------
