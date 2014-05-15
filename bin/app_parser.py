@@ -274,7 +274,7 @@ def main():
     ver = "APEL parser %s.%s.%s" % __version__
     opt_parser = OptionParser(description=__doc__, version=ver)
     opt_parser.add_option("-c", "--config", help="location of config file",
-                          default="/etc/apel/parser.cfg")
+                          default="/etc/apel/app_parser.cfg")
     opt_parser.add_option("-l", "--log_config",
                           help="location of logging config file (optional)",
                           default="/etc/apel/parserlog.cfg")
