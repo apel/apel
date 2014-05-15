@@ -22,14 +22,13 @@ class ApplicationRecord(Record):
     Class to represent an Application Accounting Record
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self):
         '''
         Initializer for ApplicationRecord
         '''
 
         Record.__init__(self)
-        self._db_fields = ["Site", "MachineName", "BinaryPath", "ExitInfo",
+        self._db_fields = ["Site", "MachineName", "BinaryPath",
                            "User", "StartTime", "EndTime"]
         self._datetime_fields = ["StartTime", "EndTime"]
         self._all_fields = self._db_fields
-        self.set_all(kwargs)

@@ -55,12 +55,15 @@ class ApplicationParser(Parser):
         # json parse the stuff
         data = json.loads(line)
 
+        # Ignore processes that didn't exit sucessfully
+        if data['exit_info']['exited_normally'] == 'false' or int(data['exit_info']['signal']) != 0:
+            return None
+
         # Simple mapping between keys in a log file and a table's columns
         mapping = {'Site': lambda x: self.site_name,
                    'MachineName': lambda x: self.machine_name,
                    'BinaryPath': lambda x: x['binary path'],
-                   'ExitInfo'  : lambda x: x['exit_info'],
-                   'User'      : lambda x: x['user'],
+                   'User'      : lambda x: x['user']['uid'],
                    'StartTime' : lambda x: strptime(x['start_time'], '%a %b %d %H:%M:%S %Y'),
                    'EndTime'   : lambda x: strptime(x['end_time'], '%a %b %d %H:%M:%S %Y')
                    }
@@ -68,4 +71,6 @@ class ApplicationParser(Parser):
         for key in mapping:
             rc[key] = mapping[key](data)
 
-        return ApplicationRecord(**rc)
+        record = ApplicationRecord()
+        record.set_all(rc)
+        return record
