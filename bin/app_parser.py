@@ -36,7 +36,7 @@ LOGGER_ID = 'app_parser'
 # How many records should be sent/fetched to/from database in a single query
 BATCH_SIZE = 1000
 DB_BACKEND = 'mysql'
-PARSERS = {'applicaion': ApplicationParser}
+PARSERS = {'application': ApplicationParser}
 
 
 class ParserConfigException(Exception):

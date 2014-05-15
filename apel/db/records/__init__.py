@@ -22,6 +22,7 @@ Interface for apel.db.records.
 import time
 import datetime
 
+from application import ApplicationRecord
 from record import Record, InvalidRecordException
 from blahd import BlahdRecord
 from cloud import CloudRecord
