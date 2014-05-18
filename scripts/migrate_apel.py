@@ -65,9 +65,9 @@ DUPLICATES_JOIN = """ FROM JobRecords AS t
 				  FROM JobRecords 
 				  LEFT JOIN MachineNames 
 				  on (JobRecords.MachineNameID = MachineNames.id) 
-				  WHERE MachineNames.name = 'MachineName' ) 
+				  WHERE MachineNames.name != 'MachineName' ) 
 				  AS u 
-                      ON (m.name != 'MachineName' AND t.LocalJobId = u.LocalJobId AND t.EndTime = u.EndTime); """
+                      ON (m.name = 'MachineName' AND t.LocalJobId = u.LocalJobId AND t.EndTime = u.EndTime); """
 
 COUNT_DUPLICATES_STMT = "SELECT count(*) " + DUPLICATES_JOIN
 
