@@ -158,8 +158,8 @@ CREATE TABLE NormalisedSummaries (
   LatestEndTime DATETIME,
   WallDuration BIGINT UNSIGNED NOT NULL,
   CpuDuration BIGINT UNSIGNED NOT NULL,
-  NormalisedWallDuration INT NOT NULL,
-  NormalisedCpuDuration INT NOT NULL,
+  NormalisedWallDuration BIGINT NOT NULL,
+  NormalisedCpuDuration BIGINT NOT NULL,
   NumberOfJobs BIGINT UNSIGNED NOT NULL,
   PublisherDNID INT NOT NULL,
 
@@ -734,7 +734,7 @@ CREATE VIEW VNormalisedSuperSummaries AS
 -- -----------------------------------------------------------------------------
 -- View on SuperSummaries
 -- useful form of data from SuperSummaries
--- TODO Check if this can be deprecated (see if it's used on goccr).
+
 -- TODO Check if need conversion to hours (divide by 3600).
 DROP VIEW IF EXISTS VUserSummaries;
 CREATE VIEW VUserSummaries AS
