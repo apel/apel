@@ -163,6 +163,10 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         # we will leave this record unmodified
                         updated.append(pf)
                         found = True
+                        # Check for zero parsed lines so we can warn later on.
+                        if pf.get_field('Parsed') == 0:
+                            unparsed = True
+                        break  # If we find a match, no need to keep checking.
                         
                 if reparse or not found:
                     try:
@@ -190,8 +194,11 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         pr.set_field('StopLine', total)
                         pr.set_field('Parsed', parsed)
                         updated.append(pr)
+                elif unparsed:
+                    log.warn('%s already parsed unsuccessfully, skipping'
+                             % abs_file)
                 else:
-                    log.info('%s already parsed, omitting' % abs_file)
+                    log.info('%s already parsed, skipping' % abs_file)
             elif os.path.isfile(abs_file):
                 log.info('Filename does not match configuration: %s' % item)
         
