@@ -14,7 +14,7 @@ import warnings
 COMMIT_THRESHOLD=500
 SUMMARISE_THRESHOLD=10000
 
-SPECINT = 'Si2k'
+SPECINT = 'si2k'
 
 # procedure used to insert each record into the new schema
 CREATE_PROC = '''
