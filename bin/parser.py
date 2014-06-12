@@ -158,6 +158,7 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                 # first, calculate the hash of the file:
                 file_hash = calculate_hash(abs_file)
                 found = False
+                unparsed = False
                 # next, try to find corresponding entry
                 # in database
                 for pf in processed:
@@ -185,8 +186,7 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         finally:
                             fp.close()
                     except IOError, e:
-                        log.error('Cannot open file %s due to: %s' % 
-                                     (item, str(e)))
+                        log.error('Cannot open file %s: %s' % (item, e))
                     except ApelDbException, e:
                         log.error('Failed to parse %s due to a database problem: %s' % (item, e))
                     else:
@@ -198,12 +198,12 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         pr.set_field('Parsed', parsed)
                         updated.append(pr)
                 elif unparsed:
-                    log.warn('%s already parsed unsuccessfully, skipping'
+                    log.info('Skipping file (failed to parse previously): %s'
                              % abs_file)
                 else:
-                    log.info('%s already parsed, skipping' % abs_file)
+                    log.info('Skipping file (already parsed): %s ' % abs_file)
             elif os.path.isfile(abs_file):
-                log.info('Filename does not match configuration: %s' % item)
+                log.info('Filename does not match pattern: %s' % item)
         
         return updated
     
