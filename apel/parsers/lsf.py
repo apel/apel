@@ -31,6 +31,7 @@ class LSFParser(Parser):
      - 6.x
      - 7.x
      - 8.x
+     - 9.x
     '''
 
     '''
@@ -128,7 +129,8 @@ class LSFParser(Parser):
                    '5' : mapping_lsf_5678,
                    '6' : mapping_lsf_5678,
                    '7' : mapping_lsf_5678,
-                   '8' : mapping_lsf_5678
+                   '8' : mapping_lsf_5678,
+                   '9': mapping_lsf_5678
                   }
         
         version = items[1][0]
