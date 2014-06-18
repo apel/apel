@@ -151,15 +151,15 @@ CREATE TABLE NormalisedSummaries (
   VOGroupID INT NOT NULL,               -- Foreign key
   VORoleID INT NOT NULL,                -- Foreign key
   SubmitHostId INT NOT NULL,
-  InfrastructureType VARCHAR(20),
+  Infrastructure VARCHAR(20),
   NodeCount INT NOT NULL,
   Processors INT NOT NULL,
   EarliestEndTime DATETIME,
   LatestEndTime DATETIME,
   WallDuration BIGINT UNSIGNED NOT NULL,
   CpuDuration BIGINT UNSIGNED NOT NULL,
-  NormalisedWallDuration BIGINT NOT NULL,
-  NormalisedCpuDuration BIGINT NOT NULL,
+  NormalisedWallDuration BIGINT UNSIGNED NOT NULL,
+  NormalisedCpuDuration BIGINT UNSIGNED NOT NULL,
   NumberOfJobs BIGINT UNSIGNED NOT NULL,
   PublisherDNID INT NOT NULL,
 
@@ -234,15 +234,15 @@ CREATE TABLE NormalisedSuperSummaries (
   VOGroupID INT NOT NULL,               -- Foreign key
   VORoleID INT NOT NULL,                -- Foreign key
   SubmitHostId INT NOT NULL,
-  InfrastructureType VARCHAR(20),
+  Infrastructure VARCHAR(20),
   NodeCount INT NOT NULL,
   Processors INT NOT NULL,
   EarliestEndTime DATETIME,
   LatestEndTime DATETIME,
   WallDuration BIGINT UNSIGNED NOT NULL,
   CpuDuration BIGINT UNSIGNED NOT NULL,
-  NormalisedWallDuration INT NOT NULL,
-  NormalisedCpuDuration INT NOT NULL,
+  NormalisedWallDuration BIGINT UNSIGNED NOT NULL,
+  NormalisedCpuDuration BIGINT UNSIGNED NOT NULL,
   NumberOfJobs BIGINT UNSIGNED NOT NULL,
 
   PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VORoleID, VOGroupID, 
