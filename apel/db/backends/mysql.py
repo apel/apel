@@ -51,7 +51,7 @@ class ApelMysqlDb(object):
                     SyncRecord  : 'SyncRecords',
                     CloudRecord : 'CloudRecords',
                     CloudSummaryRecord : 'VCloudSummaries',
-                    NormalisedSummaryRecord : 'NormalisedSummaries',
+                    NormalisedSummaryRecord : 'VNormalisedSummaries',
                     ProcessedRecord : 'VProcessedFiles',
                     SummaryRecord : 'VSummaries'}
     
