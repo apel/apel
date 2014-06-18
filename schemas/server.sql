@@ -173,19 +173,19 @@ DELIMITER //
 CREATE PROCEDURE ReplaceNormalisedSummary(
   site VARCHAR(255),  month INT,  year INT, 
   globalUserName VARCHAR(255), vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255), 
-  submitHost VARCHAR(255), infrastructureType VARCHAR(50), 
+  submitHost VARCHAR(255), infrastructure VARCHAR(50), 
   nodeCount INT, processors INT, earliestEndTime DATETIME, latestEndTime DATETIME, wallDuration INT, cpuDuration INT, 
   normalisedWallDuration INT, normalisedCpuDuration INT, numberOfJobs INT, publisherDN VARCHAR(255))
 BEGIN
     REPLACE INTO NormalisedSummaries(SiteID, Month, Year, GlobalUserNameID, VOID, 
-        VOGroupID, VORoleID, SubmitHostId, InfrastructureType, 
+        VOGroupID, VORoleID, SubmitHostId, Infrastructure, 
         NodeCount, Processors, EarliestEndTime, LatestEndTime, WallDuration,
         CpuDuration, NormalisedWallDuration, NormalisedCpuDuration,
 	NumberOfJobs, PublisherDNID)
       VALUES (
         SiteLookup(site), month, year, DNLookup(globalUserName), VOLookup(vo), 
         VOGroupLookup(voGroup), VORoleLookup(voRole), SubmitHostLookup(submitHost),
-        infrastructureType, nodeCount, processors, earliestEndTime, 
+        infrastructure, nodeCount, processors, earliestEndTime, 
         latestEndTime, wallDuration, cpuDuration, normalisedWallDuration, normalisedCpuDuration,
        	numberOfJobs, DNLookup(publisherDN));
 END //
@@ -246,7 +246,7 @@ CREATE TABLE NormalisedSuperSummaries (
   NumberOfJobs BIGINT UNSIGNED NOT NULL,
 
   PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VORoleID, VOGroupID, 
-               SubmitHostId, InfrastructureType, NodeCount, Processors)
+               SubmitHostId, Infrastructure, NodeCount, Processors)
 );
 
 DROP PROCEDURE IF EXISTS SummariseJobs;
@@ -254,7 +254,7 @@ DELIMITER //
 CREATE PROCEDURE SummariseJobs()
 BEGIN
     REPLACE INTO NormalisedSuperSummaries(SiteID, Month, Year, GlobalUserNameID, VOID, 
-        VOGroupID, VORoleID, SubmitHostID, InfrastructureType, 
+        VOGroupID, VORoleID, SubmitHostID, Infrastructure, 
         NodeCount, Processors, EarliestEndTime, 
         LatestEndTime, WallDuration, CpuDuration, NormalisedWallDuration, NormalisedCpuDuration,
 	NumberOfJobs)
@@ -280,7 +280,7 @@ DELIMITER //
 CREATE PROCEDURE NormaliseSummaries()
 BEGIN
     REPLACE INTO NormalisedSuperSummaries(SiteID, Month, Year, GlobalUserNameID, VOID, 
-        VOGroupID, VORoleID, SubmitHostID, InfrastructureType, 
+        VOGroupID, VORoleID, SubmitHostID, Infrastructure, 
         NodeCount, Processors, EarliestEndTime, 
         LatestEndTime, WallDuration, CpuDuration, NormalisedWallDuration, NormalisedCpuDuration,
 	NumberOfJobs)
@@ -303,11 +303,11 @@ DELIMITER //
 CREATE PROCEDURE CopySummaries()
 BEGIN
     REPLACE INTO NormalisedSuperSummaries(SiteID, Month, Year, GlobalUserNameID, VOID,
-        VOGroupID, VORoleID, SubmitHostID, InfrastructureType, 
+        VOGroupID, VORoleID, SubmitHostID, Infrastructure, 
         NodeCount, Processors, EarliestEndTime, LatestEndTime, WallDuration,
         CpuDuration, NormalisedWallDuration, NormalisedCpuDuration, NumberOfJobs)
     SELECT SiteID, Month, Year, GlobalUserNameID, VOID,
-        VOGroupID, VORoleID, SubmitHostID, InfrastructureType, 
+        VOGroupID, VORoleID, SubmitHostID, Infrastructure, 
         NodeCount, Processors, EarliestEndTime, LatestEndTime, WallDuration,
         CpuDuration, NormalisedWallDuration, NormalisedCpuDuration, NumberOfJobs
     FROM NormalisedSummaries;
@@ -625,7 +625,7 @@ CREATE VIEW VNormalisedSummaries AS
         vogroup.name VOGroup, 
         vorole.name VORole, 
         submithost.name SubmitHost,
-        InfrastructureType,
+        Infrastructure,
         NodeCount,
         Processors,
         EarliestEndTime, 
@@ -705,7 +705,7 @@ CREATE VIEW VNormalisedSuperSummaries AS
         vogroup.name VOGroup, 
         vorole.name VORole, 
         submithost.name SubmitHost,
-        InfrastructureType,
+        Infrastructure,
         NodeCount,
         Processors,
         EarliestEndTime, 
