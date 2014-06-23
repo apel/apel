@@ -735,7 +735,7 @@ CREATE VIEW VNormalisedSuperSummaries AS
 -- View on SuperSummaries
 -- useful form of data from SuperSummaries
 
--- TODO Check if need conversion to hours (divide by 3600).
+-- TODO Check relevance of this view
 DROP VIEW IF EXISTS VUserSummaries;
 CREATE VIEW VUserSummaries AS
     SELECT 

@@ -1,7 +1,6 @@
 -- Extra views on NormalisedSuperSummaries for the central APEL server.
 -- This schema does not need to be loaded by regional servers.
 
--- TODO Check if need conversion to hours (divide by 3600).
 
 DROP VIEW IF EXISTS VSumCPU;
 
