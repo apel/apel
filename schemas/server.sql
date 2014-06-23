@@ -770,25 +770,6 @@ CREATE VIEW VUserSummaries AS
 
 
 -- -----------------------------------------------------------------------------
--- View on SuperSummaries
--- Replaced the older table HepSpecHistory
-DROP VIEW IF EXISTS VHepSpecHistory;
-CREATE VIEW VHepSpecHistory AS
-    SELECT 
-        site.name AS Site,
-        IF(ServiceLevelType='HEPSPEC', ServiceLevel, ServiceLevel/250) AS HepSpec06,
-        SUM(NumberOfJobs) AS NumberOfJobs,
-        Year,
-        Month,
-        DATE(MIN(EarliestEndTime)) AS EarliestEndDate,
-        DATE(MAX(LatestEndTime)) AS LatestEndDate
-    FROM
-        SuperSummaries
-    INNER JOIN Sites site ON SiteID=site.id
-    GROUP BY SiteID, HepSpec06, Year, Month;
-
-
--- -----------------------------------------------------------------------------
 -- View on JobRecords
 DROP VIEW IF EXISTS VJobRecords;
 CREATE VIEW VJobRecords AS
