@@ -732,8 +732,8 @@ CREATE VIEW VNormalisedSuperSummaries AS
         
         
 -- -----------------------------------------------------------------------------
--- View on SuperSummaries
--- useful form of data from SuperSummaries
+-- View on NormalisedSuperSummaries
+-- useful form of data from NormalisedSuperSummaries
 
 -- TODO Check relevance of this view
 DROP VIEW IF EXISTS VUserSummaries;
@@ -746,14 +746,14 @@ CREATE VIEW VUserSummaries AS
         dn.name GlobalUserName,
         vogroup.name VOGroup,
         vorole.name VORole,
-        ROUND(SUM(WallDuration)*IF(ServiceLevelType='HEPSPEC', ServiceLevel, ServiceLevel/250),2) AS TotalWallDuration,
-        ROUND(SUM(CpuDuration)*IF(ServiceLevelType='HEPSPEC', ServiceLevel, ServiceLevel/250),2) AS TotalCpuDuration,
-        ROUND(SUM(WallDuration)*IF(ServiceLevelType='HEPSPEC', ServiceLevel, ServiceLevel/250)/3600,2) AS NormalisedWallDuration,
-        ROUND(SUM(CpuDuration)*IF(ServiceLevelType='HEPSPEC', ServiceLevel, ServiceLevel/250)/3600,2) AS NormalisedCpuDuration,
-        SUM(NumberOfJobs),
+        SUM(WallDuration) AS TotalWallDuration,
+        SUM(CpuDuration) AS TotalCpuDuration,
+        ROUND(SUM(NormalisedWallDuration) / 3600, 2) AS NormalisedWallDuration,
+        ROUND(SUM(NormalisedCpuDuration) / 3600, 2) AS NormalisedCpuDuration,
+        SUM(NumberOfJobs) AS TotalNumberOfJobs,
         MIN(EarliestEndTime) as EarliestEndTime,
         MAX(LatestEndTime) as LatestEndTime
-    FROM SuperSummaries summary 
+    FROM NormalisedSuperSummaries summary 
     INNER JOIN Sites site ON site.id=summary.SiteID
     INNER JOIN VOs vo ON summary.VOID = vo.id
     INNER JOIN DNs dn ON summary.GlobalUserNameID = dn.id
