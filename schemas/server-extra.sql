@@ -1,6 +1,6 @@
 -- Extra views on NormalisedSuperSummaries for the central APEL server.
 -- This schema does not need to be loaded by regional servers.
-
+-- -----------------------------------------------------------------------------
 
 DROP VIEW IF EXISTS VSumCPU;
 
@@ -75,42 +75,39 @@ CREATE VIEW VUserCPU AS
         Month,
         Year;
 
+-- -----------------------------------------------------------------------------
 
 DROP VIEW IF EXISTS VSpecIntHistory;
 
 CREATE VIEW VSpecIntHistory AS
-    SELECT
-        site.name AS ExecutingSite,
-        CAST(ROUND(NormalisedWallDuration / WallDuration * 250, 0) AS UNSIGNED) AS SpecInt2000,
-        CAST(SUM(NumberOfJobs) AS UNSIGNED) AS Njobs,
-        Month,
-        Year,
-        CAST(MIN(EarliestEndTime) AS DATE) AS RecordStart,
-        CAST(MAX(LatestEndTime) AS DATE) AS RecordEnd
-    FROM
-        NormalisedSuperSummaries JOIN Sites AS site ON SiteID = site.id
-    GROUP BY
-        SiteID,
-        SpecInt2000,
-        Year,
-        Month;
+    SELECT site.name AS ExecutingSite,
+           CAST(ROUND(IF((ServiceLevelType = 'HEPSPEC'), (ServiceLevel * 250), ServiceLevel), 0) AS UNSIGNED) AS SpecInt2000,
+           CAST(SUM(NumberOfJobs) AS UNSIGNED) AS Njobs,
+           Month,
+           Year,
+           CAST(MIN(EarliestEndTime) AS DATE) AS RecordStart,
+           CAST(MAX(LatestEndTime) AS DATE) AS RecordEnd
+    FROM HybridSuperSummaries
+    JOIN Sites AS site ON SiteID = site.id
+    GROUP BY SiteID,
+             SpecInt2000,
+             Year,
+             Month;
 
 
 DROP VIEW IF EXISTS VHepSpecHistory;
 
 CREATE VIEW VHepSpecHistory AS
-    SELECT
-        site.name AS Site,
-        CAST(ROUND(NormalisedWallDuration / WallDuration, 0) AS UNSIGNED) AS HepSpec06,
-        SUM(NumberOfJobs) AS NumberOfJobs,
-        Year,
-        Month,
-        CAST(MIN(EarliestEndTime) AS DATE) AS EarliestEndDate,
-        CAST(MAX(LatestEndTime) AS DATE) AS LatestEndDate
-    FROM
-        NormalisedSuperSummaries JOIN Sites AS site ON SiteID = site.id
-    GROUP BY
-        SiteID,
-        HepSpec06,
-        Year,
-        Month;
+  SELECT site.name AS Site,
+         IF((ServiceLevelType = 'HEPSPEC'), ServiceLevel, (ServiceLevel / 250)) AS HepSpec06,
+         SUM(NumberOfJobs) AS NumberOfJobs,
+         Year,
+         Month,
+         CAST(MIN(EarliestEndTime) AS DATE) AS EarliestEndDate,
+         CAST(MAX(LatestEndTime) AS DATE) AS LatestEndDate
+  FROM HybridSuperSummaries
+  JOIN Sites AS site ON SiteID = site.id
+  GROUP BY SiteID,
+           HepSpec06,
+           Year,
+           Month;
