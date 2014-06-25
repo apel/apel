@@ -19,7 +19,7 @@ CREATE VIEW VSumCPU AS
         CAST(MIN(EarliestEndTime) AS DATE) AS RecordStart,
         CAST(MAX(LatestEndTime) AS DATE) AS RecordEnd
     FROM
-        NormalisedSuperSummaries,
+        HybridSuperSummaries,
         Sites,
         VOs
     WHERE
@@ -53,7 +53,7 @@ CREATE VIEW VUserCPU AS
         CAST(MIN(EarliestEndTime) AS DATE) AS RecordStart,
         CAST(MAX(LatestEndTime) AS DATE) AS RecordEnd
     FROM
-        NormalisedSuperSummaries,
+        HybridSuperSummaries,
         Sites,
         VOs,
         DNs,

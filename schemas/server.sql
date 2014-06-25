@@ -714,7 +714,7 @@ CREATE VIEW VSuperSummaries AS
         vogroup.name VOGroup, 
         vorole.name VORole, 
         submithost.name SubmitHost,
-        InfrastructureType,
+        Infrastructure AS InfrastructureType,
         ServiceLevelType, 
         ServiceLevel,  
         NodeCount,
