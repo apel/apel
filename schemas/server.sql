@@ -324,7 +324,7 @@ BEGIN
          ROUND(IF(WallDuration > 0, WallDuration, 0) * IF(ServiceLevelType = "HEPSPEC", ServiceLevel, ServiceLevel / 250)) AS NormSumWCT,
          ROUND(IF(CpuDuration > 0, CpuDuration, 0) * IF(ServiceLevelType = "HEPSPEC", ServiceLevel, ServiceLevel / 250)) AS NormSumCPU,
          NumberOfJobs
-  FROM Summaries
+  FROM Summaries;
 END //
 DELIMITER ;
 
