@@ -1,4 +1,4 @@
--- Extra views on NormalisedSuperSummaries for the central APEL server.
+-- Extra views on HybridSuperSummaries for the central APEL server.
 -- This schema does not need to be loaded by regional servers.
 -- -----------------------------------------------------------------------------
 

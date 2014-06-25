@@ -784,8 +784,8 @@ CREATE VIEW VNormalisedSuperSummaries AS
 
 
 -- -----------------------------------------------------------------------------
--- View on NormalisedSuperSummaries
--- useful form of data from NormalisedSuperSummaries
+-- View on HybridSuperSummaries
+-- useful form of data from HybridSuperSummaries
 
 -- TODO Check relevance of this view
 DROP VIEW IF EXISTS VUserSummaries;

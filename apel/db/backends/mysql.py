@@ -87,7 +87,7 @@ class ApelMysqlDb(object):
         self._summarise_jobs_proc = "SummariseJobs"
         self._normalise_summaries_proc = "NormaliseSummaries"
         self._summarise_vms_proc = "SummariseVMs"
-        self._copy_summaries_proc = "CopySummaries"
+        self._copy_summaries_proc = "CopyNormalisedSummaries"
         self._hep_spec_hist_proc = "CreateHepSpecHistory"
         self._join_records_proc = "JoinJobRecords"
         self._local_jobs_proc = "LocalJobs"
@@ -281,7 +281,7 @@ class ApelMysqlDb(object):
     def summarise_jobs(self):
         '''
         Aggregate the data from the JobRecords table and put the results in the 
-        NormalisedSuperSummaries table.  This method does this by calling the 
+        HybridSuperSummaries table.  This method does this by calling the 
         SummariseJobs stored procedure.
         
         Any failure will result in the entire transaction being rolled 
@@ -308,11 +308,11 @@ class ApelMysqlDb(object):
     
     def normalise_summaries(self):
         """
-        Normalise data from Summaries and insert into NormalisedSuperSummaries.
+        Normalise data from Summaries and insert into HybridSuperSummaries.
 
         Normalise the data from the Summaries table (calculate the normalised
         wall clock and cpu duration values from the ServiceLevel fields) and put
-        the results in the NormalisedSuperSummaries table. This is done by
+        the results in the HybridSuperSummaries table. This is done by
         calling the NormaliseSummaries stored procedure.
 
         Any failure will result in the entire transaction being rolled 
@@ -339,7 +339,7 @@ class ApelMysqlDb(object):
     
     def copy_summaries(self):
         '''
-        Copy summaries from the NormalisedSummaries table to the NormalisedSuperSummaries table.
+        Copy summaries from the NormalisedSummaries table to the HybridSuperSummaries table.
         ''' 
         try:
             # prevent MySQLdb from raising
