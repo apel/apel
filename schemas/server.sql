@@ -237,9 +237,9 @@ CREATE TABLE HybridSuperSummaries (
   VOGroupID INT NOT NULL,               -- ID for lookup table
   VORoleID INT NOT NULL,                -- ID for lookup table
   SubmitHostId INT NOT NULL,            -- ID for lookup table
-  Infrastructure VARCHAR(20),
-  ServiceLevelType VARCHAR(50),
-  ServiceLevel DECIMAL(10,3),
+  Infrastructure VARCHAR(20) NOT NULL,
+  ServiceLevelType VARCHAR(50) NOT NULL,
+  ServiceLevel DECIMAL(10,3) NOT NULL,
   NodeCount INT NOT NULL,
   Processors INT NOT NULL,
   EarliestEndTime DATETIME,
