@@ -18,7 +18,7 @@
 # - BLAH
 # - PBS
 # - SGE
-# - LSF (5.x, 6.x, 7.x 8.x)
+# - LSF (5.x to 9.x)
 
 '''
     @author: Konrad Jopek, Will Rogers
