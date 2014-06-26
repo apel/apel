@@ -89,6 +89,8 @@ CREATE VIEW VSpecIntHistory AS
            CAST(MAX(LatestEndTime) AS DATE) AS RecordEnd
     FROM HybridSuperSummaries
     JOIN Sites AS site ON SiteID = site.id
+    -- Exclude sites that send normalised summaries where service level is not set
+    WHERE ServiceLevelType <> ''
     GROUP BY SiteID,
              SpecInt2000,
              Year,
@@ -107,6 +109,8 @@ CREATE VIEW VHepSpecHistory AS
          CAST(MAX(LatestEndTime) AS DATE) AS LatestEndDate
   FROM HybridSuperSummaries
   JOIN Sites AS site ON SiteID = site.id
+  -- Exclude sites that send normalised summaries where service level is not set
+  WHERE ServiceLevelType <> ''
   GROUP BY SiteID,
            HepSpec06,
            Year,
