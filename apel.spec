@@ -4,8 +4,8 @@
 %endif
 
 Name:           apel
-Version:        1.2.0
-Release:        1%{?dist}
+Version:        1.3.0
+Release:        0.1.rc1%{?dist}
 Summary:        APEL packages
 
 Group:          Development/Languages
@@ -33,7 +33,7 @@ apel-lib provides required libraries for the rest of APEL system.
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apel-lib >= 1.2.0
+Requires:       apel-lib >= 1.3.0
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -43,7 +43,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.2.0, apel-ssm
+Requires:       apel-lib >= 1.3.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -54,7 +54,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.2.0, apel-ssm
+Requires:       apel-lib >= 1.3.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -171,6 +171,12 @@ exit 0
 %config(noreplace) %{apelconf}/auth.cfg
 
 %changelog
+ * Fri Jun 27 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.1.rc1
+ - Added support for APEL servers to be sent normalised summaries using the new
+   summary job record format (v0.3).
+ - Some views used by the central APEL server, which shouldn't be needed by
+   regional servers, have been separated out into server-extra.sql.
+
  * Thu Jun 26 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.0-1
  - Added support for version 9 LSF batch logs to LSF parser.
  - Improved input checking for SLURM and PBS parsers.
