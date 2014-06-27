@@ -122,7 +122,7 @@ CREATE PROCEDURE ReplaceSummary(
   site VARCHAR(255),  month INT,  year INT, 
   globalUserName VARCHAR(255), vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255), 
   submitHost VARCHAR(255), infrastructureType VARCHAR(50), serviceLevelType VARCHAR(50), serviceLevel DECIMAL(10,3),
-  nodeCount INT, processors INT, earliestEndTime DATETIME, latestEndTime DATETIME, wallDuration INT, cpuDuration INT, 
+  nodeCount INT, processors INT, earliestEndTime DATETIME, latestEndTime DATETIME, wallDuration BIGINT, cpuDuration BIGINT, 
    numberOfJobs INT, publisherDN VARCHAR(255))
 BEGIN
     REPLACE INTO Summaries(SiteID, Month, Year, GlobalUserNameID, VOID, 

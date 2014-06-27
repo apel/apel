@@ -12,7 +12,7 @@ components:
   ------------
 These extract data from the following batch systems:
  * SGE/OGE
- * LSF 5.x, 6.x, 7.x, 8.x
+ * LSF 5.x to 9.x
  * PBS
 and place in the client database.
 

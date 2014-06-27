@@ -90,8 +90,15 @@ class SlurmParser(Parser):
         if rc['Queue'] == '':
             del rc['Queue']
 
-        assert rc['CpuDuration'] >= 0, 'Negative CpuDuration value'
-        assert rc['WallDuration'] >= 0, 'Negative WallDuration value'
+        # Input checking
+        if rc['CpuDuration'] < 0:
+            raise ValueError('Negative CpuDuration value')
+
+        if rc['WallDuration'] < 0:
+            raise ValueError('Negative WallDuration value')
+
+        if rc['StopTime'] < rc['StartTime']:
+            raise ValueError('StopTime less than StartTime')
 
         record = EventRecord()
         record.set_all(rc)
