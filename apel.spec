@@ -4,8 +4,8 @@
 %endif
 
 Name:           apel
-Version:        1.1.2
-Release:        0%{?dist}
+Version:        1.2.0
+Release:        1%{?dist}
 Summary:        APEL packages
 
 Group:          Development/Languages
@@ -33,7 +33,7 @@ apel-lib provides required libraries for the rest of APEL system.
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apel-lib >= 1.1.2
+Requires:       apel-lib >= 1.2.0
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -43,7 +43,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.1.2, apel-ssm
+Requires:       apel-lib >= 1.2.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -54,7 +54,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.1.2, apel-ssm
+Requires:       apel-lib >= 1.2.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -171,6 +171,21 @@ exit 0
 %config(noreplace) %{apelconf}/auth.cfg
 
 %changelog
+ * Thu Jun 26 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.0-1
+ - Added support for version 9 LSF batch logs to LSF parser.
+ - Improved input checking for SLURM and PBS parsers.
+ - Improved message handling for regional servers and central APEL server.
+ - When parsed files are skipped the log message now gives a clearer reason.
+ - Corrected line numbers in 'skipping' log messages which were 1 less than the
+   actual value. (Also affects StopLine column of ProcessedFiles table).
+
+ * Wed Dec 11 2013 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.1.3-0
+ - Added catch for xml parser exceptions to fix db loader crash.
+ - Changed SLURM parser to handle times greater than a day and unit prefixes
+   greater than K.
+ - Added ORDER BY NULL to GROUP BY queries to improve performance.
+ - Changed client.py to fetch site_name if joiner is enabled to fix crash.
+
  * Fri May 31 2013 Stuart Pullinger <stuart.pullinger@stfc.ac.uk> - 1.1.2-0
  - Changed file permissions for parser.cfg, client.cfg and db.cfg 
    to 0600, owner and group of db.cfg to apel:apel, in apel.spec

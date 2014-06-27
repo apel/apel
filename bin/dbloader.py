@@ -103,39 +103,32 @@ def run_as_daemon(loader, interval):
     rootlogger = logging.getLogger()
     log_files = [x.stream for x in rootlogger.handlers]
     dc = DaemonContext(files_preserve=log_files)
-    
-    try:
-        # Note: because we need to be compatible with python 2.4, we can't use
-        # with dc:
-        # here - we need to call the open() and close() methods 
-        # manually.
-        dc.open()
-        loader.startup()
 
-        # every <interval> seconds, process the records in the incoming 
-        # directory  
-        while True:
-            loader.load_all_msgs()
-            time.sleep(interval)
-                
-    except SystemExit, e:
-        log.info("Received the shutdown signal: " + str(e))
+    try:
+        try:
+            # Note: Because we need to be compatible with Python 2.4, we can't
+            # use "with dc:" here - we need to call the open() and close()
+            # methods manually.
+            dc.open()
+            loader.startup()
+
+            # every <interval> seconds, process the records in the incoming
+            # directory
+            while True:
+                loader.load_all_msgs()
+                time.sleep(interval)
+
+        except SystemExit, e:
+            log.info("Received the shutdown signal: %s" % e)
+        except LoaderException, e:
+            log.critical("An unrecoverable exception was thrown: %s" % e)
+        except Exception, e:
+            log.exception("Unexpected exception. Traceback follows...")
+    finally:
+        log.info("The loader will shutdown.")
         loader.shutdown()
         dc.close()
-    except LoaderException, e:
-        log.error("An unrecoverable exception was thrown:")
-        log.error(str(e))
-        log.error("The loader will exit.")  
-        loader.shutdown()
-        dc.close()
-    except Exception, e:
-        log.error(type(e))
-        log.error(str(e))
-        log.error("Unexpected exception: " + str(e))
-        log.error("The loader will exit.")  
-        loader.shutdown()
-        dc.close()
-        
+
     log.info("=======================")
 
 

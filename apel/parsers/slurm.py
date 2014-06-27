@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
    @author: Lisa Zangrando, Will Rogers
 '''
 from apel.common import parse_time
@@ -30,7 +30,7 @@ def parse_local_timestamp(datetime_string):
     '''
     Parse a timestamp without TZ information, assuming that it is
     referring to system time.  Return a datetime converted to UTC.
-    
+
     SLURM timestamps are in the form '2013-06-01T10:00:00'.
     '''
     unix_time = time.mktime(time.strptime(datetime_string, "%Y-%m-%dT%H:%M:%S"))
@@ -44,32 +44,25 @@ class SlurmParser(Parser):
     def __init__(self, site, machine_name, mpi):
         Parser.__init__(self, site, machine_name, mpi)
         log.info('Site: %s; batch system: %s' % (self.site_name, self.machine_name))
-    
+
     def parse(self, line):
         '''
         Parses single line from accounting log file.
         '''
         # /usr/local/bin/sacct -P -n --format=JobID,JobName,User,Group,Start,End,Elapsed,CPUTimeRAW,Partition,NCPUS,NNodes,NodeList,MaxRSS,MaxVMSize,State -j $JOBID >> /var/log/apel/slurm_acc.20130311
         # 1007|cream_612883006|dteam005|dteam|2013-03-27T17:13:41|2013-03-27T17:13:44|00:00:03|3|prod|1|1|cert-40|||COMPLETED
-        
+
         # log.info('line: %s' % (line));
         values = line.strip().split('|')
-        
+
         if values[14] != 'COMPLETED':
             return None
 
-        rmem = None
-        if values[12]:
-            # remove 'K' string from the end
-            rmem = int(values[12][:-1])
+        rmem = self._normalise_memory(values[12])
 
-        vmem = None
-        if values[13]:
-            # remove 'K' string from the end
-            vmem = int(values[13][:-1])
+        vmem = self._normalise_memory(values[13])
 
-        mapping = {
-                   'Site'            : lambda x: self.site_name,
+        mapping = {'Site'            : lambda x: self.site_name,
                    'MachineName'     : lambda x: self.machine_name,
                    'Infrastructure'  : lambda x: "APEL-CREAM-SLURM",
                    'JobName'         : lambda x: x[0],
@@ -80,25 +73,51 @@ class SlurmParser(Parser):
                    # SLURM gives timestamps which are in system time.
                    'StartTime'       : lambda x: parse_local_timestamp(x[4]),
                    'StopTime'        : lambda x: parse_local_timestamp(x[5]),
-                   'Queue'           : lambda x: x[9],
-                   'MemoryReal'      : lambda x: rmem, # KB
-                   'MemoryVirtual'   : lambda x: vmem, # KB
+                   'Queue'           : lambda x: x[8],
+                   'MemoryReal'      : lambda x: rmem,  # KB
+                   'MemoryVirtual'   : lambda x: vmem,  # KB
                    'Processors'      : lambda x: int(x[9]),
                    'NodeCount'       : lambda x: int(x[10])
-        }
+                   }
 
         rc = {}
 
         for key in mapping:
             rc[key] = mapping[key](values)
 
-        assert rc['CpuDuration'] >= 0, 'Negative CpuDuration value'
-        assert rc['WallDuration'] >= 0, 'Negative WallDuration value'
+        # Delete the Queue key if empty and let the Record class handle it
+        # (usually by inserting the string 'None').
+        if rc['Queue'] == '':
+            del rc['Queue']
+
+        # Input checking
+        if rc['CpuDuration'] < 0:
+            raise ValueError('Negative CpuDuration value')
+
+        if rc['WallDuration'] < 0:
+            raise ValueError('Negative WallDuration value')
+
+        if rc['StopTime'] < rc['StartTime']:
+            raise ValueError('StopTime less than StartTime')
 
         record = EventRecord()
         record.set_all(rc)
-        return record      
+        return record
 
+    def _normalise_memory(self, mem):
+        """Strip unit prefix and return memory size as int in KB."""
 
+        # Accepted prefixes and their power of 1024 relative to KB.
+        unit_prefixes = {'K': 0, 'M': 1, 'G': 2, 'T': 3, 'P': 4}
 
-    
+        if mem:
+            if mem[-1:] in unit_prefixes:
+                mem = int(float(mem[:-1]) * 1024**unit_prefixes[mem[-1:]])
+            elif mem == '0':
+                raise ValueError("Incorrect memory value of 0. Should be blank or non-zero.")
+            else:
+                raise ValueError("Unsupported unit prefix '%s'. Expected one of [KMGTP]." % mem[-1:])
+        else:
+            mem = None
+
+        return mem

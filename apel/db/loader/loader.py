@@ -18,25 +18,29 @@
 Module containing the Loader class.
 '''
 
-import apel.db 
 import logging
 import os
-
-from apel.db.records import InvalidRecordException
-from apel.db.loader.xml_parser import XMLParserException
-from record_factory import RecordFactory, RecordFactoryException
+from xml.parsers.expat import ExpatError
 
 from dirq.queue import Queue
 
-# set up the logger 
+import apel.db
+from apel.db.loader.xml_parser import XMLParserException
+from apel.db.records import InvalidRecordException
+from record_factory import RecordFactory, RecordFactoryException
+
+
+# set up the logger
 log = logging.getLogger('loader')
 
 QSCHEMA = {"body": "string", "signer":"string", "empaid":"string?", "error": "string?"}
 REJECT_SCHEMA = {"body": "string", "signer":"string?", "empaid":"string?", "error": "string"}
 
+
 class LoaderException(Exception):
     ''' Exception for use by loader class.'''
     pass
+
 
 class Loader(object):
     '''
@@ -94,8 +98,16 @@ class Loader(object):
                 
     def shutdown(self):
         """
-        Remove the pidfile.
+        Unlock current messsage queue element and remove pidfile.
         """
+        # Check if self.current_msg is assigned as it may not have been before
+        # shutdown is called.
+        if hasattr(self, 'current_msg') and self.current_msg:
+            try:
+                self._inq.unlock(self.current_msg)
+            except OSError, e:
+                log.error('Unable to remove lock: %s' % e)
+
         pidfile = self._pidfile
         try:
             if os.path.exists(pidfile):
@@ -103,35 +115,37 @@ class Loader(object):
             else:
                 log.warn("pidfile %s not found." % pidfile)
         except IOError, e:
-            log.warn("Failed to remove pidfile %s: %e" % (pidfile, e))
+            log.warn("Failed to remove pidfile %s: %s" % (pidfile, e))
             log.warn("The loader may not start again until it is removed.")
             
         log.info("The loader has shut down.")
         
     def load_all_msgs(self):
-        '''
-        Get all the messages from the MessageDB and attempt to put them 
-        into the database.
-        '''
+        """
+        Get all the messages from the incoming queue and attempt to put them
+        into the database, then purge the accept, incoming, and reject queues.
+        """
         log.debug("======================")
         log.debug("Starting loader run.")
-        log.info("Found %s messages" % self._inq.count())
 
-        name = self._inq.first()
+        num_msgs = self._inq.count()
+        log.info("Found %s messages" % num_msgs)
+
+        self.current_msg = self._inq.first()
         # loop until there are no messages left
-        while name:
-            if not self._inq.lock(name):
-                log.warn("Skipping locked message: ID = %s" % name)
-                name = self._inq.next()
+        while self.current_msg:
+            if not self._inq.lock(self.current_msg):
+                log.warn("Skipping locked message %s" % self.current_msg)
+                self.current_msg = self._inq.next()
                 continue
-            log.debug("# reading element %s" % name)
-            data = self._inq.get(name)
+            log.debug("Reading message %s" % self.current_msg)
+            data = self._inq.get(self.current_msg)
             msg_id = data['empaid']
             signer = data['signer']
             msg_text = data['body']
             
             try:
-                log.info("Loading message: ID = " + msg_id)
+                log.info("Loading message %s. ID = %s" % (self.current_msg, msg_id))
                 self.load_msg(msg_text, signer)
                 
                 if self._save_msgs:
@@ -141,18 +155,28 @@ class Loader(object):
                     
             except (RecordFactoryException, LoaderException,
                     InvalidRecordException, apel.db.ApelDbException,
-                    XMLParserException), err:
-                errmsg = "Message parsing unsuccessful: %s." % str(err)
-                log.warn('Message rejected: %s' % errmsg)
+                    XMLParserException, ExpatError), err:
+                errmsg = "Parsing unsuccessful: %s" % str(err)
+                log.warn('Message rejected. %s' % errmsg)
                 self._rejectq.add({"body": msg_text, 
                                    "signer": signer, 
                                    "empaid": msg_id,
                                    "error": errmsg})
                 
-            log.info("Removing message: ID = " + msg_id)
-            self._inq.remove(name)
-            name = self._inq.next()
-            
+            log.info("Removing message %s. ID = %s" % (self.current_msg, msg_id))
+            self._inq.remove(self.current_msg)
+            self.current_msg = self._inq.next()
+
+        if num_msgs:  # Only tidy up if messages found
+            log.info('Tidying message directories')
+            try:
+                # Remove empty dirs and unlock msgs older than 5 min (default)
+                self._acceptq.purge()
+                self._inq.purge()
+                self._rejectq.purge()
+            except OSError, e:
+                log.error('OSError raised while purging message queues: %s' % e)
+
         log.debug("Loader run finished.")
         log.debug("======================")
         
@@ -161,13 +185,14 @@ class Loader(object):
         Load one message (i.e. one file; many records)
         from its text content into the database.
         '''
-        log.info('Loading message from ' + signer + '.')
+        log.info('Loading message from %s' % signer)
 
         # Create the record objects, using the RecordFactory
         records = self._rf.create_records(msg_text)
-        log.info('Message contains '+ str(len(records)) + ' records.')
+        log.info('Message contains %i records' % len(records))
         # Use the DB to load the records
+        log.debug('Loading records...')
         self._apeldb.load_records(records, source=signer)
         
-        log.debug('Message successfully loaded.')
+        log.debug('Records successfully loaded')
  
