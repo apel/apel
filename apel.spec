@@ -5,14 +5,14 @@
 
 Name:           apel
 Version:        1.2.0
-ReleaseNum:     3
-Release:        %{releasenum}%{?dist}
+Release:        4%{?dist}
 Summary:        APEL packages
 
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            https://wiki.egi.eu/wiki/APEL
-Source0:        %{name}-%{version}-%{releasenum}.tar.gz
+# Value between %{version} and extension must match "Release" without %{dist}
+Source:         %{name}-%{version}-4.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 
@@ -172,6 +172,9 @@ exit 0
 %config(noreplace) %{apelconf}/auth.cfg
 
 %changelog
+ * Mon Jun 30 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.0-4
+ - Updates made to rpmbuild spec file to support new versioning scheme.
+
  * Thu Jun 26 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.0-1
  - Added support for version 9 LSF batch logs to LSF parser.
  - Improved input checking for SLURM and PBS parsers.
