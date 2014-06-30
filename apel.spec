@@ -63,7 +63,8 @@ The apel-server package contains all code needed to receive accounting data
 from clients, to process and to send the results elsewhere using SSM.
 
 %prep
-%setup -q -n %{name}-%{version}
+# Value between %{version} and extension must match "Release" without %{dist}
+%setup -q -n %{name}-%{version}-4
 
 %build
 
