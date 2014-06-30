@@ -5,13 +5,14 @@
 
 Name:           apel
 Version:        1.2.0
-Release:        2%{?dist}
+ReleaseNum:     2
+Release:        %{releasenum}%{?dist}
 Summary:        APEL packages
 
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            https://wiki.egi.eu/wiki/APEL
-Source0:        %{name}-%{version}-%{release}.tar.gz
+Source0:        %{name}-%{version}-%{releasenum}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 
