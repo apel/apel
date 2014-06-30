@@ -5,14 +5,14 @@
 
 Name:           apel
 Version:        1.3.0
-Release:        0.1.rc1%{?dist}
+Release:        0.2.rc1%{?dist}
 Summary:        APEL packages
 
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            https://wiki.egi.eu/wiki/APEL
 # Value between %{version} and extension must match "Release" without %{dist}
-Source:         %{name}-%{version}-5.tar.gz
+Source:         %{name}-%{version}-0.2.rc1.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 
@@ -64,7 +64,7 @@ from clients, to process and to send the results elsewhere using SSM.
 
 %prep
 # Value between %{version} and extension must match "Release" without %{dist}
-%setup -q -n %{name}-%{version}-5
+%setup -q -n %{name}-%{version}-0.2.rc1
 
 %build
 
@@ -173,7 +173,7 @@ exit 0
 %config(noreplace) %{apelconf}/auth.cfg
 
 %changelog
- * Fri Jun 27 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.1.rc1
+ * Mon Jun 30 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.2.rc1
  - Added support for APEL servers to be sent normalised summaries using the new
    summary job record format (v0.3).
  - Some views used by the central APEL server, which shouldn't be needed by
