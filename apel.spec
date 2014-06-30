@@ -11,7 +11,8 @@ Summary:        APEL packages
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            https://wiki.egi.eu/wiki/APEL
-Source0:        %{name}-%{version}-%{release}.tar.gz
+# Value between %{version} and extension must match "Release" without %{dist}
+Source:         %{name}-%{version}-5.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 
@@ -62,7 +63,8 @@ The apel-server package contains all code needed to receive accounting data
 from clients, to process and to send the results elsewhere using SSM.
 
 %prep
-%setup -q -n %{name}-%{version}
+# Value between %{version} and extension must match "Release" without %{dist}
+%setup -q -n %{name}-%{version}-5
 
 %build
 
@@ -176,6 +178,9 @@ exit 0
    summary job record format (v0.3).
  - Some views used by the central APEL server, which shouldn't be needed by
    regional servers, have been separated out into server-extra.sql.
+
+ * Mon Jun 30 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.0-5
+ - Updates made to rpmbuild spec file to support new versioning scheme.
 
  * Thu Jun 26 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.0-1
  - Added support for version 9 LSF batch logs to LSF parser.
