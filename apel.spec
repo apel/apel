@@ -172,6 +172,9 @@ exit 0
 %config(noreplace) %{apelconf}/auth.cfg
 
 %changelog
+ * Mon Jun 30 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.0-4
+ - Updates made to rpmbuild spec file to support new versioning scheme.
+
  * Thu Jun 26 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.0-1
  - Added support for version 9 LSF batch logs to LSF parser.
  - Improved input checking for SLURM and PBS parsers.
