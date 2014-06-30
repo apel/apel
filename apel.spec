@@ -5,7 +5,7 @@
 
 Name:           apel
 Version:        1.2.0
-ReleaseNum:     2
+ReleaseNum:     3
 Release:        %{releasenum}%{?dist}
 Summary:        APEL packages
 
