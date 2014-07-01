@@ -106,6 +106,7 @@ cp conf/auth.cfg %{buildroot}%{apelconf}/
 # database schemas
 cp schemas/client.sql %{buildroot}%_datadir/apel/
 cp schemas/server.sql %{buildroot}%_datadir/apel/
+cp schemas/server-extra.sql %{buildroot}%_datadir/apel/
 cp schemas/cloud.sql %{buildroot}%_datadir/apel/
 cp schemas/storage.sql %{buildroot}%_datadir/apel/
 
@@ -152,6 +153,7 @@ exit 0
 %defattr(-,root,root,-)
 
 %_datadir/apel/server.sql
+%_datadir/apel/server-extra.sql
 %_datadir/apel/cloud.sql
 %_datadir/apel/storage.sql
 %attr(755,root,root) %_datadir/apel/msg_status.py
