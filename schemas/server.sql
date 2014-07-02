@@ -238,8 +238,10 @@ CREATE TABLE HybridSuperSummaries (
   VORoleID INT NOT NULL,                -- ID for lookup table
   SubmitHostId INT NOT NULL,            -- ID for lookup table
   Infrastructure VARCHAR(20) NOT NULL,
-  ServiceLevelType VARCHAR(50) NOT NULL,
-  ServiceLevel DECIMAL(10,3) NOT NULL,
+  /* Defaults for service level fields set so that warnings are not raised when
+  normalised summaries (which lack service level fields) are copied in.*/
+  ServiceLevelType VARCHAR(50) NOT NULL DEFAULT '',
+  ServiceLevel DECIMAL(10,3) NOT NULL DEFAULT 0,
   NodeCount INT NOT NULL,
   Processors INT NOT NULL,
   EarliestEndTime DATETIME,
