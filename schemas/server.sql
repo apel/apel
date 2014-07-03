@@ -194,6 +194,7 @@ DELIMITER ;
 
 -- -----------------------------------------------------------------------------
 -- SuperSummaries
+-- Deprecated in 1.3.0
 DROP TABLE IF EXISTS SuperSummaries;
 CREATE TABLE SuperSummaries (
   UpdateTime TIMESTAMP,
@@ -789,7 +790,7 @@ CREATE VIEW VNormalisedSuperSummaries AS
 -- View on HybridSuperSummaries
 -- useful form of data from HybridSuperSummaries
 
--- TODO Check relevance of this view
+-- TODO Check relevance of this view and possibly move to server-extra.sql
 DROP VIEW IF EXISTS VUserSummaries;
 CREATE VIEW VUserSummaries AS
     SELECT 
