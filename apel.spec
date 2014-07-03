@@ -5,14 +5,14 @@
 
 Name:           apel
 Version:        1.3.0
-Release:        0.3.rc2%{?dist}
+Release:        0.4.rc3%{?dist}
 Summary:        APEL packages
 
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            https://wiki.egi.eu/wiki/APEL
 # Value between %{version} and extension must match "Release" without %{dist}
-Source:         %{name}-%{version}-0.3.rc2.tar.gz
+Source:         %{name}-%{version}-0.4.rc3.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 
@@ -64,7 +64,7 @@ from clients, to process and to send the results elsewhere using SSM.
 
 %prep
 # Value between %{version} and extension must match "Release" without %{dist}
-%setup -q -n %{name}-%{version}-0.3.rc2
+%setup -q -n %{name}-%{version}-0.4.rc3
 
 %build
 
@@ -175,6 +175,9 @@ exit 0
 %config(noreplace) %{apelconf}/auth.cfg
 
 %changelog
+ * Thu Jul 03 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.4.rc3
+ - Add partitioning statement to schema used by central APEL server.
+
  * Thu Jul 03 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.3.rc2
  - Corrections made to server schema to avoid warnings about default values not
    being set.

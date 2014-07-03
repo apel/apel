@@ -1,5 +1,8 @@
 Changelog for apel
 ==================
+ * Thu Jul 03 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.4.rc3
+ - Add partitioning statement to schema used by central APEL server.
+
  * Thu Jul 03 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.3.rc2
  - Corrections made to server schema to avoid warnings about default values not
    being set.
