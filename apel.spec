@@ -175,7 +175,7 @@ exit 0
 %config(noreplace) %{apelconf}/auth.cfg
 
 %changelog
- * Wed Jul 02 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.3.rc2
+ * Thu Jul 03 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.3.rc2
  - Corrections made to server schema to avoid warnings about default values not
    being set.
  - Added missing file to rpmbuild spec file.
