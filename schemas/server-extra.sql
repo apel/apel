@@ -173,3 +173,21 @@ CREATE VIEW VHepSpecHistory AS
            HepSpec06,
            Year,
            Month;
+
+-- -----------------------------------------------------------------------------
+
+DROP VIEW IF EXISTS VLcgRecordsSync_v2;
+
+CREATE VIEW VLcgRecordsSync_v2 AS
+  SELECT CONCAT(site.name,'-',SyncRecords.Year,'-',SyncRecords.Month) AS RecordIdentity,
+         site.name AS ExecutingSite,
+         SUM(SyncRecords.NumberOfJobs) AS Njobs,
+         NULL AS Ndays,
+         NULL AS RecordStart,
+         NULL AS RecordEnd,
+         CAST(SyncRecords.UpdateTime AS DATE) AS MeasurementDate,
+         CAST(SyncRecords.UpdateTime AS TIME) AS MeasurementTime
+  FROM SyncRecords
+  JOIN Sites AS site
+  WHERE SyncRecords.SiteID = site.id
+  GROUP BY 1;
