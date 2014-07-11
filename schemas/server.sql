@@ -122,7 +122,7 @@ CREATE PROCEDURE ReplaceSummary(
   site VARCHAR(255),  month INT,  year INT, 
   globalUserName VARCHAR(255), vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255), 
   submitHost VARCHAR(255), infrastructureType VARCHAR(50), serviceLevelType VARCHAR(50), serviceLevel DECIMAL(10,3),
-  nodeCount INT, processors INT, earliestEndTime DATETIME, latestEndTime DATETIME, wallDuration INT, cpuDuration INT, 
+  nodeCount INT, processors INT, earliestEndTime DATETIME, latestEndTime DATETIME, wallDuration BIGINT, cpuDuration BIGINT, 
    numberOfJobs INT, publisherDN VARCHAR(255))
 BEGIN
     REPLACE INTO Summaries(SiteID, Month, Year, GlobalUserNameID, VOID, 
@@ -194,6 +194,7 @@ DELIMITER ;
 
 -- -----------------------------------------------------------------------------
 -- SuperSummaries
+-- Deprecated in 1.3.0
 DROP TABLE IF EXISTS SuperSummaries;
 CREATE TABLE SuperSummaries (
   UpdateTime TIMESTAMP,
@@ -238,8 +239,10 @@ CREATE TABLE HybridSuperSummaries (
   VORoleID INT NOT NULL,                -- ID for lookup table
   SubmitHostId INT NOT NULL,            -- ID for lookup table
   Infrastructure VARCHAR(20) NOT NULL,
-  ServiceLevelType VARCHAR(50) NOT NULL,
-  ServiceLevel DECIMAL(10,3) NOT NULL,
+  /* Defaults for service level fields set so that warnings are not raised when
+  normalised summaries (which lack service level fields) are copied in.*/
+  ServiceLevelType VARCHAR(50) NOT NULL DEFAULT '',
+  ServiceLevel DECIMAL(10,3) NOT NULL DEFAULT 0,
   NodeCount INT NOT NULL,
   Processors INT NOT NULL,
   EarliestEndTime DATETIME,
@@ -787,7 +790,7 @@ CREATE VIEW VNormalisedSuperSummaries AS
 -- View on HybridSuperSummaries
 -- useful form of data from HybridSuperSummaries
 
--- TODO Check relevance of this view
+-- TODO Check relevance of this view and possibly move to server-extra.sql
 DROP VIEW IF EXISTS VUserSummaries;
 CREATE VIEW VUserSummaries AS
     SELECT 
@@ -818,7 +821,8 @@ CREATE VIEW VUserSummaries AS
         summary.VOGroupID,
         summary.VORoleID,
         summary.Year,
-        summary.Month;
+        summary.Month
+    ORDER BY NULL;
 
 
 -- -----------------------------------------------------------------------------

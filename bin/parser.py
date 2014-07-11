@@ -18,7 +18,7 @@
 # - BLAH
 # - PBS
 # - SGE
-# - LSF (5.x, 6.x, 7.x 8.x)
+# - LSF (5.x to 9.x)
 
 '''
     @author: Konrad Jopek, Will Rogers
@@ -93,18 +93,21 @@ def parse_file(parser, apel_db, fp, replace):
     # how many times given error was raised
     exceptions = {}
     
-    line_no = 0
+    index = 0
     parsed = 0
     failed = 0
     ignored = 0
     
-    for line_no, line in enumerate(fp):
+    for index, line in enumerate(fp):
+        # Indexing is from zero so add 1 to find line number. Can't use start=1
+        # in enumerate() to maintain Python 2.4 compatibility.
+        line_number = index + 1
         try:
             record = parser.parse(line)
         except Exception, e:
-            log.debug('Error %s on line %d' % (str(e), line_no))
+            log.debug('Error %s on line %d' % (e, line_number))
             failed += 1
-            if exceptions.has_key(str(e)):
+            if str(e) in exceptions:
                 exceptions[str(e)] += 1
             else:
                 exceptions[str(e)] = 1
@@ -121,7 +124,7 @@ def parse_file(parser, apel_db, fp, replace):
         
     apel_db.load_records(records, replace=replace)
     
-    if line_no == 0:
+    if index == 0:
         log.info('Ignored empty file.')
     elif parsed == 0:
         log.warn('Failed to parse file.  Is %s correct?' % parser.__class__.__name__)        
@@ -133,7 +136,7 @@ def parse_file(parser, apel_db, fp, replace):
         for error in exceptions:
             log.error('%s raised %d times' % (error, exceptions[error]))
     
-    return parsed, line_no
+    return parsed, line_number
 
         
 def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
@@ -155,6 +158,7 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                 # first, calculate the hash of the file:
                 file_hash = calculate_hash(abs_file)
                 found = False
+                unparsed = False
                 # next, try to find corresponding entry
                 # in database
                 for pf in processed:
@@ -163,6 +167,10 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         # we will leave this record unmodified
                         updated.append(pf)
                         found = True
+                        # Check for zero parsed lines so we can warn later on.
+                        if pf.get_field('Parsed') == 0:
+                            unparsed = True
+                        break  # If we find a match, no need to keep checking.
                         
                 if reparse or not found:
                     try:
@@ -171,14 +179,14 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         # a regular file
                         try:
                             fp = gzip.open(abs_file)
-                            parsed, total = parse_file(parser, apel_db, fp, reparse)
-                        except IOError, e: # not a gzipped file
+                        except IOError, e:  # not a gzipped file
                             fp = open(abs_file, 'r')
+                        try:
                             parsed, total = parse_file(parser, apel_db, fp, reparse)
+                        finally:
                             fp.close()
                     except IOError, e:
-                        log.error('Cannot open file %s due to: %s' % 
-                                     (item, str(e)))
+                        log.error('Cannot open file %s: %s' % (item, e))
                     except ApelDbException, e:
                         log.error('Failed to parse %s due to a database problem: %s' % (item, e))
                     else:
@@ -189,10 +197,13 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         pr.set_field('StopLine', total)
                         pr.set_field('Parsed', parsed)
                         updated.append(pr)
+                elif unparsed:
+                    log.info('Skipping file (failed to parse previously): %s'
+                             % abs_file)
                 else:
-                    log.info('%s already parsed, omitting' % abs_file)
+                    log.info('Skipping file (already parsed): %s ' % abs_file)
             elif os.path.isfile(abs_file):
-                log.info('Filename does not match configuration: %s' % item)
+                log.info('Filename does not match pattern: %s' % item)
         
         return updated
     

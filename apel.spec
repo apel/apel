@@ -4,14 +4,15 @@
 %endif
 
 Name:           apel
-Version:        1.1.2
-Release:        0%{?dist}
+Version:        1.3.0
+Release:        0.4.rc3%{?dist}
 Summary:        APEL packages
 
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            https://wiki.egi.eu/wiki/APEL
-Source0:        %{name}-%{version}.tar.gz
+# Value between %{version} and extension must match "Release" without %{dist}
+Source:         %{name}-%{version}-0.4.rc3.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 
@@ -33,7 +34,7 @@ apel-lib provides required libraries for the rest of APEL system.
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apel-lib >= 1.1.2
+Requires:       apel-lib >= 1.3.0
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -43,7 +44,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.1.2, apel-ssm
+Requires:       apel-lib >= 1.3.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -54,7 +55,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.1.2, apel-ssm
+Requires:       apel-lib >= 1.3.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -62,7 +63,8 @@ The apel-server package contains all code needed to receive accounting data
 from clients, to process and to send the results elsewhere using SSM.
 
 %prep
-%setup -q -n %{name}-%{version}
+# Value between %{version} and extension must match "Release" without %{dist}
+%setup -q -n %{name}-%{version}-0.4.rc3
 
 %build
 
@@ -104,6 +106,7 @@ cp conf/auth.cfg %{buildroot}%{apelconf}/
 # database schemas
 cp schemas/client.sql %{buildroot}%_datadir/apel/
 cp schemas/server.sql %{buildroot}%_datadir/apel/
+cp schemas/server-extra.sql %{buildroot}%_datadir/apel/
 cp schemas/cloud.sql %{buildroot}%_datadir/apel/
 cp schemas/storage.sql %{buildroot}%_datadir/apel/
 
@@ -150,6 +153,7 @@ exit 0
 %defattr(-,root,root,-)
 
 %_datadir/apel/server.sql
+%_datadir/apel/server-extra.sql
 %_datadir/apel/cloud.sql
 %_datadir/apel/storage.sql
 %attr(755,root,root) %_datadir/apel/msg_status.py
@@ -171,6 +175,38 @@ exit 0
 %config(noreplace) %{apelconf}/auth.cfg
 
 %changelog
+ * Thu Jul 03 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.4.rc3
+ - Add partitioning statement to schema used by central APEL server.
+
+ * Thu Jul 03 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.3.rc2
+ - Corrections made to server schema to avoid warnings about default values not
+   being set.
+ - Added missing file to rpmbuild spec file.
+
+ * Mon Jun 30 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.2.rc1
+ - Added support for APEL servers to be sent normalised summaries using the new
+   summary job record format (v0.3).
+ - Some views used by the central APEL server, which shouldn't be needed by
+   regional servers, have been separated out into server-extra.sql.
+
+ * Mon Jun 30 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.0-5
+ - Updates made to rpmbuild spec file to support new versioning scheme.
+
+ * Thu Jun 26 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.0-1
+ - Added support for version 9 LSF batch logs to LSF parser.
+ - Improved input checking for SLURM and PBS parsers.
+ - Improved message handling for regional servers and central APEL server.
+ - When parsed files are skipped the log message now gives a clearer reason.
+ - Corrected line numbers in 'skipping' log messages which were 1 less than the
+   actual value. (Also affects StopLine column of ProcessedFiles table).
+
+ * Wed Dec 11 2013 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.1.3-0
+ - Added catch for xml parser exceptions to fix db loader crash.
+ - Changed SLURM parser to handle times greater than a day and unit prefixes
+   greater than K.
+ - Added ORDER BY NULL to GROUP BY queries to improve performance.
+ - Changed client.py to fetch site_name if joiner is enabled to fix crash.
+
  * Fri May 31 2013 Stuart Pullinger <stuart.pullinger@stfc.ac.uk> - 1.1.2-0
  - Changed file permissions for parser.cfg, client.cfg and db.cfg 
    to 0600, owner and group of db.cfg to apel:apel, in apel.spec

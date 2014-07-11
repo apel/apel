@@ -176,23 +176,25 @@ class ApelMysqlDb(object):
             yield batch
 
     def get_sync_records(self, query=None, rec_number=1000):
-        '''
-        Get sync records from the SuperSummaries table.  Filter by the 
+        """
+        Get sync records from the SuperSummaries table. Filter by the
         provided query.
-        '''
+        """
         if query is not None:
             where = query.get_where()
         else:
             where = ''
-        
-        select_query = '''SELECT Site, SubmitHost, sum(NumberOfJobs) as NumberOfJobs, 
-        Month, Year FROM VSuperSummaries %s GROUP BY Site, SubmitHost, Month, Year''' % where
-        
+
+        select_query = ('SELECT Site, SubmitHost, sum(NumberOfJobs) '
+                        'AS NumberOfJobs, Month, Year FROM VSuperSummaries %s '
+                        'GROUP BY Site, SubmitHost, Month, Year ORDER BY NULL'
+                        % where)
+
         log.debug(select_query)
-    
+
         for batch in self._get_records(SyncRecord, select_query, rec_number):
             yield batch
-        
+
     def _get_records(self, record_type, query_string, rec_number=1000):
 
         record_list = []

@@ -478,7 +478,8 @@ BEGIN
     COUNT(*) AS Njobs
     FROM JobRecords 
     GROUP BY SiteID, VOID, GlobalUserNameID, VOGroupID, VORoleID, EndYear, EndMonth, InfrastructureType, 
-             SubmitHostID, ServiceLevelType, ServiceLevel, NodeCount, Processors;
+             SubmitHostID, ServiceLevelType, ServiceLevel, NodeCount, Processors
+    ORDER BY NULL;
 END //
 DELIMITER ;
 
@@ -737,7 +738,8 @@ CREATE VIEW VSyncRecords as
     FROM SuperSummaries, Sites site, SubmitHosts host
     WHERE site.id = SuperSummaries.SiteID
     AND host.id = SuperSummaries.SubmitHostID
-    GROUP BY Site, SubmitHost, Month, Year;
+    GROUP BY Site, SubmitHost, Month, Year
+    ORDER BY NULL;
 
 -- -----------------------------------------------------------------------------
 -- View on SpecRecords

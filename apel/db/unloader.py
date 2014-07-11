@@ -185,7 +185,7 @@ class DbUnloader(object):
         
         log.info('Getting summaries for months since: %s' % since.date())
         if since is not None:
-            query.EarliestEndTime_gt = str(since)
+            query.EarliestEndTime_ge = str(since)
             
         msgs, records = self._write_messages(record_type, table_name, query, ur)
         
