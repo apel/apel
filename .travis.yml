@@ -1,0 +1,15 @@
+language: python
+python:
+  - "2.6"
+  - "2.7"
+# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+install:
+  - pip install MySQL-python
+  - pip install python-ldap
+  - pip install iso8601
+  - pip install unittest2
+# command to run tests, e.g. python setup.py test
+script:
+  - export PYTHONPATH=$PYTHONPATH:`pwd -P`
+  - cd test
+  - unit2 discover
