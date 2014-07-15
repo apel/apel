@@ -1,10 +1,11 @@
-from unittest import TestCase
-from apel.db.loader import StarParser
 from datetime import datetime
+import unittest
 
+from apel.db.loader import StarParser
 from test_car_parser import datetimes_equal
 
-class StarParserTest(TestCase):
+
+class StarParserTest(unittest.TestCase):
     '''
     Test case for StarParser
     '''
@@ -119,3 +120,6 @@ class StarParserTest(TestCase):
                         self.fail("Datetimes don't match for key %s: %s, %s" % (key, cont[key], self.cases[star][key]))
                 else:
                     self.assertEqual(cont[key], self.cases[star][key], "%s != %s for key %s" % (cont[key], self.cases[star][key], key))
+
+if __name__ == '__main__':
+    unittest.main()
