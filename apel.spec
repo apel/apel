@@ -4,15 +4,15 @@
 %endif
 
 Name:           apel
-Version:        1.2.0
-Release:        5%{?dist}
+Version:        1.3.0
+Release:        1%{?dist}
 Summary:        APEL packages
 
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            https://wiki.egi.eu/wiki/APEL
 # Value between %{version} and extension must match "Release" without %{dist}
-Source:         %{name}-%{version}-5.tar.gz
+Source:         %{name}-%{version}-1.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 
@@ -34,7 +34,7 @@ apel-lib provides required libraries for the rest of APEL system.
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apel-lib >= 1.2.0
+Requires:       apel-lib >= 1.3.0
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -44,7 +44,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.2.0, apel-ssm
+Requires:       apel-lib >= 1.3.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -55,7 +55,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.2.0, apel-ssm
+Requires:       apel-lib >= 1.3.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -63,8 +63,8 @@ The apel-server package contains all code needed to receive accounting data
 from clients, to process and to send the results elsewhere using SSM.
 
 %prep
-# Value between %{version} and extension must match "Release" without %{dist}
-%setup -q -n %{name}-%{version}-5
+# Value after %{version} must match "Release" without %{dist}
+%setup -q -n %{name}-%{version}-1
 
 %build
 
@@ -106,6 +106,7 @@ cp conf/auth.cfg %{buildroot}%{apelconf}/
 # database schemas
 cp schemas/client.sql %{buildroot}%_datadir/apel/
 cp schemas/server.sql %{buildroot}%_datadir/apel/
+cp schemas/server-extra.sql %{buildroot}%_datadir/apel/
 cp schemas/cloud.sql %{buildroot}%_datadir/apel/
 cp schemas/storage.sql %{buildroot}%_datadir/apel/
 
@@ -152,6 +153,7 @@ exit 0
 %defattr(-,root,root,-)
 
 %_datadir/apel/server.sql
+%_datadir/apel/server-extra.sql
 %_datadir/apel/cloud.sql
 %_datadir/apel/storage.sql
 %attr(755,root,root) %_datadir/apel/msg_status.py
@@ -173,6 +175,23 @@ exit 0
 %config(noreplace) %{apelconf}/auth.cfg
 
 %changelog
+ * Tue Jul 15 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-1
+ - Added in a missing database view that the central APEL server uses.
+
+ * Thu Jul 03 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.4.rc3
+ - Add partitioning statement to schema used by central APEL server.
+
+ * Thu Jul 03 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.3.rc2
+ - Corrections made to server schema to avoid warnings about default values not
+   being set.
+ - Added missing file to rpmbuild spec file.
+
+ * Mon Jun 30 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.2.rc1
+ - Added support for APEL servers to be sent normalised summaries using the new
+   summary job record format (v0.3).
+ - Some views used by the central APEL server, which shouldn't be needed by
+   regional servers, have been separated out into server-extra.sql.
+
  * Mon Jun 30 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.0-5
  - Updates made to rpmbuild spec file to support new versioning scheme.
 

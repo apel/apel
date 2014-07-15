@@ -104,7 +104,7 @@ ServiceLevel: 1000
     
     
         self._sr_text = '''\
-APEL-summary-job-message: v0.1
+APEL-summary-job-message: v0.2
 Site: RAL-LCG2
 Month: 3
 Year: 2010
@@ -128,3 +128,6 @@ CpuDuration: 2345
 NumberOfJobs: 100
 %%
 '''
+
+if __name__ == '__main__':
+    unittest.main()

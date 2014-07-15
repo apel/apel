@@ -1,7 +1,9 @@
-from apel.db.loader.xml_parser import XMLParser, get_primary_ns
-from unittest import TestCase
+import unittest
 
-class XMLParserTest(TestCase):
+from apel.db.loader.xml_parser import XMLParser, get_primary_ns
+
+
+class XMLParserTest(unittest.TestCase):
     '''
     Test case for XMLParser
     '''
@@ -31,7 +33,7 @@ class XMLParserTest(TestCase):
     
     def test_get_tag_by_attr(self):
         attributes = self.parser.doc.getElementsByTagNameNS(self.parser.NAMESPACE, 'attribute')
-        print len(attributes)
+        #print len(attributes)
         self.assertEqual(len(self.parser.getTagByAttr(attributes, 'id', 'test1')), 1)
         self.assertEqual(len(self.parser.getTagByAttr(attributes, 'id', 'test2')), 1)
     
@@ -43,4 +45,6 @@ class XMLParserTest(TestCase):
         test_xml = '<?xml version="1.0" ?><ur:UsageRecord xmlns:ur="booboob"/>'
         ns = get_primary_ns(test_xml)
         self.assertEqual("booboob", ns)
-        
+
+if __name__ == '__main__':
+    unittest.main()

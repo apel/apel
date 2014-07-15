@@ -26,6 +26,7 @@ from apel.db.records import BlahdRecord, \
                             EventRecord, \
                             GroupAttributeRecord, \
                             JobRecord, \
+                            NormalisedSummaryRecord, \
                             ProcessedRecord, \
                             StorageRecord, \
                             SummaryRecord, \
@@ -50,6 +51,7 @@ class ApelMysqlDb(object):
                     SyncRecord  : 'SyncRecords',
                     CloudRecord : 'CloudRecords',
                     CloudSummaryRecord : 'VCloudSummaries',
+                    NormalisedSummaryRecord : 'VNormalisedSummaries',
                     ProcessedRecord : 'VProcessedFiles',
                     SummaryRecord : 'VSummaries'}
     
@@ -63,6 +65,7 @@ class ApelMysqlDb(object):
               EventRecord : 'CALL ReplaceEventRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
               JobRecord   : "CALL ReplaceJobRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               SummaryRecord: "CALL ReplaceSummary(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              NormalisedSummaryRecord: "CALL ReplaceNormalisedSummary(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               SyncRecord  : "CALL ReplaceSyncRecord(%s, %s, %s, %s, %s, %s)",
               ProcessedRecord : "CALL ReplaceProcessedFile(%s, %s, %s, %s, %s)",
               CloudRecord : "CALL ReplaceCloudRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
@@ -82,8 +85,9 @@ class ApelMysqlDb(object):
         self._db_name = db
         
         self._summarise_jobs_proc = "SummariseJobs"
+        self._normalise_summaries_proc = "NormaliseSummaries"
         self._summarise_vms_proc = "SummariseVMs"
-        self._copy_summaries_proc = "CopySummaries"
+        self._copy_summaries_proc = "CopyNormalisedSummaries"
         self._hep_spec_hist_proc = "CreateHepSpecHistory"
         self._join_records_proc = "JoinJobRecords"
         self._local_jobs_proc = "LocalJobs"
@@ -279,7 +283,7 @@ class ApelMysqlDb(object):
     def summarise_jobs(self):
         '''
         Aggregate the data from the JobRecords table and put the results in the 
-        SuperSummaries table.  This method does this by calling the 
+        HybridSuperSummaries table.  This method does this by calling the 
         SummariseJobs stored procedure.
         
         Any failure will result in the entire transaction being rolled 
@@ -304,9 +308,40 @@ class ApelMysqlDb(object):
                 self.db.rollback()
             raise
     
+    def normalise_summaries(self):
+        """
+        Normalise data from Summaries and insert into HybridSuperSummaries.
+
+        Normalise the data from the Summaries table (calculate the normalised
+        wall clock and cpu duration values from the ServiceLevel fields) and put
+        the results in the HybridSuperSummaries table. This is done by
+        calling the NormaliseSummaries stored procedure.
+
+        Any failure will result in the entire transaction being rolled 
+        back.
+        """
+        try:
+            # prevent MySQLdb from raising
+            # 'MySQL server has gone' exception
+            self._mysql_reconnect()
+
+            c = self.db.cursor()
+
+            log.info("Normalising the Summary records...")
+            c.callproc(self._normalise_summaries_proc, ())
+            log.info("Done.")
+            self.db.commit()
+        except MySQLdb.Error, e:
+            log.error("A MySQL error occurred: %s" % e)
+            log.error("Any transaction will be rolled back.")
+
+            if self.db is not None:
+                self.db.rollback()
+            raise
+    
     def copy_summaries(self):
         '''
-        Copy summaries from the Summaries table to the SuperSummaries table.
+        Copy summaries from the NormalisedSummaries table to the HybridSuperSummaries table.
         ''' 
         try:
             # prevent MySQLdb from raising
