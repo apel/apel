@@ -5,14 +5,14 @@
 
 Name:           apel
 Version:        1.3.0
-Release:        0.4.rc3%{?dist}
+Release:        1%{?dist}
 Summary:        APEL packages
 
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            https://wiki.egi.eu/wiki/APEL
 # Value between %{version} and extension must match "Release" without %{dist}
-Source:         %{name}-%{version}-0.4.rc3.tar.gz
+Source:         %{name}-%{version}-1.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 
@@ -63,8 +63,8 @@ The apel-server package contains all code needed to receive accounting data
 from clients, to process and to send the results elsewhere using SSM.
 
 %prep
-# Value between %{version} and extension must match "Release" without %{dist}
-%setup -q -n %{name}-%{version}-0.4.rc3
+# Value after %{version} must match "Release" without %{dist}
+%setup -q -n %{name}-%{version}-1
 
 %build
 
@@ -175,6 +175,9 @@ exit 0
 %config(noreplace) %{apelconf}/auth.cfg
 
 %changelog
+ * Tue Jul 15 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-1
+ - Added in a missing database view that the central APEL server uses.
+
  * Thu Jul 03 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.4.rc3
  - Add partitioning statement to schema used by central APEL server.
 
