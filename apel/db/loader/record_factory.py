@@ -20,11 +20,13 @@ Module containing the RecordFactory class.
 
 from apel.db.records.job import JobRecord
 from apel.db.records.summary import SummaryRecord
+from apel.db.records.normalised_summary import NormalisedSummaryRecord
 from apel.db.records.sync import SyncRecord
 from apel.db.records.cloud import CloudRecord
 from apel.db.records.cloud_summary import CloudSummaryRecord
-from apel.db import JOB_MSG_HEADER, SUMMARY_MSG_HEADER, SYNC_MSG_HEADER, \
-        CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER
+from apel.db import (JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
+                     NORMALISED_SUMMARY_MSG_HEADER, SYNC_MSG_HEADER,
+                     CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER)
 
 from apel.db.loader.car_parser import CarParser
 from apel.db.loader.aur_parser import AurParser
@@ -49,7 +51,8 @@ class RecordFactory(object):
     '''
     # Message headers; remove version numbers from the end.
     JR_HEADER = JOB_MSG_HEADER.split(':')[0].strip()
-    SR_HEADER = SUMMARY_MSG_HEADER.split(':')[0].strip()
+    SR_HEADER = SUMMARY_MSG_HEADER
+    NSR_HEADER = NORMALISED_SUMMARY_MSG_HEADER
     SYNC_HEADER = SYNC_MSG_HEADER.split(':')[0].strip()
     CLOUD_HEADER = CLOUD_MSG_HEADER.split(':')[0].strip()
     CLOUD_SUMMARY_HEADER = CLOUD_SUMMARY_MSG_HEADER.split(':')[0].strip()
@@ -88,16 +91,17 @@ class RecordFactory(object):
             
                 # crop the string to before the first ':'
                 index = header.index(':')
-                header = header[0:index].strip()
-                if (header == RecordFactory.JR_HEADER):
+                if (header[0:index].strip() == RecordFactory.JR_HEADER):
                     created_records = self._create_jrs(msg_text)
-                elif (header == RecordFactory.SR_HEADER):
+                elif (header.strip() == RecordFactory.SR_HEADER):
                     created_records = self._create_srs(msg_text)
-                elif (header == RecordFactory.SYNC_HEADER):
+                elif (header.strip() == RecordFactory.NSR_HEADER):
+                    created_records = self._create_nsrs(msg_text)
+                elif (header[0:index].strip() == RecordFactory.SYNC_HEADER):
                     created_records = self._create_syncs(msg_text)
-                elif (header == RecordFactory.CLOUD_HEADER):
+                elif (header[0:index].strip() == RecordFactory.CLOUD_HEADER):
                     created_records = self._create_clouds(msg_text)
-                elif (header == RecordFactory.CLOUD_SUMMARY_HEADER):
+                elif (header[0:index].strip() == RecordFactory.CLOUD_SUMMARY_HEADER):
                     created_records = self._create_cloud_summaries(msg_text)
                 else:
                     raise RecordFactoryException('Message type %s not recognised.' % header)
@@ -151,6 +155,25 @@ class RecordFactory(object):
         
         return msgs
                 
+
+    def _create_nsrs(self, msg_text):
+        """
+        Given the text from a normalised summary record message, create a list
+        of JobRecord objects and return it.
+        """
+
+        msg_text = msg_text.strip()
+
+        records = msg_text.split('%%')
+        msgs = []
+        for record in records:
+            # unnecessary hack?
+            if record != '' and not record.isspace():
+                ns = NormalisedSummaryRecord()
+                ns.load_from_msg(record)
+                msgs.append(ns)
+
+        return msgs
 
     def _create_syncs(self, msg_text):
         '''

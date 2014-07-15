@@ -13,12 +13,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
    
-   @author: Will Rogers, Konrad Jopek
+   @author: Will Rogers, Konrad Jopek, Stuart Pullinger
 '''
 
 from apel.common import iso2seconds, parse_timestamp
 from xml_parser import XMLParser
-from apel.db.records.summary import SummaryRecord
+from apel.db.records.normalised_summary import NormalisedSummaryRecord
 from apel.db.loader.car_parser import CarParser
 import logging
 
@@ -27,10 +27,17 @@ log = logging.getLogger('loader')
 
 class AurParser(XMLParser):
     '''
-    Parser for Computing Accounting Records
+    Parser for Aggregated Usage Records
     
     For documentation please visit: 
     https://twiki.cern.ch/twiki/bin/view/EMI/ComputeAccountingRecord
+
+    The record format now conforms to the Normalised Summary format here:
+    https://wiki.egi.eu/wiki/APEL/MessageFormat#Summary_Job_Records
+
+    It includes NormalisedCpuDuration and NormalisedWallDuration and omits
+    ServiceLevel and ServiceLevelType. The field formerly called
+    InfrastructureType is now called Infrastructure.
     '''
     
     # main namespace for records
@@ -80,9 +87,8 @@ class AurParser(XMLParser):
                                                           'type', 'role')[0].childNodes),
             'MachineName'      : lambda nodes: self.getText(nodes['MachineName'][0].childNodes),
             'SubmitHost'       : lambda nodes: self.getText(nodes['SubmitHost'][0].childNodes),
-            'InfrastructureType' : lambda nodes: self.getAttr(
-                                            nodes['Infrastructure'][0], 'type',
-                                            CarParser.NAMESPACE),
+            'Infrastructure': lambda nodes: self.getText(
+                nodes['Infrastructure'][0].childNodes),
             'EarliestEndTime'  : lambda nodes: parse_timestamp(self.getText(
                                         nodes['EarliestEndTime'][0].childNodes)),
             'LatestEndTime'  : lambda nodes: parse_timestamp(self.getText(
@@ -91,10 +97,10 @@ class AurParser(XMLParser):
                                         nodes['WallDuration'][0].childNodes)),
             'CpuDuration'      : lambda nodes: iso2seconds(self.getText(
                                         nodes['CpuDuration'][0].childNodes)),
-            'ServiceLevelType' : lambda nodes: self.getAttr(
-                                        nodes['ServiceLevel'][0], 'type', CarParser.NAMESPACE),
-            'ServiceLevel'     : lambda nodes: self.getText(
-                                        nodes['ServiceLevel'][0].childNodes),
+            'NormalisedWallDuration': lambda nodes: iso2seconds(self.getText(
+                nodes['NormalisedWallDuration'][0].childNodes)),
+            'NormalisedCpuDuration': lambda nodes: iso2seconds(self.getText(
+                nodes['NormalisedCpuDuration'][0].childNodes)),
             'NumberOfJobs'     : lambda nodes: self.getText(nodes['NumberOfJobs'][0].childNodes),
             'NodeCount'        : lambda nodes: self.getText(nodes['NodeCount'][0].childNodes),
             'Processors'       : lambda nodes: self.getText(nodes['Processors'][0].childNodes),
@@ -103,7 +109,8 @@ class AurParser(XMLParser):
         tags = ['Site', 'Month', 'Year', 'GlobalUserName', 'Group', 
                 'GroupAttribute', 'SubmitHost', 'Infrastructure',
                 'EarliestEndTime', 'LatestEndTime', 'WallDuration', 'CpuDuration', 
-                'ServiceLevel', 'NumberOfJobs', 'NodeCount', 'Processors']
+                'NormalisedWallDuration', 'NormalisedCpuDuration',
+                'NumberOfJobs', 'NodeCount', 'Processors']
 
         nodes = {}.fromkeys(tags)
         data = {}
@@ -122,7 +129,7 @@ class AurParser(XMLParser):
             except KeyError, e:
                 log.debug('Failed to parse field %s: %s' % (field, e))
         
-        sr = SummaryRecord()
-        sr.set_all(data)
+        nsr = NormalisedSummaryRecord()
+        nsr.set_all(data)
         
-        return sr
+        return nsr

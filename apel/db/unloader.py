@@ -15,10 +15,11 @@
    
    @author: Konrad Jopek, Will Rogers
 '''
-from apel.db import Query, ApelDbException, \
-    JOB_MSG_HEADER, SUMMARY_MSG_HEADER, SYNC_MSG_HEADER, CLOUD_MSG_HEADER, \
-    CLOUD_SUMMARY_MSG_HEADER
-from apel.db.records import JobRecord, SummaryRecord, SyncRecord, CloudRecord, CloudSummaryRecord
+from apel.db import (Query, ApelDbException, JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
+                     NORMALISED_SUMMARY_MSG_HEADER, SYNC_MSG_HEADER,
+                     CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER)
+from apel.db.records import (JobRecord, SummaryRecord, NormalisedSummaryRecord,
+                             SyncRecord, CloudRecord, CloudSummaryRecord)
 from dirq.QueueSimple import QueueSimple
 try:
     import cStringIO as StringIO
@@ -30,21 +31,25 @@ import logging
 
 log = logging.getLogger(__name__)
 
+
 class DbUnloader(object):
-    
-    APEL_HEADERS = {JobRecord: JOB_MSG_HEADER, 
+
+    APEL_HEADERS = {JobRecord: JOB_MSG_HEADER,
                     SummaryRecord: SUMMARY_MSG_HEADER,
+                    NormalisedSummaryRecord: NORMALISED_SUMMARY_MSG_HEADER,
                     SyncRecord: SYNC_MSG_HEADER,
                     CloudRecord: CLOUD_MSG_HEADER,
                     CloudSummaryRecord: CLOUD_SUMMARY_MSG_HEADER}
-    
+
     RECORD_TYPES = {'VJobRecords': JobRecord,
                     'VSummaries': SummaryRecord,
                     'VSuperSummaries': SummaryRecord,
+                    'VNormalisedSummaries': NormalisedSummaryRecord,
+                    'VNormalisedSuperSummaries': NormalisedSummaryRecord,
                     'VSyncRecords': SyncRecord,
                     'VCloudRecords': CloudRecord,
                     'VCloudSummaries': CloudSummaryRecord}
-    
+
     # all record types for which withholding DNs is a valid option
     MAY_WITHHOLD_DNS = [JobRecord, SyncRecord, CloudRecord]
     
@@ -64,7 +69,8 @@ class DbUnloader(object):
         ''' 
         query = Query()
         
-        if record_type in (JobRecord, SummaryRecord, SyncRecord):
+        if record_type in (JobRecord, SummaryRecord, NormalisedSummaryRecord,
+                           SyncRecord):
             if self._inc_vos is not None:
                 query.VO_in = self._inc_vos
                 log.info('Sending only these VOs: ')
@@ -104,7 +110,6 @@ class DbUnloader(object):
             msgs += 1
         return msgs, records
         
-        
     def unload_gap(self, table_name, start, end, ur=False):
         '''
         Unload all records from the JobRecords table whose EndTime falls
@@ -142,9 +147,9 @@ class DbUnloader(object):
         
         Returns (number of files, number of records)
         '''
-        # special case for SuperSummaries
-        if table_name == 'VSuperSummaries':
-            msgs, records = self.unload_latest_super_summaries()
+        # Special case for [Normalised]SuperSummaries
+        if table_name in ('VSuperSummaries', 'VNormalisedSuperSummaries'):
+            msgs, records = self.unload_latest_super_summaries(table_name)
         else:
             record_type = self.RECORD_TYPES[table_name]
             
@@ -160,16 +165,16 @@ class DbUnloader(object):
             self._db.set_updated()
         
         return msgs, records
-        
-    def unload_latest_super_summaries(self, ur=False):
-        '''
-        Special case for the SuperSummaries table.  Since it is generally
-        updated by the SummariseJobs() procedure, all records will 
-        have been updated.  Instead, send all records for the current
+
+    def unload_latest_super_summaries(self, table_name, ur=False,):
+        """
+        Unload (normalised) super summaries for current and preceding month
+
+        Special case for the [Normalised]SuperSummaries table. Since it is
+        generally updated by the SummariseJobs() procedure, all records will
+        have been updated. Instead, send all records for the current
         month and the preceding month.
-        ''' 
-        table_name = 'VSuperSummaries'
-        
+        """
         record_type = self.RECORD_TYPES[table_name]
         
         query = self._get_base_query(record_type)
