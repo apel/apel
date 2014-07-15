@@ -1,7 +1,10 @@
 Changelog for apel
 ==================
+ * Tue Jul 15 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-1
+ - Added in a missing database view that the central APEL server uses.
+
  * Thu Jul 03 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.4.rc3
- - Add partitioning statement to schema used by central APEL server.
+ - Added partitioning statement to schema used by central APEL server.
 
  * Thu Jul 03 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.3.rc2
  - Corrections made to server schema to avoid warnings about default values not
