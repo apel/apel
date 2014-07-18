@@ -53,5 +53,5 @@ def parse_fqan(fqan):
         return (role, group, vo)       
     
     except Exception:
-        log.info("FQAN in non-standard format: " + fqan)
+        log.warn("FQAN in non-standard format: " + fqan)
         return (None, None, fqan)
