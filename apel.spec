@@ -4,15 +4,15 @@
 %endif
 
 Name:           apel
-Version:        1.2.0
-Release:        5%{?dist}
+Version:        1.2.1
+Release:        0.1.rc1%{?dist}
 Summary:        APEL packages
 
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            https://wiki.egi.eu/wiki/APEL
 # Value between %{version} and extension must match "Release" without %{dist}
-Source:         %{name}-%{version}-5.tar.gz
+Source:         %{name}-%{version}-0.1.rc1.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 
@@ -64,7 +64,7 @@ from clients, to process and to send the results elsewhere using SSM.
 
 %prep
 # Value between %{version} and extension must match "Release" without %{dist}
-%setup -q -n %{name}-%{version}-5
+%setup -q -n %{name}-%{version}-0.1.rc1
 
 %build
 
@@ -179,6 +179,11 @@ exit 0
 %config(noreplace) %{apelconf}/auth.cfg
 
 %changelog
+ * Thu Jul 24 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.1-0.1.rc1
+ - Changed parsers to handle short FQANS properly.
+ - Added a logratate script for client.log. 'apel-client' will be installed to
+   the logrotate.d directory.
+
  * Mon Jun 30 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.0-5
  - Updates made to rpmbuild spec file to support new versioning scheme.
 

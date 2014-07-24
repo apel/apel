@@ -1,5 +1,10 @@
 Changelog for apel
 ==================
+ * Thu Jul 24 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.1-0.1.rc1
+ - Changed parsers to handle short FQANS properly.
+ - Added a logratate script for client.log. 'apel-client' will be installed to
+   the logrotate.d directory.
+
  * Mon Jun 30 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.0-5
  - Updates made to rpmbuild spec file to support new versioning scheme.
 
