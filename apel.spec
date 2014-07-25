@@ -124,17 +124,21 @@ getent passwd apel >/dev/null || \
     useradd -r apel
 exit 0
 
+# ==============================================================================
+
 %files lib
 %defattr(-,root,root,-)
 %{python_sitelib}/apel
 
+# ------------------------------------------------------------------------------
+
 %files parsers
 %defattr(-,root,root,-)
 %attr(755,root,root) %_bindir/apelparser
-# TODO Compact to single line
-%config(noreplace) %{apelconf}/parser.cfg
-%attr(600,-,-) %{apelconf}/parser.cfg
+%config(noreplace) %attr(600,-,-) %{apelconf}/parser.cfg
 %attr(755,root,root) %_datadir/apel/slurm_acc.sh
+
+# ------------------------------------------------------------------------------
 
 %files client
 %defattr(-,root,root,-)
@@ -146,9 +150,9 @@ exit 0
 
 %attr(755,root,root) %_bindir/apelclient
 
-# TODO Compact to single line
-%config(noreplace) %{apelconf}/client.cfg
-%attr(600,-,-) %{apelconf}/client.cfg
+%config(noreplace) %attr(600,-,-) %{apelconf}/client.cfg
+
+# ------------------------------------------------------------------------------
 
 %files server
 %defattr(-,root,root,-)
@@ -171,10 +175,10 @@ exit 0
 %config(noreplace) %{apelconf}/summariser.cfg
 %config(noreplace) %{apelconf}/unloader.cfg
 %config(noreplace) %{apelconf}/loader.cfg
-# TODO Compact to single line
-%config(noreplace) %{apelconf}/db.cfg
-%attr(600,apel,apel) %{apelconf}/db.cfg
+%config(noreplace) %attr(600,apel,apel) %{apelconf}/db.cfg
 %config(noreplace) %{apelconf}/auth.cfg
+
+# ==============================================================================
 
 %changelog
  * Tue Jul 15 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-1
