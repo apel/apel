@@ -4,15 +4,15 @@
 %endif
 
 Name:           apel
-Version:        1.3.0
-Release:        1%{?dist}
+Version:        1.3.1
+%define releasenumber 0.1.alpha1
+Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
 
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            https://wiki.egi.eu/wiki/APEL
-# Value between %{version} and extension must match "Release" without %{dist}
-Source:         %{name}-%{version}-1.tar.gz
+Source:         %{name}-%{version}-%{releasenumber}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 
@@ -63,8 +63,7 @@ The apel-server package contains all code needed to receive accounting data
 from clients, to process and to send the results elsewhere using SSM.
 
 %prep
-# Value after %{version} must match "Release" without %{dist}
-%setup -q -n %{name}-%{version}-1
+%setup -q -n %{name}-%{version}-%{releasenumber}
 
 %build
 
@@ -132,6 +131,7 @@ exit 0
 %files parsers
 %defattr(-,root,root,-)
 %attr(755,root,root) %_bindir/apelparser
+# TODO Compact to single line
 %config(noreplace) %{apelconf}/parser.cfg
 %attr(600,-,-) %{apelconf}/parser.cfg
 %attr(755,root,root) %_datadir/apel/slurm_acc.sh
@@ -146,6 +146,7 @@ exit 0
 
 %attr(755,root,root) %_bindir/apelclient
 
+# TODO Compact to single line
 %config(noreplace) %{apelconf}/client.cfg
 %attr(600,-,-) %{apelconf}/client.cfg
 
@@ -170,6 +171,7 @@ exit 0
 %config(noreplace) %{apelconf}/summariser.cfg
 %config(noreplace) %{apelconf}/unloader.cfg
 %config(noreplace) %{apelconf}/loader.cfg
+# TODO Compact to single line
 %config(noreplace) %{apelconf}/db.cfg
 %attr(600,apel,apel) %{apelconf}/db.cfg
 %config(noreplace) %{apelconf}/auth.cfg
