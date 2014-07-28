@@ -171,9 +171,10 @@ class Loader(object):
             log.info('Tidying message directories')
             try:
                 # Remove empty dirs and unlock msgs older than 5 min (default)
-                self._acceptq.purge()
                 self._inq.purge()
                 self._rejectq.purge()
+                if self._save_msgs:
+                    self._acceptq.purge()
             except OSError, e:
                 log.error('OSError raised while purging message queues: %s' % e)
 
