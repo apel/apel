@@ -115,6 +115,9 @@ cp scripts/slurm_acc.sh %{buildroot}%_datadir/apel/
 # message status script
 cp scripts/msg_status.py %{buildroot}%_datadir/apel/
 
+# client logrotate script
+cp scripts/apel-client %{buildroot}%{_sysconfdir}/logrotate.d
+
 %clean 
 rm -rf $RPM_BUILD_ROOT
 
@@ -153,6 +156,9 @@ exit 0
 %config(noreplace) %attr(600,-,-) %{apelconf}/client.cfg
 
 # ------------------------------------------------------------------------------
+
+%config(noreplace) %{_sysconfdir}/logrotate.d/apel-client
+
 
 %files server
 %defattr(-,root,root,-)
