@@ -173,6 +173,7 @@ class Loader(object):
                 # Remove empty dirs and unlock msgs older than 5 min (default)
                 self._inq.purge()
                 self._rejectq.purge()
+                # The accept queue is only created if _save_msgs is true.
                 if self._save_msgs:
                     self._acceptq.purge()
             except OSError, e:
@@ -196,4 +197,3 @@ class Loader(object):
         self._apeldb.load_records(records, source=signer)
         
         log.debug('Records successfully loaded')
- 
