@@ -28,14 +28,16 @@ def parse_fqan(fqan):
     # Take only the first FQAN
     fqan = fqan.split(';')[0]
     # Check for the expected format, accepting any case for 'role'
-    fqan_check = fqan.lower()
-    if (fqan_check.find('/') != 0) or (fqan_check.find('role=') == -1) \
-            or (fqan_check.find('role=') == 1):
+    if fqan.find('/') != 0:
         # if not, just return FQAN as VO
         return (None, None, fqan)
            
     pieces = fqan.split('/')
-    
+
+    # Set default value for role (but not 'Role=NULL' as we don't want to assert
+    # missing information).
+    role = 'None'
+
     try:
         # pieces[0] is empty if the string begins with /
         vo = pieces[1]
@@ -53,5 +55,5 @@ def parse_fqan(fqan):
         return (role, group, vo)       
     
     except Exception:
-        log.info("FQAN in non-standard format: " + fqan)
+        log.warn("FQAN in non-standard format: " + fqan)
         return (None, None, fqan)
