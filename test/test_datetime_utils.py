@@ -36,16 +36,20 @@ class DateTimeUtilsTest(unittest.TestCase):
             self.assertEqual(dt.minute, 1)
             self.assertEqual(dt.second, 2)
             self.assertEqual(dt.tzinfo, None)
-        
+
     def test_iso2seconds(self):
         """iso2seconds should be able to parse most iso 8601 duration strings"""
-        durations = (
-            ('P1Y', 3600*24*365),
-            ('P1M', 3600*24*30),
-            ('P1D', 3600*24))
+        durations = (('P1Y', 3600*24*365),
+                     ('P1M', 2628000),
+                     ('P1W', 3600*24*7),
+                     ('P1D', 3600*24),
+                     ('PT10H20M30S', 10*3600+20*60+30),
+                     )
 
         for iso_in, seconds_out in durations:
-            self.assertTrue(iso2seconds(iso_in), seconds_out)
+            self.assertEqual(iso2seconds(iso_in), seconds_out,
+                             "Duration '%s' converts to %s when it should be %s"
+                             % (iso_in, iso2seconds(iso_in), seconds_out))
 
 if __name__ == '__main__':
     unittest.main()
