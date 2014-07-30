@@ -44,6 +44,7 @@ class DateTimeUtilsTest(unittest.TestCase):
                      ('P1W', 3600*24*7),
                      ('P1D', 3600*24),
                      ('PT10H20M30S', 10*3600+20*60+30),
+                     ('PT1H2M4.567S', 3600+2*60+5),
                      )
 
         for iso_in, seconds_out in durations:
