@@ -1,10 +1,10 @@
 from apel.common import valid_from, valid_until, parse_timestamp, \
     iso2seconds
-from unittest import TestCase
+import unittest
 import datetime
 
 
-class DateTimeUtilsTest(TestCase):
+class DateTimeUtilsTest(unittest.TestCase):
     '''
     Test case for date/time functions from apel.common
     '''
@@ -43,3 +43,6 @@ class DateTimeUtilsTest(TestCase):
         self.assertTrue(iso2seconds(txt1), 3600*24*365)
         self.assertTrue(iso2seconds(txt2), 3600*24*30)
         self.assertTrue(iso2seconds(txt3), 3600*24)
+
+if __name__ == '__main__':
+    unittest.main()
