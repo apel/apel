@@ -38,11 +38,14 @@ class DateTimeUtilsTest(unittest.TestCase):
             self.assertEqual(dt.tzinfo, None)
         
     def test_iso2seconds(self):
-        txt1, txt2, txt3 = 'P1Y', 'P1M', 'P1D'
-        
-        self.assertTrue(iso2seconds(txt1), 3600*24*365)
-        self.assertTrue(iso2seconds(txt2), 3600*24*30)
-        self.assertTrue(iso2seconds(txt3), 3600*24)
+        """iso2seconds should be able to parse most iso 8601 duration strings"""
+        durations = (
+            ('P1Y', 3600*24*365),
+            ('P1M', 3600*24*30),
+            ('P1D', 3600*24))
+
+        for iso_in, seconds_out in durations:
+            self.assertTrue(iso2seconds(iso_in), seconds_out)
 
 if __name__ == '__main__':
     unittest.main()
