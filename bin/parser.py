@@ -179,11 +179,10 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         # a regular file
                         try:
                             fp = gzip.open(abs_file)
-                        except IOError, e:  # not a gzipped file
-                            fp = open(abs_file, 'r')
-                        try:
                             parsed, total = parse_file(parser, apel_db, fp, reparse)
-                        finally:
+                        except IOError, e: # not a gzipped file
+                            fp = open(abs_file, 'r')
+                            parsed, total = parse_file(parser, apel_db, fp, reparse)
                             fp.close()
                     except IOError, e:
                         log.error('Cannot open file %s: %s' % (item, e))
