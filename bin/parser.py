@@ -178,14 +178,21 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         # try to open as a gzip file, and if it fails try as 
                         # a regular file
                         try:
-                            fp = gzip.open(abs_file)
-                            parsed, total = parse_file(parser, apel_db, fp, reparse)
-                        except IOError, e: # not a gzipped file
-                            fp = open(abs_file, 'r')
-                            parsed, total = parse_file(parser, apel_db, fp, reparse)
+                            try:
+                                fp = gzip.open(abs_file)
+                                # gzip doesn't raise an exception when trying to
+                                # open a non-gzip file. Only a read (such as
+                                # during parsing) does that.
+                                parsed, total = parse_file(parser, apel_db,
+                                                           fp, reparse)
+                            except IOError, e:  # not a gzipped file
+                                fp = open(abs_file, 'r')
+                                parsed, total = parse_file(parser, apel_db,
+                                                           fp, reparse)
+                        finally:
                             fp.close()
                     except IOError, e:
-                        log.error('Cannot open file %s: %s' % (item, e))
+                        log.error('Cannot parse file %s: %s' % (item, e))
                     except ApelDbException, e:
                         log.error('Failed to parse %s due to a database problem: %s' % (item, e))
                     else:
