@@ -21,6 +21,6 @@ install:
 script:
   - export PYTHONPATH=$PYTHONPATH:`pwd -P`
   - cd test
-  - coverage run unit2 discover
+  - coverage run -m unittest2 discover
 after_success:
   - coveralls
