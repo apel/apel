@@ -1,6 +1,7 @@
 # APEL client and server source code
 
 [![Build Status](https://travis-ci.org/apel/apel.svg?branch=dev)](https://travis-ci.org/apel/apel)
+[![Coverage Status](https://coveralls.io/repos/apel/apel/badge.png)](https://coveralls.io/r/apel/apel)
 
 ## Project overview
 
