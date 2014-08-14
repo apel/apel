@@ -16,8 +16,11 @@ install:
   - pip install iso8601
   - pip install dirq
   - pip install unittest2
+  - pip install coveralls
 # command to run tests, e.g. python setup.py test
 script:
   - export PYTHONPATH=$PYTHONPATH:`pwd -P`
   - cd test
-  - unit2 discover
+  - coverage run unit2 discover
+after_success:
+  - coveralls
