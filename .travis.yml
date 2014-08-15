@@ -17,10 +17,12 @@ install:
   - pip install dirq
   - pip install unittest2
   - pip install coveralls
+
 # command to run tests, e.g. python setup.py test
 script:
   - export PYTHONPATH=$PYTHONPATH:`pwd -P`
   - cd test
-  - coverage run -m unittest2 discover
+  - coverage run --source=apel -m unittest2 discover
+
 after_success:
   - coveralls
