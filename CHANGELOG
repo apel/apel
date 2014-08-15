@@ -1,5 +1,8 @@
 Changelog for apel
 ==================
+ * Fri Aug 15 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.2-1
+ - Fixed being unable to parse uncompressed accounting logs.
+
  * Thu Jul 24 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.1-1
  - (No changes from pre-release version.)
 
