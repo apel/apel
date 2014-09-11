@@ -91,12 +91,14 @@ def iso2seconds(isoduration):
     for item in values:
         try:
             if ',' in item:
-                # ',' can be used as a decimal seperator in ISO 8601
+                # ',' can be used as a decimal separator in ISO 8601
                 item = item.replace(',', '.')
             # remove letter from end then get an int
-            if '.' in item:  # If item is a decimal
+            if '.' in item:
+                # If item is a decimal round to integer
                 intvals.append(int(round(float(item[:-1]))))
             else:
+                # Otherwise keep as an integer for accuracy
                 intvals.append(int(item[:-1]))
         except (ValueError, TypeError):
             intvals.append(0)
