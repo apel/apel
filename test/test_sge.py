@@ -1,10 +1,12 @@
 from datetime import datetime
-from unittest import TestCase
+import unittest
+
 import mock
+
 import apel.parsers
 import apel.parsers.sge
 
-class ParserSGETest(TestCase):
+class ParserSGETest(unittest.TestCase):
     '''
     Test case for SGE parser
     '''
@@ -115,13 +117,17 @@ class ParserSGETest(TestCase):
                         "Processors": 9
                         }
 
-        with mock.patch.object(apel.parsers.sge.SGEParser,'_load_multipliers') as fake:
+        try:
+            patcher = mock.patch.object(apel.parsers.sge.SGEParser,'_load_multipliers')
+            fake = patcher.start()
             fake.return_value = { "compute-4-19.local": { "cputmult": cputmult, "wallmult": wallmult }}
             parser = apel.parsers.sge.SGEParser('testSite', 'testHost', True)
             record = parser.parse(line)
             cont = record._record_content
             for k,v in line_values.iteritems():
                 self.assertEqual(v, cont[k])
+        finally:
+            patcher.stop()
 
     def test_get_cpu_multiplier(self):
         '''
@@ -133,10 +139,14 @@ class ParserSGETest(TestCase):
         for d,v in [({}, 1.0),
                   ({"compute-4-19.local": {"cputmult": 2.0}}, 2.0),
                   ({"compute-4-19.local": {"cputmult": 2.0, "wallmult": 2.0}}, 2.0)]:
-            with mock.patch.object(apel.parsers.sge.SGEParser,'_load_multipliers') as fake:
+            try:
+                patcher = mock.patch.object(apel.parsers.sge.SGEParser,'_load_multipliers')
+                fake = patcher.start()
                 fake.return_value = d
                 parser = apel.parsers.sge.SGEParser('testSite', 'testHost', True)
                 self.assertEqual(v, parser._get_cpu_multiplier('compute-4-19.local'))
+            finally:
+                patcher.stop()
     
     def test_get_wall_multiplier(self):
         '''
@@ -148,20 +158,28 @@ class ParserSGETest(TestCase):
         for d,v in [({}, 1.0),
                   ({"compute-4-19.local": {"wallmult": 2.0}}, 2.0),
                   ({"compute-4-19.local": {"cputmult": 2.0, "wallmult": 2.0}}, 2.0)]:
-            with mock.patch.object(apel.parsers.sge.SGEParser,'_load_multipliers') as fake:
+            try:
+                patcher = mock.patch.object(apel.parsers.sge.SGEParser,'_load_multipliers')
+                fake = patcher.start()
                 fake.return_value = d
                 parser = apel.parsers.sge.SGEParser('testSite', 'testHost', True)
                 self.assertEqual(v, parser._get_wall_multiplier('compute-4-19.local'))
+            finally:
+                patcher.stop()
     
     def test_load_multipliers_qhost_error(self):
         '''
         Testing load_multipliers() when qhost command exits with error. 
         '''
-        with mock.patch('apel.parsers.sge.subprocess') as subprocess:
+        try:
+            patcher = mock.patch('apel.parsers.sge.subprocess')
+            subprocess = patcher.start()
             subprocess.Popen.return_value.returncode = 1
             subprocess.Popen.return_value.communicate = lambda: ('', 'foo')
             parser = apel.parsers.SGEParser('testSite', 'testHost', True)
             self.assertEqual({}, parser._load_multipliers())
+        finally:
+            patcher.stop()
 
     def test_load_multipliers_xml_unique(self):
         '''
@@ -204,11 +222,15 @@ class ParserSGETest(TestCase):
                       ('cputmult', 'foo', {}),
                       ('wallmult', 2.2, {'compute-4-19.local': {'wallmult': 2.2}}),
                       ('wallmult', 'foo', {})]:
-            with mock.patch('apel.parsers.sge.subprocess') as subprocess:
+            try:
+                patcher = mock.patch('apel.parsers.sge.subprocess')
+                subprocess = patcher.start()
                 subprocess.Popen.return_value.returncode = 0
                 subprocess.Popen.return_value.communicate = lambda: (qhost_output % (c,v), '')
                 parser = apel.parsers.SGEParser('testSite', 'testHost', True)
                 self.assertEqual(d, parser._load_multipliers())
+            finally:
+                patcher.stop()
         
     def test_load_multipliers_xml_both(self):
         '''
@@ -253,8 +275,15 @@ class ParserSGETest(TestCase):
                       ('foo', 2.2, {'compute-4-19.local': {'wallmult': 2.2}}),
                       (2.2, 2.2, {'compute-4-19.local': {'cputmult': 2.2, 'wallmult': 2.2}}),
                       ('foo', 'bar', {})]:
-            with mock.patch('apel.parsers.sge.subprocess') as subprocess:
+            try:
+                patcher = mock.patch('apel.parsers.sge.subprocess')
+                subprocess = patcher.start()
                 subprocess.Popen.return_value.returncode = 0
                 subprocess.Popen.return_value.communicate = lambda: (qhost_output % (c,w), '')
                 parser = apel.parsers.SGEParser('testSite', 'testHost', True)
                 self.assertEqual(d, parser._load_multipliers())
+            finally:
+                patcher.stop()
+
+if __name__ == '__main__':
+    unittest.main()
