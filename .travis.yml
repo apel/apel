@@ -22,7 +22,7 @@ install:
 script:
   - export PYTHONPATH=$PYTHONPATH:`pwd -P`
   - cd test
-  - coverage run --source=apel -m unittest2 discover
+  - coverage run --source=apel,bin -m unittest2 discover
 
 after_success:
   - coveralls
