@@ -92,12 +92,13 @@ def parse_file(parser, apel_db, fp, replace):
     # default behaviour: show the list of errors with information
     # how many times given error was raised
     exceptions = {}
-    
+
+    line_number = 0
     index = 0
     parsed = 0
     failed = 0
     ignored = 0
-    
+
     for index, line in enumerate(fp):
         # Indexing is from zero so add 1 to find line number. Can't use start=1
         # in enumerate() to maintain Python 2.4 compatibility.
