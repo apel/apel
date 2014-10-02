@@ -109,10 +109,22 @@ if __name__ == '__main__':
             exclude_vos  = [ vo.strip() for vo in exclude.split(',') ]
         except ConfigParser.NoOptionError:
             pass
-    
+
+    interval = cp.get('unloader', 'interval')
+
     unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns)
     try:
-        msgs, recs = unloader.unload_latest(table_name, send_ur)
+        if interval == 'latest':
+            msgs, recs = unloader.unload_latest(table_name, send_ur)
+        elif interval == 'gap':
+            start = cp.get('unloader', 'gap_start')
+            end = cp.get('unloader', 'gap_end')
+            msgs, recs = unloader.unload_gap(table_name, start, end, send_ur)
+        elif interval == 'all':
+            msgs, recs = unloader.unload_all(table_name, send_ur)
+        else:
+            log.warn('Unrecognised interval: %s' % interval)
+            log.warn('Will not start unloader.')
         log.info('%d records in %d messages unloaded from %s' % (recs, msgs, table_name))
     except KeyError:
         log.error('Invalid table name: %s, omitting' % table_name)
