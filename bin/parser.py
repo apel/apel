@@ -153,7 +153,7 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
     try:
         log.info('Scanning directory: %s' % dirpath)
         
-        for item in os.listdir(dirpath):
+        for item in sorted(os.listdir(dirpath)):
             abs_file = os.path.join(dirpath, item)
             if os.path.isfile(abs_file) and expr.match(item):
                 # first, calculate the hash of the file:
