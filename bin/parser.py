@@ -29,6 +29,7 @@ import os
 import sys
 import re
 import gzip
+import bz2
 import ConfigParser
 from optparse import OptionParser
 
@@ -176,22 +177,26 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                 if reparse or not found:
                     try:
                         log.info('Parsing file: %s' % abs_file)
-                        # try to open as a gzip file, and if it fails try as 
-                        # a regular file
-                        try:
-                            try:
-                                fp = gzip.open(abs_file)
-                                # gzip doesn't raise an exception when trying to
-                                # open a non-gzip file. Only a read (such as
-                                # during parsing) does that.
-                                parsed, total = parse_file(parser, apel_db,
-                                                           fp, reparse)
-                            except IOError, e:  # not a gzipped file
-                                fp = open(abs_file, 'r')
-                                parsed, total = parse_file(parser, apel_db,
-                                                           fp, reparse)
-                        finally:
-                            fp.close()
+                        # try to open as a bzip2 file, then as a gzip file,
+                        # and if it fails try as a regular file
+                        #
+                        # bz2/gzip doesn't raise an exception when trying
+                        # to open a non-gzip file.  Only a read (such as
+                        # during parsing) does that.  For files of a wrong
+                        # format we will get IOError, empty files can
+                        # give EOFError as well.
+                        for method in (bz2.BZ2File, gzip.open, open):
+                            try: # this is for Python < 2.5
+                                try:
+                                    fp = method(abs_file)
+                                    parsed, total = parse_file(parser, apel_db,
+                                                               fp, reparse)
+				    break
+                                except (IOError, EOFError), e:
+                                    if method == open:
+                                        raise
+                            finally:
+                                fp.close()
                     except IOError, e:
                         log.error('Cannot parse file %s: %s' % (item, e))
                     except ApelDbException, e:
