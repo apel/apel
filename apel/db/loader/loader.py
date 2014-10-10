@@ -85,7 +85,7 @@ class Loader(object):
         """ 
         # If the pidfile exists, don't start up.
         if os.path.exists(self._pidfile):
-            log.warn("A pidfile %s already exists." % self._pidfile)
+            log.warn("A pidfile %s already exists.", self._pidfile)
             log.warn("Check that the dbloader is not running, then remove the file.")
             raise LoaderException("The dbloader cannot start while pidfile exists.")
         try:
@@ -94,8 +94,8 @@ class Loader(object):
             f.write("\n")
             f.close()
         except IOError, e:
-            log.warn("Failed to create pidfile %s: %s" % (self._pidfile, e))
-                
+            log.warn("Failed to create pidfile %s: %s", (self._pidfile, e))
+
     def shutdown(self):
         """
         Unlock current messsage queue element and remove pidfile.
@@ -106,16 +106,16 @@ class Loader(object):
             try:
                 self._inq.unlock(self.current_msg)
             except OSError, e:
-                log.error('Unable to remove lock: %s' % e)
+                log.error('Unable to remove lock: %s', e)
 
         pidfile = self._pidfile
         try:
             if os.path.exists(pidfile):
                 os.remove(pidfile)
             else:
-                log.warn("pidfile %s not found." % pidfile)
+                log.warn("pidfile %s not found.", pidfile)
         except IOError, e:
-            log.warn("Failed to remove pidfile %s: %s" % (pidfile, e))
+            log.warn("Failed to remove pidfile %s: %s", (pidfile, e))
             log.warn("The loader may not start again until it is removed.")
             
         log.info("The loader has shut down.")
@@ -135,17 +135,17 @@ class Loader(object):
         # loop until there are no messages left
         while self.current_msg:
             if not self._inq.lock(self.current_msg):
-                log.warn("Skipping locked message %s" % self.current_msg)
+                log.warn("Skipping locked message %s", self.current_msg)
                 self.current_msg = self._inq.next()
                 continue
-            log.debug("Reading message %s" % self.current_msg)
+            log.debug("Reading message %s", self.current_msg)
             data = self._inq.get(self.current_msg)
             msg_id = data['empaid']
             signer = data['signer']
             msg_text = data['body']
             
             try:
-                log.info("Loading message %s. ID = %s" % (self.current_msg, msg_id))
+                log.info("Loading message %s. ID = %s", (self.current_msg, msg_id))
                 self.load_msg(msg_text, signer)
                 
                 if self._save_msgs:
@@ -157,13 +157,13 @@ class Loader(object):
                     InvalidRecordException, apel.db.ApelDbException,
                     XMLParserException, ExpatError), err:
                 errmsg = "Parsing unsuccessful: %s" % str(err)
-                log.warn('Message rejected. %s' % errmsg)
-                self._rejectq.add({"body": msg_text, 
-                                   "signer": signer, 
+                log.warn('Message rejected. %s', errmsg)
+                self._rejectq.add({"body": msg_text,
+                                   "signer": signer,
                                    "empaid": msg_id,
                                    "error": errmsg})
-                
-            log.info("Removing message %s. ID = %s" % (self.current_msg, msg_id))
+
+            log.info("Removing message %s. ID = %s", (self.current_msg, msg_id))
             self._inq.remove(self.current_msg)
             self.current_msg = self._inq.next()
 
@@ -177,7 +177,7 @@ class Loader(object):
                 if self._save_msgs:
                     self._acceptq.purge()
             except OSError, e:
-                log.warn('OSError raised while purging message queues: %s' % e)
+                log.warn('OSError raised while purging message queues: %s', e)
 
         log.debug("Loader run finished.")
         log.debug("======================")
@@ -191,7 +191,7 @@ class Loader(object):
 
         # Create the record objects, using the RecordFactory
         records = self._rf.create_records(msg_text)
-        log.info('Message contains %i records' % len(records))
+        log.info('Message contains %i records', len(records))
         # Use the DB to load the records
         log.debug('Loading records...')
         self._apeldb.load_records(records, source=signer)

@@ -71,14 +71,14 @@ if __name__ == '__main__':
                     dbcp.get('db', 'name'))
         
     except ApelDbException, e:
-        log.fatal('Error: %s' % e)
+        log.fatal('Error: %s', e)
         sys.exit(1)
     except Exception, e:
-        log.fatal('Cannot get configuration: %s' % e)
+        log.fatal('Cannot get configuration: %s', e)
         sys.exit(1)
     
     log.info('=====================')
-    log.info('Starting APEL dbunloader %s.%s.%s' % __version__)
+    log.info('Starting APEL dbunloader %s.%s.%s', __version__)
     
     unload_dir       = cp.get('unloader', 'dir_location')
     table_name       = cp.get('unloader', 'table_name')
@@ -126,11 +126,11 @@ if __name__ == '__main__':
         else:
             log.warn('Unrecognised interval: %s' % interval)
             log.warn('Will not start unloader.')
-        log.info('%d records in %d messages unloaded from %s' % (recs, msgs, table_name))
+        log.info('%d records in %d messages unloaded from %s', (recs, msgs, table_name))
     except KeyError:
-        log.error('Invalid table name: %s, omitting' % table_name)
+        log.error('Invalid table name: %s, omitting', table_name)
     except ApelDbException, e:
-        log.error('Unloading failed: %s' % e)
-        
+        log.error('Unloading failed: %s', e)
+
     log.info('Unloading complete.')
     log.info('=====================') 

@@ -69,7 +69,7 @@ def run_ssm(scp):
             service = STOMP_SERVICE
         brokers = bg.get_broker_hosts_and_ports(service, scp.get('broker',
                                                                  'network'))
-        log.info('Found %s brokers.' % len(brokers))
+        log.info('Found %s brokers.', len(brokers))
     except ConfigParser.NoOptionError, e:
         try:
             host = scp.get('broker', 'host')
@@ -83,7 +83,7 @@ def run_ssm(scp):
             print 'SSM failed to start.  See log file for details.'
             sys.exit(1)
     except ldap.LDAPError, e:
-        log.error('Failed to retrieve brokers from LDAP: %s' % str(e))
+        log.error('Failed to retrieve brokers from LDAP: %s', e)
         log.error('Messages were not sent.')
         return
 
@@ -112,7 +112,7 @@ def run_ssm(scp):
                    use_ssl=scp.getboolean('broker', 'use_ssl'),
                    enc_cert=server_cert)
     except Ssm2Exception, e:
-        log.error('Failed to initialise SSM: %s' % str(e))
+        log.error('Failed to initialise SSM: %s', e)
         log.error('Messages have not been sent.')
         return
 
@@ -121,7 +121,7 @@ def run_ssm(scp):
         ssm.send_all()
         ssm.close_connection()
     except Ssm2Exception, e:
-        log.error('SSM failed to complete successfully: %s' % str(e))
+        log.error('SSM failed to complete successfully: %s', e)
         return
 
     log.info('SSM run has finished.')
@@ -185,7 +185,7 @@ def run_client(ccp):
         log.error('Error in configuration file: ' + str(err))
         sys.exit(1)
 
-    log.info('Starting apel client version %s.%s.%s' % __version__)
+    log.info('Starting apel client version %s.%s.%s', __version__)
 
     # Log into the database
     try:
@@ -215,11 +215,11 @@ def run_client(ccp):
                 db.update_spec(site_name, value[0], 'si2k', value[1])
             log.info('Spec updater finished.')
         except ldap.SERVER_DOWN, e:
-            log.warn('Failed to fetch spec info: %s' % e)
+            log.warn('Failed to fetch spec info: %s', e)
             log.warn('Spec updater failed.')
         except ldap.NO_SUCH_OBJECT, e:
-            log.warn('Found no spec values in BDII: %s' % e)
-            log.warn('Is the site name %s correct?' % site_name)
+            log.warn('Found no spec values in BDII: %s', e)
+            log.warn('Is the site name %s correct?', site_name)
 
         log.info(LOG_BREAK)
 
@@ -230,7 +230,7 @@ def run_client(ccp):
         # the stored procedures.
         if local_jobs:
             log.info('Updating benchmark information for local jobs:')
-            log.info('%s, %s, %s, %s.' % (site_name, hostname, slt, sl))
+            log.info('%s, %s, %s, %s.', (site_name, hostname, slt, sl))
             db.update_spec(site_name, hostname, slt, sl)
             log.info('Creating local jobs.')
             db.create_local_jobs()
@@ -252,7 +252,7 @@ def run_client(ccp):
         log.info(LOG_BREAK)
         log.info('Starting unloader.')
 
-        log.info('Will unload from %s.' % table_name)
+        log.info('Will unload from %s.', table_name)
 
         interval = ccp.get('unloader', 'interval')
         withhold_dns = ccp.getboolean('unloader', 'withhold_dns')
@@ -269,20 +269,20 @@ def run_client(ccp):
             elif interval == 'all':
                 msgs, recs = unloader.unload_all(table_name, send_ur)
             else:
-                log.warn('Unrecognised interval: %s' % interval)
+                log.warn('Unrecognised interval: %s', interval)
                 log.warn('Will not start unloader.')
 
-            log.info('Unloaded %d records in %d messages.' % (recs, msgs))
+            log.info('Unloaded %d records in %d messages.', (recs, msgs))
 
         except KeyError:
-            log.warn('Invalid table name: %s, omitting' % table_name)
+            log.warn('Invalid table name: %s, omitting', table_name)
         except ApelDbException, e:
             log.warn('Failed to unload records successfully: %s' % str(e))
 
         # Always send sync messages
         msgs, recs = unloader.unload_sync()
 
-        log.info('Unloaded %d sync records in %d messages.' % (recs, msgs))
+        log.info('Unloaded %d sync records in %d messages.', (recs, msgs))
 
         log.info('Unloading complete.')
         log.info(LOG_BREAK)
