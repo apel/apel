@@ -98,10 +98,10 @@ class ParserBlahTest(unittest.TestCase):
         values = (
             (datetime.datetime(2014, 5, 18, 00, 00, 58),
              '/C=CA/O=Grid/OU=triumf.ca/CN=Asoka De Silva GC1',
-             # Last, i.e. wrong, FQAN
-             #'/atlas/lcg1/Role=NULL/Capability=NULL',
-             # Correct FQAN
-             '/atlas/Role=pilot/Capability=NULL',
+             '/atlas/Role=pilot/Capability=NULL',  # primary FQAN is first one
+             'atlas',
+             '/atlas',
+             'Role=pilot',
              'ce1.triumf.ca:8443/cream-pbs-atlas',
              'CREAM663276716',
              '15876368.ce1.triumf.ca',
@@ -112,10 +112,10 @@ class ParserBlahTest(unittest.TestCase):
             (datetime.datetime(2014, 5, 18, 00, 03, 00),
              '/DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=atlpilo2/CN=531497/CN'
                 '=Robot: ATLAS Pilot2',
-             # Last, i.e. wrong, FQAN
-             #'/atlas/usatlas/Role=NULL/Capability=NULL',
-             # Correct FQAN
-             '/atlas/Role=pilot/Capability=NULL',
+             '/atlas/Role=pilot/Capability=NULL',  # primary FQAN is first one
+             'atlas',
+             '/atlas',
+             'Role=pilot',
              'ce1.triumf.ca:8443/cream-pbs-atlas',
              'CREAM503347888',
              '15876480.ce1.triumf.ca',
@@ -125,8 +125,9 @@ class ParserBlahTest(unittest.TestCase):
              ),
         )
 
-        fields = ('TimeStamp', 'GlobalUserName', 'FQAN', 'CE', 'GlobalJobId',
-                  'LrmsId', 'ValidFrom', 'ValidUntil', 'Processed')
+        fields = ('TimeStamp', 'GlobalUserName', 'FQAN', 'VO', 'VOGroup',
+                  'VORole', 'CE', 'GlobalJobId', 'LrmsId', 'ValidFrom',
+                  'ValidUntil', 'Processed')
 
         cases = {}
         for line, value in zip(lines, values):
