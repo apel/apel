@@ -185,7 +185,7 @@ def run_client(ccp):
         log.error('Error in configuration file: ' + str(err))
         sys.exit(1)
 
-    log.info('Starting apel client version %s.%s.%s', __version__)
+    log.info('Starting apel client version %s.%s.%s', *__version__)
 
     # Log into the database
     try:
@@ -230,7 +230,7 @@ def run_client(ccp):
         # the stored procedures.
         if local_jobs:
             log.info('Updating benchmark information for local jobs:')
-            log.info('%s, %s, %s, %s.', (site_name, hostname, slt, sl))
+            log.info('%s, %s, %s, %s.', site_name, hostname, slt, sl)
             db.update_spec(site_name, hostname, slt, sl)
             log.info('Creating local jobs.')
             db.create_local_jobs()
@@ -272,7 +272,7 @@ def run_client(ccp):
                 log.warn('Unrecognised interval: %s', interval)
                 log.warn('Will not start unloader.')
 
-            log.info('Unloaded %d records in %d messages.', (recs, msgs))
+            log.info('Unloaded %d records in %d messages.', recs, msgs)
 
         except KeyError:
             log.warn('Invalid table name: %s, omitting', table_name)
@@ -282,7 +282,7 @@ def run_client(ccp):
         # Always send sync messages
         msgs, recs = unloader.unload_sync()
 
-        log.info('Unloaded %d sync records in %d messages.', (recs, msgs))
+        log.info('Unloaded %d sync records in %d messages.', recs, msgs)
 
         log.info('Unloading complete.')
         log.info(LOG_BREAK)

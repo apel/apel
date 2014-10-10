@@ -107,7 +107,7 @@ def parse_file(parser, apel_db, fp, replace):
         try:
             record = parser.parse(line)
         except Exception, e:
-            log.debug('Error %s on line %d', (e, line_number))
+            log.debug('Error %s on line %d', e, line_number)
             failed += 1
             if str(e) in exceptions:
                 exceptions[str(e)] += 1
@@ -136,7 +136,7 @@ def parse_file(parser, apel_db, fp, replace):
         log.info('Failed to parse %d lines' % failed)
         
         for error in exceptions:
-            log.error('%s raised %d times', (error, exceptions[error]))
+            log.error('%s raised %d times', error, exceptions[error])
     
     return parsed, line_number
 
@@ -198,9 +198,9 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                             finally:
                                 fp.close()
                     except IOError, e:
-                        log.error('Cannot parse file %s: %s', (item, e))
+                        log.error('Cannot parse file %s: %s', item, e)
                     except ApelDbException, e:
-                        log.error('Failed to parse %s due to a database problem: %s', (item, e))
+                        log.error('Failed to parse %s due to a database problem: %s', item, e)
                     else:
                         pr = ProcessedRecord()
                         pr.set_field('HostName', parser.machine_name)
@@ -221,7 +221,7 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
     
     except KeyError, e:
         log.fatal('Improperly configured.')
-        log.fatal('Check the section for %s , %s', (str(parser), str(e)))
+        log.fatal('Check the section for %s , %s', parser, e)
         sys.exit(1)
     
 def handle_parsing(log_type, apel_db, cp):
@@ -346,7 +346,7 @@ def main():
 
     log = logging.getLogger(LOGGER_ID)
     log.info(LOG_BREAK)
-    log.info('Starting apel parser version %s.%s.%s', __version__)
+    log.info('Starting apel parser version %s.%s.%s', *__version__)
 
     # database connection
     try:

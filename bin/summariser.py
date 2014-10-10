@@ -71,7 +71,7 @@ def runprocess(db_config_file, config_file, log_config_file):
         print 'The system will exit.'
         sys.exit(1)
         
-    log.info('Starting apel summariser version %s.%s.%s', __version__)
+    log.info('Starting apel summariser version %s.%s.%s', *__version__)
         
     # Log into the database
     try:

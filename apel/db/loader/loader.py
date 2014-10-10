@@ -94,7 +94,7 @@ class Loader(object):
             f.write("\n")
             f.close()
         except IOError, e:
-            log.warn("Failed to create pidfile %s: %s", (self._pidfile, e))
+            log.warn("Failed to create pidfile %s: %s", self._pidfile, e)
 
     def shutdown(self):
         """
@@ -115,7 +115,7 @@ class Loader(object):
             else:
                 log.warn("pidfile %s not found.", pidfile)
         except IOError, e:
-            log.warn("Failed to remove pidfile %s: %s", (pidfile, e))
+            log.warn("Failed to remove pidfile %s: %s", pidfile, e)
             log.warn("The loader may not start again until it is removed.")
             
         log.info("The loader has shut down.")
@@ -145,7 +145,7 @@ class Loader(object):
             msg_text = data['body']
             
             try:
-                log.info("Loading message %s. ID = %s", (self.current_msg, msg_id))
+                log.info("Loading message %s. ID = %s", self.current_msg, msg_id)
                 self.load_msg(msg_text, signer)
                 
                 if self._save_msgs:
@@ -163,7 +163,7 @@ class Loader(object):
                                    "empaid": msg_id,
                                    "error": errmsg})
 
-            log.info("Removing message %s. ID = %s", (self.current_msg, msg_id))
+            log.info("Removing message %s. ID = %s", self.current_msg, msg_id)
             self._inq.remove(self.current_msg)
             self.current_msg = self._inq.next()
 
