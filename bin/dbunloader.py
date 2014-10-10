@@ -38,10 +38,11 @@ if __name__ == '__main__':
                           default='/etc/apel/logging.cfg')
     
     (options, args) = opt_parser.parse_args()
-    
-    cp = ConfigParser.ConfigParser()
+
+    # Set default for 'interval' as it is a new option so may not be in config.
+    cp = ConfigParser.ConfigParser({'interval': 'latest'})
     cp.read([options.config])
-    
+
     # set up logging
     try:
         if os.path.exists(options.log_config):
