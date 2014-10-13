@@ -129,7 +129,7 @@ class Loader(object):
         log.debug("Starting loader run.")
 
         num_msgs = self._inq.count()
-        log.info("Found %s messages" % num_msgs)
+        log.info("Found %s messages", num_msgs)
 
         self.current_msg = self._inq.first()
         # loop until there are no messages left
@@ -187,7 +187,7 @@ class Loader(object):
         Load one message (i.e. one file; many records)
         from its text content into the database.
         '''
-        log.info('Loading message from %s' % signer)
+        log.info('Loading message from %s', signer)
 
         # Create the record objects, using the RecordFactory
         records = self._rf.create_records(msg_text)

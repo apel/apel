@@ -73,7 +73,7 @@ class RecordFactory(object):
                     created_records = self._create_cars(msg_text)
 #                    # Not available yet.
                 elif primary_ns == AurParser.NAMESPACE:
-                    #created_records = self._create_aurs(msg_text)
+                    # created_records = self._create_aurs(msg_text)
                     raise RecordFactoryException('Aggregated usage record not yet supported.')
                 elif primary_ns == StarParser.NAMESPACE:
                     created_records = self._create_stars(msg_text)

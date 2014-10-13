@@ -87,7 +87,7 @@ class Record(object):
             if key in self._db_fields:
                 self._record_content[key] = self.checked(key, fielddict[key])
             else:
-                if not key in self._ignored_fields:
+                if key not in self._ignored_fields:
                     raise InvalidRecordException('Unknown field: %s' % key)
                 
     def set_field(self, key, value):
@@ -97,7 +97,7 @@ class Record(object):
         if key in self._db_fields:
             self._record_content[key] = self.checked(key, value)
         else:
-            if not key in self._ignored_fields:
+            if key not in self._ignored_fields:
                 raise InvalidRecordException('Unknown field: %s' % key)
 
 
@@ -189,7 +189,7 @@ class Record(object):
         how to deal with any part of a message.
         '''
         if (text == "") or text.isspace():
-#           log.info("Empty record: can't load.")
+           # log.info("Empty record: can't load.")
             return
             
         lines = text.strip().splitlines()
