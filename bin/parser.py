@@ -133,8 +133,8 @@ def parse_file(parser, apel_db, fp, replace):
     else:
         log.info('Parsed %d lines', parsed)
         log.info('Ignored %d lines (incomplete jobs)', ignored)
-        log.info('Failed to parse %d lines' % failed)
-        
+        log.info('Failed to parse %d lines', failed)
+
         for error in exceptions:
             log.error('%s raised %d times', error, exceptions[error])
     
@@ -210,8 +210,8 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         pr.set_field('Parsed', parsed)
                         updated.append(pr)
                 elif unparsed:
-                    log.info('Skipping file (failed to parse previously): %s'
-                             % abs_file)
+                    log.info('Skipping file (failed to parse previously): %s',
+                             abs_file)
                 else:
                     log.info('Skipping file (already parsed): %s ', abs_file)
             elif os.path.isfile(abs_file):

@@ -39,8 +39,8 @@ def default_handler(exc_type, value, traceback):
     
     log.critical('Unhandled exception raised!')
     log.critical('Please send a bug report with following information:')
-    log.critical('%s: %s' % (exc_type.__name__, str(value)))
-    
+    log.critical('%s: %s', exc_type.__name__, value)
+
     tbstack = []
     
     while traceback:
@@ -52,7 +52,7 @@ def default_handler(exc_type, value, traceback):
     
     tbstack.reverse()
 
-    log.critical('%s [%s %s]' % (tbstack[0][1], tbstack[0][0], tbstack[0][2]))
+    log.critical('%s [%s %s]', tbstack[0][1], tbstack[0][0], tbstack[0][2])
 
     for tb in tbstack[1:]:
-        log.critical('  %s in %s [%s]' % (tb[1], tb[0], tb[2]))
+        log.critical('  %s in %s [%s]', tb[1], tb[0], tb[2])

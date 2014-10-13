@@ -277,7 +277,7 @@ def run_client(ccp):
         except KeyError:
             log.warn('Invalid table name: %s, omitting', table_name)
         except ApelDbException, e:
-            log.warn('Failed to unload records successfully: %s' % str(e))
+            log.warn('Failed to unload records successfully: %s', e)
 
         # Always send sync messages
         msgs, recs = unloader.unload_sync()

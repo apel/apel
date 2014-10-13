@@ -49,7 +49,7 @@ class Configuration(object):
 
 def get_config(config_file):
     """Using the config file location, get a config object."""
-        # Read configuration from file 
+    # Read configuration from file
     cp = ConfigParser.ConfigParser()
     cp.read(config_file)
     
@@ -113,7 +113,7 @@ def get_xml(url, proxy):
         conn.close()
     except IOError:
         # Try with a proxy
-        if not proxy is None:
+        if proxy is not None:
             proxy = {"http": proxy}
             conn = urllib.urlopen(url, proxies=proxy)
             dn_xml = conn.read()
@@ -185,7 +185,7 @@ def runprocess(config_file, log_config_file):
 
     log = logging.getLogger('auth')
     log.info(LOG_BREAK)
-    log.info('Starting apel auth version %s.%s.%s' % __version__)
+    log.info('Starting apel auth version %s.%s.%s', *__version__)
     log.info("Starting auth ...")
     
     # We'll fill this list with DNs.
@@ -194,7 +194,7 @@ def runprocess(config_file, log_config_file):
     
     try:
         xml_string = get_xml(cfg.gocdb_url, cfg.proxy)
-        log.info("Fetched XML from %s" % cfg.gocdb_url)
+        log.info("Fetched XML from %s", cfg.gocdb_url)
         try:
             dns.extend(dns_from_xml(xml_string))
         except xml.parsers.expat.ExpatError, e:
@@ -210,18 +210,18 @@ def runprocess(config_file, log_config_file):
     # get the DNs from the additional file
     try:
         extra_dns = dns_from_file(cfg.extra_dns)
-        log.info("Fetched %s extra DNs from file %s." % (len(extra_dns), cfg.extra_dns))
+        log.info("Fetched %s extra DNs from file %s.", len(extra_dns), cfg.extra_dns)
         dns.extend(extra_dns)
     except IOError:
-        log.warn("Failed to retrieve extra DNs from file %s." % cfg.extra_dns)
+        log.warn("Failed to retrieve extra DNs from file %s.", cfg.extra_dns)
         log.warn("Check the configuration.")
         
     dns_to_remove = []
     try:
         dns_to_remove = dns_from_file(cfg.banned_dns)
-        log.info("Fetched %s banned DNs from file %s." % (len(dns_to_remove), cfg.banned_dns))
+        log.info("Fetched %s banned DNs from file %s.", len(dns_to_remove), cfg.banned_dns)
     except IOError:
-        log.warn("Failed to retrieve banned DNs from file %s." % cfg.banned_dns)
+        log.warn("Failed to retrieve banned DNs from file %s.", cfg.banned_dns)
         log.warn("Check the configuration.")
     
     # remove all items from the list dns which are in the list dns_to_remove
@@ -231,7 +231,7 @@ def runprocess(config_file, log_config_file):
     try:
         new_dn_file = open(cfg.dn_file, 'w')
     except IOError, e:
-        log.warn("Failed to open file %s for writing." % cfg.dn_file)
+        log.warn("Failed to open file %s for writing.", cfg.dn_file)
         log.warn("Check the configuration.")
         log.warn("auth will exit.")
         sys.exit(1)
@@ -248,9 +248,9 @@ def runprocess(config_file, log_config_file):
             log.warning("DN not valid and won't be added: " + dn)
                 
     new_dn_file.close()
-    
-    log.info("%s DNs have been written to %s." % (added, cfg.dn_file))
-    
+
+    log.info("%s DNs have been written to %s.", added, cfg.dn_file)
+
     log.info("auth has finished.")
     log.info(LOG_BREAK)
     

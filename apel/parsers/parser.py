@@ -35,7 +35,7 @@ class Parser(object):
         '''
         self.site_name = site
         self.machine_name = machine_name
-        log.info('Site: %s; batch system: %s' % (self.site_name, self.machine_name))
+        log.info('Site: %s; batch system: %s', self.site_name, self.machine_name)
         self._mpi = mpi
         if self._mpi:
             log.info('Parser will retrieve per-processor accounting information.')
@@ -59,7 +59,7 @@ class Parser(object):
         try:
             if self.parse(line) is not None:
                 return True
-        except: # An exception means we can't parse the file!
+        except Exception:  # An exception means we can't parse the file!
             pass
         
         return False
