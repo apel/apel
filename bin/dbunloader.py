@@ -124,9 +124,9 @@ if __name__ == '__main__':
         elif interval == 'all':
             msgs, recs = unloader.unload_all(table_name, send_ur)
         else:
-            log.warn('Unrecognised interval: %s' % interval)
+            log.warn('Unrecognised interval: %s', interval)
             log.warn('Will not start unloader.')
-        log.info('%d records in %d messages unloaded from %s', (recs, msgs, table_name))
+        log.info('%d records in %d messages unloaded from %s', recs, msgs, table_name)
     except KeyError:
         log.error('Invalid table name: %s, omitting', table_name)
     except ApelDbException, e:
