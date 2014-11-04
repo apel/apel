@@ -81,7 +81,7 @@ def iso2seconds(isoduration):
     pattern += "(T)?"       # T indicates time values are starting
     pattern += "([0-9]+H)?" # hours
     pattern += "([0-9]+M)?" # minutes
-    pattern += "([0-9]+S)?" # seconds
+    pattern += "([0-9]+[\.,]?[0-9]*S)?"  # seconds
     pattern += "$"          # end of string
 
     cp = re.compile(pattern)
@@ -90,8 +90,16 @@ def iso2seconds(isoduration):
     intvals = []
     for item in values:
         try:
+            if ',' in item:
+                # ',' can be used as a decimal separator in ISO 8601
+                item = item.replace(',', '.')
             # remove letter from end then get an int
-            intvals.append(int(item[:-1]))
+            if '.' in item:
+                # If item is a decimal round to integer
+                intvals.append(int(round(float(item[:-1]))))
+            else:
+                # Otherwise keep as an integer for accuracy
+                intvals.append(int(item[:-1]))
         except (ValueError, TypeError):
             intvals.append(0)
 

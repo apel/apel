@@ -70,9 +70,12 @@ class BlahParser(Parser):
             'ValidUntil'     : lambda x: valid_until(parse_timestamp(x['timestamp'])),
             'Processed'      : lambda x: Parser.UNPROCESSED}
 
-        for key,value in parts:
-            data[key] = value
-        
+        for key, value in parts:
+            # Store only the first value encountered. This is mainly for the
+            # userFQAN field as the first occurence of this is the primary FQAN.
+            if key not in data:
+                data[key] = value
+
         for key in mapping:
             rc[key] = mapping[key](data)
 
