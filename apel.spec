@@ -5,7 +5,7 @@
 
 Name:           apel
 Version:        1.3.1
-%define releasenumber 0.2.alpha2
+%define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
 
@@ -34,7 +34,7 @@ apel-lib provides required libraries for the rest of APEL system.
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apel-lib >= 1.3.0
+Requires:       apel-lib >= 1.3.1
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -44,7 +44,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.3.0, apel-ssm
+Requires:       apel-lib >= 1.3.1, apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -55,7 +55,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.3.0, apel-ssm
+Requires:       apel-lib >= 1.3.1, apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -187,11 +187,23 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Tue Nov 04 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.1-1
+ - (No changes from pre-release version.)
+
+ * Wed Oct 22 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.1-0.3.beta1
+ - Corrected the handling of muliple FQANs in blah logs so that the role and
+   group are taken from the first (i.e. primary) FQAN rather than the last.
+ - Fixed a crash that occurred when the parser encountered an empty file.
+ - Added support for parsing fractional seconds in XML usage records.
+ - Fixed database loader crash when save_messages was set to false.
+ - Added options to unloader.conf to allow the unloader to unload more than just
+   the current and previous months.
+
  * Tue Jul 15 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-1
  - Added in a missing database view that the central APEL server uses.
 
  * Thu Jul 03 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.4.rc3
- - Add partitioning statement to schema used by central APEL server.
+ - Added partitioning statement to schema used by central APEL server.
 
  * Thu Jul 03 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.0-0.3.rc2
  - Corrections made to server schema to avoid warnings about default values not
@@ -203,6 +215,17 @@ exit 0
    summary job record format (v0.3).
  - Some views used by the central APEL server, which shouldn't be needed by
    regional servers, have been separated out into server-extra.sql.
+
+ * Fri Aug 15 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.2-1
+ - Fixed being unable to parse uncompressed accounting logs.
+
+ * Thu Jul 24 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.1-1
+ - (No changes from pre-release version.)
+
+ * Thu Jul 24 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.1-0.1.rc1
+ - Changed parsers to handle short FQANS properly.
+ - Added a logratate script for client.log. 'apel-client' will be installed to
+   the logrotate.d directory.
 
  * Mon Jun 30 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.2.0-5
  - Updates made to rpmbuild spec file to support new versioning scheme.
