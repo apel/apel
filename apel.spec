@@ -5,7 +5,7 @@
 
 Name:           apel
 Version:        1.3.1
-%define releasenumber 0.3.beta1
+%define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
 
@@ -34,7 +34,7 @@ apel-lib provides required libraries for the rest of APEL system.
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apel-lib >= 1.3.0
+Requires:       apel-lib >= 1.3.1
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -44,7 +44,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.3.0, apel-ssm
+Requires:       apel-lib >= 1.3.1, apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -55,7 +55,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.3.0, apel-ssm
+Requires:       apel-lib >= 1.3.1, apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -187,6 +187,9 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Tue Nov 04 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.1-1
+ - (No changes from pre-release version.)
+
  * Wed Oct 22 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.1-0.3.beta1
  - Corrected the handling of muliple FQANs in blah logs so that the role and
    group are taken from the first (i.e. primary) FQAN rather than the last.
