@@ -20,11 +20,12 @@ The outline of this procedure is to export all the data from the database except
   mysqldump -u root -p --no-create-info --ignore-table=apel.SuperSummaries apel | gzip > upgrade_data.sql.gz
   ```
 1. Log into MySQL and drop the database.
-1. Upgrade the RPMs.
+1. Upgrade the RPMs. (Assuming v1.3.1 packages for SL5 are used.)
 
   ```shell
   rpm -U apel-lib-1.3.1-1.el5.noarch.rpm apel-server-1.3.1-1.el5.noarch.rpm
   ```
+1. Log into MySQL and create a new empty database.
 1. Load the new server schema.
 
   ```shell
