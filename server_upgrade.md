@@ -1,5 +1,7 @@
 # Server Upgrade: 1.2.x to 1.3.x
 
+This procedure is for sites running the APEL regional server. Sites running the APEL client are _not_ affected by the schema change described in this document.
+
 ## Motivation
 
 Version 1.3 of the APEL server software uses a different database schema to version 1.2. This change was made to allow normalised summary records to be sent to APEL servers which necessitated altering one table among other changes. This requires extra steps to be performed during an upgrade.
