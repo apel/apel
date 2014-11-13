@@ -177,7 +177,7 @@ class Loader(object):
                 if self._save_msgs:
                     self._acceptq.purge()
             except OSError, e:
-                log.error('OSError raised while purging message queues: %s' % e)
+                log.warn('OSError raised while purging message queues: %s' % e)
 
         log.debug("Loader run finished.")
         log.debug("======================")
