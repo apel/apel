@@ -173,7 +173,7 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         if pf.get_field('Parsed') == 0:
                             unparsed = True
                         break  # If we find a match, no need to keep checking.
-                        
+
                 if reparse or not found:
                     try:
                         log.info('Parsing file: %s' % abs_file)
@@ -186,12 +186,12 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         # format we will get IOError, empty files can
                         # give EOFError as well.
                         for method in (bz2.BZ2File, gzip.open, open):
-                            try: # this is for Python < 2.5
+                            try:  # this is for Python < 2.5
                                 try:
                                     fp = method(abs_file)
                                     parsed, total = parse_file(parser, apel_db,
                                                                fp, reparse)
-				    break
+                                    break
                                 except (IOError, EOFError), e:
                                     if method == open:
                                         raise
