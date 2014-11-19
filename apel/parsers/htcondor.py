@@ -1,5 +1,5 @@
 '''
-   Copyright (C) 2014 STFC
+   Copyright 2014 The Science and Technology Facilities Council
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
 
    @author: Pavel Demin
 '''
-from apel.common import parse_time
+
+
+import logging
+
 from apel.db.records.event import EventRecord
 from apel.parsers import Parser
 
-import time
-import datetime
-import logging
 
 log = logging.getLogger(__name__)
 
@@ -67,4 +67,3 @@ class HTCondorParser(Parser):
         record = EventRecord()
         record.set_all(rc)
         return record
-
