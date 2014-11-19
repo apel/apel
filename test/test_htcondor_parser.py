@@ -29,7 +29,7 @@ class HTCondorParserTest(unittest.TestCase):
         )
 
         values = (
-            ('1234567', 'opssgm', None, 19, 188,
+            ('1234567', 'opssgm', None, 19, 26,
              datetime.datetime(2014, 10, 7, 13, 24, 33),
              datetime.datetime(2014, 10, 7, 18, 56, 39),
              712944, 2075028, 0, 1),
