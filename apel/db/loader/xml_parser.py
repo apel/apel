@@ -67,8 +67,8 @@ class XMLParser(object):
             
         retList = []
         for node in nodes:
-            if (node.hasAttributeNS(namespace, name) and 
-                self.getAttr(node, name, self.NAMESPACE) == value):
+            if (node.hasAttributeNS(namespace, name) and
+                    self.getAttr(node, name, self.NAMESPACE) == value):
                 retList.append(node)
         return retList
     

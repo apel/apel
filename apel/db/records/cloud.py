@@ -70,11 +70,11 @@ class CloudRecord(Record):
         # Keep the fqan itself as other methods in the class use it.
         role, group, vo = parse_fqan(self._record_content['FQAN'])
         # We can't / don't put NULL in the database, so we use 'None'
-        if role == None:
+        if role is None:
             role = 'None'
-        if group == None:
+        if group is None:
             group = 'None'
-        if vo == None:
+        if vo is None:
             vo = 'None'
             
         self._record_content['VORole'] = role
@@ -82,7 +82,7 @@ class CloudRecord(Record):
         self._record_content['VO'] = vo
         
         # Check the values of StartTime and EndTime
-        #self._check_start_end_times()
+        # self._check_start_end_times()
 
         
     def _check_start_end_times(self):

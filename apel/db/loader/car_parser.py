@@ -158,7 +158,7 @@ class CarParser(XMLParser):
             try:
                 data[field] = functions[field](nodes)
             except (IndexError, KeyError, AttributeError), e:
-                log.debug('Failed to parse field %s: %s' % (field, e))
+                log.debug('Failed to parse field %s: %s', field, e)
             
         jr = JobRecord()
         jr.set_all(data)

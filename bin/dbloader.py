@@ -30,7 +30,6 @@ from apel.common import set_up_logging
 from apel import __version__
 import ConfigParser
 from optparse import OptionParser
-from dirq.queue import Queue
 
 log = None
 

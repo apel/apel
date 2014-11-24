@@ -16,8 +16,8 @@
 @author Will Rogers
 '''
 
-from apel.db.records import Record, InvalidRecordException
-from datetime import datetime, timedelta
+from apel.db.records import Record
+
 import logging
 
 # get the relevant logger

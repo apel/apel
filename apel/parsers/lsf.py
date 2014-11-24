@@ -35,9 +35,7 @@ class LSFParser(Parser):
      - 7.x
      - 8.x
      - 9.x
-    '''
 
-    '''
     The expression below describes elements which we are looking for.
     Here is some explanation:
     
