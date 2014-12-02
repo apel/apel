@@ -174,8 +174,8 @@ CREATE PROCEDURE ReplaceNormalisedSummary(
   site VARCHAR(255),  month INT,  year INT, 
   globalUserName VARCHAR(255), vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255), 
   submitHost VARCHAR(255), infrastructure VARCHAR(50), 
-  nodeCount INT, processors INT, earliestEndTime DATETIME, latestEndTime DATETIME, wallDuration INT, cpuDuration INT, 
-  normalisedWallDuration INT, normalisedCpuDuration INT, numberOfJobs INT, publisherDN VARCHAR(255))
+  nodeCount INT, processors INT, earliestEndTime DATETIME, latestEndTime DATETIME, wallDuration BIGINT, cpuDuration BIGINT, 
+  normalisedWallDuration BIGINT, normalisedCpuDuration BIGINT, numberOfJobs INT, publisherDN VARCHAR(255))
 BEGIN
     REPLACE INTO NormalisedSummaries(SiteID, Month, Year, GlobalUserNameID, VOID, 
         VOGroupID, VORoleID, SubmitHostId, Infrastructure, 
