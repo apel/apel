@@ -31,6 +31,7 @@ import ConfigParser
 import logging.config
 import os
 import sys
+import time
 import urllib
 import xml.dom.minidom
 import xml.parsers.expat
@@ -46,6 +47,7 @@ class Configuration(object):
         self.banned_dns = None
         self.dn_file = None
         self.proxy = None
+        self.expire_hours = None
 
 def get_config(config_file):
     """Using the config file location, get a config object."""
@@ -82,9 +84,13 @@ def get_config(config_file):
         proxy = cp.get('auth', 'proxy')
         c.proxy = proxy
     except ConfigParser.NoOptionError:
-        c.proxy = None   
-        
-    
+        c.proxy = None
+
+    try:
+        c.expire_hours = cp.getint('auth', 'expire_hours')
+    except ConfigParser.NoOptionError:
+        c.expire_hours = 0
+
     # set up logging
     try:
         if os.path.exists(options.log_config):
@@ -191,7 +197,8 @@ def runprocess(config_file, log_config_file):
     # We'll fill this list with DNs.
     dns = []
     xml_string = None
-    
+    fetch_failed = False
+
     try:
         xml_string = get_xml(cfg.gocdb_url, cfg.proxy)
         log.info("Fetched XML from %s", cfg.gocdb_url)
@@ -199,14 +206,22 @@ def runprocess(config_file, log_config_file):
             dns.extend(dns_from_xml(xml_string))
         except xml.parsers.expat.ExpatError, e:
             log.warn("Failed to parse the retrieved XML - is the URL correct?")
+            fetch_failed = True
     except AttributeError:
         # gocdb_url == None
         log.info("No GOCDB URL specified - won't fetch URLs.")
     except IOError, e:
         log.info("Failed to retrieve XML - is the URL correct?")
         log.info(e)
-        
-        
+        fetch_failed = True
+
+    if fetch_failed and (time.time() - os.path.getmtime(cfg.dn_file) <
+                         (cfg.expire_hours * 3600)):
+        log.warn('Failed to update DNs from GOCDB. Will not modify DNs file.')
+        log.info("auth will exit.")
+        sys.exit(1)
+        log.info(LOG_BREAK)
+
     # get the DNs from the additional file
     try:
         extra_dns = dns_from_file(cfg.extra_dns)
