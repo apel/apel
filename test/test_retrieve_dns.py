@@ -30,12 +30,55 @@ class SimpleTestCase(unittest.TestCase):
                              "Invalid DN accepted: %s" % dn)
 
 
-class RetrieveDnsTestCase(unittest.TestCase):
-
+class ConfigTestCase(unittest.TestCase):
     def setUp(self):
         # Mock out logging
         mock.patch('bin.retrieve_dns.set_up_logging', autospec=True).start()
+        # Mock options.log_config as this isn't set if runprocess isn't run
+        bin.retrieve_dns.options = mock.Mock(log_config="fake_file")
 
+    def test_get_config(self):
+        path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..',
+                                            'conf', 'auth.cfg'))
+        conf = bin.retrieve_dns.get_config(path).__dict__
+
+        settings = {'gocdb_url': ('https://goc.egi.eu/gocdbpi/public/?method=ge'
+                                  't_service_endpoint&service_type=gLite-APEL'),
+                    'extra_dns': os.path.normpath('/etc/apel/extra-dns'),
+                    'banned_dns': os.path.normpath('/etc/apel/banned-dns'),
+                    'dn_file': os.path.normpath('/etc/apel/dns'),
+                    'proxy': 'http://wwwcache.rl.ac.uk:8080',
+                    'expire_hours': 2}
+
+        for key in settings:
+            self.assertEqual(conf[key], settings[key],
+                             "%s != %s for option %s" % (conf[key],
+                                                         settings[key], key))
+
+    def test_get_empty_config(self):
+        # Make a temp file for blank [auth] config
+        handle, path = tempfile.mkstemp()
+        os.write(handle, "[auth]\n[logging]\nlogfile=_\nlevel=_\nconsole=False")
+        os.close(handle)
+
+        conf = bin.retrieve_dns.get_config(path).__dict__
+
+        settings = {'gocdb_url': None, 'extra_dns': None, 'banned_dns': None,
+                    'dn_file': None, 'proxy': None, 'expire_hours': 0}
+
+        for key in settings:
+            self.assertEqual(conf[key], settings[key],
+                             "%s != %s for option %s" % (conf[key],
+                                                         settings[key], key))
+
+    def tearDown(self):
+        # Stop all patchers so that they're reset for the next test
+        mock.patch.stopall()
+
+
+class RunprocessTestCase(unittest.TestCase):
+
+    def setUp(self):
         # Mock out config
         mock_config = mock.patch('bin.retrieve_dns.get_config',
                                  autospec=True).start()
@@ -50,7 +93,7 @@ class RetrieveDnsTestCase(unittest.TestCase):
             self.files[item] = dict(zip(('handle', 'path'), tempfile.mkstemp()))
 
         os.write(self.files['dn']['handle'], "/dn/1\n/dn/2\n")
-        os.write(self.files['extra']['handle'], "/extra/dn\n/banned/dn")
+        os.write(self.files['extra']['handle'], "#comment\n/extra/dn\n/banned/dn")
         os.write(self.files['ban']['handle'], "/banned/dn")
 
         for item in self.files.values():
@@ -68,6 +111,7 @@ class RetrieveDnsTestCase(unittest.TestCase):
         self.mock_xml.return_value = """<results>
         <SERVICE_ENDPOINT><HOSTDN>/basic/dn</HOSTDN></SERVICE_ENDPOINT>
         <SERVICE_ENDPOINT><HOSTDN>/banned/dn</HOSTDN></SERVICE_ENDPOINT>
+        <SERVICE_ENDPOINT><HOSTDN>invalid</HOSTDN></SERVICE_ENDPOINT>
         </results>"""
         bin.retrieve_dns.runprocess("fake_config_file", "fake_log_config_file")
         dns = open(self.files['dn']['path'])

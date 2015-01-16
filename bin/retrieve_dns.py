@@ -219,8 +219,8 @@ def runprocess(config_file, log_config_file):
                          (cfg.expire_hours * 3600)):
         log.warn('Failed to update DNs from GOCDB. Will not modify DNs file.')
         log.info("auth will exit.")
-        sys.exit(1)
         log.info(LOG_BREAK)
+        sys.exit(1)
 
     # get the DNs from the additional file
     try:
@@ -249,8 +249,8 @@ def runprocess(config_file, log_config_file):
         log.warn("Failed to open file %s for writing.", cfg.dn_file)
         log.warn("Check the configuration.")
         log.warn("auth will exit.")
-        sys.exit(1)
         log.info(LOG_BREAK)
+        sys.exit(1)
 
     added = 0
     for dn in dns:
