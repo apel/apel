@@ -251,17 +251,20 @@ def runprocess(config_file, log_config_file):
         log.warn("auth will exit.")
         sys.exit(1)
         log.info(LOG_BREAK)
-        
+
     added = 0
     for dn in dns:
         if verify_dn(dn):
             new_dn_file.write(dn)
             new_dn_file.write('\n')
             added += 1
+        elif dn.lstrip().startswith("#"):
+            # Ignore comment lines starting with "#"
+            log.debug("Comment ignored: %s", dn)
         else:
             # We haven't accepted the DN, so write it to the log file.
             log.warning("DN not valid and won't be added: " + dn)
-                
+
     new_dn_file.close()
 
     log.info("%s DNs have been written to %s.", added, cfg.dn_file)
