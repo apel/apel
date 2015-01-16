@@ -1,4 +1,3 @@
-import logging
 import os
 import tempfile
 import unittest
@@ -8,7 +7,27 @@ import mock
 import bin.retrieve_dns
 
 
-logging.basicConfig(level=logging.WARN)
+class SimpleTestCase(unittest.TestCase):
+    """Test fixture for simple test cases."""
+
+    def test_verify_valid_dns(self):
+        valid_dns = ("/C=UK/O=eScience/OU=CLRC/L=RAL/CN=apel-test.esc.rl.ac.uk",
+                     "/C=UK/O=eScience/OU=CLRC/L=RAL/CN=sctapel.esc.rl.ac.uk",
+                     "/C=UK/O=eScience/OU=CLRC/L=RAL/CN=uas.esc.rl.ac.uk",
+                     "/smallest/acceptable")
+
+        for dn in valid_dns:
+            self.assertTrue(bin.retrieve_dns.verify_dn(dn),
+                            "Valid DN rejected: %s" % dn)
+
+    def test_verify_invalid_dns(self):
+        invalid_dns = ("# Some comment",
+                       "/C=UK, /O=eScience, /OU=Lanchester, /L=Physics",
+                       "/too-few-elements")
+
+        for dn in invalid_dns:
+            self.assertFalse(bin.retrieve_dns.verify_dn(dn),
+                             "Invalid DN accepted: %s" % dn)
 
 
 class RetrieveDnsTestCase(unittest.TestCase):
@@ -30,9 +49,9 @@ class RetrieveDnsTestCase(unittest.TestCase):
         for item in ('dn', 'extra', 'ban'):
             self.files[item] = dict(zip(('handle', 'path'), tempfile.mkstemp()))
 
-        os.write(self.files['dn']['handle'], "/dn1\n/dn2\n")
-        os.write(self.files['extra']['handle'], "/extra_dn\n/banned_dn")
-        os.write(self.files['ban']['handle'], "/banned_dn")
+        os.write(self.files['dn']['handle'], "/dn/1\n/dn/2\n")
+        os.write(self.files['extra']['handle'], "/extra/dn\n/banned/dn")
+        os.write(self.files['ban']['handle'], "/banned/dn")
 
         for item in self.files.values():
             os.close(item['handle'])
@@ -47,13 +66,13 @@ class RetrieveDnsTestCase(unittest.TestCase):
 
     def test_basics(self):
         self.mock_xml.return_value = """<results>
-        <SERVICE_ENDPOINT><HOSTDN>/basic_dn</HOSTDN></SERVICE_ENDPOINT>
-        <SERVICE_ENDPOINT><HOSTDN>/banned_dn</HOSTDN></SERVICE_ENDPOINT>
+        <SERVICE_ENDPOINT><HOSTDN>/basic/dn</HOSTDN></SERVICE_ENDPOINT>
+        <SERVICE_ENDPOINT><HOSTDN>/banned/dn</HOSTDN></SERVICE_ENDPOINT>
         </results>"""
         bin.retrieve_dns.runprocess("fake_config_file", "fake_log_config_file")
         dns = open(self.files['dn']['path'])
         try:
-            self.assertEqual(dns.read(), "/basic_dn\n/extra_dn\n")
+            self.assertEqual(dns.read(), "/basic/dn\n/extra/dn\n")
         finally:
             dns.close()
 
@@ -64,10 +83,11 @@ class RetrieveDnsTestCase(unittest.TestCase):
         obtained.
         """
         self.mock_xml.return_value = ""
-        self.assertRaises(SystemExit, bin.retrieve_dns.runprocess, "fake_config_file", "fake_log_config_file")
+        self.assertRaises(SystemExit, bin.retrieve_dns.runprocess,
+                          "fake_config_file", "fake_log_config_file")
         dns = open(self.files['dn']['path'])
         try:
-            self.assertEqual(dns.read(), "/dn1\n/dn2\n")
+            self.assertEqual(dns.read(), "/dn/1\n/dn/2\n")
         finally:
             dns.close()
 
