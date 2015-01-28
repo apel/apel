@@ -66,6 +66,8 @@ class SGEParser(Parser):
             if p.returncode != 0:
                 raise MultiplierError(err)
         except (OSError, MultiplierError):
+            log.warn("Unable to retrieve multipliers from qhost. Will default "
+                     "to '1.0'.")
             return {}
 
         xml_str = xml.dom.minidom.parseString(out)
