@@ -17,10 +17,16 @@
 '''
 
 
+import logging
+
 from apel.db.records.storage import StorageRecord
 from apel.db.records.group_attribute import GroupAttributeRecord
 from apel.common.datetime_utils import parse_timestamp
 from xml_parser import XMLParser
+
+
+log = logging.getLogger(__name__)
+
 
 class StarParser(XMLParser):
     '''
@@ -120,8 +126,8 @@ class StarParser(XMLParser):
                 # else:
                 data[field] = functions[field](nodes)
             except (IndexError, KeyError), e:
-                print "Failed to get field %s: %s" % (field, e)
-        
+                log.debug("Failed to get field %s: %s", field, e)
+
         sr = StorageRecord()
         sr.set_all(data)
 
