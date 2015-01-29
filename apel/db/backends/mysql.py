@@ -39,7 +39,7 @@ import decimal
 # set up the logger 
 log = logging.getLogger(__name__)
 # treat MySQL warnings as exceptions
-#warnings.simplefilter("error", category=MySQLdb.Warning)
+# warnings.simplefilter("error", category=MySQLdb.Warning)
 
 class ApelMysqlDb(object):
     '''
@@ -101,7 +101,7 @@ class ApelMysqlDb(object):
                                       user=self._db_username, passwd=self._db_pwd, 
                                       db=self._db_name)
         except MySQLdb.Error, e:
-            log.error('Error connecting to database: %s' % str(e))
+            log.error('Error connecting to database: %s', e)
             raise ApelDbException(e)
         
     def test_connection(self):
@@ -148,11 +148,11 @@ class ApelMysqlDb(object):
             
             for record in record_list:
                 values = record.get_db_tuple(source)
-                log.debug('Values: %s' % str(values))
+                log.debug('Values: %s', values)
                 c.execute(proc, values)
             self.db.commit()
         except (MySQLdb.Warning, MySQLdb.Error, KeyError), err:
-            log.error("Error loading records: %s" % str(err))
+            log.error("Error loading records: %s", err)
             log.error("Transaction will be rolled back.")
             self.db.rollback()
             raise ApelDbException(err)
@@ -220,14 +220,13 @@ class ApelMysqlDb(object):
                     break
                 
         except MySQLdb.Error, err:
-            log.error('Error during getting records: %s' % (str(err)))
+            log.error('Error during getting records: %s', err)
             log.error('Transaction will be rolled back.')
             self.db.rollback()
             raise ApelDbException(err)
         except MySQLdb.Warning, warning:
-            log.warn('Warning from MySQL: %s' % str(warning))
-        
-        
+            log.warn('Warning from MySQL: %s', warning)
+
     def get_last_updated(self):
         '''
         Find the last time that messages were sent.
@@ -273,10 +272,10 @@ class ApelMysqlDb(object):
                 raise ApelDbException("Records exist in both job and summary tables for the same site.")
             self.db.commit()
         except MySQLdb.Error, e:
-            log.error("A mysql error occurred: %s" % e)
+            log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
-            
-            if not self.db is None:
+
+            if self.db is not None:
                 self.db.rollback()
             raise
             
@@ -301,10 +300,10 @@ class ApelMysqlDb(object):
             log.info("Done.")
             self.db.commit()
         except MySQLdb.Error, e:
-            log.error("A mysql error occurred: %s" % e)
+            log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
-            
-            if not self.db is None:
+
+            if self.db is not None:
                 self.db.rollback()
             raise
     
@@ -332,7 +331,7 @@ class ApelMysqlDb(object):
             log.info("Done.")
             self.db.commit()
         except MySQLdb.Error, e:
-            log.error("A MySQL error occurred: %s" % e)
+            log.error("A MySQL error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
 
             if self.db is not None:
@@ -355,10 +354,10 @@ class ApelMysqlDb(object):
 
             self.db.commit()
         except MySQLdb.Error, e:
-            log.error("A mysql error occurred: %s" % e)
+            log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
-            
-            if not self.db is None:
+
+            if self.db is not None:
                 self.db.rollback()
             raise
         
@@ -384,10 +383,10 @@ class ApelMysqlDb(object):
             
             self.db.commit()
         except MySQLdb.Error, e:
-            log.error("A mysql error occurred: %s" % e)
+            log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
-            
-            if not self.db is None:
+
+            if self.db is not None:
                 self.db.rollback()
             raise
         
@@ -410,10 +409,10 @@ class ApelMysqlDb(object):
             log.info("Done.")
             self.db.commit()
         except MySQLdb.Error, e:
-            log.error("A mysql error occurred: %s" % e)
+            log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
-            
-            if not self.db is None:
+
+            if self.db is not None:
                 self.db.rollback()
             raise e
         
@@ -430,10 +429,10 @@ class ApelMysqlDb(object):
             log.info("Done.")
             self.db.commit()
         except MySQLdb.Error, e:
-            log.error("A mysql error occurred: %s" % e)
+            log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
-            
-            if not self.db is None:
+
+            if self.db is not None:
                 self.db.rollback()
                 
             raise e
@@ -477,10 +476,10 @@ class ApelMysqlDb(object):
             self.db.commit()
             
         except MySQLdb.Error, e:
-            log.error("A mysql error occurred: %s" % e)
+            log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
             
-            if not self.db is None:
+            if self.db is not None:
                 self.db.rollback()
         
     def clean_processed_files(self, hostname):
@@ -496,9 +495,9 @@ class ApelMysqlDb(object):
             c.execute(self._processed_clean, [hostname])
             self.db.commit()
         except MySQLdb.Error, e:
-            log.error("A mysql error occurred: %s" % e)
+            log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
-            if not self.db is None:
+            if self.db is not None:
                 self.db.rollback()
     
     def _mysql_reconnect(self):
@@ -514,5 +513,5 @@ class ApelMysqlDb(object):
                                           user=self._db_username, passwd=self._db_pwd, 
                                           db=self._db_name)
             except MySQLdb.Error, e:
-                log.error('Error connecting to database: %s' % str(e))
+                log.error('Error connecting to database: %s', e)
                 raise ApelDbException(e)

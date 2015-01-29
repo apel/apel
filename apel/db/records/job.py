@@ -59,7 +59,7 @@ class JobRecord(Record):
                        "MemoryVirtual", "ServiceLevelType", "ServiceLevel"]
         
         # Not used in the message format, but required by the database.
-        #self._fqan_fields = ["VO", "VOGroup", "VORole"]
+        # self._fqan_fields = ["VO", "VOGroup", "VORole"]
         
         # Fields which are accepted but currently ignored.
         self._ignored_fields = ["SubmitHostType", "UpdateTime"]
@@ -92,11 +92,11 @@ class JobRecord(Record):
             
             role, group, vo = parse_fqan(self._record_content['FQAN'])
             # We can't / don't put NULL in the database, so we use 'None'
-            if role == None:
+            if role is None:
                 role = 'None'
-            if group == None:
+            if group is None:
                 group = 'None'
-            if vo == None:
+            if vo is None:
                 vo = 'None'
             
             self._record_content['VORole'] = role

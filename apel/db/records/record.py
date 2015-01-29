@@ -87,7 +87,7 @@ class Record(object):
             if key in self._db_fields:
                 self._record_content[key] = self.checked(key, fielddict[key])
             else:
-                if not key in self._ignored_fields:
+                if key not in self._ignored_fields:
                     raise InvalidRecordException('Unknown field: %s' % key)
                 
     def set_field(self, key, value):
@@ -97,7 +97,7 @@ class Record(object):
         if key in self._db_fields:
             self._record_content[key] = self.checked(key, value)
         else:
-            if not key in self._ignored_fields:
+            if key not in self._ignored_fields:
                 raise InvalidRecordException('Unknown field: %s' % key)
 
 
@@ -132,10 +132,10 @@ class Record(object):
                 value = None
             # firstly we must ensure that we do not put None
             # in mandatory field
-            if value == None and name in self._mandatory_fields:
+            if value is None and name in self._mandatory_fields:
                 raise InvalidRecordException('NULL in mandatory field: %s' % str(name))
-            
-            elif value == None:
+
+            elif value is None:
                 return value
             
             if name in self._int_fields: # integer values
@@ -189,7 +189,7 @@ class Record(object):
         how to deal with any part of a message.
         '''
         if (text == "") or text.isspace():
-#           log.info("Empty record: can't load.")
+           # log.info("Empty record: can't load.")
             return
             
         lines = text.strip().splitlines()
@@ -247,7 +247,7 @@ class Record(object):
                 # otherwise just don't write the line to the message.
                 if key in self._mandatory_fields:
                     raise InvalidRecordException('No mandatory key: %s found' % key)
-            if value == None or value.isspace() or value == "":
+            if value is None or value.isspace() or value == "":
                 # Don't write a line to the message unless there's something
                 # to say.
                 continue
@@ -336,7 +336,7 @@ class Record(object):
                     raise InvalidRecordException("Mandatory int field " + key + 
                                     " doesn't contain an integer.")
                 elif check_for_null(value):
-                    contents[key] = None 
-                elif value != None:
+                    contents[key] = None
+                elif value is not None:
                     raise InvalidRecordException("Int field " + key + 
                                     " doesn't contain an integer.")

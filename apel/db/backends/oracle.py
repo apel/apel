@@ -23,13 +23,13 @@ from apel.db import ApelDbException, LOGGER_ID
 from apel.db.records.job import JobRecord
 import cx_Oracle
 import logging
-import warnings
+# import warnings
 
 # Set up the logger
 log = logging.getLogger(LOGGER_ID)
 
 # Treat cx_Oracle warnings as exceptions
-#warnings.simplefilter("error", category=cx_Oracle.Warning)
+# warnings.simplefilter("error", category=cx_Oracle.Warning)
 
 
 class ApelOracleDb(object):
@@ -76,15 +76,15 @@ class ApelOracleDb(object):
         
         try:
             cur = con.cursor()
-            
-            ''' Insert the records into temporary tables. '''
+
+            # Insert the records into temporary tables.
             for record in record_list:
                 proc = self.INSERT_PROCEDURES[type(record)]
                 values = record.get_db_tuple(source)
                 
                 cur.callproc(proc, values)
-                
-            ''' Now merge the temporary tables into the actual tables. '''
+
+            # Now merge the temporary tables into the actual tables.
             for k, v in self.MERGE_PROCEDURES.iteritems():
                 cur.callproc(v)
                 
@@ -92,7 +92,7 @@ class ApelOracleDb(object):
             con.close()
         
         except (cx_Oracle.Warning, cx_Oracle.Error), err:
-            log.error("Error loading records: %s" % str(err))
+            log.error("Error loading records: %s", err)
             log.error("Transaction will be rolled back.")
             
             con.rollback()

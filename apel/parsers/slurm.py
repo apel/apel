@@ -43,13 +43,16 @@ class SlurmParser(Parser):
     '''
     def __init__(self, site, machine_name, mpi):
         Parser.__init__(self, site, machine_name, mpi)
-        log.info('Site: %s; batch system: %s' % (self.site_name, self.machine_name))
+        log.info('Site: %s; batch system: %s', self.site_name, self.machine_name)
 
     def parse(self, line):
         '''
         Parses single line from accounting log file.
         '''
-        # /usr/local/bin/sacct -P -n --format=JobID,JobName,User,Group,Start,End,Elapsed,CPUTimeRAW,Partition,NCPUS,NNodes,NodeList,MaxRSS,MaxVMSize,State -j $JOBID >> /var/log/apel/slurm_acc.20130311
+        # /usr/local/bin/sacct -P -n --format=JobID,JobName,User,Group,Start,End
+        # ,Elapsed,CPUTimeRAW,Partition,NCPUS,NNodes,NodeList,MaxRSS,MaxVMSize,S
+        # tate -j $JOBID >> /var/log/apel/slurm_acc.20130311
+
         # 1007|cream_612883006|dteam005|dteam|2013-03-27T17:13:41|2013-03-27T17:13:44|00:00:03|3|prod|1|1|cert-40|||COMPLETED
 
         # log.info('line: %s' % (line));

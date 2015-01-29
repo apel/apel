@@ -88,8 +88,8 @@ class DbUnloader(object):
         '''
         Unload all records from the specified table.
         '''
-        log.info('Unloading all records from %s.' % table_name)
-        
+        log.info('Unloading all records from %s.', table_name)
+
         record_type = self.RECORD_TYPES[table_name]
         
         query = self._get_base_query(record_type)
@@ -155,8 +155,8 @@ class DbUnloader(object):
             
             query = self._get_base_query(record_type)
             since = self._db.get_last_updated()
-            
-            log.info('Getting records updated since: %s' % since)
+
+            log.info('Getting records updated since: %s', since)
             if since is not None:
                 query.UpdateTime_gt = str(since)
                 
@@ -183,7 +183,7 @@ class DbUnloader(object):
         # to deduce the correct records.
         since = get_start_of_previous_month(datetime.datetime.now())
         
-        log.info('Getting summaries for months since: %s' % since.date())
+        log.info('Getting summaries for months since: %s', since.date())
         if since is not None:
             query.EarliestEndTime_ge = str(since)
             
@@ -221,12 +221,20 @@ class DbUnloader(object):
         buf = StringIO.StringIO()
         if type(records[0]) == JobRecord:
             XML_HEADER = '<?xml version="1.0" ?>'
-            UR_OPEN = '<urf:UsageRecords xmlns:urf="http://eu-emi.eu/namespaces/2012/11/computerecord" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://eu-emi.eu/namespaces/2012/11/computerecord car_v1.2.xsd">'
+            UR_OPEN = ('<urf:UsageRecords xmlns:urf="http://eu-emi.eu/namespace'
+                       's/2012/11/computerecord" xmlns:xsi="http://www.w3.org/2'
+                       '001/XMLSchema-instance" xsi:schemaLocation="http://eu-e'
+                       'mi.eu/namespaces/2012/11/computerecord car_v1.2.xsd">')
             UR_CLOSE = '</urf:UsageRecords>'
-#        elif type(records[0]) == SummaryRecord:
-#            XML_HEADER = '<?xml version="1.0" ?>'
-#            UR_OPEN = '<aur:SummaryRecords xmlns:aur="http://eu-emi.eu/namespaces/2012/11/aggregatedcomputerecord" xmlns:urf="http://eu-emi.eu/namespaces/2012/11/computerecord" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://eu-emi.eu/namespaces/2012/11/aggregatedcomputerecord ">'
-#            UR_CLOSE = '</aur:SummaryRecords>'
+        # elif type(records[0]) == SummaryRecord:
+        #     XML_HEADER = '<?xml version="1.0" ?>'
+        #     UR_OPEN = ('<aur:SummaryRecords xmlns:aur="http://eu-emi.eu/names'
+        #                'paces/2012/11/aggregatedcomputerecord" xmlns:urf="htt'
+        #                'p://eu-emi.eu/namespaces/2012/11/computerecord" xmlns'
+        #                ':xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:'
+        #                'schemaLocation="http://eu-emi.eu/namespaces/2012/11/a'
+        #                'ggregatedcomputerecord ">')
+        #     UR_CLOSE = '</aur:SummaryRecords>'
         else:
             raise ApelDbException('Can only send URs for JobRecords.')
             

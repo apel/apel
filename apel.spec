@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.3.1
+Version:        1.4.0
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -187,6 +187,20 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Thu Jan 29 2015 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.4.0-1
+ - (No changes from pre-release version.)
+
+ * Thu Jan 29 2015 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.4.0-0.1.rc1
+ - Added ability to process files compressed with bzip2.
+ - Added multiplier retrieval to GridEngine parser for CPU and wall-clock time.
+ - Fixed integer overflow when loading normalised summaries into APEL servers.
+ - Corrected the way some logging calls were made and reduced the logging level
+   when trying to purge a directory that isn't empty.
+ - Changed server authorization system to keep the list of DNs for a limited
+   time if unable to update from GOCDB and updated GOCDB query URL.
+ - Added Month and Year columns to primary key of CloudSummaries table in cloud
+   schema.
+
  * Tue Nov 04 2014 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.3.1-1
  - (No changes from pre-release version.)
 

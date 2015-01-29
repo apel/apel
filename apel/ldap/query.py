@@ -44,7 +44,7 @@ def parse_ce_capability(capability_string):
             value = capability_string.split('=')[1]
             decimal_value = Decimal(value)
     except (InvalidOperation, IndexError):
-        log.info('Failed to parse scaling reference: %s' % capability_string)
+        log.info('Failed to parse scaling reference: %s', capability_string)
         
     return decimal_value
     

@@ -58,14 +58,15 @@ CALLPROC_STMT = """CALL InsertJobRecord(%s, %s, %s, 'None', %s, %s, %s, %s, %s, 
                   %s, %s, NULL, NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
 
-def parse_timestamp(string, format="%Y-%m-%dT%H:%M:%SZ"):
+def parse_timestamp(string, fmt="%Y-%m-%dT%H:%M:%SZ"):
     '''
     Method for parsing timestamp
     '''
     if string is None:
         return None
 
-    return datetime.datetime(*time.strptime(string, format)[:-2])
+    return datetime.datetime(*time.strptime(string, fmt)[:-2])
+
 
 def get_start_of_month(months_ago):
     '''

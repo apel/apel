@@ -30,7 +30,6 @@ from apel.common import set_up_logging
 from apel import __version__
 import ConfigParser
 from optparse import OptionParser
-from dirq.queue import Queue
 
 log = None
 
@@ -58,8 +57,8 @@ def runprocess(db_config_file, config_file, log_config_file):
         print 'Error configuring logging: %s' % str(err)
         print 'The system will exit.'
         sys.exit(1)
-    
-    log.info('Starting apel dbloader version %s.%s.%s' % __version__)
+
+    log.info('Starting apel dbloader version %s.%s.%s', *__version__)
 
     try:
         qpath = cp.get('loader', 'msgpath')
@@ -119,9 +118,9 @@ def run_as_daemon(loader, interval):
                 time.sleep(interval)
 
         except SystemExit, e:
-            log.info("Received the shutdown signal: %s" % e)
+            log.info("Received the shutdown signal: %s", e)
         except LoaderException, e:
-            log.critical("An unrecoverable exception was thrown: %s" % e)
+            log.critical("An unrecoverable exception was thrown: %s", e)
         except Exception, e:
             log.exception("Unexpected exception. Traceback follows...")
     finally:

@@ -31,6 +31,7 @@ import ConfigParser
 import logging.config
 import os
 import sys
+import time
 import urllib
 import xml.dom.minidom
 import xml.parsers.expat
@@ -46,10 +47,11 @@ class Configuration(object):
         self.banned_dns = None
         self.dn_file = None
         self.proxy = None
+        self.expire_hours = None
 
 def get_config(config_file):
     """Using the config file location, get a config object."""
-        # Read configuration from file 
+    # Read configuration from file
     cp = ConfigParser.ConfigParser()
     cp.read(config_file)
     
@@ -82,9 +84,13 @@ def get_config(config_file):
         proxy = cp.get('auth', 'proxy')
         c.proxy = proxy
     except ConfigParser.NoOptionError:
-        c.proxy = None   
-        
-    
+        c.proxy = None
+
+    try:
+        c.expire_hours = cp.getint('auth', 'expire_hours')
+    except ConfigParser.NoOptionError:
+        c.expire_hours = 0
+
     # set up logging
     try:
         if os.path.exists(options.log_config):
@@ -113,7 +119,7 @@ def get_xml(url, proxy):
         conn.close()
     except IOError:
         # Try with a proxy
-        if not proxy is None:
+        if proxy is not None:
             proxy = {"http": proxy}
             conn = urllib.urlopen(url, proxies=proxy)
             dn_xml = conn.read()
@@ -171,11 +177,11 @@ def verify_dn(dn):
     # it should begin with a slash
     if dn.find('/') != 0:
         return False
-    # Check there are at least two bits
-    parts = dn.split('/')
-    if len(parts) < 2:
+    # Check that there are at least two parts to the DN. There should be 3 after
+    # the .split as an empty string is considered to be before the leading '/'.
+    if len(dn.split('/')) <= 2:
         return False
-     
+
     return True
 
 
@@ -185,43 +191,52 @@ def runprocess(config_file, log_config_file):
 
     log = logging.getLogger('auth')
     log.info(LOG_BREAK)
-    log.info('Starting apel auth version %s.%s.%s' % __version__)
+    log.info('Starting apel auth version %s.%s.%s', *__version__)
     log.info("Starting auth ...")
     
     # We'll fill this list with DNs.
     dns = []
     xml_string = None
-    
+    fetch_failed = False
+
     try:
         xml_string = get_xml(cfg.gocdb_url, cfg.proxy)
-        log.info("Fetched XML from %s" % cfg.gocdb_url)
+        log.info("Fetched XML from %s", cfg.gocdb_url)
         try:
             dns.extend(dns_from_xml(xml_string))
         except xml.parsers.expat.ExpatError, e:
             log.warn("Failed to parse the retrieved XML - is the URL correct?")
+            fetch_failed = True
     except AttributeError:
         # gocdb_url == None
         log.info("No GOCDB URL specified - won't fetch URLs.")
     except IOError, e:
         log.info("Failed to retrieve XML - is the URL correct?")
         log.info(e)
-        
-        
+        fetch_failed = True
+
+    if fetch_failed and (time.time() - os.path.getmtime(cfg.dn_file) <
+                         (cfg.expire_hours * 3600)):
+        log.warn('Failed to update DNs from GOCDB. Will not modify DNs file.')
+        log.info("auth will exit.")
+        log.info(LOG_BREAK)
+        sys.exit(1)
+
     # get the DNs from the additional file
     try:
         extra_dns = dns_from_file(cfg.extra_dns)
-        log.info("Fetched %s extra DNs from file %s." % (len(extra_dns), cfg.extra_dns))
+        log.info("Fetched %s extra DNs from file %s.", len(extra_dns), cfg.extra_dns)
         dns.extend(extra_dns)
     except IOError:
-        log.warn("Failed to retrieve extra DNs from file %s." % cfg.extra_dns)
+        log.warn("Failed to retrieve extra DNs from file %s.", cfg.extra_dns)
         log.warn("Check the configuration.")
         
     dns_to_remove = []
     try:
         dns_to_remove = dns_from_file(cfg.banned_dns)
-        log.info("Fetched %s banned DNs from file %s." % (len(dns_to_remove), cfg.banned_dns))
+        log.info("Fetched %s banned DNs from file %s.", len(dns_to_remove), cfg.banned_dns)
     except IOError:
-        log.warn("Failed to retrieve banned DNs from file %s." % cfg.banned_dns)
+        log.warn("Failed to retrieve banned DNs from file %s.", cfg.banned_dns)
         log.warn("Check the configuration.")
     
     # remove all items from the list dns which are in the list dns_to_remove
@@ -231,26 +246,29 @@ def runprocess(config_file, log_config_file):
     try:
         new_dn_file = open(cfg.dn_file, 'w')
     except IOError, e:
-        log.warn("Failed to open file %s for writing." % cfg.dn_file)
+        log.warn("Failed to open file %s for writing.", cfg.dn_file)
         log.warn("Check the configuration.")
         log.warn("auth will exit.")
-        sys.exit(1)
         log.info(LOG_BREAK)
-        
+        sys.exit(1)
+
     added = 0
     for dn in dns:
         if verify_dn(dn):
             new_dn_file.write(dn)
             new_dn_file.write('\n')
             added += 1
+        elif dn.lstrip().startswith("#"):
+            # Ignore comment lines starting with "#"
+            log.debug("Comment ignored: %s", dn)
         else:
             # We haven't accepted the DN, so write it to the log file.
             log.warning("DN not valid and won't be added: " + dn)
-                
+
     new_dn_file.close()
-    
-    log.info("%s DNs have been written to %s." % (added, cfg.dn_file))
-    
+
+    log.info("%s DNs have been written to %s.", added, cfg.dn_file)
+
     log.info("auth has finished.")
     log.info(LOG_BREAK)
     

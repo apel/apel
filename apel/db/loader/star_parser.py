@@ -16,11 +16,10 @@
    @author: Konrad Jopek
 '''
 
-import xml.dom.minidom
 
 from apel.db.records.storage import StorageRecord
 from apel.db.records.group_attribute import GroupAttributeRecord
-from apel.common.datetime_utils import iso2seconds, parse_timestamp
+from apel.common.datetime_utils import parse_timestamp
 from xml_parser import XMLParser
 
 class StarParser(XMLParser):
@@ -96,21 +95,18 @@ class StarParser(XMLParser):
             'StartTime'             : lambda nodes: parse_timestamp(self.getText(nodes['StartTime'][0].childNodes)),
             'EndTime'               : lambda nodes: parse_timestamp(self.getText(nodes['EndTime'][0].childNodes)),
             'ResourceCapacityUsed'  : lambda nodes: self.getText(
-                                                        nodes['ResourceCapacityUsed'][0]
-                                                          .childNodes),
+                nodes['ResourceCapacityUsed'][0].childNodes),
             'LogicalCapacityUsed'   : lambda nodes: self.getText(
-                                                        nodes['LogicalCapacityUsed'][0]
-                                                          .childNodes),
+                nodes['LogicalCapacityUsed'][0].childNodes),
             'ResourceCapacityAllocated'   : lambda nodes: self.getText(
-                                                        nodes['ResourceCapacityAllocated'][0]
-                                                          .childNodes)
+                nodes['ResourceCapacityAllocated'][0].childNodes)
             }
 
         # here we copy keys from functions
         # we only want to change 'RecordId' to 'RecordIdentity',
         nodes = {}.fromkeys( map (lambda f: f == 'RecordId' and 'RecordIdentity' or f, 
                                   [S for S in functions]) )
-       #nodes = {}.fromkeys(functions.keys())
+        # nodes = {}.fromkeys(functions.keys())
         data = {}
 
         for node in nodes:
@@ -119,9 +115,9 @@ class StarParser(XMLParser):
             
         for field in functions:
             try:
-#                if field == 'Group':
-#                    data['GroupName'] = functions[field](nodes)
-#                else:
+                # if field == 'Group':
+                #     data['GroupName'] = functions[field](nodes)
+                # else:
                 data[field] = functions[field](nodes)
             except (IndexError, KeyError), e:
                 print "Failed to get field %s: %s" % (field, e)
