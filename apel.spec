@@ -5,7 +5,7 @@
 
 Name:           apel
 Version:        1.4.0
-%define releasenumber 0.1.rc1
+%define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
 
@@ -187,6 +187,9 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Thu Jan 29 2015 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.4.0-1
+ - (No changes from pre-release version.)
+
  * Thu Jan 29 2015 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.4.0-0.1.rc1
  - Added ability to process files compressed with bzip2.
  - Added multiplier retrieval to GridEngine parser for CPU and wall-clock time.
