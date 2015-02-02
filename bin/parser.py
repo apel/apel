@@ -274,13 +274,20 @@ def handle_parsing(log_type, apel_db, cp):
         raise ParserConfigException(e)
     except KeyError, e:
         raise ParserConfigException("Not a valid parser type: %s" % e)
-    
+
+    # Set parser specific options
     if log_type == 'LSF':
         try:
             parser.set_scaling(cp.getboolean('batch', 'scale_host_factor'))
         except ConfigParser.NoOptionError:
             pass
-        
+    elif log_type == 'SGE':
+        try:
+            parser.ms_timestamps(cp.getbooleon('Grid Engine',
+                                               'millisecond_timestamps'))
+        except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+            pass
+
     # regular expressions for blah log files and for batch log files
     try:
         prefix = cp.get(section, 'filename_prefix')
