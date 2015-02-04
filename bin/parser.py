@@ -283,8 +283,8 @@ def handle_parsing(log_type, apel_db, cp):
             pass
     elif log_type == 'SGE':
         try:
-            parser.ms_timestamps(cp.getbooleon('Grid Engine',
-                                               'millisecond_timestamps'))
+            parser.ms_timestamps = cp.getboolean('Grid Engine',
+                                                 'millisecond_timestamps')
         except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
             pass
 
