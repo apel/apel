@@ -1,4 +1,5 @@
 import bz2
+import ConfigParser
 import gzip
 import os
 import re
@@ -51,9 +52,24 @@ class ParserTest(unittest.TestCase):
         finally:
             shutil.rmtree(dir_path)
 
+    def test_handle_parsing(self):
+        """Check handle_parsing in a basic way (i.e. no errors raised)."""
+        # Construct the location of the parser config file.
+        path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..',
+                                            'conf', 'parser.cfg'))
+        # Read the config and fill in empty values.
+        self.cp = ConfigParser.ConfigParser()
+        self.cp.read(path)
+        self.cp.set('site_info', 'site_name', 'TestSite')
+        self.cp.set('site_info', 'lrms_server', 'TestServer')
+        # It's hard to test handle_parsing, but we can check that no erorrs are
+        # raised and that the load_records method is called with an empty list.
+        bin.parser.handle_parsing('SGE', self.mock_db, self.cp)
+        self.mock_db.load_records.assert_called_once_with([])
+
     def tearDown(self):
         self.tf.close()
-        self.patcher.stop()
+        mock.patch.stopall()
 
 
 if __name__ == '__main__':
