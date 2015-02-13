@@ -152,7 +152,7 @@ class Loader(object):
                     name = self._acceptq.add({"body": msg_text,
                                               "signer": signer,
                                               "empaid": msg_id})
-                    log.info("Message saved to accpet queue as %s", name)
+                    log.info("Message saved to accept queue as %s", name)
 
             except (RecordFactoryException, LoaderException,
                     InvalidRecordException, apel.db.ApelDbException,
