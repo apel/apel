@@ -50,6 +50,8 @@ class LoaderTest(unittest.TestCase):
 
         in_q = dirq.Queue(os.path.join(self.dir_path, 'incoming'),
                           schema=schema)
+        in_q.add({"body": "bad message", "signer": "test signer", "empaid": "",
+                  "error": ""})
         in_q.add({"body": "APEL-summary-job-message: v0.3",
                   "signer": "test signer", "empaid": "", "error": ""})
 
