@@ -19,7 +19,9 @@ class LoaderTest(unittest.TestCase):
         self.dir_path = tempfile.mkdtemp()
 
         # Mock out the database as we're not testing that here
-        mock.patch('apel.db.ApelDb', autospec=True, spec_set=True).start()
+        # Note that as it's a class it needs instantiating
+        self.mock_db = mock.patch('apel.db.ApelDb', autospec=True,
+                                  spec_set=True).start()()
 
     def test_startup_fail(self):
         """Check that startup fails due to extant pidfile."""
@@ -42,20 +44,21 @@ class LoaderTest(unittest.TestCase):
         loader.shutdown()
         self.assertFalse(os.path.exists(pidfile))
 
-    def test_basic_load_all(self):
-        """Check that load_all_msgs runs without problems."""
+    def test_load_all(self):
+        """Check that load_records is called with the right arguments."""
         pidfile = os.path.join(self.dir_path, 'pidfile')
 
         in_q = dirq.Queue(os.path.join(self.dir_path, 'incoming'),
                           schema=schema)
-        in_q.add({"body": "test body", "signer": "test signer",
-                  "empaid": "", "error": ""})
+        in_q.add({"body": "APEL-summary-job-message: v0.3",
+                  "signer": "test signer", "empaid": "", "error": ""})
 
         self.loader = apel.db.loader.Loader(self.dir_path, True, 'mysql',
                                             'host', 1234, 'db', 'user', 'pwd',
                                             pidfile)
-
         self.loader.load_all_msgs()
+        self.mock_db.load_records.assert_called_once_with([],
+                                                          source='test signer')
 
     def tearDown(self):
         shutil.rmtree(self.dir_path)
