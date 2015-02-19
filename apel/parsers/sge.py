@@ -55,7 +55,18 @@ class SGEParser(Parser):
 
         # This should be set to True in parser.py for versions of Grid Engine
         # using millisecond timestamps (i.e. Univa Grid Engine 8.2.0+).
-        self.ms_timestamps = False
+        self._ms_timestamps = False
+
+    def set_ms_timestamps(self, use_ms):
+        """
+        Set _ms_timestamps to True or False.
+
+        This decides if timestamps will be treated as being in milliseconds (in
+        which case they'll need to be converted back to seconds).
+        """
+        if use_ms:
+            log.info('Will treat GE timestamps as being in milliseconds.')
+        self._ms_timestamps = use_ms
 
     def _load_multipliers(self):
         '''
@@ -116,7 +127,7 @@ class SGEParser(Parser):
 
         # If a version of GE that uses millisecond timestamps is being used then
         # set the divisor to convert back to seconds.
-        if self.ms_timestamps:
+        if self._ms_timestamps:
             divisor = 1000
         else:
             divisor = 1

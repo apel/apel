@@ -284,7 +284,7 @@ def handle_parsing(log_type, apel_db, cp):
                         "'. Will default to 'false'.")
     elif log_type == 'SGE':
         try:
-            parser.ms_timestamps = cp.getboolean('batch', 'ge_ms_timestamps')
+            parser.set_ms_timestamps(cp.getboolean('batch', 'ge_ms_timestamps'))
         except ConfigParser.NoOptionError:
             log.warning("Option 'ge_ms_timestamps' not found in section 'batch'"
                         " . Will default to 'false'.")

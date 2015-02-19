@@ -120,7 +120,7 @@ class ParserSGETest(unittest.TestCase):
         Univa Grid Engine timestamps changed from seconds to milliseconds in
         version 8.2.0. This tests the new format accounting log.
         """
-        self.parser.ms_timestamps = True
+        self.parser._ms_timestamps = True
 
         line = ("grid.q:node101.cm.cluster:atlas:atlas235:cream_814542935:38725"
                 "61:sge:0:1412932860657:1412932865141:1412933085629:0:0:220.488"
