@@ -18,6 +18,7 @@ cache: pip
 
 # Commands that prepare things for the test
 before_script:
+  - mysql -e 'CREATE DATABASE apel_unittest;'
   - export PYTHONPATH=$PYTHONPATH:`pwd -P`
   - cd test
 
