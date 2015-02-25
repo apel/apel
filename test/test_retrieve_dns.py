@@ -70,6 +70,7 @@ class ConfigTestCase(unittest.TestCase):
             self.assertEqual(conf[key], settings[key],
                              "%s != %s for option %s" % (conf[key],
                                                          settings[key], key))
+        os.remove(path)
 
     def tearDown(self):
         # Stop all patchers so that they're reset for the next test
