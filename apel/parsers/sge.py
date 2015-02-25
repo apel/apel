@@ -53,6 +53,21 @@ class SGEParser(Parser):
             log.warn('SGE MPI accounting may be incomplete.')
         self.multipliers = self._load_multipliers()
 
+        # This should be set to True in parser.py for versions of Grid Engine
+        # using millisecond timestamps (i.e. Univa Grid Engine 8.2.0+).
+        self._ms_timestamps = False
+
+    def set_ms_timestamps(self, use_ms):
+        """
+        Set _ms_timestamps to True or False.
+
+        This decides if timestamps will be treated as being in milliseconds (in
+        which case they'll need to be converted back to seconds).
+        """
+        if use_ms:
+            log.info('Will treat GE timestamps as being in milliseconds.')
+        self._ms_timestamps = use_ms
+
     def _load_multipliers(self):
         '''
         Returns a dictionary {hostname: {cputmult: <value>, wallmult: <value>}}.
@@ -110,6 +125,13 @@ class SGEParser(Parser):
         else:
             procs = 0
 
+        # If a version of GE that uses millisecond timestamps is being used then
+        # set the divisor to convert back to seconds.
+        if self._ms_timestamps:
+            divisor = 1000
+        else:
+            divisor = 1
+
         mapping = {'Site'           : lambda x: self.site_name,
                   'JobName'         : lambda x: x[5],
                   'LocalUserID'     : lambda x: x[3],
@@ -117,8 +139,8 @@ class SGEParser(Parser):
                   # int() can't parse strings like '1.000'
                   'WallDuration'    : lambda x: int(round(float(x[13]))*self._get_wall_multiplier(x[1])),
                   'CpuDuration'     : lambda x: int(round(float(x[36]))*self._get_cpu_multiplier(x[1])),
-                  'StartTime'       : lambda x: int(x[9]),
-                  'StopTime'        : lambda x: int(x[10]),
+                  'StartTime'       : lambda x: int(round(float(x[9])/divisor)),
+                  'StopTime'        : lambda x: int(round(float(x[10])/divisor)),
                   'Infrastructure'  : lambda x: "APEL-CREAM-SGE",
                   'MachineName'     : lambda x: self.machine_name,
                   'MemoryReal'      : lambda x: int(float(x[37])*1024*1024),  # is this correct?

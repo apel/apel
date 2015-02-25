@@ -1,7 +1,9 @@
-from unittest import TestCase
+import unittest
+
 from apel.db.records import Record, InvalidRecordException
 
-class RecordTest(TestCase):
+
+class RecordTest(unittest.TestCase):
     '''
     Test case for Record
     '''
@@ -34,3 +36,6 @@ class RecordTest(TestCase):
         record._record_content['Test'] = 'value'
         
         self.assertEqual(record.get_field('Test'), 'value')
+
+if __name__ == '__main__':
+    unittest.main()

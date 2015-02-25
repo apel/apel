@@ -73,7 +73,8 @@ class LSFParser(Parser):
         Set to true if you want to scale CPU duration and wall duration
         according to the 'HostFactor' value in the log file.
         '''
-        log.info('Will scale durations according to host factor specified in log file.')
+        if scale_hf:
+            log.info('Will scale durations according to host factor specified in log file.')
         self._scale_hf = scale_hf
         
     def parse(self, line):

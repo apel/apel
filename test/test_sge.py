@@ -72,7 +72,30 @@ class ParserSGETest(unittest.TestCase):
                         }
         
         cases[line3] = line3_values
-        
+
+        line4 = ("grid.q:node101.cm.cluster:prdatl:prdatl26:cream_324080374:329"
+                 "4013:sge:0:1404167579:1404169049:1404169408:0:0:359:32.189106"
+                 ":18.607171:99104.000000:0:0:0:0:1957472:1546:0:483672.000000:"
+                 "20488:0:0:0:151429:47022:NONE:defaultdepartment:NONE:1:0:50.7"
+                 "96277:4.497218:0.339940:-u prdatl26 -q grid.q -binding no_job"
+                 "_binding 0 0 0 0 no_explicit_binding:0.000000:NONE:5944487936"
+                 ".000000:0:0:NONE")
+
+        line4_values = {'JobName': "3294013",
+                        'LocalUserID': "prdatl26",
+                        'LocalUserGroup': "prdatl",
+                        'WallDuration': 359,
+                        'CpuDuration': 51,
+                        'StartTime': datetime.utcfromtimestamp(1404169049),
+                        'StopTime': datetime.utcfromtimestamp(1404169408),
+                        'MemoryReal': int(4.497218*1024*1024),
+                        'MemoryVirtual': 5944487936,
+                        'NodeCount': 0,
+                        'Processors': 1
+                        }
+
+        cases[line4] = line4_values
+
         for line in cases.keys():
             record = self.parser.parse(line)
             cont = record._record_content
@@ -91,6 +114,43 @@ class ParserSGETest(unittest.TestCase):
         
             for key in cases[line].keys():
                 self.assertEqual(cont[key], cases[line][key], "%s != %s for key %s" % (cont[key], cases[line][key], key))
+
+    def test_univa_timestamps(self):
+        """
+        Univa Grid Engine timestamps changed from seconds to milliseconds in
+        version 8.2.0. This tests the new format accounting log.
+        """
+        self.parser._ms_timestamps = True
+
+        line = ("grid.q:node101.cm.cluster:atlas:atlas235:cream_814542935:38725"
+                "61:sge:0:1412932860657:1412932865141:1412933085629:0:0:220.488"
+                ":7.301:5.469:123796:0:0:0:0:601325:794:0:237152:728:0:0:0:5439"
+                "6:1217:NONE:defaultdepartment:NONE:1:0:12.770:0.803193:0.08415"
+                "9:-u atlas235 -q grid.q -binding no_job_binding 0 0 0 0 no_exp"
+                "licit_binding:0.000000:NONE:1291231232:0:0:NONE:NONE:124411904"
+                ":115065856:grid-cream-02.hpc.susx.ac.uk:NONE:qsub /tmp/cream_8"
+                "14542935")
+
+        values = {'JobName': "3872561",
+                  'LocalUserID': "atlas235",
+                  'LocalUserGroup': "atlas",
+                  'WallDuration': 220,
+                  'CpuDuration': 13,
+                  'StartTime': datetime.utcfromtimestamp(1412932865),
+                  'StopTime': datetime.utcfromtimestamp(1412933086),
+                  'MemoryReal': int(0.803193*1024*1024),
+                  'MemoryVirtual': 1291231232,
+                  'NodeCount': 0,
+                  'Processors': 1
+                  }
+
+        record = self.parser.parse(line)
+        cont = record._record_content
+
+        for key in values:
+            self.assertEqual(cont[key], values[key],
+                             "%s != %s for key %s" % (cont[key], values[key],
+                                                      key))
 
     def test_parse_line_with_multiplier(self):
         '''
