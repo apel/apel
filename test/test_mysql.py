@@ -19,8 +19,31 @@ class MysqlTest(unittest.TestCase):
         self.db = apel.db.apeldb.ApelDb('mysql', 'localhost', 3306, 'root', '',
                                         'apel_unittest')
 
-    def test_connection(self):
+    def test_test_connection(self):
+        """Basic check that test_connection works without error."""
         self.db.test_connection()
+
+    def test_bad_connection(self):
+        """Check that initialising ApelDb fails if a bad password is used."""
+        self.assertRaises(apel.db.apeldb.ApelDbException, apel.db.apeldb.ApelDb,
+                          'mysql', 'localhost', 3306, 'root', 'badpassword',
+                          'apel_badtest')
+
+    def test_lost_connection(self):
+        """
+        Check that a lost connection to the db raises an exception.
+
+        Simulate the lost connection by changing the port.
+        """
+        self.db._db_port = 1234
+        self.assertRaises(apel.db.apeldb.ApelDbException,
+                          self.db.test_connection)
+
+    def test_bad_loads(self):
+        """Check that empty loads return None and bad types raise exception."""
+        self.assertTrue(self.db.load_records([], source='testDN') is None)
+        self.assertRaises(apel.db.apeldb.ApelDbException,
+                          self.db.load_records, [1234], source='testDN')
 
     def test_load_and_get(self):
         job = apel.db.records.job.JobRecord()
