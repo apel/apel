@@ -33,9 +33,9 @@ class MysqlTest(unittest.TestCase):
         """
         Check that a lost connection to the db raises an exception.
 
-        Simulate the lost connection by changing the port.
+        Simulate the lost connection by changing the host.
         """
-        self.db._db_port = 1234
+        self.db._db_host = 'badhost'
         self.assertRaises(apel.db.apeldb.ApelDbException,
                           self.db.test_connection)
 
