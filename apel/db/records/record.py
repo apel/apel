@@ -193,7 +193,7 @@ class Record(object):
         how to deal with any part of a message.
         '''
         if (text == "") or text.isspace():
-           # log.info("Empty record: can't load.")
+            # log.info("Empty record: can't load.")
             return
             
         lines = text.strip().splitlines()
