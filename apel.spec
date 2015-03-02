@@ -4,8 +4,8 @@
 %endif
 
 Name:           apel
-Version:        1.4.0
-%define releasenumber 1
+Version:        1.4.1
+%define releasenumber 0.1.rc1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
 
@@ -187,6 +187,12 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Mon Mar 02 2015 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.4.1-0.1.rc1
+ - Added an option to the batch configuration section to allow for the
+   millisecond timestamps introduced in Univa Grid Engine version 8.2.0.
+ - Improved logging output to make it more useful to APEL servers when tracing
+   messages.
+
  * Thu Jan 29 2015 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.4.0-1
  - (No changes from pre-release version.)
 
