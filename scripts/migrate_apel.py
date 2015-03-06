@@ -77,17 +77,17 @@ def get_start_of_month(months_ago):
     '''
     today = datetime.datetime.utcnow().date()
 
-    month_delta = months_ago % 12
-    year_delta = months_ago / 12
+    target_month = (today.month - months_ago) % 12
+    if target_month == 0:
+        target_month = 12
 
-    target_month = (today.month - month_delta) % 12
-    target_year = today.year - year_delta
+    target_year = today.year + (today.month - months_ago - 1) // 12
 
     midnight = datetime.time.min
     target_date = datetime.date(target_year, target_month, 1)
     start_of_target_month = datetime.datetime.combine(target_date, midnight)
     return start_of_target_month
-    
+
 
 def remove_proc(cursor):
     '''
