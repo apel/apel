@@ -158,7 +158,6 @@ class Record(object):
                 # We accept ints or floats as seconds since the epoch
                 try:
                     value = int(value)
-                    return datetime.utcfromtimestamp(value)
                 except ValueError:
                     # Not a datetime or an int, so it has to be a string representation.
                     # We get ISO format dates when parsing CAR or StAR.
@@ -170,6 +169,11 @@ class Record(object):
                         return dt
                     except ValueError: # Failed to parse timestamp
                         raise InvalidRecordException('Unknown datetime format!: %s' % value)
+                try:
+                    return datetime.utcfromtimestamp(value)
+                except ValueError, e:
+                    # Given timestamp is probably out of range
+                    raise InvalidRecordException(e)
             else:
                 return value
         except ValueError:
@@ -189,7 +193,7 @@ class Record(object):
         how to deal with any part of a message.
         '''
         if (text == "") or text.isspace():
-           # log.info("Empty record: can't load.")
+            # log.info("Empty record: can't load.")
             return
             
         lines = text.strip().splitlines()

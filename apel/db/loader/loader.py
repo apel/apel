@@ -149,19 +149,21 @@ class Loader(object):
                 self.load_msg(msg_text, signer)
                 
                 if self._save_msgs:
-                    self._acceptq.add({"body": msg_text,
-                                       "signer": signer,
-                                       "empaid": msg_id})
-                    
+                    name = self._acceptq.add({"body": msg_text,
+                                              "signer": signer,
+                                              "empaid": msg_id})
+                    log.info("Message saved to accept queue as %s", name)
+
             except (RecordFactoryException, LoaderException,
                     InvalidRecordException, apel.db.ApelDbException,
                     XMLParserException, ExpatError), err:
                 errmsg = "Parsing unsuccessful: %s" % str(err)
                 log.warn('Message rejected. %s', errmsg)
-                self._rejectq.add({"body": msg_text,
-                                   "signer": signer,
-                                   "empaid": msg_id,
-                                   "error": errmsg})
+                name = self._rejectq.add({"body": msg_text,
+                                          "signer": signer,
+                                          "empaid": msg_id,
+                                          "error": errmsg})
+                log.info("Message saved to reject queue as %s", name)
 
             log.info("Removing message %s. ID = %s", self.current_msg, msg_id)
             self._inq.remove(self.current_msg)
