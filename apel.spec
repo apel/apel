@@ -5,7 +5,7 @@
 
 Name:           apel
 Version:        1.4.1
-%define releasenumber 0.1.rc1
+%define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
 
@@ -187,6 +187,10 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Thu Mar 12 2015 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.4.1-1
+ - Changed defaults so that parallel jobs are reported for new installations.
+ - Corrected year calculation in migrate_apel.py script.
+
  * Mon Mar 02 2015 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.4.1-0.1.rc1
  - Added an option to the batch configuration section to allow for the
    millisecond timestamps introduced in Univa Grid Engine version 8.2.0.
