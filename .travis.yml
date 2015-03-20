@@ -9,13 +9,20 @@ matrix:
     - python: "3.4"
   fast_finish: true
 
+# Route build to container-based infrastructure
 sudo: false
+# Cache the dependencies installed by pip
 cache: pip
 
-# command to run tests, e.g. python setup.py test
-script:
+# Install defaults to "pip install -r requirements.txt"
+
+# Commands that prepare things for the test
+before_script:
   - export PYTHONPATH=$PYTHONPATH:`pwd -P`
   - cd test
+
+# Command to run tests
+script:
   - coverage run --source=apel,bin -m unittest2 discover
 
 after_success:
