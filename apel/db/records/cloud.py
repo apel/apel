@@ -38,24 +38,23 @@ class CloudRecord(Record):
         self._mandatory_fields = ["VMUUID", "SiteName"]
             
         # This list allows us to specify the order of lines when we construct records.
-        self._msg_fields  = ["VMUUID", "SiteName", "MachineName", 
+        self._msg_fields  = ["VMUUID", "SiteName", "CloudComputeService", "MachineName", 
                              "LocalUserId", "LocalGroupId", "GlobalUserName", "FQAN",
                              "Status", "StartTime", "EndTime", "SuspendDuration", 
                               "WallDuration",
                              "CpuDuration", "CpuCount", "NetworkType", "NetworkInbound", 
-                             "NetworkOutbound",
-                             "Memory", "Disk", "StorageRecordId", "ImageId", "CloudType"]
+                             "NetworkOutbound", "PublicIPCount", "Memory", "Disk", 
+                             "BenchmarkType", "Benchmark", "StorageRecordId", "ImageId", "CloudType"]
         
         # This list specifies the information that goes in the database.
-        self._db_fields = self._msg_fields[:7] + ['VO', 'VOGroup', 'VORole'] + self._msg_fields[7:]
+        self._db_fields = self._msg_fields[:8] + ['VO', 'VOGroup', 'VORole'] + self._msg_fields[8:]
         self._all_fields = self._db_fields
         
         self._ignored_fields = ["UpdateTime"]
         
         # Fields which will have an integer stored in them
         self._int_fields = [ "SuspendDuration", "WallDuration", "CpuDuration", "CpuCount", 
-                            "NetworkInbound", 
-                            "NetworkOutbound", "Memory", "Disk"]
+                            "NetworkInbound", "NetworkOutbound", "PublicIPCount", "Memory", "Disk"]
         
         self._datetime_fields = ["StartTime", "EndTime"]
     
