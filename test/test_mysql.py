@@ -8,7 +8,7 @@ import apel.db.records.job
 
 
 class MysqlTest(unittest.TestCase):
-    # These test cases require a local MySQL db server with a apel_unittest db
+    # These test cases require a local MySQL db server with an apel_unittest db
     def setUp(self):
         schema_path = os.path.abspath(os.path.join('..', 'schemas',
                                                    'server.sql'))
@@ -65,6 +65,17 @@ class MysqlTest(unittest.TestCase):
         # Check that items_in is a subset of items_out
         # Can't use 'all()' rather than comparing the length as Python 2.4
         self.assertEqual([item in items_out for item in items_in].count(True), len(items_in))
+
+    def test_last_update(self):
+        """
+        Check that the LastUpdated table can be set and queried.
+
+        It should not be set initially, so should return None, then should
+        return a time after being set.
+        """
+        self.assertTrue(self.db.get_last_updated() is None)
+        self.assertTrue(self.db.set_updated())
+        self.assertTrue(type(self.db.get_last_updated()) is datetime.datetime)
 
 
 if __name__ == '__main__':
