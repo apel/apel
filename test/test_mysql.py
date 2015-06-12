@@ -8,16 +8,23 @@ import apel.db.records.job
 
 
 class MysqlTest(unittest.TestCase):
-    # These test cases require a local MySQL db server with an apel_unittest db
+    # These test cases require a local MySQL db server
     def setUp(self):
+        query = ('DROP DATABASE IF EXISTS apel_unittest;'
+                 'CREATE DATABASE apel_unittest;')
+        subprocess.call(['mysql', '-e', query])
+
         schema_path = os.path.abspath(os.path.join('..', 'schemas',
                                                    'server.sql'))
         schema_handle = open(schema_path)
-        subprocess.Popen(['mysql', 'apel_unittest'], stdin=schema_handle).wait()
+        subprocess.call(['mysql', 'apel_unittest'], stdin=schema_handle)
         schema_handle.close()
 
         self.db = apel.db.apeldb.ApelDb('mysql', 'localhost', 3306, 'root', '',
                                         'apel_unittest')
+
+    def tearDown(self):
+        subprocess.call(['mysql', '-e', 'DROP DATABASE apel_unittest;'])
 
     def test_test_connection(self):
         """Basic check that test_connection works without error."""
