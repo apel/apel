@@ -3,15 +3,19 @@ from subprocess import call, Popen, PIPE
 import unittest
 
 
+if os.name == 'nt':
+    os.environ['PATH'] += ';C:/Program Files/MySQL/MySQL Server 5.1/bin/'
+
+
 class SchemaTest(unittest.TestCase):
-    # These test cases require a local MySQL db server
+    # These test cases require a local MySQL db server with no password on root
     def setUp(self):
         query = ('DROP DATABASE IF EXISTS apel_unittest;'
                  'CREATE DATABASE apel_unittest;')
-        call(['mysql', '-e', query])
+        call(['mysql', '-u', 'root', '-e', query])
 
     def tearDown(self):
-        call(['mysql', '-e', 'DROP DATABASE apel_unittest;'])
+        call(['mysql', '-u', 'root', '-e', 'DROP DATABASE apel_unittest;'])
 
 
 def make_schema_test(schema):
@@ -22,11 +26,11 @@ def make_schema_test(schema):
             parent_schema_path = os.path.abspath(os.path.join('..', 'schemas',
                                                               'server.sql'))
             parent_schema_handle = open(parent_schema_path)
-            call(['mysql', 'apel_unittest'], stdin=parent_schema_handle)
+            call(['mysql', '-u', 'root', 'apel_unittest'], stdin=parent_schema_handle)
             parent_schema_handle.close()
         schema_path = os.path.abspath(os.path.join('..', 'schemas', schema))
         schema_handle = open(schema_path)
-        p = Popen(['mysql', 'apel_unittest'], stdin=schema_handle, stderr=PIPE)
+        p = Popen(['mysql', '-u', 'root', 'apel_unittest'], stdin=schema_handle, stderr=PIPE)
         schema_handle.close()
         p.wait()
         self.assertFalse(p.returncode, p.communicate()[1])

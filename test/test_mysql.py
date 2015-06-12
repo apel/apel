@@ -7,24 +7,28 @@ import apel.db.apeldb
 import apel.db.records.job
 
 
+if os.name == 'nt':
+    os.environ['PATH'] += ';C:/Program Files/MySQL/MySQL Server 5.1/bin/'
+
+
 class MysqlTest(unittest.TestCase):
-    # These test cases require a local MySQL db server
+    # These test cases require a local MySQL db server with no password on root
     def setUp(self):
         query = ('DROP DATABASE IF EXISTS apel_unittest;'
                  'CREATE DATABASE apel_unittest;')
-        subprocess.call(['mysql', '-e', query])
+        subprocess.call(['mysql', '-u', 'root', '-e', query])
 
         schema_path = os.path.abspath(os.path.join('..', 'schemas',
                                                    'server.sql'))
         schema_handle = open(schema_path)
-        subprocess.call(['mysql', 'apel_unittest'], stdin=schema_handle)
+        subprocess.call(['mysql', '-u', 'root', 'apel_unittest'], stdin=schema_handle)
         schema_handle.close()
 
         self.db = apel.db.apeldb.ApelDb('mysql', 'localhost', 3306, 'root', '',
                                         'apel_unittest')
 
     def tearDown(self):
-        subprocess.call(['mysql', '-e', 'DROP DATABASE apel_unittest;'])
+        subprocess.call(['mysql', '-u', 'root', '-e', 'DROP DATABASE apel_unittest;'])
 
     def test_test_connection(self):
         """Basic check that test_connection works without error."""
