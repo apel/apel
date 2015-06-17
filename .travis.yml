@@ -22,6 +22,6 @@ before_script:
   - cd test
 
 # Command to run tests
-script: coverage run --source=apel,bin -m unittest2 discover
+script: coverage run --source=apel,bin -m unittest2 discover --buffer
 
 after_success: coveralls
