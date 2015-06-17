@@ -28,7 +28,8 @@ class MysqlTest(unittest.TestCase):
                                         'apel_unittest')
 
     def tearDown(self):
-        subprocess.call(['mysql', '-u', 'root', '-e', 'DROP DATABASE apel_unittest;'])
+        query = "DROP DATABASE apel_unittest;"
+        subprocess.call(['mysql', '-u', 'root', '-e', query])
 
     def test_test_connection(self):
         """Basic check that test_connection works without error."""
