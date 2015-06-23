@@ -14,11 +14,6 @@ OUTPUT_FILE=$OUTPUT_LOCATION/accounting.$NOW
 # Build the filter for the history command
 CONSTR="(JobStartDate>0)&&(CompletionDate>`date +%s -d "01 Jan 2014"`)"
 
-# Only get the jobs submitted from this CE (ceCertificateSubject is
-# set in /etc/condor/config.s/blah and added to the job classad with
-# the SUBMIT_EXPRS directive in the same file)
-CONSTR=${CONSTR}"&&(ceCertificateSubject==$(condor_config_val ceCertificateSubject))"
-
 # Populate the temporary file
 for HF in $HISTORY_FILES
 do

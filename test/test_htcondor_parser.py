@@ -55,5 +55,6 @@ class HTCondorParserTest(unittest.TestCase):
                                  "%s != %s for key %s." %
                                  (cont[key], cases[line][key], key))
 
+
 if __name__ == '__main__':
     unittest.main()
