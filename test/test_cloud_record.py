@@ -73,7 +73,7 @@ CloudType: OpenNebula
                         'PublicIPCount': 5,
                         'Memory': 512,
                         'BenchmarkType': 'Hepspec',
-                        'Benchmark': '1006.3',
+                        'Benchmark': 1006.3,
                         'ImageId': '\'scilin6\'',
                         'CloudType': 'OpenNebula'
                         }
@@ -121,7 +121,7 @@ CloudType: Openstack
                         'PublicIPCount': 1,
                         'Memory': 512,
                         'BenchmarkType': 'Si2k',
-                        'Benchmark': '200',
+                        'Benchmark': 200,
                         'ImageId': 'Debian Testing (Wheezy)',
                         'CloudType': 'Openstack'                  
                          }
