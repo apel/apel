@@ -25,7 +25,10 @@ class HTCondorParserTest(unittest.TestCase):
 
         # Examples for correct lines
         lines = (
-            ('1234567|opssgm|19|18|8|1412688273|1412708199|712944|2075028|1'),
+            '1234567|opssgm|19|18|8|1412688273|1412708199|712944|2075028|1',
+            'arcce.rl.ac.uk#2376.0#1589|tatls011|287|107|11|1435671643|1435671930|26636|26832|1|1',
+            'arcce.rl.ac.uk#2486.0#1888|t2k016|4|0|0|1435671919|1435671922|0|11|1|1',
+            'arcce.rl.ac.uk#2478.0#1874|snoplus014|2|0|0|1435671918|1435671920|0|11|1|1',
         )
 
         values = (
@@ -33,6 +36,18 @@ class HTCondorParserTest(unittest.TestCase):
              datetime.datetime(2014, 10, 7, 13, 24, 33),
              datetime.datetime(2014, 10, 7, 18, 56, 39),
              712944, 2075028, 0, 1),
+            ('arcce.rl.ac.uk#2376.0#1589', 'tatls011', None, 287, 118,
+             datetime.datetime(2015, 6, 30, 13, 40, 43),
+             datetime.datetime(2015, 6, 30, 13, 45, 30),
+             26636, 26832, 0, 1),
+            ('arcce.rl.ac.uk#2486.0#1888', 't2k016', None, 4, 0,
+             datetime.datetime(2015, 6, 30, 13, 45, 19),
+             datetime.datetime(2015, 6, 30, 13, 45, 22),
+             0, 11, 0, 1),
+            ('arcce.rl.ac.uk#2478.0#1874', 'snoplus014', None, 2, 0,
+             datetime.datetime(2015, 6, 30, 13, 45, 18),
+             datetime.datetime(2015, 6, 30, 13, 45, 20),
+             0, 11, 0, 1),
         )
 
         cases = {}
