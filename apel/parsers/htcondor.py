@@ -48,7 +48,7 @@ class HTCondorParser(Parser):
                    'Infrastructure'  : lambda x: "APEL-CREAM-HTCONDOR",
                    'JobName'         : lambda x: x[0],
                    'LocalUserID'     : lambda x: x[1],
-                   'LocalUserGroup'  : lambda x: x[10],
+                   'LocalUserGroup'  : lambda x: "",
                    'WallDuration'    : lambda x: int(x[2]),
                    'CpuDuration'     : lambda x: int(x[3])+int(x[4]),
                    'StartTime'       : lambda x: x[5],
