@@ -28,7 +28,7 @@ do
     -format "%d|" ResidentSetSize_RAW \
     -format "%d|" ImageSize_RAW \
     -format "%d|" RequestCpus \
-    -format "%s\n" Group >> $OUTPUT_FILE
+    -format "\n" EMPTY >> $OUTPUT_FILE
 done
 
 # Invoke the parser
