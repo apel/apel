@@ -38,8 +38,8 @@ class HTCondorParser(Parser):
         '''
         Parses single line from accounting log file.
         '''
-        # condor_history -constraint "JobStartDate > 0" -format "%d|" ClusterId -format "%s|" Owner -format "%d|" RemoteWallClockTime -format "%d|" RemoteUserCpu -format "%d|" RemoteSysCpu -format "%d|" JobStartDate -format "%d|" EnteredCurrentStatus -format "%d|" ResidentSetSize_RAW -format "%d|" ImageSize_RAW -format "%d\n" RequestCpus
-        # 1234567|opssgm|19|18|8|1412688273|1412708199|712944|2075028|1
+        # condor_history -constraint "JobStartDate > 0" -format "%s|" GlobalJobId -format "%s|" Owner -format "%d|" RemoteWallClockTime -format "%d|" RemoteUserCpu -format "%d|" RemoteSysCpu -format "%d|" JobStartDate -format "%d|" EnteredCurrentStatus -format "%d|" ResidentSetSize_RAW -format "%d|" ImageSize_RAW  -format "%d|" RequestCpus  -format "%s\n" RequestCpus
+        # arcce.rl.ac.uk#2376.0#71589|tatls011|287|107|11|1435671643|1435671930|26636|26832|1|1
 
         values = line.strip().split('|')
 

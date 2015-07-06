@@ -19,7 +19,7 @@ class HTCondorParserTest(unittest.TestCase):
                 'MemoryVirtual', 'NodeCount', 'Processors')
 
         # condor_history output (line split):
-        #   ClusterId|Owner|RemoteWallClockTime|RemoteUserCpu|RemoteSysCpu|
+        #   GlobalJobId|Owner|RemoteWallClockTime|RemoteUserCpu|RemoteSysCpu|
         #   JobStartDate|EnteredCurrentStatus|ResidentSetSize_RAW|ImageSize_RAW|
         #   RequestCpus
 
