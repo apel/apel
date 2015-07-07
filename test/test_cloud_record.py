@@ -1,7 +1,9 @@
-from apel.db.records import CloudRecord
-from unittest import TestCase
+import unittest
 
-class CloudRecordTest(TestCase):
+from apel.db.records import CloudRecord
+
+
+class CloudRecordTest(unittest.TestCase):
     '''
     Test case for CloudRecord
     '''
@@ -153,3 +155,6 @@ CloudType: Openstack
             record._check_fields()
         except Exception, e:
             self.fail('_check_fields method failed: %s [%s]' % (str(e), str(type(e))))
+
+if __name__ == '__main__':
+    unittest.main()
