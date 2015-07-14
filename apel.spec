@@ -109,8 +109,9 @@ cp schemas/server-extra.sql %{buildroot}%_datadir/apel/
 cp schemas/cloud.sql %{buildroot}%_datadir/apel/
 cp schemas/storage.sql %{buildroot}%_datadir/apel/
 
-# slurm accounting script
+# accounting scripts
 cp scripts/slurm_acc.sh %{buildroot}%_datadir/apel/
+cp scripts/htcondor_acc.sh %{buildroot}%_datadir/apel/
 
 # message status script
 cp scripts/msg_status.py %{buildroot}%_datadir/apel/
