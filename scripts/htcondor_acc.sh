@@ -32,7 +32,7 @@ do
 done
 
 # Invoke the parser
-/usr/bin/apelparser
+/usr/bin/apelparser --config /etc/apel/parser.cfg
 
 # Cleanup
 /bin/find $OUTPUT_LOCATION -name accounting.\* -mtime +30 -exec /bin/rm {} \;
