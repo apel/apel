@@ -5,7 +5,7 @@ OUTPUT_LOCATION=/var/log/accounting
 
 # Find all the history files modified in the last two months
 # (there can be more than one, if the CE submits to several schedds)
-HISTORY_FILES=$(find /var/lib/condor/spool/ -name history\* -mtime -61)
+HISTORY_FILES=$(find /var/lib/condor/spool/ -name history\* -mtime -62)
 
 # Create a temporary accounting file name
 NOW=$(date +"%Y%m%dT%H%M%S")
