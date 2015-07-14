@@ -141,6 +141,7 @@ exit 0
 %attr(755,root,root) %_bindir/apelparser
 %config(noreplace) %attr(600,-,-) %{apelconf}/parser.cfg
 %attr(755,root,root) %_datadir/apel/slurm_acc.sh
+%attr(755,root,root) %_datadir/apel/htcondor_acc.sh
 
 # ------------------------------------------------------------------------------
 
