@@ -43,6 +43,7 @@ from apel.parsers.lsf import LSFParser
 from apel.parsers.sge import SGEParser
 from apel.parsers.pbs import PBSParser
 from apel.parsers.slurm import SlurmParser
+from apel.parsers.htcondor import HTCondorParser
 
 
 LOGGER_ID = 'parser'
@@ -55,8 +56,10 @@ PARSERS = {
            'LSF': LSFParser,
            'SGE': SGEParser,
            'SLURM': SlurmParser,
-           'blah' : BlahParser
+           'blah' : BlahParser,
+           'HTCondor': HTCondorParser,
            }
+
 
 class ParserConfigException(Exception):
     '''
@@ -154,7 +157,7 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
     try:
         log.info('Scanning directory: %s', dirpath)
         
-        for item in os.listdir(dirpath):
+        for item in sorted(os.listdir(dirpath)):
             abs_file = os.path.join(dirpath, item)
             if os.path.isfile(abs_file) and expr.match(item):
                 # first, calculate the hash of the file:

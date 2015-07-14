@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.4.1
+Version:        1.5.0
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -34,7 +34,7 @@ apel-lib provides required libraries for the rest of APEL system.
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apel-lib >= 1.3.1
+Requires:       apel-lib >= 1.5.0
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -44,7 +44,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.3.1, apel-ssm
+Requires:       apel-lib >= 1.5.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -55,7 +55,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.3.1, apel-ssm
+Requires:       apel-lib >= 1.5.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -109,8 +109,9 @@ cp schemas/server-extra.sql %{buildroot}%_datadir/apel/
 cp schemas/cloud.sql %{buildroot}%_datadir/apel/
 cp schemas/storage.sql %{buildroot}%_datadir/apel/
 
-# slurm accounting script
+# accounting scripts
 cp scripts/slurm_acc.sh %{buildroot}%_datadir/apel/
+cp scripts/htcondor_acc.sh %{buildroot}%_datadir/apel/
 
 # message status script
 cp scripts/msg_status.py %{buildroot}%_datadir/apel/
@@ -140,6 +141,7 @@ exit 0
 %attr(755,root,root) %_bindir/apelparser
 %config(noreplace) %attr(600,-,-) %{apelconf}/parser.cfg
 %attr(755,root,root) %_datadir/apel/slurm_acc.sh
+%attr(755,root,root) %_datadir/apel/htcondor_acc.sh
 
 # ------------------------------------------------------------------------------
 
@@ -187,6 +189,13 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Tue Jul 14 2015 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.5.0-1
+ - Added sorting of accounting logs before parsing which makes reading through
+   the parser log easier, especially if files use the YYYYMMDD date format.
+ - Added the first version of a basic HTCondor parser.
+ - Fixed the server schema to correctly aggregate super summaries when
+   viewed as normalised super summaries.
+
  * Thu Mar 12 2015 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.4.1-1
  - Changed defaults so that parallel jobs are reported for new installations.
  - Corrected year calculation in migrate_apel.py script.

@@ -9,20 +9,19 @@ matrix:
     - python: "3.4"
   fast_finish: true
 
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install:
-  - pip install MySQL-python
-  - pip install python-ldap
-  - pip install iso8601
-  - pip install dirq
-  - pip install unittest2
-  - pip install coveralls
+# Route build to container-based infrastructure
+sudo: false
+# Cache the dependencies installed by pip
+cache: pip
 
-# command to run tests, e.g. python setup.py test
-script:
+# Install defaults to "pip install -r requirements.txt"
+
+# Commands that prepare things for the test
+before_script:
   - export PYTHONPATH=$PYTHONPATH:`pwd -P`
   - cd test
-  - coverage run --source=apel,bin -m unittest2 discover
 
-after_success:
-  - coveralls
+# Command to run tests
+script: coverage run --source=apel,bin -m unittest2 discover --buffer
+
+after_success: coveralls

@@ -762,13 +762,13 @@ CREATE VIEW VNormalisedSuperSummaries AS
          Infrastructure,
          NodeCount,
          Processors,
-         EarliestEndTime,
-         LatestEndTime,
+         MIN(EarliestEndTime) AS EarliestEndTime,
+         MAX(LatestEndTime) AS LatestEndTime,
          SUM(WallDuration) AS WallDuration,
          SUM(CpuDuration) AS CpuDuration,
          SUM(NormalisedWallDuration) AS NormalisedWallDuration,
          SUM(NormalisedCpuDuration) AS NormalisedCpuDuration,
-         NumberOfJobs
+         SUM(NumberOfJobs) AS NumberOfJobs
   FROM HybridSuperSummaries,
        Sites AS site,
        DNs AS userdn,
