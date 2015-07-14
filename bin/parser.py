@@ -43,6 +43,7 @@ from apel.parsers.lsf import LSFParser
 from apel.parsers.sge import SGEParser
 from apel.parsers.pbs import PBSParser
 from apel.parsers.slurm import SlurmParser
+from apel.parsers.htcondor import HTCondorParser
 
 
 LOGGER_ID = 'parser'
@@ -55,8 +56,10 @@ PARSERS = {
            'LSF': LSFParser,
            'SGE': SGEParser,
            'SLURM': SlurmParser,
-           'blah' : BlahParser
+           'blah' : BlahParser,
+           'HTCondor': HTCondorParser,
            }
+
 
 class ParserConfigException(Exception):
     '''
