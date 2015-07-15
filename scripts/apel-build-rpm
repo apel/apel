@@ -1,0 +1,33 @@
+#!/bin/bash
+
+RPMDIR=/home/rpmb/rpmbuild
+VERSION=1.5.0-1
+APELDIR=apel-$VERSION
+
+# Remove old sources and RPMS
+rm -f $RPMDIR/SPECS/*
+rm -f $RPMDIR/SOURCES/*
+rm -f $RPMDIR/SRPMS/*
+rm -f $RPMDIR/RPMS/noarch/*
+
+# master branch
+#FILE=master
+# tag, just named after the version e.g. 0.0.2
+FILE=$VERSION
+
+wget --no-check-certificate https://github.com/apel/apel/archive/$FILE.tar.gz -O $FILE
+
+tar xzvf $FILE
+rm $FILE
+
+mv apel-$FILE $APELDIR
+
+tar czvf $APELDIR.tar.gz $APELDIR
+cp $APELDIR.tar.gz $RPMDIR/SOURCES
+cp $APELDIR/apel.spec $RPMDIR/SPECS
+
+rpmbuild -ba $RPMDIR/SPECS/apel.spec
+
+# Clean up
+rm -rf apel*
+rm -f $FILE*
