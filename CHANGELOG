@@ -1,5 +1,8 @@
 Changelog for apel
 ==================
+ * Mon Jul 20 2015 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.6.0-0.1.rc1
+ - Updated Cloud Accounting Usage Record support to version 0.4.
+
  * Tue Jul 14 2015 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.5.0-1
  - Added sorting of accounting logs before parsing which makes reading through
    the parser log easier, especially if files use the YYYYMMDD date format.

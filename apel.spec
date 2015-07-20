@@ -4,8 +4,8 @@
 %endif
 
 Name:           apel
-Version:        1.5.0
-%define releasenumber 1
+Version:        1.6.0
+%define releasenumber 0.1.rc1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
 
@@ -34,7 +34,7 @@ apel-lib provides required libraries for the rest of APEL system.
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apel-lib >= 1.5.0
+Requires:       apel-lib >= 1.6.0
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -44,7 +44,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.5.0, apel-ssm
+Requires:       apel-lib >= 1.6.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -55,7 +55,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.5.0, apel-ssm
+Requires:       apel-lib >= 1.6.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -189,6 +189,9 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Mon Jul 20 2015 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.6.0-0.1.rc1
+ - Updated Cloud Accounting Usage Record support to version 0.4.
+
  * Tue Jul 14 2015 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.5.0-1
  - Added sorting of accounting logs before parsing which makes reading through
    the parser log easier, especially if files use the YYYYMMDD date format.
