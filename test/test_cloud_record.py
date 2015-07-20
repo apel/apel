@@ -1,9 +1,11 @@
-from apel.db.records import CloudRecord
-from unittest import TestCase
+import unittest
 
-class CloudRecordTest(TestCase):
+from apel.db.records import CloudRecord
+
+
+class CloudRecordTest(unittest.TestCase):
     '''
-    Test case for StorageRecord
+    Test case for CloudRecord
     '''
     
 #    def test_load_from_tuple(self):
@@ -39,6 +41,7 @@ class CloudRecordTest(TestCase):
         self._msg1 = '''
 VMUUID: 2012-12-04 09:15:01+00:00 CESNET vm-0
 SiteName: CESNET
+CloudComputeService: OpenNebula Service A
 MachineName: 'one-0'
 LocalUserId: 5
 LocalGroupId: 1
@@ -54,18 +57,25 @@ CpuCount: 1
 NetworkType: NULL
 NetworkInbound: 0
 NetworkOutbound: 0
+PublicIPCount: 5
 Memory: 512
 Disk: NULL
+BenchmarkType: Hepspec
+Benchmark: 1006.3
 StorageRecordId: NULL
 ImageId: 'scilin6'
 CloudType: OpenNebula
 '''
         self._values1 = {'SiteName': 'CESNET',
+                        'CloudComputeService': 'OpenNebula Service A', 
                         'MachineName': '\'one-0\'',
                         'LocalUserId': '5',
                         'Status': 'completed',
                         'CpuCount': 1,
+                        'PublicIPCount': 5,
                         'Memory': 512,
+                        'BenchmarkType': 'Hepspec',
+                        'Benchmark': 1006.3,
                         'ImageId': '\'scilin6\'',
                         'CloudType': 'OpenNebula'
                         }
@@ -73,6 +83,7 @@ CloudType: OpenNebula
         self._msg2 = '''
 VMUUID: 2012-08-14 14:00:01+0200 FZJ Accounting Test
 SiteName: FZJ
+CloudComputeService: OpenStack Service A
 MachineName: Accounting Test
 LocalUserId: 1189105086dc4959bc9889383afc43b5
 LocalGroupId: EGI FCTF
@@ -88,14 +99,18 @@ CpuCount: 1
 NetworkType: NULL
 NetworkInbound: NULL
 NetworkOutbound: NULL
+PublicIPCount: 1
 Memory: 512
 Disk: 0
+BenchmarkType: Si2k
+Benchmark: 200
 StorageRecordId: NULL
 ImageId: Debian Testing (Wheezy)
 CloudType: Openstack
 '''
 
         self._values2 = {'SiteName': 'FZJ',
+                        'CloudComputeService': 'OpenStack Service A', 
                         'MachineName': 'Accounting Test',
                         'LocalUserId': '1189105086dc4959bc9889383afc43b5',
                         'GlobalUserName': '/DC=es/DC=irisgrid/O=cesga/CN=javier-lopez',
@@ -105,7 +120,10 @@ CloudType: Openstack
                         'VORole': 'Role=NULL',
                         'Status': 'started',
                         'CpuCount': 1,
+                        'PublicIPCount': 1,
                         'Memory': 512,
+                        'BenchmarkType': 'Si2k',
+                        'Benchmark': 200,
                         'ImageId': 'Debian Testing (Wheezy)',
                         'CloudType': 'Openstack'                  
                          }
@@ -137,3 +155,6 @@ CloudType: Openstack
             record._check_fields()
         except Exception, e:
             self.fail('_check_fields method failed: %s [%s]' % (str(e), str(type(e))))
+
+if __name__ == '__main__':
+    unittest.main()
