@@ -10,12 +10,14 @@ class ArcParser(Parser):
     This parser differs from most of the others as ARC saves each accounting
     record in a separate file.
     """
-    def parse_file(self, arcfile):
+    def parse_arc_file(self, arcfile):
         """
         Takes an open ARC accounting file object and returns a JobRecord.
         """
         arcjob = {}
+        lines = 0
         for line in arcfile:
+            lines += 1
             key, value = line.split('=', 1)
             arcjob[key] = value[:-1]  # remove trailing newline
         arcjob['accounting_options'] = self.accounting_options2dict(arcjob['accounting_options'])
@@ -47,7 +49,7 @@ class ArcParser(Parser):
 
         record = JobRecord()
         record.set_all(apeljob)
-        return record
+        return record, lines
 
     def accounting_options2dict(self, accounting_options):
         options = {}

@@ -1,6 +1,7 @@
 import StringIO
 import unittest
 
+from apel.db.records.job import JobRecord
 from apel.parsers.arc import ArcParser
 
 
@@ -13,12 +14,15 @@ class ArcParserTest(unittest.TestCase):
         Test that the parser runs without raising an exception.
         """
         arcfile = StringIO.StringIO(data)
-        self.parser.parse_file(arcfile)
+        record, lines = self.parser.parse_arc_file(arcfile)
+        self.assertEqual(type(record), JobRecord)
+        self.assertEqual(lines, 29)
 
         arcfile.close()
 
 
-data = """loggerurl=APEL:http://mq.cro-ngi.hr:6162
+
+data = r"""loggerurl=APEL:http://mq.cro-ngi.hr:6162
 accounting_options=urbatch:1000,archiving:/var/run/arc/urs,topic:/queue/global.accounting.cpu.central,gocdb_name:RAL-LCG2,use_ssl:true,Network:PROD,benchmark_type:Si2k,benchmark_value:1006.00
 key_path=/etc/grid-security/hostkey.pem
 certificate_path=/etc/grid-security/hostcert.pem
@@ -46,7 +50,8 @@ nodename=slot1@lcg1526.gridpp.rl.ac.uk
 nodecount=1
 usedcputime=40830
 endtime=20150519133100Z
-status=completed"""
+status=completed
+"""
 
 
 if __name__ == '__main__':
