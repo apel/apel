@@ -3,7 +3,7 @@ from apel.db.records.job import JobRecord
 from apel.parsers import Parser
 
 
-class ArcParser(Parser):
+class ARCParser(Parser):
     """
     Parser for ARC accounting records.
 
@@ -12,7 +12,10 @@ class ArcParser(Parser):
     """
     def parse_arc_file(self, arcfile):
         """
-        Takes an open ARC accounting file object and returns a JobRecord.
+        Parse an ARC accounting file.
+
+        Takes an open ARC accounting file object and returns a JobRecord and the
+        number of lines in it.
         """
         arcjob = {}
         lines = 0
@@ -20,7 +23,12 @@ class ArcParser(Parser):
             lines += 1
             key, value = line.split('=', 1)
             arcjob[key] = value[:-1]  # remove trailing newline
-        arcjob['accounting_options'] = self.accounting_options2dict(arcjob['accounting_options'])
+
+        if arcjob == {}:
+            # Empty file so return None
+            return None, lines
+
+        arcjob['accounting_options'] = self.parse_accounting_options(arcjob['accounting_options'])
 
         apeljob = {}
         apeljob['Site'] = arcjob['accounting_options']['gocdb_name']
@@ -51,7 +59,7 @@ class ArcParser(Parser):
         record.set_all(apeljob)
         return record, lines
 
-    def accounting_options2dict(self, accounting_options):
+    def parse_accounting_options(self, accounting_options):
         options = {}
         for pair in accounting_options.split(','):
             key, value = pair.split(':')

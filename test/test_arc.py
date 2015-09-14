@@ -2,24 +2,36 @@ import StringIO
 import unittest
 
 from apel.db.records.job import JobRecord
-from apel.parsers.arc import ArcParser
+from apel.parsers.arc import ARCParser
 
 
-class ArcParserTest(unittest.TestCase):
+class ARCParserTest(unittest.TestCase):
     def setUp(self):
-        self.parser = ArcParser('testSite', 'testHost', True)
+        self.parser = ARCParser('testSite', 'testHost', True)
 
     def test_parse_file(self):
         """
-        Test that the parser runs without raising an exception.
+        Test that the parser returns a JobRecord and the right number of lines.
         """
         arcfile = StringIO.StringIO(data)
+
         record, lines = self.parser.parse_arc_file(arcfile)
         self.assertEqual(type(record), JobRecord)
         self.assertEqual(lines, 29)
 
         arcfile.close()
 
+    def test_parse_empty_file(self):
+        """
+        Test that the parser returns None when parsing an empty file.
+        """
+        empty_file = StringIO.StringIO("")
+
+        record, lines = self.parser.parse_arc_file(empty_file)
+        self.assertEqual(record, None)
+        self.assertEqual(lines, 0)
+
+        empty_file.close()
 
 
 data = r"""loggerurl=APEL:http://mq.cro-ngi.hr:6162
