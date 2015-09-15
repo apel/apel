@@ -44,6 +44,7 @@ from apel.parsers.sge import SGEParser
 from apel.parsers.pbs import PBSParser
 from apel.parsers.slurm import SlurmParser
 from apel.parsers.htcondor import HTCondorParser
+from apel.parsers.arc import ARCParser
 
 
 LOGGER_ID = 'parser'
@@ -58,6 +59,7 @@ PARSERS = {
            'SLURM': SlurmParser,
            'blah' : BlahParser,
            'HTCondor': HTCondorParser,
+           'ARC': ARCParser,
            }
 
 
@@ -91,59 +93,79 @@ def parse_file(parser, apel_db, fp, replace):
     '''
     log = logging.getLogger(LOGGER_ID)
     records = []
-    
-    # we will save information about errors
-    # default behaviour: show the list of errors with information
-    # how many times given error was raised
-    exceptions = {}
 
-    line_number = 0
-    index = 0
-    parsed = 0
-    failed = 0
-    ignored = 0
-
-    for index, line in enumerate(fp):
-        # Indexing is from zero so add 1 to find line number. Can't use start=1
-        # in enumerate() to maintain Python 2.4 compatibility.
-        line_number = index + 1
+    # ARC produces one multiline record per file so requires different handling
+    if parser == ARCParser:
         try:
-            record = parser.parse(line)
-        except Exception, e:
-            log.debug('Error %s on line %d', e, line_number)
-            failed += 1
-            if str(e) in exceptions:
-                exceptions[str(e)] += 1
-            else:
-                exceptions[str(e)] = 1
+            record, lines = parser.parse_arc_file(fp)
+        except Exception:
+            log.warn('Failed to parse file.  Is %s correct?',
+                     parser.__class__.__name__)
         else:
+            line_number = lines
             if record is not None:
                 records.append(record)
-                parsed += 1
-            else:
-                ignored += 1
-            if len(records) % BATCH_SIZE == 0 and len(records) != 0:
                 apel_db.load_records(records, replace=replace)
-                del records
-                records = []
-        
-    apel_db.load_records(records, replace=replace)
-    
-    if index == 0:
-        log.info('Ignored empty file.')
-    elif parsed == 0:
-        log.warn('Failed to parse file.  Is %s correct?', parser.__class__.__name__)
+                parsed = 1
+                log.info("Parsed file successfully.")
+            elif line_number == 0:
+                log.info("Ignored empty file.")
+            elif line_number > 0:
+                log.info("Ignored incomplete job")
     else:
-        log.info('Parsed %d lines', parsed)
-        log.info('Ignored %d lines (incomplete jobs)', ignored)
-        log.info('Failed to parse %d lines', failed)
+        # we will save information about errors
+        # default behaviour: show the list of errors with information
+        # how many times given error was raised
+        exceptions = {}
 
-        for error in exceptions:
-            log.error('%s raised %d times', error, exceptions[error])
-    
+        line_number = 0
+        index = 0
+        parsed = 0
+        failed = 0
+        ignored = 0
+
+        for index, line in enumerate(fp):
+            # Indexing is from zero so add 1 to find line number. Can't use start=1
+            # in enumerate() to maintain Python 2.4 compatibility.
+            line_number = index + 1
+            try:
+                record = parser.parse(line)
+            except Exception, e:
+                log.debug('Error %s on line %d', e, line_number)
+                failed += 1
+                if str(e) in exceptions:
+                    exceptions[str(e)] += 1
+                else:
+                    exceptions[str(e)] = 1
+            else:
+                if record is not None:
+                    records.append(record)
+                    parsed += 1
+                else:
+                    ignored += 1
+                if len(records) % BATCH_SIZE == 0 and len(records) != 0:
+                    apel_db.load_records(records, replace=replace)
+                    del records
+                    records = []
+
+        # Load any remaining records not in full sets (less than BATCH_SIZE)
+        apel_db.load_records(records, replace=replace)
+
+        if index == 0:
+            log.info('Ignored empty file.')
+        elif parsed == 0:
+            log.warn('Failed to parse file.  Is %s correct?', parser.__class__.__name__)
+        else:
+            log.info('Parsed %d lines', parsed)
+            log.info('Ignored %d lines (incomplete jobs)', ignored)
+            log.info('Failed to parse %d lines', failed)
+
+            for error in exceptions:
+                log.error('%s raised %d times', error, exceptions[error])
+
     return parsed, line_number
 
-        
+
 def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
     '''
     Check all files in a directory and parse them if:
