@@ -25,8 +25,8 @@ class ARCParser(Parser):
             key, value = line.split('=', 1)
             arcjob[key] = value
 
-        if arcjob == {}:
-            # Empty file so return None
+        if lines == 0 or 'status' not in arcjob or arcjob['status'] != "completed":
+            # Empty file, incomplete job, or failed job (respectively)
             return None, lines
 
         arcjob['accounting_options'] = self.parse_accounting_options(arcjob['accounting_options'])

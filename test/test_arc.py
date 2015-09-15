@@ -13,7 +13,7 @@ class ARCParserTest(unittest.TestCase):
         """
         Test that the parser returns a JobRecord and the right number of lines.
         """
-        arcfile = StringIO.StringIO(data)
+        arcfile = StringIO.StringIO(complete)
 
         record, lines = self.parser.parse_arc_file(arcfile)
         self.assertEqual(type(record), JobRecord)
@@ -23,7 +23,7 @@ class ARCParserTest(unittest.TestCase):
 
     def test_parse_empty_file(self):
         """
-        Test that the parser returns None when parsing an empty file.
+        Test that the parser returns None and 0 for an empty file.
         """
         empty_file = StringIO.StringIO("")
 
@@ -33,8 +33,30 @@ class ARCParserTest(unittest.TestCase):
 
         empty_file.close()
 
+    def test_invalid_file(self):
+        """
+        Test that the parser raises an exception for an invalid file.
+        """
+        invalid_file = StringIO.StringIO("valid=line\ninvalid line")
 
-data = r"""loggerurl=APEL:http://mq.cro-ngi.hr:6162
+        self.assertRaises(ValueError, self.parser.parse_arc_file, invalid_file)
+
+        invalid_file.close()
+
+    def test_parse_incomplete_job(self):
+        """
+        Test that the parser returns None and >0 for an incomplete job.
+        """
+        incomplete_job = StringIO.StringIO(incomplete)
+
+        record, lines = self.parser.parse_arc_file(incomplete_job)
+        self.assertEqual(record, None)
+        self.assertNotEqual(lines, 0)
+
+        incomplete_job.close()
+
+
+complete = r"""loggerurl=APEL:http://mq.cro-ngi.hr:6162
 accounting_options=urbatch:1000,archiving:/var/run/arc/urs,topic:/queue/global.accounting.cpu.central,gocdb_name:RAL-LCG2,use_ssl:true,Network:PROD,benchmark_type:Si2k,benchmark_value:1006.00
 key_path=/etc/grid-security/hostkey.pem
 certificate_path=/etc/grid-security/hostcert.pem
@@ -63,6 +85,26 @@ nodecount=1
 usedcputime=40830
 endtime=20150519133100Z
 status=completed
+"""
+
+incomplete = r"""loggerurl=APEL:http://mq.cro-ngi.hr:6162
+accounting_options=urbatch:1000,archiving:/var/run/arc/urs,topic:/queue/global.accounting.cpu.central,gocdb_name:RAL-LCG2,use_ssl:true,Network:PROD,benchmark_type:Si2k,benchmark_value:1006.00
+key_path=/etc/grid-security/hostkey.pem
+certificate_path=/etc/grid-security/hostcert.pem
+ca_certificates_dir=/etc/grid-security/certificates
+description=&("savestate" = "yes" )("action" = "request" )("hostname" = "aipanda062.cern.ch" )("executable" = "runpilot3-wrapper.sh" )("arguments" = "-s" "ANALY_RAL_SL6" "-h" "ANALY_RAL_SL6" "-p" "25443" "-w" "https://pandaserver.cern.ch" "-u" "user" )("executables" = "runpilot3-wrapper.sh" )("inputfiles" = (".gahp_complete" "" ) ("runpilot3-wrapper.sh" "" ) )("stdout" = "_condor_stdout.aipanda062.cern.ch_5943946.21_1432043893" )("stderr" = "_condor_stderr.aipanda062.cern.ch_5943946.21_1432043893" )("outputfiles" = ("_condor_stdout.aipanda062.cern.ch_5943946.21_1432043893" "" ) ("_condor_stderr.aipanda062.cern.ch_5943946.21_1432043893" "" ) )("queue" = "grid3000M" )("runtimeenvironment" = "APPS/HEP/ATLAS-SITE-LCG" )("runtimeenvironment" = "ENV/PROXY" )("jobname" = "arc_pilot" )("memory" = "3000" )("walltime" = "345600" )("environment" = ("APFFID" "aipanda062-glexecdev" ) ("PANDA_JSID" "aipanda062-glexecdev" ) ("APFCID" "5943946.21" ) ("GTAG" "http://aipanda062.cern.ch/pilots/2015-05-19/ANALY_RAL_SL6-5495-dev/5943946.21.out" ) ("APFMON" "http://apfmon.lancs.ac.uk/api" ) ("FACTORYQUEUE" "ANALY_RAL_SL6-5495-dev" ) ("FACTORYUSER" "apf" ) ("RUCIO_ACCOUNT" "pilot" ) )
+localuser=tatls015
+submissiontime=20150519135824Z
+ngjobid=0JENDmUDxEmnCIXDjqiBL5XqABFKDmABFKDm5fVKDmMBFKDmT9YYQm
+usersn=/DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=atlpilo1/CN=614260/CN=Robot: ATLAS Pilot1
+headnode=gsiftp://arc-ce01.gridpp.rl.ac.uk:2811/jobs
+lrms=condor
+queue=grid3000M
+jobname=arc_pilot
+globalid=gsiftp://arc-ce01.gridpp.rl.ac.uk:2811/jobs/0JENDmUDxEmnCIXDjqiBL5XqABFKDmABFKDm5fVKDmMBFKDmT9YYQm
+clienthost=128.142.200.45:56669
+requestedmemory=3000
+requestedwalltime=345600
 """
 
 
