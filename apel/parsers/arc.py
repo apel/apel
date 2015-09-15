@@ -20,9 +20,10 @@ class ARCParser(Parser):
         arcjob = {}
         lines = 0
         for line in arcfile:
+            line = line.rstrip("\r\n")  # Remove any trailing newline characters
             lines += 1
             key, value = line.split('=', 1)
-            arcjob[key] = value[:-1]  # remove trailing newline
+            arcjob[key] = value
 
         if arcjob == {}:
             # Empty file so return None
