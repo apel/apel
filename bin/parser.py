@@ -94,15 +94,17 @@ def parse_file(parser, apel_db, fp, replace):
     log = logging.getLogger(LOGGER_ID)
     records = []
 
+    line_number = 0
+    parsed = 0
+
     # ARC produces one multiline record per file so requires different handling
     if parser == ARCParser:
         try:
-            record, lines = parser.parse_arc_file(fp)
+            record, line_number = parser.parse_arc_file(fp)
         except Exception:
             log.warn('Failed to parse file.  Is %s correct?',
                      parser.__class__.__name__)
         else:
-            line_number = lines
             if record is not None:
                 records.append(record)
                 apel_db.load_records(records, replace=replace)
@@ -118,9 +120,7 @@ def parse_file(parser, apel_db, fp, replace):
         # how many times given error was raised
         exceptions = {}
 
-        line_number = 0
         index = 0
-        parsed = 0
         failed = 0
         ignored = 0
 

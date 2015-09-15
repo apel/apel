@@ -10,6 +10,7 @@ import unittest
 import mock
 
 import bin.parser
+from apel.parsers.arc import ARCParser
 
 
 class ParserTest(unittest.TestCase):
@@ -24,6 +25,13 @@ class ParserTest(unittest.TestCase):
     def test_parse_empty_file(self):
         """An empty file should be ignored and no errors raised."""
         bin.parser.parse_file(None, self.mock_db, self.tf, False)
+
+    def test_parse_empty_arc_file(self):
+        """An empty ARC file should be ignored and no errors raised."""
+        parsed, line_number = bin.parser.parse_file(ARCParser, self.mock_db,
+                                                    self.tf, False)
+        self.assertEqual(parsed, 0)
+        self.assertEqual(line_number, 0)
 
     def test_scan_dir(self):
         """
