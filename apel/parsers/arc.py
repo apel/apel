@@ -16,6 +16,9 @@ class ARCParser(Parser):
 
         Takes an open ARC accounting file object and returns a JobRecord and the
         number of lines in it.
+
+        The ARC to APEL mapping used can be found in the JURA souce code here:
+        http://svn.nordugrid.org/trac/nordugrid/browser/arc1/trunk/src/services/a-rex/jura/arexlog2ur.txt
         """
         arcjob = {}
         lines = 0
