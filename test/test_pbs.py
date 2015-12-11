@@ -32,6 +32,12 @@ class ParserPBSTest(unittest.TestCase):
              's=1 Resource_List.nodect=1 Resource_List.nodes=1 Resource_List.pmem=2000mb Resource_List.pvmem=4000mb Resource_List.vmem=4000mb Resour'
              'ce_List.walltime=48:00:00 session=22256 total_execution_slots=1 unique_node_count=1 end=1448926792 Exit_status=271 resources_used.cput'
              '=03:32:02 resources_used.energy_used=0 resources_used.mem=2574308kb resources_used.vmem=4032516kb resources_used.walltime=03:32:47'),
+            # This example is from Torque 5.1.2 where time is now in seconds
+            ('11/30/2015 15:42:06;E;24940336.b0;user=atlaspt5 group=atlaspt jobname=cream_830820758 queue=atlas ctime=1448913907 qtime=1448913907 et'
+             'ime=1448913907 start=1448914025 owner=atlaspt5@bugaboo-hep.westgrid.ca exec_host=b341/2 Resource_List.file=15gb Resource_List.neednode'
+             's=1 Resource_List.nodect=1 Resource_List.nodes=1 Resource_List.pmem=2000mb Resource_List.pvmem=4000mb Resource_List.vmem=4000mb Resour'
+             'ce_List.walltime=48:00:00 session=22256 total_execution_slots=1 unique_node_count=1 end=1448926926 Exit_status=0 resources_used.cput=1'
+             '2722 resources_used.energy_used=0 resources_used.mem=2574308kb resources_used.vmem=4032516kb resources_used.walltime=12767'),
         )
 
         values = (
@@ -45,6 +51,10 @@ class ParserPBSTest(unittest.TestCase):
             ("24940336.b0", "atlaspt5", "atlaspt", 3*3600+32*60+47,
              3*3600+32*60+2, datetime.datetime.utcfromtimestamp(1448914025),
              datetime.datetime.utcfromtimestamp(1448926792), 2574308, 4032516,
+             1, 1),
+            ("24940336.b0", "atlaspt5", "atlaspt", 12767, 12722,
+             datetime.datetime.utcfromtimestamp(1448914025),
+             datetime.datetime.utcfromtimestamp(1448926926), 2574308, 4032516,
              1, 1),
         )
 

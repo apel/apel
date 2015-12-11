@@ -60,13 +60,20 @@ class PBSParser(Parser):
         else:
             nodes, cores = 0, 0
 
+        # Torque 5.1.2 uses seconds rather than hh:mm:ss for cput and walltime
+        # so check for that here.
+        if ':' not in data['resources_used.cput']:
+            time_function = lambda y: y
+        else:
+            time_function = parse_time
+
         # map each field to functions which will extract them
         mapping = {'Site'          : lambda x: self.site_name,
                    'JobName'       : lambda x: jobName,
                    'LocalUserID'   : lambda x: x['user'],
                    'LocalUserGroup': lambda x: x['group'],
-                   'WallDuration'  : lambda x: parse_time(x['resources_used.walltime']),
-                   'CpuDuration'   : lambda x: parse_time(x['resources_used.cput']),
+                   'WallDuration'  : lambda x: time_function(x['resources_used.walltime']),
+                   'CpuDuration'   : lambda x: time_function(x['resources_used.cput']),
                    'StartTime'     : lambda x: int(x['start']),
                    'StopTime'      : lambda x: int(x['end']),
                    'Infrastructure': lambda x: "APEL-CREAM-PBS",
