@@ -27,6 +27,11 @@ class ParserPBSTest(unittest.TestCase):
              'Resource_List.cput=800:00:00 Resource_List.neednodes=1:ppn=8 Resource_List.nodect=1 Resource_List.nodes=1:ppn=8 '
              'Resource_List.opsys=sl5 Resource_List.pcput=96:00:00 Resource_List.walltime=96:00:00 session=7428 end=1317427530 '
              'Exit_status=0 resources_used.cput=00:00:00 resources_used.mem=0kb resources_used.vmem=0kb resources_used.walltime=00:00:00'),
+            ('11/30/2015 15:39:52;E;24940336.b0;user=atlaspt5 group=atlaspt jobname=cream_830820758 queue=atlas ctime=1448913907 qtime=1448913907 et'
+             'ime=1448913907 start=1448914025 owner=atlaspt5@bugaboo-hep.westgrid.ca exec_host=b341/2 Resource_List.file=15gb Resource_List.neednode'
+             's=1 Resource_List.nodect=1 Resource_List.nodes=1 Resource_List.pmem=2000mb Resource_List.pvmem=4000mb Resource_List.vmem=4000mb Resour'
+             'ce_List.walltime=48:00:00 session=22256 total_execution_slots=1 unique_node_count=1 end=1448926792 Exit_status=271 resources_used.cput'
+             '=03:32:02 resources_used.energy_used=0 resources_used.mem=2574308kb resources_used.vmem=4032516kb resources_used.walltime=03:32:47'),
         )
 
         values = (
@@ -36,7 +41,12 @@ class ParserPBSTest(unittest.TestCase):
              1, 1),
             ("21010040.lcgbatch01.gridpp.rl.ac.uk", "plhcb010", "prodlhcb", 0,
              0, datetime.datetime.utcfromtimestamp(1317427530),
-             datetime.datetime.utcfromtimestamp(1317427530), 0, 0, 1, 8),)
+             datetime.datetime.utcfromtimestamp(1317427530), 0, 0, 1, 8),
+            ("24940336.b0", "atlaspt5", "atlaspt", 3*3600+32*60+47,
+             3*3600+32*60+2, datetime.datetime.utcfromtimestamp(1448914025),
+             datetime.datetime.utcfromtimestamp(1448926792), 2574308, 4032516,
+             1, 1),
+        )
 
         fields = ('JobName', 'LocalUserID', 'LocalUserGroup', 'WallDuration',
                   'CpuDuration', 'StartTime', 'StopTime', 'MemoryReal',
