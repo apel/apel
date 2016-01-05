@@ -63,6 +63,8 @@ class PBSParser(Parser):
         # Torque 5.1.2 uses seconds rather than hh:mm:ss for cput and walltime
         # so check for that here.
         if ':' not in data['resources_used.cput']:
+            # Although the duration doesn't need converting if it's already in
+            # seconds, this needs to be a function to work with later code.
             time_function = lambda y: y
         else:
             time_function = parse_time
