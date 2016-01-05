@@ -62,12 +62,16 @@ class PBSParser(Parser):
 
         # Torque 5.1.2 uses seconds rather than hh:mm:ss for cput and walltime
         # so check for that here.
-        if ':' not in data['resources_used.cput']:
+        if (':' not in data['resources_used.cput'] and
+                ':' not in data['resources_used.walltime']):
             # Although the duration doesn't need converting if it's already in
             # seconds, this needs to be a function to work with later code.
             time_function = lambda y: y
-        else:
+        elif (':' in data['resources_used.cput'] and
+                ':' in data['resources_used.walltime']):
             time_function = parse_time
+        else:
+            raise ValueError("Durations have different time formats")
 
         # map each field to functions which will extract them
         mapping = {'Site'          : lambda x: self.site_name,
