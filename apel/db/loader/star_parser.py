@@ -49,10 +49,10 @@ class StarParser(XMLParser):
         records = []
         
         xml_storage_records = self.doc.getElementsByTagNameNS(self.NAMESPACE, 'StorageUsageRecord')
-        
+
         if len(xml_storage_records) == 0:
-            raise Exception('File does not contain car records!') 
-        
+            raise Exception('File does not contain StAR records!')
+
         for xml_storage_record in xml_storage_records:
             # get record and associated attributes
             record, group_attributes = self.parseStarRecord(xml_storage_record)
