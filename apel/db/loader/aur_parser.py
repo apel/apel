@@ -17,7 +17,7 @@
 '''
 
 from apel.common import iso2seconds, parse_timestamp
-from xml_parser import XMLParser
+from xml_parser import XMLParser, XMLParserException
 from apel.db.records.normalised_summary import NormalisedSummaryRecord
 from apel.db.loader.car_parser import CarParser
 import logging
@@ -56,7 +56,7 @@ class AurParser(XMLParser):
         xml_storage_records = self.doc.getElementsByTagNameNS(self.NAMESPACE, 'SummaryRecord')
         
         if len(xml_storage_records) == 0:
-            raise Exception('File does not contain AUR records!') 
+            raise XMLParserException('File does not contain AUR records!')
         
         for xml_storage_record in xml_storage_records:
             record = self.parseAurRecord(xml_storage_record)

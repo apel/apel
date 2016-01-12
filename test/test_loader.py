@@ -48,8 +48,8 @@ class LoaderTest(unittest.TestCase):
         """Check that load_records is called with the right arguments."""
         pidfile = os.path.join(self.dir_path, 'pidfile')
 
-        in_q = dirq.Queue(os.path.join(self.dir_path, 'incoming'),
-                          schema=schema)
+        in_q = dirq.queue.Queue(os.path.join(self.dir_path, 'incoming'),
+                                schema=schema)
         in_q.add({"body": "bad message", "signer": "test signer", "empaid": "",
                   "error": ""})
         in_q.add({"body": "APEL-summary-job-message: v0.3",

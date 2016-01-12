@@ -2,6 +2,8 @@ from datetime import datetime
 import unittest
 
 from apel.db.loader import StarParser
+from apel.db.loader.xml_parser import XMLParserException
+
 from test_car_parser import datetimes_equal
 
 
@@ -120,6 +122,14 @@ class StarParserTest(unittest.TestCase):
                         self.fail("Datetimes don't match for key %s: %s, %s" % (key, cont[key], self.cases[star][key]))
                 else:
                     self.assertEqual(cont[key], self.cases[star][key], "%s != %s for key %s" % (cont[key], self.cases[star][key], key))
+
+    def test_empty_xml(self):
+        """
+        Check that correct exception is raised for an XML file with no records.
+        """
+        parser = StarParser("<something></something>")
+        self.assertRaises(XMLParserException, parser.get_records)
+
 
 if __name__ == '__main__':
     unittest.main()

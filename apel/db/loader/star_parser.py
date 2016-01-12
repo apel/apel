@@ -22,7 +22,7 @@ import logging
 from apel.db.records.storage import StorageRecord
 from apel.db.records.group_attribute import GroupAttributeRecord
 from apel.common.datetime_utils import parse_timestamp
-from xml_parser import XMLParser
+from xml_parser import XMLParser, XMLParserException
 
 
 log = logging.getLogger(__name__)
@@ -49,10 +49,10 @@ class StarParser(XMLParser):
         records = []
         
         xml_storage_records = self.doc.getElementsByTagNameNS(self.NAMESPACE, 'StorageUsageRecord')
-        
+
         if len(xml_storage_records) == 0:
-            raise Exception('File does not contain car records!') 
-        
+            raise XMLParserException('File does not contain StAR records!')
+
         for xml_storage_record in xml_storage_records:
             # get record and associated attributes
             record, group_attributes = self.parseStarRecord(xml_storage_record)

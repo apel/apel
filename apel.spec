@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.5.0
+Version:        1.5.1
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -34,7 +34,7 @@ apel-lib provides required libraries for the rest of APEL system.
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apel-lib >= 1.5.0
+Requires:       apel-lib >= 1.5.1
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -44,7 +44,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.5.0, apel-ssm
+Requires:       apel-lib >= 1.5.1, apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -55,7 +55,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.5.0, apel-ssm
+Requires:       apel-lib >= 1.5.1, apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -189,6 +189,11 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Tue Jan 12 2016 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.5.1-1
+ - Add support for Torque 5.1.2 time duration format.
+ - Change dirq call to use absolute path to support versions of dirq >= 1.7.
+ - Fix crash when StAR loader encouters a valid XML file with no records in it.
+
  * Tue Jul 14 2015 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.5.0-1
  - Added sorting of accounting logs before parsing which makes reading through
    the parser log easier, especially if files use the YYYYMMDD date format.
