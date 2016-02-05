@@ -31,14 +31,14 @@ def main():
                     'schemas/cloud.sql',
                     'schemas/storage.sql']
 
-    accounting_files = ['scripts/slurm_acc.sh', 'htcondor_acc.sh']
+    accounting_files = ['scripts/slurm_acc.sh', 'scripts/htcondor_acc.sh']
 
     message_files = ['scripts/msg_status.py']
 
     log_rotate_dir = '/etc/logrotate.d'
     log_rotate_files = ['scripts/apel-client']
 
-    setup(name='apel-ssm',
+    setup(name='apel',
           version='1.5.1',
           description=("The APEL project provides grid accounting for EGI."),
           author='APEL',
@@ -59,14 +59,13 @@ def main():
                       (data_dir, message_files),
                       (log_rotate_dir, log_rotate_files)])
 
-
-if sys.argv[1] == 'install':
-    remove('bin/apelclient')
-    remove('bin/apelparser')
-    remove('bin/apeldbloader')
-    remove('bin/apeldbunloader')
-    remove('bin/apelsummariser')
-    remove('bin/apelauth')
+    if sys.argv[1] == 'install':
+        remove('bin/apelclient')
+        remove('bin/apelparser')
+        remove('bin/apeldbloader')
+        remove('bin/apeldbunloader')
+        remove('bin/apelsummariser')
+        remove('bin/apelauth')
 
 if __name__ == "__main__":
     main()
