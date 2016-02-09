@@ -169,7 +169,8 @@ exit 0
 %_datadir/apel/server-extra.sql
 %_datadir/apel/cloud.sql
 %_datadir/apel/storage.sql
-%attr(755,root,root) %_datadir/apel/msg_status.py
+# Use wildcard to match .py, .pyc, and .pyo
+%attr(755,root,root) %_datadir/apel/msg_status.py*
 
 # Directories for logs, PID files
 %dir %{_localstatedir}/log/apel
