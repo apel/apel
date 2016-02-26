@@ -40,7 +40,7 @@ CREATE TABLE CloudRecords (
 
   PublisherDNID INT NOT NULL,	    -- Foreign key
 
-  PRIMARY KEY (VMUUID),
+  PRIMARY KEY (VMUUID, StartTime, SuspendDuration, WallDuration),
 
   INDEX (UpdateTime),
   INDEX (GlobalUserNameID),
