@@ -20,11 +20,11 @@ CREATE TABLE CloudRecords (
 
   Status VARCHAR(255),
 
-  StartTime DATETIME, 
+  StartTime DATETIME NOT NULL, 
   EndTime DATETIME, 
-  SuspendDuration INT, 
+  SuspendDuration INT NOT NULL, 
 
-  WallDuration INT, 
+  WallDuration INT NOT NULL, 
   CpuDuration INT, 
   CpuCount INT, 
 
@@ -74,8 +74,8 @@ BEGIN
       VALUES (
         VMUUID, SiteLookup(site), machineName, localUserId, localGroupId, DNLookup(globalUserName), 
         fqan, VOLookup(vo),
-        VOGroupLookup(voGroup), VORoleLookup(voRole), status, startTime, endTime, suspendDuration, 
-        wallDuration, cpuDuration, cpuCount, networkType, networkInbound, networkOutbound, memory,
+        VOGroupLookup(voGroup), VORoleLookup(voRole), status, startTime, endTime, IFNULL(suspendDuration, 0), 
+        IFNULL(wallDuration, cpuDuration), cpuDuration, cpuCount, networkType, networkInbound, networkOutbound, memory,
         disk, storageRecordId, imageId, cloudType, DNLookup(publisherDN)
         );
 END //
