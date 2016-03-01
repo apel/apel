@@ -75,7 +75,7 @@ BEGIN
         VMUUID, SiteLookup(site), machineName, localUserId, localGroupId, DNLookup(globalUserName), 
         fqan, VOLookup(vo),
         VOGroupLookup(voGroup), VORoleLookup(voRole), status, startTime, endTime, IFNULL(suspendDuration, 0), 
-        IFNULL(wallDuration, cpuDuration), cpuDuration, cpuCount, networkType, networkInbound, networkOutbound, memory,
+	IF((wallDuration IS NULL) AND (status = "completed"), endTime - startTime, wallDuration), cpuDuration, cpuCount, networkType, networkInbound, networkOutbound, memory,
         disk, storageRecordId, imageId, cloudType, DNLookup(publisherDN)
         );
 END //
