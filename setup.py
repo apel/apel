@@ -1,13 +1,20 @@
-"""A setup up script for the APEL."""
-from shutil import copyfile
+"""A setup script for APEL.
+
+Requires setuptools.
+"""
+
 from os import remove
+from shutil import copyfile
 import sys
+
 from setuptools import setup, find_packages
+
+from apel import __version__
 
 
 def main():
-    """Called when run as script, i.e. "python setup.py install"."""
-    if sys.argv[1] == 'install':
+    """Called when run as script, e.g. 'python setup.py install'."""
+    if 'install' in sys.argv:
         copyfile('bin/client.py', 'bin/apelclient')
         copyfile('bin/parser.py', 'bin/apelparser')
         copyfile('bin/dbloader.py', 'bin/apeldbloader')
@@ -39,12 +46,13 @@ def main():
     log_rotate_files = ['scripts/apel-client']
 
     setup(name='apel',
-          version='1.5.1',
+          version='%i.%i.%i' % __version__,
           description=("The APEL project provides grid accounting for EGI."),
           author='APEL',
           author_email='apel-admins@stfc.ac.uk',
-          download_url='https://github.com/apel/apel/archive/1.5.1-1.zip',
-          license='Apache License, v2 - http://www.apache.org/licenses/',
+          url='http://apel.github.io/',
+          download_url='https://github.com/apel/apel/releases',
+          license='Apache License, Version 2.0',
           install_requires=['MySQL-python', 'iso8601', 'python-ldap', 'dirq'],
           packages=find_packages(exclude=['bin']),
           scripts=['bin/apelclient',
@@ -59,7 +67,7 @@ def main():
                       (data_dir, message_files),
                       (log_rotate_dir, log_rotate_files)])
 
-    if sys.argv[1] == 'install':
+    if 'install' in sys.argv:
         remove('bin/apelclient')
         remove('bin/apelparser')
         remove('bin/apeldbloader')
