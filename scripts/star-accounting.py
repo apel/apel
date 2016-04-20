@@ -85,11 +85,11 @@ def addrecord(xmlroot, hostname, group, user, site, filecount, resourcecapacityu
   e.text = "disk"
 
   if validduration:
-    e = etree.SubElement(rec, SR+"EndTime")
-    d = datetime.datetime.utcnow() + datetime.timedelta(seconds=validduration)
+    e = etree.SubElement(rec, SR+"StartTime")
+    d = datetime.datetime.utcnow() - datetime.timedelta(seconds=validduration)
     e.text = d.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-  e = etree.SubElement(rec, SR+"StartTime")
+  e = etree.SubElement(rec, SR+"EndTime")
   e.text = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
@@ -205,7 +205,7 @@ parser.add_option('--nsconfig', dest='nsconfig', default=None, help="Path to the
 parser.add_option('--dbhost', dest='dbhost', default=None, help="Database host, if no NSCONFIG given")
 parser.add_option('--dbuser', dest='dbuser', default=None, help="Database user, if no NSCONFIG given")
 parser.add_option('--dbpwd', dest='dbpwd', default=None, help="Database password, if no NSCONFIG given")
-parser.add_option('--validduration', dest='validduration', default=2592000, help="Valid duration of this record, in seconds (default: 1 month)")
+parser.add_option('--validduration', dest='validduration', default=86400, help="Valid duration of this record, in seconds (default: 1 month)")
 options, args = parser.parse_args()
 
 record_id = options.recordid
