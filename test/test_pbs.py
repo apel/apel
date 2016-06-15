@@ -113,11 +113,22 @@ class ParserPBSTest(unittest.TestCase):
 
     def test_parse_mpi(self):
 
-        exec_host = 'lcg0766.gridpp.rl.ac.uk/7+lcg0766.gridpp.rl.ac.uk/6+lcg0766.gridpp.rl.ac.uk/5+lcg0766.gridpp.rl.ac.uk/4+lcg0766.gridpp.rl.ac.uk/3+lcg0766.gridpp.rl.ac.uk/2+lcg0766.gridpp.rl.ac.uk/1+lcg0766.gridpp.rl.ac.uk/0'
-        nodecount, processors = _parse_mpi(exec_host)
+        exec_hosts = ('lcg0766.gridpp.rl.ac.uk/7+lcg0766.gridpp.rl.ac.uk/6+lcg0766.gridpp.rl.ac.uk/5+lcg0766.gridpp.rl.ac.uk/4+lcg0766.gridpp.rl.ac.uk/3+lcg0766.gridpp.rl.ac.uk/2+lcg0766.gridpp.rl.ac.uk/1+lcg0766.gridpp.rl.ac.uk/0',
+                      'b372/4+b372/5+b372/6+b372/7',
+                      'b391/0-3',
+                      'b391/0-1,5,11',
+                      )
+        # List of (node, cpu) counts for above exec_hosts
+        counts = ((1, 8),
+                  (1, 4),
+                  (1, 4),
+                  (1, 4),
+                  )
+        for exec_host, count in zip(exec_hosts, counts):
+            nodecount, processors = _parse_mpi(exec_host)
 
-        self.assertEqual(nodecount, 1)
-        self.assertEqual(processors, 8)
+            self.assertEqual(nodecount, count[0])
+            self.assertEqual(processors, count[1])
 
     def test_value_errors(self):
         """Test that the parser raises a ValueError for certain problems."""
