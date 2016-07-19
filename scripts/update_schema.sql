@@ -97,3 +97,6 @@ ON 	(ThisRecord.VMUUID = PrevRecord.VMUUID and
     ORDER BY NULL;
 END //
 DELIMITER ;
+
+-- Are start times guranteed to be there? let's assume so for now
+ALTER TABLE CloudRecords MODIFY StartTime INT(11) NOT NULL;
