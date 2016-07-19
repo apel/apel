@@ -102,6 +102,11 @@ DELIMITER ;
 ALTER TABLE CloudRecords MODIFY StartTime DATETIME NOT NULL;
 
 -- Update any NULL SuspendDuration to 0
-UPDATE CloudRecords SET SuspendDuration=0 WHERE SuspendDuration is NULL
+UPDATE CloudRecords SET SuspendDuration=0 WHERE SuspendDuration is NULL;
 -- Set SuspendDuration to be NOT NULL
 ALTER TABLE CloudRecords MODIFY SuspendDuration INT NOT NULL;
+
+-- UPdate and NULL WallDuration to 0
+UPDATE CloudRecords SET WallDuration=0 WHERE WallDuration is NULL;
+-- Set WallDuration to be NOT NULL
+ALTER TABLE CloudRecords MODIFY WallDuration INT NOT NULL;
