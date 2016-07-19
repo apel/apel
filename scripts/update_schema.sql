@@ -99,4 +99,9 @@ END //
 DELIMITER ;
 
 -- Are start times guranteed to be there? let's assume so for now
-ALTER TABLE CloudRecords MODIFY StartTime INT(11) NOT NULL;
+ALTER TABLE CloudRecords MODIFY StartTime DATETIME NOT NULL;
+
+-- Update any NULL SuspendDuration to 0
+UPDATE CloudRecords SET SuspendDuration=0 WHERE SuspendDuration is NULL
+-- Set SuspendDuration to be NOT NULL
+ALTER TABLE CloudRecords MODIFY SuspendDuration INT NOT NULL;
