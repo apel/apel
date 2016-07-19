@@ -106,7 +106,10 @@ UPDATE CloudRecords SET SuspendDuration=0 WHERE SuspendDuration is NULL;
 -- Set SuspendDuration to be NOT NULL
 ALTER TABLE CloudRecords MODIFY SuspendDuration INT NOT NULL;
 
--- UPdate and NULL WallDuration to 0
+-- Update and NULL WallDuration to 0
 UPDATE CloudRecords SET WallDuration=0 WHERE WallDuration is NULL;
 -- Set WallDuration to be NOT NULL
 ALTER TABLE CloudRecords MODIFY WallDuration INT NOT NULL;
+
+-- Replace the primary key
+ALTER TABLE CloudRecords DROP PRIMARY KEY, ADD PRIMARY KEY(VMUUID, StartTime, SuspendDuration, WallDuration);
