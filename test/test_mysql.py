@@ -4,7 +4,7 @@ import subprocess
 import unittest
 
 import apel.db.apeldb
-import apel.db.records.job
+import apel.db.records
 
 
 if os.name == 'nt':
@@ -78,6 +78,27 @@ class MysqlTest(unittest.TestCase):
         # Check that items_in is a subset of items_out
         # Can't use 'all()' rather than comparing the length as Python 2.4
         self.assertEqual([item in items_out for item in items_in].count(True), len(items_in))
+
+    def test_mixed_load(self):
+        """
+        Check that loader fails gracefully if passed mixed types in record list.
+        """
+        job = apel.db.records.job.JobRecord()
+        job._record_content = {'Site': 'testSite', 'LocalJobId': 'testJob',
+                               'SubmitHost': 'testHost',
+                               'WallDuration': 10, 'CpuDuration': 10,
+                               'StartTime': datetime.datetime.fromtimestamp(123456),
+                               'EndTime': datetime.datetime.fromtimestamp(654321),
+                               'ServiceLevelType': 'HEPSPEC',
+                               'ServiceLevel': 3}
+        summary = apel.db.records.SummaryRecord()
+        summary._record_content = {'Site': 'testSite', 'Month': 1,
+                                   'Year': 2016, 'WallDuration': 2000,
+                                   'CpuDuration': 1000, 'NumberOfJobs': 3}
+        record_list = [job, summary]
+
+        self.assertRaises(apel.db.apeldb.ApelDbException,
+                          self.db.load_records, record_list, source='testDN')
 
     def test_last_update(self):
         """

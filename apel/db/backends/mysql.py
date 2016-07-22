@@ -126,9 +126,15 @@ class ApelMysqlDb(object):
         either all or no records will be loaded.  Includes the DN of the 
         sender.
         '''
-        # all records in the list are the same type
+        # All records in the list should be of the same type (but may not be).
         try:
             record_type = type(record_list[0])
+
+            # Check that all the records are of the same type as the first.
+            for record in record_list:
+                if type(record) != record_type:
+                    raise ApelDbException("Not all records in list are of type %s." % record_type)
+
             if replace:
                 proc = self.REPLACE_PROCEDURES[record_type]
             else:
