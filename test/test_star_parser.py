@@ -8,11 +8,12 @@ from test_car_parser import datetimes_equal
 
 
 class StarParserTest(unittest.TestCase):
-    '''
-    Test case for StarParser
-    '''
-    
-    def setUp(self):
+    """
+    Test case for StarParser.
+    """
+
+    def test_star_parser(self):
+
         star1 = '''<?xml version="1.0" encoding="UTF-8" ?>
     <sr:StorageUsageRecords xmlns:sr="http://eu-emi.eu/namespaces/2011/02/storagerecord">
       <sr:StorageUsageRecord>
@@ -29,17 +30,16 @@ class StarParserTest(unittest.TestCase):
         <sr:ResourceCapacityUsed>693064064</sr:ResourceCapacityUsed>
       </sr:StorageUsageRecord>
     </sr:StorageUsageRecords>'''
-        
-        values1 = {
-                   'StorageSystem': 'discordia.desy.de',
-                   'Site':'desycerttb',
+
+        values1 = {'StorageSystem': 'discordia.desy.de',
+                   'Site': 'desycerttb',
                    'StorageMedia': 'disk',
                    'FileCount': 5,
                    'StartTime': datetime(2012, 10, 30, 17, 10, 4),
                    'EndTime': datetime(2012, 10, 30, 17, 20, 4),
                    'ResourceCapacityUsed': 693064064
                    }
-        
+
         star2 = '''<?xml version="1.0" encoding="UTF-8" ?>
     <sr:StorageUsageRecords xmlns:sr="http://eu-emi.eu/namespaces/2011/02/storagerecord">
       <sr:StorageUsageRecord>
@@ -56,17 +56,16 @@ class StarParserTest(unittest.TestCase):
         <sr:ResourceCapacityUsed>2843234682</sr:ResourceCapacityUsed>
       </sr:StorageUsageRecord>
     </sr:StorageUsageRecords>'''
-    
-        values2 = {
-                   'StorageSystem': 'discordia.desy.de',
-                   'Site':'desycerttb',
+
+        values2 = {'StorageSystem': 'discordia.desy.de',
+                   'Site': 'desycerttb',
                    'StorageMedia': 'disk',
                    'FileCount': 163,
                    'StartTime': datetime(2012, 10, 30, 17, 10, 4),
                    'EndTime': datetime(2012, 10, 30, 17, 20, 4),
                    'ResourceCapacityUsed': 2843234682
                    }
-    
+
     # From the StAR document.
         star3 = '''<sr:StorageUsageRecord
     xmlns:sr="http://eu-emi.eu/namespaces/2011/02/storagerecord">
@@ -86,10 +85,9 @@ class StarParserTest(unittest.TestCase):
     <sr:ResourceCapacityUsed>14728</sr:ResourceCapacityUsed>
     <sr:LogicalCapacityUsed>13617</sr:LogicalCapacityUsed>
 </sr:StorageUsageRecord>'''
-    
-        values3 = {
-                   'StorageSystem': 'host.example.org',
-                   'Site':'ACME-University',
+
+        values3 = {'StorageSystem': 'host.example.org',
+                   'Site': 'ACME-University',
                    'StorageMedia': 'disk',
                    'FileCount': 42,
                    'StartTime': datetime(2010, 10, 11, 9, 31, 40),
@@ -97,31 +95,29 @@ class StarParserTest(unittest.TestCase):
                    'ResourceCapacityUsed': 14728,
                    'LogicalCapacityUsed': 13617
                    }
-        
-        self.cases = {}
-        self.cases[star1] = values1
-        self.cases[star2] = values2
-        self.cases[star3] = values3
-        
-    def test_star_parser(self):
-        for star in self.cases:
-            
-            parser  = StarParser(star)
+
+        cases = {}
+        cases[star1] = values1
+        cases[star2] = values2
+        cases[star3] = values3
+
+        for star in cases:
+
+            parser = StarParser(star)
             record = parser.get_records()[0]
             cont = record._record_content
-            
+
             #  Mandatory fields
-            self.assertTrue(cont.has_key("StorageSystem"))
-            self.assertTrue(cont.has_key("StartTime"))
-            self.assertTrue(cont.has_key("EndTime"))
-            self.assertTrue(cont.has_key("ResourceCapacityUsed"))
-        
-            for key in self.cases[star].keys():
+            for field in ("RecordId", "CreateTime", "StorageSystem",
+                          "StartTime", "EndTime", "ResourceCapacityUsed"):
+                self.assertTrue(field in cont, "Field '%s' not found" % field)
+
+            for key in cases[star].keys():
                 if isinstance(cont[key], datetime):
-                    if not datetimes_equal(cont[key], self.cases[star][key]):
-                        self.fail("Datetimes don't match for key %s: %s, %s" % (key, cont[key], self.cases[star][key]))
+                    if not datetimes_equal(cont[key], cases[star][key]):
+                        self.fail("Datetimes don't match for key %s: %s, %s" % (key, cont[key], cases[star][key]))
                 else:
-                    self.assertEqual(cont[key], self.cases[star][key], "%s != %s for key %s" % (cont[key], self.cases[star][key], key))
+                    self.assertEqual(cont[key], cases[star][key], "%s != %s for key %s" % (cont[key], cases[star][key], key))
 
     def test_empty_xml(self):
         """
