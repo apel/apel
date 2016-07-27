@@ -131,7 +131,9 @@ ON 	(ThisRecord.VMUUID = PrevRecord.VMUUID and
 END //
 DELIMITER ;
 
--- Are start times guranteed to be there? let's assume so for now
+-- Update any NULL StartTime to 0
+UPDATE CloudRecords SET StartTime=0 WHERE StartTime is NULL;
+-- Set StartTime to be NOT NULL
 ALTER TABLE CloudRecords MODIFY StartTime DATETIME NOT NULL;
 
 -- Update any NULL SuspendDuration to 0
