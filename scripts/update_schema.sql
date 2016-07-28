@@ -111,9 +111,9 @@ BEGIN
         WallDuration, CpuDuration, CpuCount, NetworkType, NetworkInbound, NetworkOutbound, PublicIPCount,
         Memory, Disk, BenchmarkType, Benchmark, StorageRecordId, ImageId, CloudType, PublisherDNID)
       VALUES (
-        VMUUID, SiteLookup(site), CloudComputeServiceLookup(cloudComputeService), machineName, localUserId,
-        localGroupId, DNLookup(globalUserName), fqan, VOLookup(vo), VOGroupLookup(voGroup), VORoleLookup(voRole),
-        status, startTime, endTime, suspendDuration, 
+        VMUUID, SiteLookup(site), CloudComputeServiceLookup(cloudComputeService), machineName,
+        localUserId, localGroupId, DNLookup(globalUserName), fqan, VOLookup(vo), VOGroupLookup(voGroup),
+        VORoleLookup(voRole), status, startTime, endTime, suspendDuration, 
         wallDuration, 
         cpuDuration, cpuCount, networkType, networkInbound, networkOutbound, publicIPCount, memory,
         disk, benchmarkType, benchmark, storageRecordId, imageId, cloudType, DNLookup(publisherDN)
@@ -139,10 +139,11 @@ BEGIN
         WallDuration, CpuDuration, NetworkInbound, NetworkOutbound, PublicIPCount, Memory, Disk,
         BenchmarkType, Benchmark, NumberOfVMs,  PublisherDNID)
       VALUES (
-        SiteLookup(site), CloudComputeServiceLookup(cloudComputeService), month, year, DNLookup(globalUserName),
-        VOLookup(vo), VOGroupLookup(voGroup), VORoleLookup(voRole), status, cloudType, imageId,
-        earliestStartTime, latestStartTime, wallDuration, cpuDuration, networkInbound, networkOutbound,
-        publicIPCount, memory, disk, benchmarkType, benchmark, numberOfVMs, DNLookup(publisherDN)
+        SiteLookup(site), CloudComputeServiceLookup(cloudComputeService), month, year,
+        DNLookup(globalUserName), VOLookup(vo), VOGroupLookup(voGroup), VORoleLookup(voRole),
+        status, cloudType, imageId, earliestStartTime, latestStartTime, wallDuration,
+        cpuDuration, networkInbound, networkOutbound, publicIPCount, memory, disk, benchmarkType,
+        benchmark, numberOfVMs, DNLookup(publisherDN)
         );
 END //
 DELIMITER ;
@@ -153,27 +154,29 @@ DELIMITER //
 CREATE PROCEDURE SummariseVMs()
 BEGIN
     REPLACE INTO CloudSummaries(SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID,
-        VOGroupID, VORoleID, Status, CloudType, ImageId, EarliestStartTime, LatestStartTime, WallDuration, CpuDuration, NetworkInbound,
-        NetworkOutbound, PublicIPCount, Memory, Disk, BenchmarkType, Benchmark, NumberOfVMs, PublisherDNID)
+        VOGroupID, VORoleID, Status, CloudType, ImageId, EarliestStartTime, LatestStartTime,
+        WallDuration, CpuDuration, NetworkInbound, NetworkOutbound, PublicIPCount, Memory, Disk,
+        BenchmarkType, Benchmark, NumberOfVMs, PublisherDNID)
     SELECT SiteID,
-    CloudComputeServiceID,
-    MONTH(StartTime) AS Month, YEAR(StartTime) AS Year,
-    GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId,
-    MIN(StartTime),
-    MAX(StartTime),
-    SUM(WallDuration),
-    SUM(CpuDuration),
-    SUM(NetworkInbound),
-    SUM(NetworkOutbound),
-    SUM(PublicIPCount),
-    SUM(Memory),
-    SUM(Disk),
-    BenchmarkType,
-    Benchmark,
-    COUNT(*),
-    'summariser'
+        CloudComputeServiceID,
+        MONTH(StartTime) AS Month, YEAR(StartTime) AS Year,
+        GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId,
+        MIN(StartTime),
+        MAX(StartTime),
+        SUM(WallDuration),
+        SUM(CpuDuration),
+        SUM(NetworkInbound),
+        SUM(NetworkOutbound),
+        SUM(PublicIPCount),
+        SUM(Memory),
+        SUM(Disk),
+        BenchmarkType,
+        Benchmark,
+        COUNT(*),
+        'summariser'
     FROM CloudRecords
-    GROUP BY SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId, BenchmarkType, Benchmark
+    GROUP BY SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID,
+        Status, CloudType, ImageId, BenchmarkType, Benchmark
     ORDER BY NULL;
 END //
 DELIMITER ;
