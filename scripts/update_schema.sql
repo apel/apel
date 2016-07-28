@@ -17,7 +17,7 @@ ALTER TABLE CloudRecords MODIFY WallDuration INT NOT NULL;
 -- Replace the primary key
 ALTER TABLE CloudRecords DROP PRIMARY KEY, ADD PRIMARY KEY(VMUUID, StartTime, SuspendDuration, WallDuration);
 
--- Create Viewa
+-- Create Views
 -- Non created
 
 -- Create / Replace Functions / Procedures
@@ -42,12 +42,14 @@ CREATE PROCEDURE ReplaceCloudRecord(
 BEGIN
     REPLACE INTO CloudRecords(VMUUID, SiteID, MachineName, LocalUserId, LocalGroupId,
         GlobalUserNameID, FQAN, VOID, VOGroupID, VORoleID, Status, StartTime, EndTime, SuspendDuration,
-        WallDuration, CpuDuration, CpuCount, NetworkType, NetworkInbound, NetworkOutbound, Memory, Disk, StorageRecordId, ImageId, CloudType, PublisherDNID)
+        WallDuration, CpuDuration, CpuCount, NetworkType, NetworkInbound, NetworkOutbound,
+        Memory, Disk, StorageRecordId, ImageId, CloudType, PublisherDNID)
       VALUES (
-        VMUUID, SiteLookup(site), machineName, localUserId, localGroupId, DNLookup(globalUserName),
-        fqan, VOLookup(vo),
-        VOGroupLookup(voGroup), VORoleLookup(voRole), status, startTime, endTime, IFNULL(suspendDuration, 0),
-        IF((wallDuration IS NULL) AND (status = "completed"), endTime - startTime, wallDuration), cpuDuration, cpuCount, networkType, networkInbound, networkOutbound, memory,
+        VMUUID, SiteLookup(site), machineName,
+        localUserId, localGroupId, DNLookup(globalUserName), fqan, VOLookup(vo), VOGroupLookup(voGroup),
+        VORoleLookup(voRole), status, startTime, endTime, IFNULL(suspendDuration, 0),
+        IF((wallDuration IS NULL) AND (status = "completed"), endTime - startTime, wallDuration),
+        cpuDuration, cpuCount, networkType, networkInbound, networkOutbound, memory,
         disk, storageRecordId, imageId, cloudType, DNLookup(publisherDN)
         );
 END //
@@ -131,23 +133,25 @@ ON 	(ThisRecord.VMUUID = PrevRecord.VMUUID and
 	);
 
     REPLACE INTO CloudSummaries(SiteID, Month, Year, GlobalUserNameID, VOID,
-        VOGroupID, VORoleID, Status, CloudType, ImageId, EarliestStartTime, LatestStartTime, WallDuration,
-        CpuDuration, NetworkInbound, NetworkOutbound, Memory, Disk, NumberOfVMs, PublisherDNID)
+        VOGroupID, VORoleID, Status, CloudType, ImageId, EarliestStartTime, LatestStartTime,
+        WallDuration, CpuDuration, NetworkInbound, NetworkOutbound, Memory, Disk,
+        NumberOfVMs, PublisherDNID)
     SELECT SiteID,
-    Month, Year,
-    GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId,
-    MIN(StartTime),
-    MAX(StartTime),
-    SUM(ComputedWallDuration),
-    SUM(ComputedCpuDuration),
-    SUM(ComputedNetworkInbound),
-    SUM(ComputedNetworkOutbound),
-    SUM(Memory),
-    SUM(Disk),
-    COUNT(*),
-    'summariser'
+        Month, Year,
+        GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId,
+        MIN(StartTime),
+        MAX(StartTime),
+        SUM(ComputedWallDuration),
+        SUM(ComputedCpuDuration),
+        SUM(ComputedNetworkInbound),
+        SUM(ComputedNetworkOutbound),
+        SUM(Memory),
+        SUM(Disk),
+        COUNT(*),
+       'summariser'
     FROM TVMUsagePerMonth
-    GROUP BY SiteID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId
+    GROUP BY SiteID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID,
+        Status, CloudType, ImageId
     ORDER BY NULL;
 END //
 DELIMITER ;
