@@ -1,5 +1,26 @@
--- The first thing we can do is replace the procedures
+-- Create / Update Tables
+-- Update any NULL StartTime to 0
+UPDATE CloudRecords SET StartTime=0 WHERE StartTime is NULL;
+-- Set StartTime to be NOT NULL
+ALTER TABLE CloudRecords MODIFY StartTime DATETIME NOT NULL;
 
+-- Update any NULL SuspendDuration to 0
+UPDATE CloudRecords SET SuspendDuration=0 WHERE SuspendDuration is NULL;
+-- Set SuspendDuration to be NOT NULL
+ALTER TABLE CloudRecords MODIFY SuspendDuration INT NOT NULL;
+
+-- Update and NULL WallDuration to 0
+UPDATE CloudRecords SET WallDuration=0 WHERE WallDuration is NULL;
+-- Set WallDuration to be NOT NULL
+ALTER TABLE CloudRecords MODIFY WallDuration INT NOT NULL;
+
+-- Replace the primary key
+ALTER TABLE CloudRecords DROP PRIMARY KEY, ADD PRIMARY KEY(VMUUID, StartTime, SuspendDuration, WallDuration);
+
+-- Create Viewa
+-- Non created
+
+-- Create / Replace Functions / Procedures
 -- Replace ReplaceCloudRecords
 DROP PROCEDURE IF EXISTS ReplaceCloudRecord;
 DELIMITER //
@@ -32,7 +53,7 @@ BEGIN
 END //
 DELIMITER ;
 
--- Replace SummariseVMs()
+-- Replace SummariesVMs
 DROP PROCEDURE IF EXISTS SummariseVMs;
 DELIMITER //
 CREATE PROCEDURE SummariseVMs()
@@ -130,21 +151,3 @@ ON 	(ThisRecord.VMUUID = PrevRecord.VMUUID and
     ORDER BY NULL;
 END //
 DELIMITER ;
-
--- Update any NULL StartTime to 0
-UPDATE CloudRecords SET StartTime=0 WHERE StartTime is NULL;
--- Set StartTime to be NOT NULL
-ALTER TABLE CloudRecords MODIFY StartTime DATETIME NOT NULL;
-
--- Update any NULL SuspendDuration to 0
-UPDATE CloudRecords SET SuspendDuration=0 WHERE SuspendDuration is NULL;
--- Set SuspendDuration to be NOT NULL
-ALTER TABLE CloudRecords MODIFY SuspendDuration INT NOT NULL;
-
--- Update and NULL WallDuration to 0
-UPDATE CloudRecords SET WallDuration=0 WHERE WallDuration is NULL;
--- Set WallDuration to be NOT NULL
-ALTER TABLE CloudRecords MODIFY WallDuration INT NOT NULL;
-
--- Replace the primary key
-ALTER TABLE CloudRecords DROP PRIMARY KEY, ADD PRIMARY KEY(VMUUID, StartTime, SuspendDuration, WallDuration);
