@@ -43,9 +43,9 @@ CREATE VIEW VCloudRecords AS
 -- View on CloudRecords
 DROP VIEW IF EXISTS VAnonCloudRecords;
 CREATE VIEW VAnonCloudRecords AS
-    SELECT UpdateTime, VMUUID, site.name SiteName, cloudComputeService.name CloudComputeService
-	       MachineName, LocalUserId, LocalGroupId, GlobalUserNameID, FQAN, vo.name VO,  Status, 
-		   StartTime, EndTime, SuspendDuration, WallDuration, CpuDuration, CpuCount, NetworkType,
+    SELECT UpdateTime, VMUUID, site.name SiteName, cloudComputeService.name CloudComputeService,
+           MachineName, LocalUserId, LocalGroupId, GlobalUserNameID, FQAN, vo.name VO,  Status, 
+           StartTime, EndTime, SuspendDuration, WallDuration, CpuDuration, CpuCount, NetworkType,
            NetworkInbound, NetworkOutbound, PublicIPCount, Memory, Disk, BenchmarkType, Benchmark,
            StorageRecordId, ImageId, CloudType
     FROM CloudRecords, Sites site, CloudComputeServices cloudComputeService, DNs userdn, VOs vo WHERE
