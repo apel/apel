@@ -47,7 +47,7 @@ BEGIN
         VMUUID, SiteLookup(site), machineName, localUserId, localGroupId, DNLookup(globalUserName),
         fqan, VOLookup(vo),
         VOGroupLookup(voGroup), VORoleLookup(voRole), status, startTime, endTime, IFNULL(suspendDuration, 0),
-	IF((wallDuration IS NULL) AND (status = "completed"), endTime - startTime, wallDuration), cpuDuration, cpuCount, networkType, networkInbound, networkOutbound, memory,
+        IF((wallDuration IS NULL) AND (status = "completed"), endTime - startTime, wallDuration), cpuDuration, cpuCount, networkType, networkInbound, networkOutbound, memory,
         disk, storageRecordId, imageId, cloudType, DNLookup(publisherDN)
         );
 END //
@@ -131,8 +131,8 @@ ON 	(ThisRecord.VMUUID = PrevRecord.VMUUID and
 	);
 
     REPLACE INTO CloudSummaries(SiteID, Month, Year, GlobalUserNameID, VOID,
-		VOGroupID, VORoleID, Status, CloudType, ImageId, EarliestStartTime, LatestStartTime, WallDuration, CpuDuration, NetworkInbound,
-			NetworkOutbound, Memory, Disk, NumberOfVMs, PublisherDNID)
+        VOGroupID, VORoleID, Status, CloudType, ImageId, EarliestStartTime, LatestStartTime, WallDuration,
+        CpuDuration, NetworkInbound, NetworkOutbound, Memory, Disk, NumberOfVMs, PublisherDNID)
     SELECT SiteID,
     Month, Year,
     GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId,
