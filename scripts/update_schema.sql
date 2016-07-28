@@ -92,16 +92,16 @@ DROP PROCEDURE IF EXISTS ReplaceCloudRecord;
 DELIMITER //
 CREATE PROCEDURE ReplaceCloudRecord(
   VMUUID VARCHAR(255), site VARCHAR(255), cloudComputeService VARCHAR(255),
-  machineName VARCHAR(255), 
+  machineName VARCHAR(255),
   localUserId VARCHAR(255),
   localGroupId VARCHAR(255), globalUserName VARCHAR(255), 
-  fqan VARCHAR(255), vo VARCHAR(255), 
+  fqan VARCHAR(255), vo VARCHAR(255),
   voGroup VARCHAR(255), voRole VARCHAR(255), status VARCHAR(255),
-  startTime DATETIME, endTime DATETIME, 
+  startTime DATETIME, endTime DATETIME,
   suspendDuration INT,
-  wallDuration INT, cpuDuration INT, 
-  cpuCount INT, networkType VARCHAR(255),  networkInbound INT, 
-  networkOutbound INT, publicIPCount INT, memory INT, 
+  wallDuration INT, cpuDuration INT,
+  cpuCount INT, networkType VARCHAR(255),  networkInbound INT,
+  networkOutbound INT, publicIPCount INT, memory INT,
   disk INT, benchmarkType VARCHAR(50), benchmark DECIMAL(10,3), storageRecordId VARCHAR(255),
   imageId VARCHAR(255), cloudType VARCHAR(255),
   publisherDN VARCHAR(255))
