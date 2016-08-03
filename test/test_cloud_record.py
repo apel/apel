@@ -127,10 +127,50 @@ CloudType: Openstack
                         'ImageId': 'Debian Testing (Wheezy)',
                         'CloudType': 'Openstack'                  
                          }
-        
+
+        # A v0.2 style message, used to check we can still
+        # support a v0.2 cloud message
+        self._msg3 = '''
+VMUUID: 2013-11-14 19:15:21+00:00 CESNET vm-1
+SiteName: CESNET
+MachineName: 'one-1'
+LocalUserId: 5
+LocalGroupId: 1
+GlobalUserName: NULL
+FQAN: NULL
+Status: completed
+StartTime: 1318842264
+EndTime: 1318849976
+SuspendDuration: NULL
+WallDuration: NULL
+CpuDuration: NULL
+CpuCount: 1
+NetworkType: NULL
+NetworkInbound: 0
+NetworkOutbound: 0
+Memory: 512
+Disk: NULL
+StorageRecordId: NULL
+ImageId: 'scilin6'
+CloudType: OpenNebula
+'''
+
+        self._values3 = {'SiteName': 'CESNET',
+                         'CloudComputeService': 'None',
+                         'MachineName': '\'one-1\'',
+                         'LocalUserId': '5',
+                         'Status': 'completed',
+                         'CpuCount': 1,
+                         'PublicIPCount': None,
+                         'Memory': 512,
+                         'BenchmarkType': 'None',
+                         'Benchmark': 'None',
+                         'ImageId': '\'scilin6\'',
+                         'CloudType': 'OpenNebula'}
         self.cases = {}
         self.cases[self._msg1] = self._values1
         self.cases[self._msg2] = self._values2
+        self.cases[self._msg3] = self._values3
 
     def test_load_from_msg(self):
         
