@@ -61,7 +61,7 @@ CREATE PROCEDURE ReplaceCloudRecord(
   VMUUID VARCHAR(255), site VARCHAR(255), cloudComputeService VARCHAR(255),
   machineName VARCHAR(255),
   localUserId VARCHAR(255),
-  localGroupId VARCHAR(255), globalUserName VARCHAR(255), 
+  localGroupId VARCHAR(255), globalUserName VARCHAR(255),
   fqan VARCHAR(255), vo VARCHAR(255),
   voGroup VARCHAR(255), voRole VARCHAR(255), status VARCHAR(255),
   startTime DATETIME, endTime DATETIME,
@@ -156,7 +156,6 @@ BEGIN
 END //
 DELIMITER ;
 
-
 DROP PROCEDURE IF EXISTS SummariseVMs;
 DELIMITER //
 CREATE PROCEDURE SummariseVMs()
@@ -222,8 +221,11 @@ SELECT
 	-- Will Memory change during the course of the VM lifetime? If so, do we report a maximum, or
 	-- average, or something else?
 	-- If it doesn't change:
+	ThisRecord.PublicIPCount,
 	ThisRecord.Memory,
-	ThisRecord.Disk -- As above: constant or changing?
+	ThisRecord.Disk, -- As above: constant or changing?
+	ThisRecord.BenchmarkType,
+	ThisRecord.Benchmark
 FROM	LastCloudRecordPerMonth as ThisRecord
 LEFT JOIN LastCloudRecordPerMonth as PrevRecord
 ON 	(ThisRecord.VMUUID = PrevRecord.VMUUID and
@@ -233,12 +235,13 @@ ON 	(ThisRecord.VMUUID = PrevRecord.VMUUID and
 					AND MeasurementTime < ThisRecord.MeasurementTime)
 	);
 
-    REPLACE INTO CloudSummaries(SiteID, Month, Year, GlobalUserNameID, VOID,
+    REPLACE INTO CloudSummaries(SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID,
         VOGroupID, VORoleID, Status, CloudType, ImageId, EarliestStartTime, LatestStartTime,
-        WallDuration, CpuDuration, NetworkInbound, NetworkOutbound, Memory, Disk,
-        NumberOfVMs, PublisherDNID)
+        WallDuration, CpuDuration, NetworkInbound, NetworkOutbound, PublicIPCount, Memory, Disk,
+        BenchmarkType, Benchmark, NumberOfVMs, PublisherDNID)
     SELECT SiteID,
         Month, Year,
+        CloudComputeServiceID,
         GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId,
         MIN(StartTime),
         MAX(StartTime),
@@ -246,13 +249,16 @@ ON 	(ThisRecord.VMUUID = PrevRecord.VMUUID and
         SUM(ComputedCpuDuration),
         SUM(ComputedNetworkInbound),
         SUM(ComputedNetworkOutbound),
+        SUM(PublicIPCount),
         SUM(Memory),
         SUM(Disk),
+        BenchmarkType,
+        Benchmark,
         COUNT(*),
        'summariser'
     FROM TVMUsagePerMonth
     GROUP BY SiteID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID,
-        Status, CloudType, ImageId
+        Status, CloudType, ImageId, BenchmarkType, Benchmark
     ORDER BY NULL;
 END //
 DELIMITER ;
