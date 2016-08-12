@@ -4,8 +4,8 @@
 %endif
 
 Name:           apel
-Version:        1.5.1
-%define releasenumber 1
+Version:        1.6.0
+%define releasenumber 0.2.rc2
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
 
