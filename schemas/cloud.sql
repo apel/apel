@@ -203,6 +203,7 @@ CREATE TEMPORARY TABLE TVMUsagePerMonth
 (INDEX index_VMUsagePerMonth USING BTREE (VMUUID, Month, Year))
 SELECT
 	ThisRecord.VMUUID as VMUUID,
+	ThisRecord.CloudComputeServiceID as CloudComputeServiceID,
 	ThisRecord.SiteID as SiteID,
 	ThisRecord.Month as Month,
 	ThisRecord.Year as Year,
@@ -240,8 +241,8 @@ ON 	(ThisRecord.VMUUID = PrevRecord.VMUUID and
         WallDuration, CpuDuration, NetworkInbound, NetworkOutbound, PublicIPCount, Memory, Disk,
         BenchmarkType, Benchmark, NumberOfVMs, PublisherDNID)
     SELECT SiteID,
-        Month, Year,
         CloudComputeServiceID,
+        Month, Year,
         GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId,
         MIN(StartTime),
         MAX(StartTime),
