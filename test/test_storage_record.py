@@ -1,11 +1,13 @@
-from apel.db.records import StorageRecord
-from unittest import TestCase
+import unittest
 
-class StorageRecordTest(TestCase):
-    '''
+from apel.db.records import StorageRecord
+
+
+class StorageRecordTest(unittest.TestCase):
+    """
     Test case for StorageRecord
-    '''
-    
+    """
+
 #    def test_load_from_tuple(self):
 #        # full example
 #        data = ('host.example.org/sr/87912469269276', 1289293612, 'host.example.org', 'MySite',
@@ -34,7 +36,7 @@ class StorageRecordTest(TestCase):
 #        self.assertEquals(str(record.get_field('EndTime')), "2010-10-11 09:41:40")
 #        self.assertEquals(record.get_field('ResourceCapacityUsed'), 14728)
 #        self.assertEquals(record.get_field('LogicalCapacityUsed'), 13617)
-#        
+
     def test_mandatory_fields(self):
         record = StorageRecord()
         record.set_field('RecordId', 'host.example.org/sr/87912469269276')
@@ -43,8 +45,12 @@ class StorageRecordTest(TestCase):
         record.set_field('StartTime', 1286785900)
         record.set_field('EndTime', 1286786500)
         record.set_field('ResourceCapacityUsed', 14728)
-        
+
         try:
             record._check_fields()
         except Exception, e:
             self.fail('_check_fields method failed: %s [%s]' % (str(e), str(type(e))))
+
+
+if __name__ == '__main__':
+    unittest.main()
