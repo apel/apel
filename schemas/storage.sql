@@ -163,10 +163,55 @@ END //
 DELIMITER ;
 
 -- ------------------------------------------------------------------------------
+-- SubGroups
+DROP TABLE IF EXISTS SubGroups;
+CREATE TABLE SubGroups (
+    id              INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name            VARCHAR(255),
+    INDEX (name)
+);
+
+DROP FUNCTION IF EXISTS SubGroupLookup;
+DELIMITER //
+CREATE FUNCTION SubGroupLookup(lookup VARCHAR(255)) RETURNS INTEGER DETERMINISTIC
+BEGIN
+    DECLARE result INTEGER;
+    SELECT id FROM SubGroups WHERE name=lookup INTO result;
+    IF result IS NULL THEN
+        INSERT INTO SubGroups(name) VALUES (lookup);
+        SET result=LAST_INSERT_ID();
+    END IF;
+RETURN result;
+END //
+DELIMITER ;
+
+-- ------------------------------------------------------------------------------
+-- Roles
+DROP TABLE IF EXISTS Roles;
+CREATE TABLE Roles (
+    id              INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name            VARCHAR(255),
+    INDEX (name)
+);
+
+DROP FUNCTION IF EXISTS RoleLookup;
+DELIMITER //
+CREATE FUNCTION RoleLookup(lookup VARCHAR(255)) RETURNS INTEGER DETERMINISTIC
+BEGIN
+    DECLARE result INTEGER;
+    SELECT id FROM Roles WHERE name=lookup INTO result;
+    IF result IS NULL THEN
+        INSERT INTO Roles(name) VALUES (lookup);
+        SET result=LAST_INSERT_ID();
+    END IF;
+RETURN result;
+END //
+DELIMITER ;
+
+-- ------------------------------------------------------------------------------
 -- GroupAttributes
 DROP TABLE IF EXISTS GroupAttributes;
 CREATE TABLE GroupAttributes (
--- TODO: RecordIdentity as VARCHAR?!
     StarRecordID            VARCHAR(255) NOT NULL,
     AttributeType           VARCHAR(255),
     AttributeValue          VARCHAR(255),
@@ -204,6 +249,8 @@ CREATE TABLE StarRecords (
     LocalGroup              VARCHAR(255),
     UserIdentityID          INT NOT NULL,
     GroupID                 INT NOT NULL,
+    SubGroupID          INT NOT NULL,
+    RoleID              INT NOT NULL,
     StartTime               DATETIME NOT NULL,
     EndTime                 DATETIME NOT NULL,
     ResourceCapacityUsed    BIGINT NOT NULL,
@@ -219,7 +266,6 @@ CREATE TABLE StarRecords (
 
 );
 
--- WORK IN PROGRESS !!!
 
 DROP PROCEDURE IF EXISTS ReplaceStarRecord;
 DELIMITER //
@@ -237,6 +283,8 @@ CREATE PROCEDURE ReplaceStarRecord(
     localGroup              VARCHAR(255),
     userIdentity            VARCHAR(255),
     groupName               VARCHAR(255),
+    subGroupName        VARCHAR(255),
+    roleName            VARCHAR(255),
     startTime               DATETIME,
     endTime                 DATETIME,
     resourceCapacityUsed    BIGINT,
@@ -257,6 +305,8 @@ BEGIN
         LocalGroup,
         UserIdentityID,
         GroupID,
+        SubGroupID,
+        RoleID,
         StartTime,
         EndTime,
         ResourceCapacityUsed,
@@ -276,6 +326,8 @@ BEGIN
         localGroup,
         UserIdentityLookup(userIdentity),
         GroupLookup(groupName),
+        SubGroupLookup(subGroupName),
+        RoleLookup(roleName),
         startTime,
         endTime,
         resourceCapacityUsed,
