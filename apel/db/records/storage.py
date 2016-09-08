@@ -39,11 +39,11 @@ class StorageRecord(Record):
     # This list specifies the information that goes in the database.
     DB_FIELDS = ["RecordId", "CreateTime", "StorageSystem", "Site", "StorageShare", 
                        "StorageMedia", "StorageClass", "FileCount", "DirectoryPath",
-                       "LocalUser", "LocalGroup", "UserIdentity", 
-                       "Group", "StartTime", "EndTime", 
+                       "LocalUser", "LocalGroup", "UserIdentity",
+                       "Group", "SubGroup", "Role", "StartTime", "EndTime",
                        "ResourceCapacityUsed", "LogicalCapacityUsed",
                        "ResourceCapacityAllocated"]
-    
+
     ALL_FIELDS = DB_FIELDS
     
     def __init__(self):

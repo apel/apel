@@ -14,8 +14,8 @@ class StorageRecordTest(unittest.TestCase):
                 'host.example.org', 'MySite', 'pool-003', 'disk', 'replicated',
                 42, '/home/projectA', 'johndoe', 'projectA',
                 '/O=Grid/OU=example.org/CN=John Doe',
-                'binarydataproject.example.org', '2010-10-11T09:31:40Z',
-                '2010-10-11T09:41:40Z', 14728, 13617, 0)
+                'binarydataproject.example.org', 'uk', 'poweruser',
+                '2010-10-11T09:31:40Z', '2010-10-11T09:41:40Z', 14728, 13617, 0)
 
         record = StorageRecord()
         record.load_from_tuple(data)
@@ -37,6 +37,8 @@ class StorageRecordTest(unittest.TestCase):
                           '/O=Grid/OU=example.org/CN=John Doe')
         self.assertEquals(record.get_field('Group'),
                           'binarydataproject.example.org')
+        self.assertEquals(record.get_field('SubGroup'), 'uk')
+        self.assertEquals(record.get_field('Role'), 'poweruser')
         self.assertEquals(str(record.get_field('StartTime')),
                           "2010-10-11 09:31:40")
         self.assertEquals(str(record.get_field('EndTime')),
