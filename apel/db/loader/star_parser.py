@@ -98,6 +98,9 @@ class StarParser(XMLParser):
                                                         nodes['UserIdentity'][0].childNodes),
             'Group'                 : lambda nodes: self.getText(
                                                         nodes['Group'][0].childNodes),
+            'SubGroup': lambda nodes: self.getText(self.getTagByAttr(nodes['SubGroup'], 'attributeType', 'subgroup')[0].childNodes),
+            'Role': lambda nodes: self.getText(
+                self.getTagByAttr(nodes['Role'], 'attributeType', 'role')[0].childNodes),
             'StartTime'             : lambda nodes: parse_timestamp(self.getText(nodes['StartTime'][0].childNodes)),
             'EndTime'               : lambda nodes: parse_timestamp(self.getText(nodes['EndTime'][0].childNodes)),
             'ResourceCapacityUsed'  : lambda nodes: self.getText(
@@ -116,14 +119,14 @@ class StarParser(XMLParser):
         data = {}
 
         for node in nodes:
+            if node in ('SubGroup', 'Role'):
+                nodes[node] = xml_storage_record.getElementsByTagNameNS(self.NAMESPACE, 'GroupAttribute')
+            else:
+                nodes[node] = xml_storage_record.getElementsByTagNameNS(self.NAMESPACE, node)
             # empty list = element have not been found in XML file
-            nodes[node] = xml_storage_record.getElementsByTagNameNS(self.NAMESPACE, node)
-            
+
         for field in functions:
             try:
-                # if field == 'Group':
-                #     data['GroupName'] = functions[field](nodes)
-                # else:
                 data[field] = functions[field](nodes)
             except (IndexError, KeyError), e:
                 log.debug("Failed to get field %s: %s", field, e)
@@ -135,21 +138,25 @@ class StarParser(XMLParser):
                         xml_storage_record.getElementsByTagNameNS(
                                 self.NAMESPACE,'GroupAttribute'),
                         sr.get_field('RecordId'))
-    
-    
+
     def parseGroupAttributes(self, nodes, star_record_id):
-        '''
-        Return a list of GroupAttributes associated with StarRecord.
-        '''
+        """
+        Return a list of GroupAttributeRecords associated with a StarRecord.
+
+        Only returns records for attributeTypes other than subgroup and role as
+        those two types are stored in the StarRecord.
+        """
         ret = []
 
         for node in nodes:
-            group_attr = GroupAttributeRecord()
-            group_attr.set_field('StarRecordID', star_record_id)
             attr_type = self.getAttr(node, 'attributeType')
-            group_attr.set_field('AttributeType', attr_type)
-            attr_value = self.getText(node.childNodes)
-            group_attr.set_field('AttributeValue', attr_value)
-            ret.append(group_attr)
-        
+            # Only create records for types other than subgroup and role
+            if attr_type not in ('subgroup', 'role'):
+                group_attr = GroupAttributeRecord()
+                group_attr.set_field('StarRecordID', star_record_id)
+                group_attr.set_field('AttributeType', attr_type)
+                attr_value = self.getText(node.childNodes)
+                group_attr.set_field('AttributeValue', attr_value)
+                ret.append(group_attr)
+
         return ret
