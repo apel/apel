@@ -80,10 +80,11 @@ class StorageRecord(Record):
         
         
         return values
-    
-    
-    def get_db_tuple(self, source):
-        '''
-        Last item in list is not usable for us.
-        '''
-        return Record.get_db_tuple(self, source)[:-1]
+
+    def get_db_tuple(self, source=None):
+        """
+        Return record contents as tuple ignoring the 'source' keyword argument.
+
+        The source (DN of the sender) isn't used in this record type currently.
+        """
+        return Record.get_db_tuple(self)
