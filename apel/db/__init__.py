@@ -19,7 +19,7 @@ JOB_MSG_HEADER = "APEL-individual-job-message: v0.3"
 SUMMARY_MSG_HEADER = "APEL-summary-job-message: v0.2"
 NORMALISED_SUMMARY_MSG_HEADER = "APEL-summary-job-message: v0.3"
 SYNC_MSG_HEADER = "APEL-sync-message: v0.1"
-CLOUD_MSG_HEADER = 'APEL-cloud-message: v0.2'
+CLOUD_MSG_HEADER = 'APEL-cloud-message: v0.4'
 CLOUD_SUMMARY_MSG_HEADER = 'APEL-cloud-summary-message: v0.2'
 
 from apel.db.apeldb import ApelDb, Query, ApelDbException
