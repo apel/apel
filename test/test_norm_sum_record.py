@@ -68,11 +68,7 @@ class TestNormalisedSummaryRecord(unittest.TestCase):
         for record in self._wrong_records:
             nsr = NormalisedSummaryRecord()
 
-            try:
-                nsr.load_from_msg(record)
-                self.fail("Incorrect record loaded as message.")
-            except InvalidRecordException:
-                continue
+            self.assertRaises(InvalidRecordException, nsr.load_from_msg, record)
 
     def test_get_apel_db_insert(self):
         """Test that the method getting the data to put into the DB
@@ -137,7 +133,7 @@ class TestNormalisedSummaryRecord(unittest.TestCase):
             NumberOfJobs: 100"""
 
         record_text3 = """Site: RAL-LCG2
-            Month: 5
+            Month: 12
             Year: 2010
             GlobalUserName: /C=whatever/D=someDN
             VO: atlas
@@ -145,8 +141,8 @@ class TestNormalisedSummaryRecord(unittest.TestCase):
             VORole: Role=production
             SubmitHost: some.host.org
             Infrastructure: local
-            EarliestEndTime: 1272672000
-            LatestEndTime: 1272672500
+            EarliestEndTime: 1291161600
+            LatestEndTime: 1291162100
             Processors: 1
             NodeCount: 1
             WallDuration: 234256
@@ -180,10 +176,10 @@ class TestNormalisedSummaryRecord(unittest.TestCase):
                   datetime.utcfromtimestamp(1271725200), 234256, 244435, 234256,
                   244435, 100)
 
-        tuple3 = ('RAL-LCG2', 5, 2010, '/C=whatever/D=someDN', 'atlas',
+        tuple3 = ('RAL-LCG2', 12, 2010, '/C=whatever/D=someDN', 'atlas',
                   '/atlas', 'Role=production', 'some.host.org', 'local', 1, 1,
-                  datetime.utcfromtimestamp(1272672000),
-                  datetime.utcfromtimestamp(1272672500), 234256, 244435, 234256,
+                  datetime.utcfromtimestamp(1291161600),
+                  datetime.utcfromtimestamp(1291162100), 234256, 244435, 234256,
                   244435, 100)
 
         tuples.append(tuple1)
