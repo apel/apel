@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Test cases for the NormalisedSummaryRecord based on SummaryRecord tests."""
+
 
 from datetime import datetime, timedelta
 import unittest
