@@ -5,7 +5,7 @@
 
 Name:           apel
 Version:        1.6.0
-%define releasenumber 0.4.rc4
+%define releasenumber 0.5.rc5
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
 
