@@ -199,14 +199,26 @@ def runprocess(config_file, log_config_file):
     xml_string = None
     fetch_failed = False
 
+    next_url = cfg.gocdb_url
     try:
-        xml_string = get_xml(cfg.gocdb_url, cfg.proxy)
-        log.info("Fetched XML from %s", cfg.gocdb_url)
-        try:
-            dns.extend(dns_from_xml(xml_string))
-        except xml.parsers.expat.ExpatError, e:
-            log.warn("Failed to parse the retrieved XML - is the URL correct?")
-            fetch_failed = True
+        while next_url is not None:
+            xml_string = get_xml(next_url, cfg.proxy)
+            log.info("Fetched XML from %s", next_url)
+
+            dom = xml.dom.minidom.parseString(xml_string)
+            link_nodes = dom.getElementsByTagName('link')
+
+            next_url = None
+            for link in link_nodes:
+                rel = link.attributes['rel'].value
+                if rel == 'next':
+                    next_url = link.attributes['href'].value
+
+            try:
+                dns.extend(dns_from_xml(xml_string))
+            except xml.parsers.expat.ExpatError, e:
+                log.warn("Failed to parse the retrieved XML - is the URL correct?")
+                fetch_failed = True
     except AttributeError:
         # gocdb_url == None
         log.info("No GOCDB URL specified - won't fetch URLs.")
