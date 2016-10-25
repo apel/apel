@@ -109,6 +109,23 @@ class RunprocessTestCase(unittest.TestCase):
         c.gocdb_url = "not.a.host"
         mock_config.return_value = c
 
+    def test_next_link_from_xml(self):
+        """Test a next link is correctly retrieved from a xml string."""
+        xml_test_string = """<results>
+        <meta>
+        <link rel="self" href="not a next link"/>
+        <link rel="prev" href="not this one either"/>
+        <link rel="start" href="nor this one"/>
+        <link rel="next" href="next link"/>
+        </meta>
+        <SERVICE_ENDPOINT><HOSTDN>/basic/dn</HOSTDN></SERVICE_ENDPOINT>
+        <SERVICE_ENDPOINT><HOSTDN>/banned/dn</HOSTDN></SERVICE_ENDPOINT>
+        <SERVICE_ENDPOINT><HOSTDN>invalid</HOSTDN></SERVICE_ENDPOINT>
+        </results>"""
+
+        result = bin.retrieve_dns.next_link_from_xml(xml_test_string)
+        self.assertTrue(result, "next link")
+
     def test_basics(self):
         self.mock_xml.return_value = """<results>
         <SERVICE_ENDPOINT><HOSTDN>/basic/dn</HOSTDN></SERVICE_ENDPOINT>
