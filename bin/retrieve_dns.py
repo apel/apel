@@ -239,7 +239,7 @@ def runprocess(config_file, log_config_file):
                 dns.extend(dns_from_xml(xml_string))
             except xml.parsers.expat.ExpatError, e:
                 log.warn('Failed to parse the retrieved XML.')
-                loh.warn('Is the URL correct?')
+                log.warn('Is the URL correct?')
                 fetch_failed = True
     except AttributeError:
         # gocdb_url == None
