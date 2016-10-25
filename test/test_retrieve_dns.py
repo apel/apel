@@ -106,6 +106,7 @@ class RunprocessTestCase(unittest.TestCase):
         c.extra_dns = self.files['extra']['path']
         c.banned_dns = self.files['ban']['path']
         c.expire_hours = 1
+        c.gocdb_url = "not.a.host"
         mock_config.return_value = c
 
     def test_basics(self):
