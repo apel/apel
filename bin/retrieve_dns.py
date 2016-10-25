@@ -201,20 +201,29 @@ def runprocess(config_file, log_config_file):
 
     next_url = cfg.gocdb_url
     try:
-        while next_url is not None:
+        # If next_url is non, it implies we have reached the ned of paging
+        # (or that paging was not turned on).
+        # The addition of fetch_failed catches the case where no XML is
+        # returned from next_url (i.e. gocdb_url).
+        while next_url is not None and not fetch_failed:
             xml_string = get_xml(next_url, cfg.proxy)
             log.info("Fetched XML from %s", next_url)
 
-            dom = xml.dom.minidom.parseString(xml_string)
-            link_nodes = dom.getElementsByTagName('link')
-
-            next_url = None
-            for link in link_nodes:
-                rel = link.attributes['rel'].value
-                if rel == 'next':
-                    next_url = link.attributes['href'].value
-
             try:
+                # Get the link nodes
+                dom = xml.dom.minidom.parseString(xml_string)
+                link_nodes = dom.getElementsByTagName('link')
+
+                # Assume there is no next link
+                next_url = None
+                for link in link_nodes:
+                    # Find the rel value i.e <link ref="next" href="..."/>
+                    rel = link.attributes['rel'].value
+                    # Assumes only one next value
+                    if rel == 'next':
+                        # Fetch this link next
+                        next_url = link.attributes['href'].value
+
                 dns.extend(dns_from_xml(xml_string))
             except xml.parsers.expat.ExpatError, e:
                 log.warn("Failed to parse the retrieved XML - is the URL correct?")
