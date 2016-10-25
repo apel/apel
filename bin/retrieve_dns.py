@@ -167,6 +167,29 @@ def dns_from_file(path):
     return dns
 
 
+def next_link_from_xml(xml_string):
+    """Return the href of the <link rel="next" href="..."/> tag, if any."""
+    # First, assume there is no next link
+    next_url = None
+
+    # Parse the XML into a Document Object Model
+    dom = xml.dom.minidom.parseString(xml_string)
+
+    # Get the link nodes from the DOM
+    link_nodes = dom.getElementsByTagName('link')
+
+    # For each link node, i.e. self, prev, next and start
+    for link in link_nodes:
+        # Find the rel value i.e <link ref="next" href="..."/>
+        rel = link.attributes['rel'].value
+        # Assumes only one next value
+        if rel == 'next':
+            # Fetch this link next
+            next_url = link.attributes['href'].value
+
+    return next_url
+
+
 def verify_dn(dn):
     '''
     Simplistically check that the DN is of the /-separated format.
@@ -193,7 +216,7 @@ def runprocess(config_file, log_config_file):
     log.info(LOG_BREAK)
     log.info('Starting apel auth version %s.%s.%s', *__version__)
     log.info("Starting auth ...")
-    
+
     # We'll fill this list with DNs.
     dns = []
     xml_string = None
@@ -201,32 +224,22 @@ def runprocess(config_file, log_config_file):
 
     next_url = cfg.gocdb_url
     try:
-        # If next_url is non, it implies we have reached the ned of paging
+        # If next_url is none, it implies we have reached the end of paging
         # (or that paging was not turned on).
-        # The addition of fetch_failed catches the case where no XML is
+        # The addition of 'not fetch_failed' catches the case where no XML is
         # returned from next_url (i.e. gocdb_url).
         while next_url is not None and not fetch_failed:
             xml_string = get_xml(next_url, cfg.proxy)
             log.info("Fetched XML from %s", next_url)
 
             try:
-                # Get the link nodes
-                dom = xml.dom.minidom.parseString(xml_string)
-                link_nodes = dom.getElementsByTagName('link')
-
-                # Assume there is no next link
-                next_url = None
-                for link in link_nodes:
-                    # Find the rel value i.e <link ref="next" href="..."/>
-                    rel = link.attributes['rel'].value
-                    # Assumes only one next value
-                    if rel == 'next':
-                        # Fetch this link next
-                        next_url = link.attributes['href'].value
-
+                # Get the next url, if any
+                next_url = next_link_from_xml(xml_string)
+                # Add the listed DNs to the list
                 dns.extend(dns_from_xml(xml_string))
             except xml.parsers.expat.ExpatError, e:
-                log.warn("Failed to parse the retrieved XML - is the URL correct?")
+                log.warn('Failed to parse the retrieved XML.')
+                loh.warn('Is the URL correct?')
                 fetch_failed = True
     except AttributeError:
         # gocdb_url == None
