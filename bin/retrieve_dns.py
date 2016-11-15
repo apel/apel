@@ -130,12 +130,12 @@ def get_xml(url, proxy):
     return dn_xml
     
 
-def dns_from_xml(xml_string):
-    '''
-    Given XML in string format, get the content of all <HOSTDN> tags as 
-    a list of strings.
-    '''
-    dom = xml.dom.minidom.parseString(xml_string)
+def dns_from_dom(dom):
+    """
+    Given a Document Object Model, get the content of all <HOSTDN> tags.
+
+    Returned as a list of strings.
+    """
     dn_nodes = dom.getElementsByTagName('HOSTDN')
     
     log.info('Found ' + str(len(dn_nodes)) + ' HOSTDN tags.' )
@@ -167,13 +167,14 @@ def dns_from_file(path):
     return dns
 
 
-def next_link_from_xml(xml_string):
-    """Return the href of the <link rel="next" href="..."/> tag, if any."""
+def next_link_from_dom(dom):
+    """
+    Given a Document Object Model, return the "next" link if any, or None.
+
+    i.e. the href of the <link rel="next" href="..."/> tag.
+    """
     # First, assume there is no next link
     next_url = None
-
-    # Parse the XML into a Document Object Model
-    dom = xml.dom.minidom.parseString(xml_string)
 
     # Get the link nodes from the DOM
     link_nodes = dom.getElementsByTagName('link')
@@ -233,10 +234,12 @@ def runprocess(config_file, log_config_file):
             log.info("Fetched XML from %s", next_url)
 
             try:
+                # Parse the XML into a Document Object Model
+                dom = xml.dom.minidom.parseString(xml_string)
                 # Get the next url, if any
-                next_url = next_link_from_xml(xml_string)
+                next_url = next_link_from_dom(dom)
                 # Add the listed DNs to the list
-                dns.extend(dns_from_xml(xml_string))
+                dns.extend(dns_from_dom(dom))
             except xml.parsers.expat.ExpatError, e:
                 log.warn('Failed to parse the retrieved XML.')
                 log.warn('Is the URL correct?')

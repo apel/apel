@@ -1,8 +1,8 @@
 import os
 import tempfile
 import unittest
-
 import mock
+import xml.dom.minidom
 
 import bin.retrieve_dns
 
@@ -109,7 +109,7 @@ class RunprocessTestCase(unittest.TestCase):
         c.gocdb_url = "not.a.host"
         mock_config.return_value = c
 
-    def test_next_link_from_xml(self):
+    def test_next_link_from_dom(self):
         """Test a next link is correctly retrieved from a xml string."""
         xml_test_string = """<results>
         <meta>
@@ -123,7 +123,10 @@ class RunprocessTestCase(unittest.TestCase):
         <SERVICE_ENDPOINT><HOSTDN>invalid</HOSTDN></SERVICE_ENDPOINT>
         </results>"""
 
-        result = bin.retrieve_dns.next_link_from_xml(xml_test_string)
+        # Parse the test XML into a Document Object Model
+        dom = xml.dom.minidom.parseString(xml_test_string)
+        
+        result = bin.retrieve_dns.next_link_from_dom(dom)
         self.assertTrue(result, "next link")
 
     def test_basics(self):
