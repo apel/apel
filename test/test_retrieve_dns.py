@@ -125,7 +125,7 @@ class RunprocessTestCase(unittest.TestCase):
 
         # Parse the test XML into a Document Object Model
         dom = xml.dom.minidom.parseString(xml_test_string)
-        
+
         result = bin.retrieve_dns.next_link_from_dom(dom)
         self.assertTrue(result, "next link")
 
