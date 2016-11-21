@@ -127,7 +127,7 @@ class RunprocessTestCase(unittest.TestCase):
         dom = xml.dom.minidom.parseString(xml_test_string)
 
         result = bin.retrieve_dns.next_link_from_dom(dom)
-        self.assertTrue(result, "next link")
+        self.assertEqual(result, "next link")
 
     def test_basics(self):
         self.mock_xml.return_value = """<results>
