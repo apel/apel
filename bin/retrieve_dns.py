@@ -134,7 +134,7 @@ def dns_from_dom(dom):
     """
     Given a Document Object Model, get the content of all <HOSTDN> tags.
 
-    Returned as a list of strings.
+    Returns a list of strings.
     """
     dn_nodes = dom.getElementsByTagName('HOSTDN')
     
@@ -169,7 +169,7 @@ def dns_from_file(path):
 
 def next_link_from_dom(dom):
     """
-    Given a Document Object Model, return the "next" link if any, or None.
+    Given a Document Object Model, return the "next" link, if any, or None.
 
     i.e. the href of the <link rel="next" href="..."/> tag.
     """
