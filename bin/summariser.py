@@ -29,6 +29,7 @@ from apel.db import ApelDb, ApelDbException
 from apel.common import set_up_logging, LOG_BREAK
 from apel import __version__
 
+
 def runprocess(db_config_file, config_file, log_config_file):
     '''Parse the configuration file, connect to the database and run the 
        summarising process.'''
@@ -37,6 +38,9 @@ def runprocess(db_config_file, config_file, log_config_file):
         # Read configuration from file
         cp = ConfigParser.ConfigParser()
         cp.read(config_file)
+
+        pidfile = cp.get('summariser', 'pidfile')
+
         dbcp = ConfigParser.ConfigParser()
         dbcp.read(db_config_file)
         
@@ -72,7 +76,26 @@ def runprocess(db_config_file, config_file, log_config_file):
         sys.exit(1)
         
     log.info('Starting apel summariser version %s.%s.%s', *__version__)
-        
+
+    # If the pidfile exists, don't start up.
+    try:
+        if os.path.exists(pidfile):
+            error = "Cannot start summariser.  Pidfile %s already exists." % pidfile
+
+            log.error("A pidfile %s already exists.", pidfile)
+            log.warn("Check that the dbloader is not running, then remove the file.")
+            raise Exception("The dbloader cannot start while pidfile exists.")
+    except Exception, err:
+        print "Error initialising summariser: " + err
+        sys.exit(1)
+    try:
+        f = open(pidfile, "w")
+        f.write(str(os.getpid()))
+        f.write("\n")
+        f.close()
+    except IOError, e:
+        log.warn("Failed to create pidfile %s: %s", pidfile, e)
+
     # Log into the database
     try:
 
