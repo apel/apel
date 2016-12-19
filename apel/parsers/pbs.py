@@ -60,26 +60,25 @@ class PBSParser(Parser):
         else:
             nodes, cores = 0, 0
 
-        # Torque 5.1.2 uses seconds rather than hh:mm:ss for cput and walltime
-        # so check for that here.
-        if (':' not in data['resources_used.cput'] and
-                ':' not in data['resources_used.walltime']):
+        wall_function = parse_time
+        cput_function = parse_time
+
+        # Different versions Torque use different time formats for for cput and
+        # walltime (either seconds or hh:mm:ss) so check for that here.
+        if ':' not in data['resources_used.walltime']:
             # Although the duration doesn't need converting if it's already in
             # seconds, this needs to be a function to work with later code.
-            time_function = lambda y: y
-        elif (':' in data['resources_used.cput'] and
-                ':' in data['resources_used.walltime']):
-            time_function = parse_time
-        else:
-            raise ValueError("Durations have different time formats")
+            wall_function = lambda y: y
+        if ':' not in data['resources_used.cput']:
+            cput_function = lambda y: y
 
         # map each field to functions which will extract them
         mapping = {'Site'          : lambda x: self.site_name,
                    'JobName'       : lambda x: jobName,
                    'LocalUserID'   : lambda x: x['user'],
                    'LocalUserGroup': lambda x: x['group'],
-                   'WallDuration'  : lambda x: time_function(x['resources_used.walltime']),
-                   'CpuDuration'   : lambda x: time_function(x['resources_used.cput']),
+                   'WallDuration'  : lambda x: wall_function(x['resources_used.walltime']),
+                   'CpuDuration'   : lambda x: cput_function(x['resources_used.cput']),
                    'StartTime'     : lambda x: int(x['start']),
                    'StopTime'      : lambda x: int(x['end']),
                    'Infrastructure': lambda x: "APEL-CREAM-PBS",
