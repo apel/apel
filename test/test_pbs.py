@@ -50,6 +50,12 @@ class ParserPBSTest(unittest.TestCase):
              '.neednodes=1pn=4 Resource_List.nodect=1 Resource_List.nodes=1pn=4 Resource_List.pmem=2666mb Resource_List.vmem=16000mb Resource_List.w'
              'alltime=16:00:00 session=26754 total_execution_slots=4 unique_node_count=1 end=1427439987 Exit_status=0 resources_used.cput=18:31:56 r'
              'esources_used.energy_used=0 resources_used.mem=8212056kb resources_used.vmem=12526772kb resources_used.walltime=04:43:32'),
+            # Torque 5.1.3 has cput in secondss but walltime in hh:mm:ss
+            ('12/07/2016 01:08:31;E;37803854.b0;user=atcant2 group=atcant jobname=cream_105055799 queue=atlas ctime=1481101558 qtime=1481101558 etim'
+             'e=1481101558 start=1481101655 owner=atcant@bug.eastgrid.io exec_host=b126/2 Resource_List.file=15gb Resource_List.neednodes=1 Resource'
+             '_List.nodect=1 Resource_List.nodes=1 Resource_List.pmem=2000mb Resource_List.walltime=50:00:00 session=1664 total_execution_slots=1 un'
+             'ique_node_count=1 end=1481101711 Exit_status=0 resources_used.cput=9 resources_used.energy_used=0 resources_used.mem=41512kb resources'
+             '_used.vmem=325428kb resources_used.walltime=00:00:56'),
         )
 
         values = (
@@ -76,6 +82,10 @@ class ParserPBSTest(unittest.TestCase):
              18*3600+31*60+56, datetime.datetime.utcfromtimestamp(1427422975),
              datetime.datetime.utcfromtimestamp(1427439987), 8212056, 12526772,
              1, 4),
+            ("37803854.b0", "atcant2", "atcant", 56, 9,
+             datetime.datetime.utcfromtimestamp(1481101655),
+             datetime.datetime.utcfromtimestamp(1481101711), 41512, 325428,
+             1, 1),
         )
 
         fields = ('JobName', 'LocalUserID', 'LocalUserGroup', 'WallDuration',
