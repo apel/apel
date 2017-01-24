@@ -110,21 +110,28 @@ class PBSParser(Parser):
 
 
 def _parse_mpi(exec_host):
-    '''
+    """
     Return (nodes, total-cores) given a dict from a PBS record.
-
-    There are two ways to derive this from the logs; the second is from
-    the field
-    Resource_List.nodes=x:ppn=y
-    The above would return x,y.
-    '''
+    """
     # exec_host is of the form <hostname>/core_no[+<hostname>/core_no]
     # e.g. wn1.rl.ac.uk/0+wn1.rl.ac.uk/1+wn2.rl.ac.uk/0+wn2.rl.ac.uk/1
+    # The 'exec_host' in Torque >= 5.1.0 reads like 'b391/0-1,5,11'
+
     core_info = exec_host.split('+')
-    # remove /core_no and get the list of hostnames
-    hostnames = [x.split('/')[0] for x in core_info]
+    # Split hostname and core_no into seperate lists.
+    hostnames, core_no = zip(*[x.split('/') for x in core_info])
+
+    # Split any comma separated fields into a flat list.
+    core_no = [core for cores in core_no for core in cores.split(',')]
+    ncores = 0
+    for no in core_no:
+        if '-' in no:
+            # Calculate the number of cores in the closed set.
+            ncores += int(no.split('-')[1]) - int(no.split('-')[0]) + 1
+        else:
+            ncores += 1
+
     # get number of unique hostnames
     nnodes = len(set(hostnames))
-    # total number of core details
-    ncores = len(core_info)
+
     return nnodes, ncores

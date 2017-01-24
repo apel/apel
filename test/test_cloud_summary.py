@@ -9,6 +9,7 @@ class CloudRecordTest(TestCase):
     def setUp(self):
         self._msg1 = '''
 SiteName: CESNET
+CloudComputeService: OpenNebula Service A
 Month: 10
 Year: 2011
 GlobalUserName: /DC=es/DC=irisgrid/O=cesga/CN=javier-lopez
@@ -24,18 +25,25 @@ WallDuration: None
 CpuDuration: None
 NetworkInbound: 0
 NetworkOutbound: 0
+PublicIPCount: 5
 Memory: 512
 Disk: None
+BenchmarkType: Si2k
+Benchmark: 1006.3
 NumberOfVMs: 1
 '''
         
         self._values1 = {'SiteName': 'CESNET',
+                        'CloudComputeService': 'OpenNebula Service A', 
                         'Status': 'completed',
                         'CloudType': 'OpenNebula',
                         'NetworkInbound': 0,
                         'NetworkOutbound': 0,
+                        'PublicIPCount': 5,
                         'Memory': 512,
                         'ImageId': '\'scilin6\'',
+                        'BenchmarkType': 'Si2k',
+                        'Benchmark': 1006.3,
                         'NumberOfVMs': 1
                         }
         

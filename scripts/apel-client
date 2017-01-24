@@ -3,5 +3,5 @@
     weekly
     rotate 4
     missingok
-    create 640 apel apel
+    create
 }

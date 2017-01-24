@@ -4,8 +4,8 @@
 %endif
 
 Name:           apel
-Version:        1.5.1
-%define releasenumber 1
+Version:        1.6.0
+%define releasenumber 0.6.rc6
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
 
@@ -34,7 +34,7 @@ apel-lib provides required libraries for the rest of APEL system.
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apel-lib >= 1.5.1
+Requires:       apel-lib >= 1.6.0
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -44,7 +44,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.5.1, apel-ssm
+Requires:       apel-lib >= 1.6.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -55,7 +55,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.5.1, apel-ssm
+Requires:       apel-lib >= 1.6.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -108,6 +108,8 @@ cp schemas/server.sql %{buildroot}%_datadir/apel/
 cp schemas/server-extra.sql %{buildroot}%_datadir/apel/
 cp schemas/cloud.sql %{buildroot}%_datadir/apel/
 cp schemas/storage.sql %{buildroot}%_datadir/apel/
+
+cp scripts/update_schema.sql %{buildroot}%_datadir/apel/
 
 # accounting scripts
 cp scripts/slurm_acc.sh %{buildroot}%_datadir/apel/
@@ -169,7 +171,9 @@ exit 0
 %_datadir/apel/server-extra.sql
 %_datadir/apel/cloud.sql
 %_datadir/apel/storage.sql
-%attr(755,root,root) %_datadir/apel/msg_status.py
+%_datadir/apel/update_schema.sql
+# Use wildcard to match .py, .pyc, and .pyo
+%attr(755,root,root) %_datadir/apel/msg_status.py*
 
 # Directories for logs, PID files
 %dir %{_localstatedir}/log/apel

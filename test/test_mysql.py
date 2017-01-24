@@ -4,7 +4,7 @@ import subprocess
 import unittest
 
 import apel.db.apeldb
-import apel.db.records.job
+import apel.db.records
 
 
 if os.name == 'nt':
@@ -78,6 +78,65 @@ class MysqlTest(unittest.TestCase):
         # Check that items_in is a subset of items_out
         # Can't use 'all()' rather than comparing the length as Python 2.4
         self.assertEqual([item in items_out for item in items_in].count(True), len(items_in))
+
+    def test_mixed_load(self):
+        """
+        Check that loader fails gracefully if passed mixed types in record list.
+        """
+        job = apel.db.records.job.JobRecord()
+        job._record_content = {'Site': 'testSite', 'LocalJobId': 'testJob',
+                               'SubmitHost': 'testHost',
+                               'WallDuration': 10, 'CpuDuration': 10,
+                               'StartTime': datetime.datetime.fromtimestamp(123456),
+                               'EndTime': datetime.datetime.fromtimestamp(654321),
+                               'ServiceLevelType': 'HEPSPEC',
+                               'ServiceLevel': 3}
+        summary = apel.db.records.SummaryRecord()
+        summary._record_content = {'Site': 'testSite', 'Month': 1,
+                                   'Year': 2016, 'WallDuration': 2000,
+                                   'CpuDuration': 1000, 'NumberOfJobs': 3}
+        record_list = [job, summary]
+
+        self.assertRaises(apel.db.apeldb.ApelDbException,
+                          self.db.load_records, record_list, source='testDN')
+
+    def test_mixed_storage_records(self):
+        """
+        Check that the loader will accept mixed types in one case.
+
+        The loader should work when passed mixed record types if they are
+        Storage and GroupAttribute records.
+        """
+        schema_path = os.path.abspath(os.path.join('..', 'schemas',
+                                                   'storage.sql'))
+        schema_handle = open(schema_path)
+        subprocess.call(['mysql', '-u', 'root', 'apel_unittest'],
+                        stdin=schema_handle)
+        schema_handle.close()
+
+        storage_rec = apel.db.records.StorageRecord()
+        storage_rec._record_content = {
+            'RecordId': 'c698',
+            'CreateTime': datetime.datetime.fromtimestamp(654321),
+            'StorageSystem': 'test-sys.ac.uk',
+            'StartTime': datetime.datetime.fromtimestamp(123456),
+            'EndTime': datetime.datetime.fromtimestamp(654321),
+            'ResourceCapacityUsed': '10'
+        }
+
+        grpattr_rec = apel.db.records.GroupAttributeRecord()
+        grpattr_rec._record_content = {
+            'StarRecordID': 'c698',
+            'AttributeType': 'authority',
+            'AttributeValue': '/O=Grid/OU=example.org/CN=Joe Bloggs'
+        }
+
+        record_list = [storage_rec, grpattr_rec]
+
+        # Try loading both with and without a source set. Both record types
+        # should ignore that field.
+        self.db.load_records(record_list, source='testDN')
+        self.db.load_records(record_list)
 
     def test_last_update(self):
         """
