@@ -50,6 +50,17 @@ class ParserPBSTest(unittest.TestCase):
              '.neednodes=1pn=4 Resource_List.nodect=1 Resource_List.nodes=1pn=4 Resource_List.pmem=2666mb Resource_List.vmem=16000mb Resource_List.w'
              'alltime=16:00:00 session=26754 total_execution_slots=4 unique_node_count=1 end=1427439987 Exit_status=0 resources_used.cput=18:31:56 r'
              'esources_used.energy_used=0 resources_used.mem=8212056kb resources_used.vmem=12526772kb resources_used.walltime=04:43:32'),
+            # Torque 5.1.3 has cput in secondss but walltime in hh:mm:ss
+            ('12/07/2016 01:08:31;E;37803854.b0;user=atcant2 group=atcant jobna'
+             'me=cream_105055799 queue=atlas ctime=1481101558 qtime=1481101558 '
+             'etime=1481101558 start=1481101655 owner=atcant@bug.eastgrid.io ex'
+             'ec_host=b126/2 Resource_List.file=15gb Resource_List.neednodes=1 '
+             'Resource_List.nodect=1 Resource_List.nodes=1 Resource_List.pmem=2'
+             '000mb Resource_List.walltime=50:00:00 session=1664 total_executio'
+             'n_slots=1 unique_node_count=1 end=1481101711 Exit_status=0 resour'
+             'ces_used.cput=9 resources_used.energy_used=0 resources_used.mem=4'
+             '1512kb resources_used.vmem=325428kb resources_used.walltime=00:00'
+             ':56'),
         )
 
         values = (
@@ -76,6 +87,10 @@ class ParserPBSTest(unittest.TestCase):
              18*3600+31*60+56, datetime.datetime.utcfromtimestamp(1427422975),
              datetime.datetime.utcfromtimestamp(1427439987), 8212056, 12526772,
              1, 4),
+            ("37803854.b0", "atcant2", "atcant", 56, 9,
+             datetime.datetime.utcfromtimestamp(1481101655),
+             datetime.datetime.utcfromtimestamp(1481101711), 41512, 325428,
+             1, 1),
         )
 
         fields = ('JobName', 'LocalUserID', 'LocalUserGroup', 'WallDuration',
@@ -139,12 +154,6 @@ class ParserPBSTest(unittest.TestCase):
              's=1 Resource_List.nodect=1 Resource_List.nodes=1 Resource_List.pmem=2000mb Resource_List.pvmem=4000mb Resource_List.vmem=4000mb Resour'
              'ce_List.walltime=48:00:00 session=22256 total_execution_slots=1 unique_node_count=1 end=1448914025 Exit_status=271 resources_used.cput'
              '=03:32:02 resources_used.energy_used=0 resources_used.mem=2574308kb resources_used.vmem=4032516kb resources_used.walltime=03:32:47'),
-            # Mixed duration formats (hh:mm:ss and s)
-            ('11/30/2015 15:42:06;E;24940336.b0;user=atlaspt5 group=atlaspt jobname=cream_830820758 queue=atlas ctime=1448913907 qtime=1448913907 et'
-             'ime=1448913907 start=1448914025 owner=atlaspt5@bugaboo-hep.westgrid.ca exec_host=b341/2 Resource_List.file=15gb Resource_List.neednode'
-             's=1 Resource_List.nodect=1 Resource_List.nodes=1 Resource_List.pmem=2000mb Resource_List.pvmem=4000mb Resource_List.vmem=4000mb Resour'
-             'ce_List.walltime=48:00:00 session=22256 total_execution_slots=1 unique_node_count=1 end=1448926926 Exit_status=0 resources_used.cput=1'
-             '2722 resources_used.energy_used=0 resources_used.mem=2574308kb resources_used.vmem=4032516kb resources_used.walltime=03:32:47'),
         )
 
         for line in lines:
