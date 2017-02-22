@@ -114,6 +114,7 @@ CREATE TABLE CloudSummaries (
   LatestStartTime DATETIME,
   WallDuration BIGINT,
   CpuDuration BIGINT,
+  CpuCount INT,
 
   NetworkInbound BIGINT,
   NetworkOutbound BIGINT,
@@ -139,17 +140,17 @@ CREATE PROCEDURE ReplaceCloudSummaryRecord(
   vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255), status VARCHAR(255),
   cloudType VARCHAR(255), imageId VARCHAR(255), 
   earliestStartTime DATETIME, latestStartTime DATETIME, 
-  wallDuration BIGINT, cpuDuration BIGINT, 
+  wallDuration BIGINT, cpuDuration BIGINT, cpuCount INT,
   networkInbound BIGINT, networkOutbound BIGINT, memory BIGINT,
   disk BIGINT, benchmarkType VARCHAR(50), benchmark DECIMAL(10,3), numberOfVMs BIGINT,
   publisherDN VARCHAR(255))
 BEGIN
     REPLACE INTO CloudSummaries(SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId, EarliestStartTime, LatestStartTime, 
-        WallDuration, CpuDuration, NetworkInbound, NetworkOutbound, Memory, Disk, BenchmarkType, Benchmark, NumberOfVMs,  PublisherDNID)
+        WallDuration, CpuDuration, CpuCount, NetworkInbound, NetworkOutbound, Memory, Disk, BenchmarkType, Benchmark, NumberOfVMs,  PublisherDNID)
       VALUES (
         SiteLookup(site), CloudComputeServiceLookup(cloudComputeService), month, year, DNLookup(globalUserName), VOLookup(vo),
         VOGroupLookup(voGroup), VORoleLookup(voRole), status, cloudType, imageId, earliestStartTime, latestStartTime, 
-        wallDuration, cpuDuration, networkInbound, networkOutbound, memory,
+        wallDuration, cpuDuration, cpuCount, networkInbound, networkOutbound, memory,
         disk, benchmarkType, benchmark, numberOfVMs, DNLookup(publisherDN)
         );
 END //
@@ -160,9 +161,11 @@ DROP PROCEDURE IF EXISTS SummariseVMs;
 DELIMITER //
 CREATE PROCEDURE SummariseVMs()
 BEGIN
-    REPLACE INTO CloudSummaries(SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID,
-        VOGroupID, VORoleID, Status, CloudType, ImageId, EarliestStartTime, LatestStartTime, WallDuration, CpuDuration, NetworkInbound,
-        NetworkOutbound, Memory, Disk, BenchmarkType, Benchmark, NumberOfVMs, PublisherDNID)
+    REPLACE INTO CloudSummaries(SiteID, CloudComputeServiceID, Month, Year,
+        GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId,
+        EarliestStartTime, LatestStartTime, WallDuration, CpuDuration, CpuCount,
+        NetworkInbound, NetworkOutbound, Memory, Disk,
+        BenchmarkType, Benchmark, NumberOfVMs, PublisherDNID)
     SELECT SiteID,
     CloudComputeServiceID,
     MONTH(StartTime) AS Month, YEAR(StartTime) AS Year,
@@ -171,6 +174,7 @@ BEGIN
     MAX(StartTime),
     SUM(WallDuration),
     SUM(CpuDuration),
+    CpuCount,
     SUM(NetworkInbound),
     SUM(NetworkOutbound),
     SUM(Memory),
@@ -180,7 +184,9 @@ BEGIN
     COUNT(*),
     'summariser'
     FROM CloudRecords
-    GROUP BY SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId, BenchmarkType, Benchmark
+    GROUP BY SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID,
+        VOGroupID, VORoleID, Status, CloudType, ImageId, CpuCount,
+        BenchmarkType, Benchmark
     ORDER BY NULL;
 END //
 DELIMITER ;
@@ -394,7 +400,7 @@ CREATE VIEW VCloudSummaries AS
            userdn.name GlobalUserName, vo.name VO, 
            vogroup.name VOGroup, vorole.name VORole,
            Status, CloudType, ImageId, EarliestStartTime, LatestStartTime,
-           WallDuration, CpuDuration, NetworkInbound, NetworkOutbound, Memory, Disk, BenchmarkType, Benchmark,  
+           WallDuration, CpuDuration, CpuCount, NetworkInbound, NetworkOutbound, Memory, Disk, BenchmarkType, Benchmark,  
            NumberOfVMs
     FROM CloudSummaries, Sites site, CloudComputeServices cloudComputeService, DNs userdn, VOs vo, VOGroups vogroup, VORoles vorole WHERE
         SiteID = site.id
