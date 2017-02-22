@@ -1,7 +1,7 @@
 -- Create / Update Tables
--- Add CloudComputeServiceID, old rows get a NULL CloudComputeServiceID
-ALTER TABLE CloudRecords ADD CloudComputeServiceID INT;
-ALTER TABLE CloudSummaries ADD CloudComputeServiceID INT;
+-- Add CloudComputeServiceID, old rows get set to 1
+ALTER TABLE CloudRecords ADD CloudComputeServiceID INT NOT NULL DEFAULT 1;
+ALTER TABLE CloudSummaries ADD CloudComputeServiceID INT NOT NULL DEFAULT 1;
 
 -- Add PublicIPCount, old rows get a NULL PublicIPCount
 ALTER TABLE CloudRecords ADD PublicIPCount INT;
@@ -21,6 +21,8 @@ CREATE TABLE CloudComputeServices (
     name VARCHAR(255) NOT NULL,
     INDEX(name)
 );
+
+INSERT INTO CloudComputeServices (id, name) VALUES(1, "None");
 
 -- Create Views
 -- View on CloudRecords
