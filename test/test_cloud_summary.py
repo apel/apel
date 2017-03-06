@@ -25,6 +25,7 @@ EarliestStartTime: 1318840264
 LatestStartTime: 1318840264
 WallDuration: None
 CpuDuration: None
+CpuCount: 4
 NetworkInbound: 0
 NetworkOutbound: 0
 Memory: 512

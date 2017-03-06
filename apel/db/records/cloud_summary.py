@@ -38,8 +38,8 @@ class CloudSummaryRecord(Record):
         self._msg_fields  = ['SiteName', 'CloudComputeService', 'Month', 'Year', 
                              'GlobalUserName', 'VO', 'VOGroup', 'VORole',
                              'Status', 'CloudType', 'ImageId', 'EarliestStartTime', 
-                             'LatestStartTime', 'WallDuration', 'CpuDuration', 'NetworkInbound', 
-                             'NetworkOutbound', 'Memory', 'Disk', 
+                             'LatestStartTime', 'WallDuration', 'CpuDuration', 'CpuCount',
+                             'NetworkInbound', 'NetworkOutbound', 'Memory', 'Disk', 
                              'BenchmarkType', 'Benchmark', 'NumberOfVMs']
         
         # This list specifies the information that goes in the database.
