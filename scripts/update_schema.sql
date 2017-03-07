@@ -22,7 +22,12 @@ CREATE TABLE CloudComputeServices (
     INDEX(name)
 );
 
+-- Insert row for "None" which can be used as a default value
 INSERT INTO CloudComputeServices (id, name) VALUES(1, "None");
+
+-- Update the existing rows in the CloudRecords table with a default value
+UPDATE CloudRecords SET CloudComputeServiceID=1;
+
 
 -- Create Views
 -- View on CloudRecords
