@@ -1,21 +1,35 @@
 -- Create / Update Tables
--- Add CloudComputeServiceID, old rows get set to 1
-ALTER TABLE CloudRecords ADD CloudComputeServiceID INT NOT NULL DEFAULT 1;
-ALTER TABLE CloudSummaries ADD CloudComputeServiceID INT NOT NULL DEFAULT 1;
 
--- Add PublicIPCount, old rows get a NULL PublicIPCount
-ALTER TABLE CloudRecords ADD PublicIPCount INT;
-ALTER TABLE CloudSummaries ADD PublicIPCount BIGINT;
+/* Update CloudRecords
 
--- Add BenchmarkType, old rows get an empty VARCHAR
-ALTER TABLE CloudRecords ADD BenchmarkType VARCHAR(50) NOT NULL;
-ALTER TABLE CloudSummaries ADD BenchmarkType VARCHAR(50) NOT NULL;
+Existing rows get set to the following:
 
--- Add Benchmark, old rows get 0.00
-ALTER TABLE CloudRecords ADD Benchmark DECIMAL(10,3) NOT NULL;
-ALTER TABLE CloudSummaries ADD Benchmark DECIMAL(10,3) NOT NULL;
+CloudComputeServiceID - set afterwards
+PublicIPCount - null (NULL)
+BenchmarkType - empty VARCHAR ("")
+Benchmark - decimal zero (0.00)
+*/
+ALTER TABLE CloudRecords
+  ADD CloudComputeServiceID INT NOT NULL AFTER SiteID,
+  ADD PublicIPCount INT AFTER NetworkOutbound,
+  ADD BenchmarkType VARCHAR(50) NOT NULL AFTER Disk,
+  ADD Benchmark DECIMAL(10,3) NOT NULL AFTER BenchmarkType;
 
--- Create CloudComputeService
+
+/* Update CloudSummaries
+
+Existing rows get same values as for CloudRecords
+
+PublicIPCount is not currently used in summaries
+*/
+ALTER TABLE CloudSummaries
+  ADD CloudComputeServiceID INT NOT NULL AFTER SiteID,
+  -- ADD PublicIPCount BIGINT AFTER NetworkOutbound,
+  ADD BenchmarkType VARCHAR(50) NOT NULL AFTER Disk,
+  ADD Benchmark DECIMAL(10,3) NOT NULL AFTER BenchmarkType;
+
+
+-- Create CloudComputeServices lookup table
 CREATE TABLE CloudComputeServices (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -25,8 +39,10 @@ CREATE TABLE CloudComputeServices (
 -- Insert row for "None" which can be used as a default value
 INSERT INTO CloudComputeServices (id, name) VALUES(1, "None");
 
--- Update the existing rows in the CloudRecords table with a default value
+-- Update the existing rows in the Cloud tables with a default value
 UPDATE CloudRecords SET CloudComputeServiceID=1;
+
+UPDATE CloudSummaries SET CloudComputeServiceID=1;
 
 
 -- Create Views
