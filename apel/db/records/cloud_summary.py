@@ -39,7 +39,7 @@ class CloudSummaryRecord(Record):
                              'GlobalUserName', 'VO', 'VOGroup', 'VORole',
                              'Status', 'CloudType', 'ImageId', 'EarliestStartTime', 
                              'LatestStartTime', 'WallDuration', 'CpuDuration', 'NetworkInbound', 
-                             'NetworkOutbound', 'PublicIPCount', 'Memory', 'Disk', 
+                             'NetworkOutbound', 'Memory', 'Disk', 
                              'BenchmarkType', 'Benchmark', 'NumberOfVMs']
         
         # This list specifies the information that goes in the database.
@@ -50,7 +50,7 @@ class CloudSummaryRecord(Record):
         
         # Fields which will have an integer stored in them
         self._int_fields = [ 'Month', 'Year', 'WallDuration', 'CpuDuration', 
-                             'NetworkInbound', 'NetworkOutbound', 'PublicIPCount',
+                             'NetworkInbound', 'NetworkOutbound',
                              'Memory', 'Disk', 'NumberOfVMs']
         
         self._float_fields = ['Benchmark']

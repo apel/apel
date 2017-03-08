@@ -1,7 +1,9 @@
-from apel.db.records import CloudSummaryRecord
-from unittest import TestCase
+import unittest
 
-class CloudRecordTest(TestCase):
+from apel.db.records import CloudSummaryRecord
+
+
+class CloudRecordTest(unittest.TestCase):
     '''
     Test case for CloudSummaryRecord
     '''
@@ -25,7 +27,6 @@ WallDuration: None
 CpuDuration: None
 NetworkInbound: 0
 NetworkOutbound: 0
-PublicIPCount: 5
 Memory: 512
 Disk: None
 BenchmarkType: Si2k
@@ -39,7 +40,6 @@ NumberOfVMs: 1
                         'CloudType': 'OpenNebula',
                         'NetworkInbound': 0,
                         'NetworkOutbound': 0,
-                        'PublicIPCount': 5,
                         'Memory': 512,
                         'ImageId': '\'scilin6\'',
                         'BenchmarkType': 'Si2k',
@@ -82,3 +82,6 @@ NumberOfVMs: 1
             record._check_fields()
         except Exception, e:
             self.fail('_check_fields method failed: %s [%s]' % (str(e), str(type(e))))
+
+if __name__ == '__main__':
+    unittest.main()
