@@ -1,7 +1,9 @@
-from apel.db.records import CloudSummaryRecord
-from unittest import TestCase
+import unittest
 
-class CloudRecordTest(TestCase):
+from apel.db.records import CloudSummaryRecord
+
+
+class CloudRecordTest(unittest.TestCase):
     '''
     Test case for CloudSummaryRecord
     '''
@@ -9,6 +11,7 @@ class CloudRecordTest(TestCase):
     def setUp(self):
         self._msg1 = '''
 SiteName: CESNET
+CloudComputeService: OpenNebula Service A
 Month: 10
 Year: 2011
 GlobalUserName: /DC=es/DC=irisgrid/O=cesga/CN=javier-lopez
@@ -26,16 +29,21 @@ NetworkInbound: 0
 NetworkOutbound: 0
 Memory: 512
 Disk: None
+BenchmarkType: Si2k
+Benchmark: 1006.3
 NumberOfVMs: 1
 '''
         
         self._values1 = {'SiteName': 'CESNET',
+                        'CloudComputeService': 'OpenNebula Service A', 
                         'Status': 'completed',
                         'CloudType': 'OpenNebula',
                         'NetworkInbound': 0,
                         'NetworkOutbound': 0,
                         'Memory': 512,
                         'ImageId': '\'scilin6\'',
+                        'BenchmarkType': 'Si2k',
+                        'Benchmark': 1006.3,
                         'NumberOfVMs': 1
                         }
         
@@ -74,3 +82,6 @@ NumberOfVMs: 1
             record._check_fields()
         except Exception, e:
             self.fail('_check_fields method failed: %s [%s]' % (str(e), str(type(e))))
+
+if __name__ == '__main__':
+    unittest.main()

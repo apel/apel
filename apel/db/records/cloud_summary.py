@@ -35,11 +35,12 @@ class CloudSummaryRecord(Record):
         self._mandatory_fields = ['SiteName', 'Month', 'Year', 'NumberOfVMs']
             
         # This list allows us to specify the order of lines when we construct records.
-        self._msg_fields  = ['SiteName', 'Month', 'Year', 
+        self._msg_fields  = ['SiteName', 'CloudComputeService', 'Month', 'Year', 
                              'GlobalUserName', 'VO', 'VOGroup', 'VORole',
                              'Status', 'CloudType', 'ImageId', 'EarliestStartTime', 
                              'LatestStartTime', 'WallDuration', 'CpuDuration', 'NetworkInbound', 
-                             'NetworkOutbound', 'Memory', 'Disk', 'NumberOfVMs']
+                             'NetworkOutbound', 'Memory', 'Disk', 
+                             'BenchmarkType', 'Benchmark', 'NumberOfVMs']
         
         # This list specifies the information that goes in the database.
         self._db_fields = self._msg_fields
@@ -49,9 +50,10 @@ class CloudSummaryRecord(Record):
         
         # Fields which will have an integer stored in them
         self._int_fields = [ 'Month', 'Year', 'WallDuration', 'CpuDuration', 
-                            'NetworkInbound', 'NetworkOutbound', 'Memory', 'Disk',
-                             'NumberOfVMs']
+                             'NetworkInbound', 'NetworkOutbound',
+                             'Memory', 'Disk', 'NumberOfVMs']
         
+        self._float_fields = ['Benchmark']
         self._datetime_fields = ['EarliestStartTime', 'LatestStartTime']
     
         
