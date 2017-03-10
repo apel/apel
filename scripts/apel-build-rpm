@@ -12,12 +12,10 @@ rm -f $RPMDIR/SOURCES/*
 rm -f $RPMDIR/SRPMS/*
 rm -f $RPMDIR/RPMS/noarch/*
 
-FILE=$VERSION
+wget --no-check-certificate https://github.com/apel/apel/archive/$VERSION.tar.gz -O $VERSION
 
-wget --no-check-certificate https://github.com/apel/apel/archive/$VERSION.tar.gz -O $FILE
-
-tar xzvf $FILE
-rm $FILE
+tar xzvf $VERSION
+rm $VERSION
 
 tar czvf $APELDIR.tar.gz $APELDIR
 cp $APELDIR.tar.gz $RPMDIR/SOURCES
