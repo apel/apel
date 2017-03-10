@@ -68,9 +68,9 @@ class ApelMysqlDb(object):
               NormalisedSummaryRecord: "CALL ReplaceNormalisedSummary(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               SyncRecord  : "CALL ReplaceSyncRecord(%s, %s, %s, %s, %s, %s)",
               ProcessedRecord : "CALL ReplaceProcessedFile(%s, %s, %s, %s, %s)",
-              CloudRecord : "CALL ReplaceCloudRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-              CloudSummaryRecord : "CALL ReplaceCloudSummaryRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-              StorageRecord: "CALL ReplaceStarRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              CloudRecord : "CALL ReplaceCloudRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              CloudSummaryRecord : "CALL ReplaceCloudSummaryRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              StorageRecord: "CALL ReplaceStarRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               GroupAttributeRecord: "CALL ReplaceGroupAttribute(%s, %s, %s)"
               }
     
@@ -122,13 +122,22 @@ class ApelMysqlDb(object):
 
     def load_records(self, record_list, replace=True, source=None):
         '''
-        Loads the records in the list into the DB.  This is transactional - 
-        either all or no records will be loaded.  Includes the DN of the 
+        Loads the records in the list into the DB.  This is transactional -
+        either all or no records will be loaded.  Includes the DN of the
         sender.
         '''
-        # all records in the list are the same type
+        # All records in the list should be of the same type (but may not be),
+        # unless they are Storage or GroupAttribute records which can be mixed.
         try:
             record_type = type(record_list[0])
+
+            # Check that all the records are the same type as the first (except
+            # for Storage and GroupAttribute records).
+            for record in record_list:
+                if (type(record) != record_type and type(record) not in
+                        (StorageRecord, GroupAttributeRecord)):
+                    raise ApelDbException("Not all records in list are of type %s." % record_type)
+
             if replace:
                 proc = self.REPLACE_PROCEDURES[record_type]
             else:
@@ -149,6 +158,10 @@ class ApelMysqlDb(object):
             for record in record_list:
                 values = record.get_db_tuple(source)
                 log.debug('Values: %s', values)
+                if type(record) in (StorageRecord, GroupAttributeRecord):
+                    # These types can be found in the same record list, so need
+                    # to get the right proedure for each one.
+                    proc = self.REPLACE_PROCEDURES[type(record)]
                 c.execute(proc, values)
             self.db.commit()
         except (MySQLdb.Warning, MySQLdb.Error, KeyError), err:

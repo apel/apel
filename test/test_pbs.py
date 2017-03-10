@@ -38,6 +38,29 @@ class ParserPBSTest(unittest.TestCase):
              's=1 Resource_List.nodect=1 Resource_List.nodes=1 Resource_List.pmem=2000mb Resource_List.pvmem=4000mb Resource_List.vmem=4000mb Resour'
              'ce_List.walltime=48:00:00 session=22256 total_execution_slots=1 unique_node_count=1 end=1448926926 Exit_status=0 resources_used.cput=1'
              '2722 resources_used.energy_used=0 resources_used.mem=2574308kb resources_used.vmem=4032516kb resources_used.walltime=12767'),
+            # Torque-4.2.8 reports cores as exec_host=b372/4+b372/5+b372/6+b372/7
+            ('03/21/2015 12:10:19;E;21414868.b0;user=atprd008 group=atprd jobname=cream_944593744 queue=atlas ctime=1426952581 qtime=1426952581 etim'
+             'e=1426952581 start=1426952875 owner=atprd008@bugaboo-hep.westgrid.ca exec_host=b372/4+b372/5+b372/6+b372/7 Resource_List.file=15gb Res'
+             'ource_List.nodect=1 Resource_List.nodes=1pn=4 Resource_List.pmem=2666mb Resource_List.vmem=16000mb Resource_List.walltime=16:00:00 ses'
+             'sion=5353 end=1426965019 Exit_status=0 resources_used.cput=13:01:39 resources_used.mem=7813056kb resources_used.vmem=12127680kb resour'
+             'ces_used.walltime=03:22:24'),
+            # Torque 5.1.0 reports cores as exec_host=b391/0-3 and total_execution_slots=4
+            ('20150327:03/27/2015 00:06:27;E;21430205.b0;user=atprd006 group=atprd jobname=cream_238467179 queue=atlas ctime=1427422724 qtime=142742'
+             '2724 etime=1427422724 start=1427422975 owner=atprd006@bugaboo-hep.westgrid.ca exec_host=b391/0-3 Resource_List.file=15gb Resource_List'
+             '.neednodes=1pn=4 Resource_List.nodect=1 Resource_List.nodes=1pn=4 Resource_List.pmem=2666mb Resource_List.vmem=16000mb Resource_List.w'
+             'alltime=16:00:00 session=26754 total_execution_slots=4 unique_node_count=1 end=1427439987 Exit_status=0 resources_used.cput=18:31:56 r'
+             'esources_used.energy_used=0 resources_used.mem=8212056kb resources_used.vmem=12526772kb resources_used.walltime=04:43:32'),
+            # Torque 5.1.3 has cput in secondss but walltime in hh:mm:ss
+            ('12/07/2016 01:08:31;E;37803854.b0;user=atcant2 group=atcant jobna'
+             'me=cream_105055799 queue=atlas ctime=1481101558 qtime=1481101558 '
+             'etime=1481101558 start=1481101655 owner=atcant@bug.eastgrid.io ex'
+             'ec_host=b126/2 Resource_List.file=15gb Resource_List.neednodes=1 '
+             'Resource_List.nodect=1 Resource_List.nodes=1 Resource_List.pmem=2'
+             '000mb Resource_List.walltime=50:00:00 session=1664 total_executio'
+             'n_slots=1 unique_node_count=1 end=1481101711 Exit_status=0 resour'
+             'ces_used.cput=9 resources_used.energy_used=0 resources_used.mem=4'
+             '1512kb resources_used.vmem=325428kb resources_used.walltime=00:00'
+             ':56'),
         )
 
         values = (
@@ -55,6 +78,18 @@ class ParserPBSTest(unittest.TestCase):
             ("24940336.b0", "atlaspt5", "atlaspt", 12767, 12722,
              datetime.datetime.utcfromtimestamp(1448914025),
              datetime.datetime.utcfromtimestamp(1448926926), 2574308, 4032516,
+             1, 1),
+            ("21414868.b0", "atprd008", "atprd", 3*3600+22*60+24,
+             13*3600+1*60+39, datetime.datetime.utcfromtimestamp(1426952875),
+             datetime.datetime.utcfromtimestamp(1426965019), 7813056, 12127680,
+             1, 4),
+            ("21430205.b0", "atprd006", "atprd", 4*3600+43*60+32,
+             18*3600+31*60+56, datetime.datetime.utcfromtimestamp(1427422975),
+             datetime.datetime.utcfromtimestamp(1427439987), 8212056, 12526772,
+             1, 4),
+            ("37803854.b0", "atcant2", "atcant", 56, 9,
+             datetime.datetime.utcfromtimestamp(1481101655),
+             datetime.datetime.utcfromtimestamp(1481101711), 41512, 325428,
              1, 1),
         )
 
@@ -93,11 +128,22 @@ class ParserPBSTest(unittest.TestCase):
 
     def test_parse_mpi(self):
 
-        exec_host = 'lcg0766.gridpp.rl.ac.uk/7+lcg0766.gridpp.rl.ac.uk/6+lcg0766.gridpp.rl.ac.uk/5+lcg0766.gridpp.rl.ac.uk/4+lcg0766.gridpp.rl.ac.uk/3+lcg0766.gridpp.rl.ac.uk/2+lcg0766.gridpp.rl.ac.uk/1+lcg0766.gridpp.rl.ac.uk/0'
-        nodecount, processors = _parse_mpi(exec_host)
+        exec_hosts = ('lcg0766.gridpp.rl.ac.uk/7+lcg0766.gridpp.rl.ac.uk/6+lcg0766.gridpp.rl.ac.uk/5+lcg0766.gridpp.rl.ac.uk/4+lcg0766.gridpp.rl.ac.uk/3+lcg0766.gridpp.rl.ac.uk/2+lcg0766.gridpp.rl.ac.uk/1+lcg0766.gridpp.rl.ac.uk/0',
+                      'b372/4+b372/5+b372/6+b372/7',
+                      'b391/0-3',
+                      'b391/0-1,5,11',
+                      )
+        # List of (node, cpu) counts for above exec_hosts
+        counts = ((1, 8),
+                  (1, 4),
+                  (1, 4),
+                  (1, 4),
+                  )
+        for exec_host, count in zip(exec_hosts, counts):
+            nodecount, processors = _parse_mpi(exec_host)
 
-        self.assertEqual(nodecount, 1)
-        self.assertEqual(processors, 8)
+            self.assertEqual(nodecount, count[0])
+            self.assertEqual(processors, count[1])
 
     def test_value_errors(self):
         """Test that the parser raises a ValueError for certain problems."""
@@ -108,12 +154,6 @@ class ParserPBSTest(unittest.TestCase):
              's=1 Resource_List.nodect=1 Resource_List.nodes=1 Resource_List.pmem=2000mb Resource_List.pvmem=4000mb Resource_List.vmem=4000mb Resour'
              'ce_List.walltime=48:00:00 session=22256 total_execution_slots=1 unique_node_count=1 end=1448914025 Exit_status=271 resources_used.cput'
              '=03:32:02 resources_used.energy_used=0 resources_used.mem=2574308kb resources_used.vmem=4032516kb resources_used.walltime=03:32:47'),
-            # Mixed duration formats (hh:mm:ss and s)
-            ('11/30/2015 15:42:06;E;24940336.b0;user=atlaspt5 group=atlaspt jobname=cream_830820758 queue=atlas ctime=1448913907 qtime=1448913907 et'
-             'ime=1448913907 start=1448914025 owner=atlaspt5@bugaboo-hep.westgrid.ca exec_host=b341/2 Resource_List.file=15gb Resource_List.neednode'
-             's=1 Resource_List.nodect=1 Resource_List.nodes=1 Resource_List.pmem=2000mb Resource_List.pvmem=4000mb Resource_List.vmem=4000mb Resour'
-             'ce_List.walltime=48:00:00 session=22256 total_execution_slots=1 unique_node_count=1 end=1448926926 Exit_status=0 resources_used.cput=1'
-             '2722 resources_used.energy_used=0 resources_used.mem=2574308kb resources_used.vmem=4032516kb resources_used.walltime=03:32:47'),
         )
 
         for line in lines:

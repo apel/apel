@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Execute the following as root to install build tools and create a build user:
+# yum install fedora-packager
+# useradd -m rpmb
+# usermod -a -G mock rpmb
+
+# Then swtich to the rpmb user (su - rpmb) and run this file, altering version.
+
+rpmdev-setuptree
+
+RPMDIR=/home/rpmb/rpmbuild
+VERSION=1.6.0-1
+APELDIR=apel-$VERSION
+
+# Remove old sources and RPMS
+rm -f $RPMDIR/SPECS/*
+rm -f $RPMDIR/SOURCES/*
+rm -f $RPMDIR/SRPMS/*
+rm -f $RPMDIR/RPMS/noarch/*
+
+wget --no-check-certificate https://github.com/apel/apel/archive/$VERSION.tar.gz -O $VERSION
+
+tar xzvf $VERSION
+rm $VERSION
+
+tar czvf $APELDIR.tar.gz $APELDIR
+cp $APELDIR.tar.gz $RPMDIR/SOURCES
+cp $APELDIR/apel.spec $RPMDIR/SPECS
+
+rpmbuild -ba $RPMDIR/SPECS/apel.spec
+
+# Clean up
+rm -rf apel-$VERSION*

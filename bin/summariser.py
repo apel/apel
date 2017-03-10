@@ -83,7 +83,8 @@ def runprocess(db_config_file, config_file, log_config_file):
         # This is all the summarising logic, contained in ApelMysqlDb() and the stored procedures.
         if db_type == 'cpu':
             # Make sure that records are not coming from the same site by two different routes
-            db.check_duplicate_sites()
+            # N.B. Disabled as check doesn't scale well and isn't that useful.
+            # db.check_duplicate_sites()
             db.summarise_jobs()
             db.normalise_summaries()
             db.copy_summaries()

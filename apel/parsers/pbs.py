@@ -60,26 +60,25 @@ class PBSParser(Parser):
         else:
             nodes, cores = 0, 0
 
-        # Torque 5.1.2 uses seconds rather than hh:mm:ss for cput and walltime
-        # so check for that here.
-        if (':' not in data['resources_used.cput'] and
-                ':' not in data['resources_used.walltime']):
+        wall_function = parse_time
+        cput_function = parse_time
+
+        # Different versions Torque use different time formats for for cput and
+        # walltime (either seconds or hh:mm:ss) so check for that here.
+        if ':' not in data['resources_used.walltime']:
             # Although the duration doesn't need converting if it's already in
             # seconds, this needs to be a function to work with later code.
-            time_function = lambda y: y
-        elif (':' in data['resources_used.cput'] and
-                ':' in data['resources_used.walltime']):
-            time_function = parse_time
-        else:
-            raise ValueError("Durations have different time formats")
+            wall_function = lambda y: y
+        if ':' not in data['resources_used.cput']:
+            cput_function = lambda y: y
 
         # map each field to functions which will extract them
         mapping = {'Site'          : lambda x: self.site_name,
                    'JobName'       : lambda x: jobName,
                    'LocalUserID'   : lambda x: x['user'],
                    'LocalUserGroup': lambda x: x['group'],
-                   'WallDuration'  : lambda x: time_function(x['resources_used.walltime']),
-                   'CpuDuration'   : lambda x: time_function(x['resources_used.cput']),
+                   'WallDuration'  : lambda x: wall_function(x['resources_used.walltime']),
+                   'CpuDuration'   : lambda x: cput_function(x['resources_used.cput']),
                    'StartTime'     : lambda x: int(x['start']),
                    'StopTime'      : lambda x: int(x['end']),
                    'Infrastructure': lambda x: "APEL-CREAM-PBS",
@@ -110,21 +109,28 @@ class PBSParser(Parser):
 
 
 def _parse_mpi(exec_host):
-    '''
+    """
     Return (nodes, total-cores) given a dict from a PBS record.
-
-    There are two ways to derive this from the logs; the second is from
-    the field
-    Resource_List.nodes=x:ppn=y
-    The above would return x,y.
-    '''
+    """
     # exec_host is of the form <hostname>/core_no[+<hostname>/core_no]
     # e.g. wn1.rl.ac.uk/0+wn1.rl.ac.uk/1+wn2.rl.ac.uk/0+wn2.rl.ac.uk/1
+    # The 'exec_host' in Torque >= 5.1.0 reads like 'b391/0-1,5,11'
+
     core_info = exec_host.split('+')
-    # remove /core_no and get the list of hostnames
-    hostnames = [x.split('/')[0] for x in core_info]
+    # Split hostname and core_no into seperate lists.
+    hostnames, core_no = zip(*[x.split('/') for x in core_info])
+
+    # Split any comma separated fields into a flat list.
+    core_no = [core for cores in core_no for core in cores.split(',')]
+    ncores = 0
+    for no in core_no:
+        if '-' in no:
+            # Calculate the number of cores in the closed set.
+            ncores += int(no.split('-')[1]) - int(no.split('-')[0]) + 1
+        else:
+            ncores += 1
+
     # get number of unique hostnames
     nnodes = len(set(hostnames))
-    # total number of core details
-    ncores = len(core_info)
+
     return nnodes, ncores
