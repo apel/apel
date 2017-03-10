@@ -1,9 +1,16 @@
 #!/bin/bash
 
+# Execute the following as root to install build tools and create a build user:
+# yum install fedora-packager
+# useradd -m rpmb
+# usermod -a -G mock rpmb
+
+# Then swtich to the rpmb user (su - rpmb) and run this file, altering version.
+
 rpmdev-setuptree
 
 RPMDIR=/home/rpmb/rpmbuild
-VERSION=1.6.0-0.4.rc4
+VERSION=1.6.0-1
 APELDIR=apel-$VERSION
 
 # Remove old sources and RPMS
