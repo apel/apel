@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.5.1
+Version:        1.6.0
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -34,7 +34,7 @@ apel-lib provides required libraries for the rest of APEL system.
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apel-lib >= 1.5.1
+Requires:       apel-lib >= 1.6.0
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -44,7 +44,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.5.1, apel-ssm
+Requires:       apel-lib >= 1.6.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -55,7 +55,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.5.1, apel-ssm
+Requires:       apel-lib >= 1.6.0, apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -193,6 +193,18 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Fri Mar 10 2017 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.6.0-1
+ - Added support for mixed time formats used in Torque 5.1.3.
+ - Changed the way core count is parsed to support Torque 5.1.0.
+ - Added CPU count to cloud accounting summaries.
+ - Added support for cloud accounting schema v0.4 format records.
+ - Added SQL file to update cloud schema.
+ - Removed file attribute args from the create directive in logrotate script.
+ - Fixed crashes of storage accounting loader due to newer format records.
+ - Added support for paged GOCDB API results.
+ - Disabled duplicate sites check in server summarising process.
+ - Updated partitioning in server-extra.sql.
+
  * Tue Jan 12 2016 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.5.1-1
  - Add support for Torque 5.1.2 time duration format.
  - Change dirq call to use absolute path to support versions of dirq >= 1.7.
