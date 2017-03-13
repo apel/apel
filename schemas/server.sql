@@ -3,7 +3,7 @@
 -- JobRecords
 DROP TABLE IF EXISTS JobRecords;
 CREATE TABLE JobRecords ( 
-  UpdateTime TIMESTAMP, 
+  UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
 
   SiteID INT NOT NULL,                -- Foreign key
   SubmitHostID INT NOT NULL,          -- Foreign key
@@ -90,7 +90,7 @@ DELIMITER ;
 -- Summaries
 DROP TABLE IF EXISTS Summaries;
 CREATE TABLE Summaries (
-  UpdateTime TIMESTAMP,
+  UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   SiteID INT NOT NULL,                  -- Foreign key
   Month INT NOT NULL,
   Year INT NOT NULL,
@@ -142,7 +142,7 @@ DELIMITER ;
 -- NormalisedSummaries
 DROP TABLE IF EXISTS NormalisedSummaries;
 CREATE TABLE NormalisedSummaries (
-  UpdateTime TIMESTAMP,
+  UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   SiteID INT NOT NULL,                  -- Foreign key
   Month INT NOT NULL,
   Year INT NOT NULL,
@@ -229,7 +229,7 @@ CREATE TABLE SuperSummaries (
 DROP TABLE IF EXISTS HybridSuperSummaries;
 
 CREATE TABLE HybridSuperSummaries (
-  UpdateTime TIMESTAMP,
+  UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   SiteID INT NOT NULL,                  -- ID for lookup table
   Month INT NOT NULL,
   Year INT NOT NULL,
@@ -368,7 +368,7 @@ DELIMITER ;
 -- SyncRecords
 DROP TABLE IF EXISTS SyncRecords;
 CREATE TABLE SyncRecords (
-  UpdateTime TIMESTAMP, 
+  UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
   SiteID INT NOT NULL,                  -- Foreign key
   SubmitHostID INT NOT NULL,            -- Foreign key
   NumberOfJobs INT NOT NULL,
@@ -402,7 +402,7 @@ DELIMITER ;
 -- LastUpdated
 DROP TABLE IF EXISTS LastUpdated;
 CREATE TABLE LastUpdated (
-  UpdateTime TIMESTAMP NOT NULL,
+  UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   Type VARCHAR(255) PRIMARY KEY
 );
 
