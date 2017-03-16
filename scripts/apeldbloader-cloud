@@ -1,0 +1,64 @@
+#!/bin/sh
+#
+# Startup script for cloud APEL cloud
+#
+# chkconfig: 2345 95 05
+# description: APEL dbloader daemon for cloud
+# config: /etc/apel/cloudloader.cfg
+# pidfile: /var/run/apel/cloudloader.pid
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+user="root"
+prog="apeldbloader"
+dbconf="/etc/apel/clouddb.cfg"
+conf="/etc/apel/cloudloader.cfg"
+PIDFILE=/var/run/cloud/cloudloader.pid
+
+start() {
+    echo -n $"Starting $prog:"
+    su $user -c "python /usr/bin/$prog -d $dbconf -c $conf"
+    RETVAL=$?
+    echo
+}
+
+stop() {
+    echo -n $"Stopping $prog:"
+    if [ -f $PIDFILE ]; then
+        kill `cat $PIDFILE`
+        RETVAL=$?
+    else
+        echo "Pidfile not found."
+        RETVAL=1
+    fi
+    echo
+}
+
+case "$1" in
+        start)
+            start
+            ;;
+
+        stop)
+            stop
+            ;;
+
+        status)
+            status -p $PIDFILE $prog
+            RETVAL=$?
+            ;;
+
+        restart)
+            stop
+            start
+            ;;
+
+        *)
+            echo $"Usage: $0 {start|stop|restart|status}"
+            exit 1
+
+esac
+
+exit $RETVAL
+
