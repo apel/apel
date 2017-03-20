@@ -134,14 +134,18 @@ exit 0
 
 %files lib
 %defattr(-,root,root,-)
+
 %{python_sitelib}/apel
 
 # ------------------------------------------------------------------------------
 
 %files parsers
 %defattr(-,root,root,-)
+
 %attr(755,root,root) %_bindir/apelparser
+
 %config(noreplace) %attr(600,-,-) %{apelconf}/parser.cfg
+
 %attr(755,root,root) %_datadir/apel/slurm_acc.sh
 %attr(755,root,root) %_datadir/apel/htcondor_acc.sh
 
@@ -158,11 +162,9 @@ exit 0
 %attr(755,root,root) %_bindir/apelclient
 
 %config(noreplace) %attr(600,-,-) %{apelconf}/client.cfg
-
-# ------------------------------------------------------------------------------
-
 %config(noreplace) %{_sysconfdir}/logrotate.d/apel-client
 
+# ------------------------------------------------------------------------------
 
 %files server
 %defattr(-,root,root,-)
@@ -172,6 +174,7 @@ exit 0
 %_datadir/apel/cloud.sql
 %_datadir/apel/storage.sql
 %_datadir/apel/update_schema.sql
+
 # Use wildcard to match .py, .pyc, and .pyo
 %attr(755,root,root) %_datadir/apel/msg_status.py*
 
