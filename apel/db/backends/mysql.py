@@ -20,17 +20,17 @@ Created on 27 Oct 2011
 
 
 from apel.db import ApelDbException
-from apel.db.records import BlahdRecord, \
-                            CloudRecord, \
-                            CloudSummaryRecord, \
-                            EventRecord, \
-                            GroupAttributeRecord, \
-                            JobRecord, \
-                            NormalisedSummaryRecord, \
-                            ProcessedRecord, \
-                            StorageRecord, \
-                            SummaryRecord, \
-                            SyncRecord
+from apel.db.records import (BlahdRecord,
+                             CloudRecord,
+                             CloudSummaryRecord,
+                             EventRecord,
+                             GroupAttributeRecord,
+                             JobRecord,
+                             NormalisedSummaryRecord,
+                             ProcessedRecord,
+                             StorageRecord,
+                             SummaryRecord,
+                             SyncRecord)
 import MySQLdb.cursors
 import datetime
 import logging
