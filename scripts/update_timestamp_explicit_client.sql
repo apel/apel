@@ -1,4 +1,4 @@
--- UPDATE SCRIOT FOR CLIENT SCHEMA
+-- UPDATE SCRIPT FOR CLIENT SCHEMA
 -- This script will set any null UpdateTimes to now
 -- and then explicitly set the UpdateTimes of 
 -- future rows to update
