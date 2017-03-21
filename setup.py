@@ -1,5 +1,11 @@
 """A setup script for APEL.
 
+This script installs the APEL library, client, parsers and server. This
+should be similar to installing the RPMs for apel-lib, apel-client,
+apel-parsers, and apel-server, although there may be some differences.
+
+Usage: 'python setup.py install'
+
 Requires setuptools.
 """
 
