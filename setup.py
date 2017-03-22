@@ -51,6 +51,10 @@ def main():
     log_rotate_dir = '/etc/logrotate.d'
     log_rotate_files = ['scripts/apel-client']
 
+    # For 'python setup.py install' to 
+    # work (on Linux SL6), 'python-daemon'
+    # must be installed or included
+    # in install_required
     setup(name='apel',
           version='%i.%i.%i' % __version__,
           description=("The APEL project provides grid accounting for EGI."),
@@ -71,7 +75,10 @@ def main():
                       (data_dir, schema_files),
                       (data_dir, accounting_files),
                       (data_dir, message_files),
-                      (log_rotate_dir, log_rotate_files)])
+                      (log_rotate_dir, log_rotate_files)],
+          # zip_safe allows setuptools to install the project
+          # as a zipfile, for maximum performance!
+          zip_safe=True)
 
     if 'install' in sys.argv:
         remove('bin/apelclient')
