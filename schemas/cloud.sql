@@ -94,7 +94,6 @@ BEGIN
     -- so set a resonable value so we can use that if needed
     SET cpuDurationNotNull = IFNULL(cpuDuration, 0);
 
-
     -- If the incoming wallDuartion is NULL we can't compute a MeasurementTime.
     -- Based off LRVMv1, we use cpuDurationNotNull, which from above is guaranteed
     -- to be a resonable value
@@ -243,33 +242,74 @@ DROP PROCEDURE IF EXISTS SummariseVMs;
 DELIMITER //
 CREATE PROCEDURE SummariseVMs()
 BEGIN
+
+  -- Based on discussion here:
+  -- http://stackoverflow.com/questions/13196190/mysql-subtracting-value-from-previous-row-group-by
+  CREATE TEMPORARY TABLE TVMUsagePerMonth
+    (INDEX index_VMUsagePerMonth USING BTREE (VMUUID, Month, Year))
+    SELECT
+      ThisRecord.VMUUID as VMUUID,
+      ThisRecord.SiteID as SiteID,
+      ThisRecord.CloudComputeServiceID as CloudComputeServiceID,
+      ThisRecord.MeasurementMonth as Month,
+      ThisRecord.MeasurementYear as Year,
+      ThisRecord.GlobalUserNameID as GlobalUserNameID,
+      ThisRecord.VOID as VOID,
+      ThisRecord.VOGroupID as VOGroupID,
+      ThisRecord.VORoleID as VORoleID,
+      ThisRecord.Status as Status,
+      ThisRecord.CloudType as CloudType,
+      ThisRecord.ImageId as ImageId,
+      ThisRecord.StartTime as StartTime,
+      COALESCE(ThisRecord.WallDuration - IFNULL(PrevRecord.WallDuration, 0)) AS ComputedWallDuration,
+      COALESCE(ThisRecord.CpuDuration - IFNULL(PrevRecord.CpuDuration, 0)) AS ComputedCpuDuration,
+      ThisRecord.CpuCount as CpuCount,
+      COALESCE(ThisRecord.NetworkInbound - IFNULL(PrevRecord.NetworkInbound, 0)) AS ComputedNetworkInbound,
+      COALESCE(ThisRecord.NetworkOutbound - IFNULL(PrevRecord.NetworkOutbound, 0)) AS ComputedNetworkOutbound,
+      -- Will Memory change during the course of the VM lifetime? If so, do we report a maximum, or
+      -- average, or something else?
+      -- If it doesn't change:
+      ThisRecord.Memory,
+      ThisRecord.Disk, -- As above: constant or changing?
+      ThisRecord.BenchmarkType as BenchmarkType,
+      ThisRecord.Benchmark as Benchmark
+
+    FROM CloudRecords as ThisRecord
+    LEFT JOIN CloudRecords as PrevRecord
+    ON (ThisRecord.VMUUID = PrevRecord.VMUUID and
+	PrevRecord.MeasurementTime = (SELECT max(MeasurementTime)
+                                      FROM CloudRecords
+                                      WHERE VMUUID = ThisRecord.VMUUID
+                                      AND MeasurementTime < ThisRecord.MeasurementTime)
+);
+
     REPLACE INTO CloudSummaries(SiteID, CloudComputeServiceID, Month, Year,
         GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId,
         EarliestStartTime, LatestStartTime, WallDuration, CpuDuration, CpuCount,
         NetworkInbound, NetworkOutbound, Memory, Disk,
         BenchmarkType, Benchmark, NumberOfVMs, PublisherDNID)
     SELECT SiteID,
-    CloudComputeServiceID,
-    MONTH(StartTime) AS Month, YEAR(StartTime) AS Year,
-    GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId,
-    MIN(StartTime),
-    MAX(StartTime),
-    SUM(WallDuration),
-    SUM(CpuDuration),
-    CpuCount,
-    SUM(NetworkInbound),
-    SUM(NetworkOutbound),
-    SUM(Memory),
-    SUM(Disk),
-    BenchmarkType,
-    Benchmark,
-    COUNT(*),
-    'summariser'
-    FROM CloudRecords
-    GROUP BY SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID,
-        VOGroupID, VORoleID, Status, CloudType, ImageId, CpuCount,
-        BenchmarkType, Benchmark
-    ORDER BY NULL;
+      CloudComputeServiceID,
+      Month, Year,
+      GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId,
+      MIN(StartTime),
+      MAX(StartTime),
+      SUM(ComputedWallDuration),
+      SUM(ComputedCpuDuration),
+      CpuCount,
+      SUM(ComputedNetworkInbound),
+      SUM(ComputedNetworkOutbound), 
+      SUM(Memory),
+      SUM(Disk),
+      BenchmarkType,
+      Benchmark,
+      COUNT(*),
+      'summariser'
+      FROM TVMUsagePerMonth
+      GROUP BY SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID,
+          VOGroupID, VORoleID, Status, CloudType, ImageId, CpuCount,
+          BenchmarkType, Benchmark
+      ORDER BY NULL;
 END //
 DELIMITER ;
 
