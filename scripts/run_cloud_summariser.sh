@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# This script runs the summariser in a safe way, by 
+# switching off the cloud loader to ensure there
+# are no writes to the database while summarising.
+
 # Stop the dbloader
 /sbin/service apeldbloader-cloud stop
 
