@@ -1,3 +1,30 @@
+###########################################################
+# This Dockerfile allows for the creation of an APEL Server 
+# Docker Image with support for Cloud Accounting
+#
+# A deployed Docker instance will require an instance of
+# the APEL Cloud Accounting Database and the mounting of: 
+#
+# - a cron job under /etc/cron.d to run
+#   /usr/bin/run_cloud_summariser.sh (at least) daily 
+# - APEL Cloud configuration files under /etc/apel
+#
+# and the optional mounting of:
+#
+# - a host direcotry under /var/spool/apel/cloud
+#   to persistantly store messages
+# - a MySQL configuraiton file under /etc/mysql
+#   (to allow command line access to the MySQL database
+#   from within the container.)
+#
+# It has been placed in the repository root to allow for future
+# docker images to built 'commit by commit' from the exact
+# state of the source in the repository. At the moment, it is 
+# limited to tagged versions that have RPMs, as that is the 
+# only way to install APEL.
+
+###########################################################
+
 FROM centos:6
 
 MAINTAINER APEL Administrator <apel-admins@stfc.ac.uk>
