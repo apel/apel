@@ -102,6 +102,11 @@ BEGIN
     -- Calculated the time of measurement so we can use it later to determine which
     -- accounting period this incoming record belongs too.
     SET measurementTimeCalculated = TIMESTAMPADD(SECOND, (suspendDurationNotNull + wallDurationNotNull), StartTime);
+    -- We recieve and currently accept messages without a start time
+    -- which causes the mesaurementTimeCalculated to be NULL
+    -- which causes a loader reject on a previously accepted message
+    -- so for now, set it to the zero time stamp
+    SET measurementTimeCalculated = IFNULL(measurementTimeCalculated, '00-00-00 00:00:00');
 
     INSERT INTO CloudRecords(VMUUID, SiteID, CloudComputeServiceID, MachineName,
         LocalUserId, LocalGroupId, GlobalUserNameID, FQAN, VOID, VOGroupID,
