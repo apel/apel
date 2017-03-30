@@ -1,5 +1,7 @@
 import unittest
 
+from datetime import datetime
+
 from apel.db.records import CloudRecord
 
 
@@ -183,8 +185,41 @@ CloudType: OpenNebula
         
             for key in self.cases[msg].keys():
                 self.assertEqual(cont[key], self.cases[msg][key], "%s != %s for key %s" % (cont[key], self.cases[msg][key], key))
-        
-        
+
+    def test_load_from_msg_type_check(self):
+        """Check the fields of a loaded message are the correct type."""
+        for msg in self.cases.keys():
+
+            cr = CloudRecord()
+            cr.load_from_msg(msg)
+
+            for key in cr._int_fields:
+                value = cr._record_content[key]
+                # check the value we are going to be passing to MySQL is an integer or None
+                # MySQL 5.6.X rejects the value otherwise, whereas 5.1.X would have
+                # interpreted it as the 0
+                valid_value = isinstance(value, int) or value is None
+                # The 'repr' expression shows the quote marks if value is a string
+                self.assertTrue(valid_value, 'Integer %s with value: %s\n%s' % (key, repr(value), msg))
+
+            for key in cr._float_fields:
+                value = cr._record_content[key]
+                # check the value we are going to be passing to MySQL is an float or None
+                # MySQL 5.6.X rejects the value otherwise, whereas 5.1.X would have
+                # interpreted it as 0.00
+                valid_value = isinstance(value, float) or value is None
+                # The 'repr' expression shows the quote marks if value is a string
+                self.assertTrue(valid_value, 'Decimal %s with value: %s\n%s' % (key, repr(value), msg))
+
+            for key in cr._datetime_fields:
+                value = cr._record_content[key]
+                # check the value we are going to be passing to MySQL is an datetime or None
+                # MySQL 5.6.X rejects the value otherwise, whereas 5.1.X would have
+                # interpreted it as the zero time stamp
+                valid_value = isinstance(value, datetime) or value is None
+                # The 'repr' expression shows the quote marks if value is a string
+                self.assertTrue(valid_value, 'Datetime %s with value: %s\n%s' % (key, repr(value), msg))
+
     def test_mandatory_fields(self):
         record = CloudRecord()
         record.set_field('VMUUID', 'host.example.org/cr/87912469269276')
