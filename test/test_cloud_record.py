@@ -174,8 +174,8 @@ CloudType: OpenNebula
         self.cases[self._msg2] = self._values2
         self.cases[self._msg3] = self._values3
 
-    def test_load_from_msg(self):
-        
+    def test_load_from_msg_value_check(self):
+        """Check self._values# is a subset of the CloudRecord object generated from self._msg#."""
         for msg in self.cases.keys():
         
             cr = CloudRecord()
