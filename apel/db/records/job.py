@@ -147,9 +147,13 @@ class JobRecord(Record):
         We accept neither field included or both.  If only one of the fields is 
         included, it doesn't really make sense so we reject it.
     
-        We expect that all null values have been converted to the string 'None'.
+        We expect that:
+           - As ServiceLevel is a float field,
+             a null sf has been converted to None.
+           - As ServiceLevelType is a msg field,
+             a null sf has been converted to the string 'None'.
         '''
-        if sf == 'None':
+        if sf == None:
             if sfu != 'None':
                 raise InvalidRecordException('Unit but not value supplied for ScalingFactor.')
             else:
