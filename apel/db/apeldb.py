@@ -58,20 +58,82 @@ class ApelDb(object):
 
     def test_connection(self):
         '''Connects to the database then closes the connection.'''
-        pass
-    
-    def load_records(self, record_list, source):
+        raise NotImplementedError("Database backend class should implement this"
+                                  " method")
+
+    def load_records(self, record_list, replace=True, source=None):
         '''Given a list of records, and the DN of the sender,
         loads them into the database.'''
-        pass
-    
-    def get_records(self, record_class, query=None):
+        raise NotImplementedError("Database backend class should implement this"
+                                  " method")
+
+    def get_records(self, record_type, table_name=None, query=None,
+                    rec_number=1000):
         '''
         Returns records from database with given record type.
         Query object specifies which rows from database should be loaded.
         '''
-        pass
-    
+        raise NotImplementedError("Database backend class should implement this"
+                                  " method")
+
+    def check_duplicate_sites(self):
+        """
+        Check that records from same site not in both JobRecords and Summaries.
+        """
+        raise NotImplementedError("Database backend class should implement this"
+                                  " method")
+
+    def summarise_jobs(self):
+        """
+        Aggregate data from JobRecords table and put results in
+        HybridSuperSummaries table by calling a stored procedure.
+        """
+        raise NotImplementedError("Database backend class should implement this"
+                                  " method")
+
+    def normalise_summaries(self):
+        """
+        Normalise data from Summaries and insert into HybridSuperSummaries.
+        """
+        raise NotImplementedError("Database backend class should implement this"
+                                  " method")
+
+    def copy_summaries(self):
+        """
+        Copy summaries from NormalisedSummaries to HybridSuperSummaries table.
+        """
+        raise NotImplementedError("Database backend class should implement this"
+                                  " method")
+
+    def summarise_cloud(self):
+        """
+        Aggregate CloudRecords table and put results in CloudSummaries table.
+        """
+        raise NotImplementedError("Database backend class should implement this"
+                                  " method")
+
+    def join_records(self):
+        """
+        Join data from BlahdRecords and EventRecords tables into JobRecords.
+        """
+        raise NotImplementedError("Database backend class should implement this"
+                                  " method")
+
+    def create_local_jobs(self):
+        """
+        Create local jobs by calling a stored procedure.
+        """
+        raise NotImplementedError("Database backend class should implement this"
+                                  " method")
+
+    def update_spec(self, site, ce, spec_level_type, spec_level):
+        """
+        Compare existing data from database to given values and update
+        SpecRecords table if neccessary.
+        """
+        raise NotImplementedError("Database backend class should implement this"
+                                  " method")
+
 
 class Query(object):
     '''
