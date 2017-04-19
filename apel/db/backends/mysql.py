@@ -21,6 +21,7 @@ Created on 27 Oct 2011
 
 from apel.db import ApelDbException
 from apel.db.records import (BlahdRecord,
+                             HTCondorCERecord,
                              CloudRecord,
                              CloudSummaryRecord,
                              EventRecord,
@@ -48,6 +49,7 @@ class ApelMysqlDb(object):
     MYSQL_TABLES = {EventRecord : 'EventRecords',
                     JobRecord   : 'VJobRecords',
                     BlahdRecord : 'BlahdRecords',
+                    HTCondorCERecord : 'BlahdRecords',
                     SyncRecord  : 'SyncRecords',
                     CloudRecord : 'VCloudRecords',
                     CloudSummaryRecord : 'VCloudSummaries',
@@ -60,6 +62,7 @@ class ApelMysqlDb(object):
     INSERT_PROCEDURES = {
               EventRecord : 'CALL InsertEventRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
               BlahdRecord : "CALL InsertBlahdRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              HTCondorCERecord : "CALL InsertBlahdRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               }
     
     REPLACE_PROCEDURES = {
@@ -407,7 +410,7 @@ class ApelMysqlDb(object):
     def join_records(self):
         '''
         This method executes JoinJobRecords procedure in database which joins data 
-        from BlahdRecords table and EventRecords table into JobRecord.
+        from BlahdRecords (or HTCondorCERecords) table and EventRecords table into JobRecord.
         
         For exact implementantion please read the code of JoinJobRecords procedure
         from client.sql in apeldb/schema folder.
