@@ -9,7 +9,7 @@ Usage: 'python setup.py install'
 Requires setuptools.
 """
 
-from os import remove
+from os import remove, path, makedirs
 from shutil import copyfile
 import sys
 
@@ -27,6 +27,12 @@ def main():
         copyfile('bin/dbunloader.py', 'bin/apeldbunloader')
         copyfile('bin/summariser.py', 'bin/apelsummariser')
         copyfile('bin/retrieve_dns.py', 'bin/apelauth')
+
+        if not path.exists('/var/log/apel'):
+            makedirs('/var/log/apel')
+
+        if not path.exists('/var/run/apel'):
+            makedirs('/var/run/apel')
 
     conf_dir = '/etc/apel/'
     conf_files = ['conf/client.cfg',
