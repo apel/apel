@@ -21,6 +21,7 @@ from apel import __version__
 def main():
     """Called when run as script, e.g. 'python setup.py install'."""
     if 'install' in sys.argv:
+        # Create temporary files with deployment names
         copyfile('bin/client.py', 'bin/apelclient')
         copyfile('bin/parser.py', 'bin/apelparser')
         copyfile('bin/dbloader.py', 'bin/apeldbloader')
@@ -34,6 +35,7 @@ def main():
         if not path.exists('/var/run/apel'):
             makedirs('/var/run/apel')
 
+    # conf_files will later be copied to conf_dir
     conf_dir = '/etc/apel/'
     conf_files = ['conf/client.cfg',
                   'conf/summariser.cfg',
@@ -43,6 +45,8 @@ def main():
                   'conf/parser.cfg',
                   'conf/auth.cfg']
 
+    # schema_files, accounting_files, and message_files will later
+    # be copied to data_dir
     data_dir = '/usr/share/apel'
     schema_files = ['schemas/client.sql',
                     'schemas/server.sql',
@@ -54,6 +58,7 @@ def main():
 
     message_files = ['scripts/msg_status.py']
 
+    # log_rotate_files will later be copied to log_rotate_dir
     log_rotate_dir = '/etc/logrotate.d'
     log_rotate_files = ['scripts/apel-client']
 
@@ -86,6 +91,7 @@ def main():
           # as a zipfile, for maximum performance!
           zip_safe=True)
 
+    # Remove temporary files with deployment names
     if 'install' in sys.argv:
         remove('bin/apelclient')
         remove('bin/apelparser')
