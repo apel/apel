@@ -45,14 +45,16 @@ def main():
                   'conf/parser.cfg',
                   'conf/auth.cfg']
 
-    # schema_files, accounting_files, and message_files will later
-    # be copied to data_dir
+    # schema_files, update_scripts, accounting_files,
+    # and message_files will later be copied to data_dir
     data_dir = '/usr/share/apel'
     schema_files = ['schemas/client.sql',
                     'schemas/server.sql',
                     'schemas/server-extra.sql',
                     'schemas/cloud.sql',
                     'schemas/storage.sql']
+
+    update_scripts = ['scripts/update_schema.sql']
 
     accounting_files = ['scripts/slurm_acc.sh', 'scripts/htcondor_acc.sh']
 
@@ -86,6 +88,7 @@ def main():
                       (data_dir, schema_files),
                       (data_dir, accounting_files),
                       (data_dir, message_files),
+                      (data_dir, update_scripts),
                       (log_rotate_dir, log_rotate_files)],
           # zip_safe allows setuptools to install the project
           # as a zipfile, for maximum performance!
