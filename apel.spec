@@ -177,8 +177,9 @@ exit 0
 %_datadir/apel/update-1.5.1-1.6.0.sql
 %_datadir/apel/update-1.6.0-next.sql
 
-# Use wildcard to match .py, .pyc, and .pyo
-%attr(755,root,root) %_datadir/apel/msg_status.py*
+%attr(755,root,root) %_datadir/apel/msg_status.py
+%exclude %_datadir/apel/msg_status.pyc
+%exclude %_datadir/apel/msg_status.pyo
 
 # Directories for logs, PID files
 %dir %{_localstatedir}/log/apel
