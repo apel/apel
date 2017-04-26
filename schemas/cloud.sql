@@ -496,7 +496,7 @@ CREATE VIEW VCloudRecords AS
     SELECT UpdateTime, VMUUID, site.name SiteName, cloudComputeService.name CloudComputeService, MachineName, 
            LocalUserId, LocalGroupId, userdn.name GlobalUserName, FQAN, vo.name VO, 
            vogroup.name VOGroup, vorole.name VORole,
-           Status, StartTime, EndTime,
+           Status, StartTime, EndTime, MeasurementTime, MeasurementMonth, MeasurementYear,
            SuspendDuration, WallDuration, CpuDuration, CpuCount, NetworkType,
            NetworkInbound, NetworkOutbound, PublicIPCount, Memory, Disk, BenchmarkType, Benchmark, StorageRecordId, ImageId, CloudType
     FROM CloudRecords, Sites site, CloudComputeServices cloudComputeService, DNs userdn, VOs vo, VOGroups vogroup, VORoles vorole WHERE
