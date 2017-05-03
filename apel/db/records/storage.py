@@ -16,7 +16,10 @@
 @author Will Rogers
 '''
 
+from datetime import datetime
+import time
 from apel.db.records import Record
+from xml.dom.minidom import Document
 
 import logging
 
@@ -88,3 +91,121 @@ class StorageRecord(Record):
         The source (DN of the sender) isn't used in this record type currently.
         """
         return Record.get_db_tuple(self)
+
+    def get_ur(self, withhold_dns=False):
+        '''
+        Returns the StorageRecord in StAR format. See
+        http://cds.cern.ch/record/1452920/
+
+        Namespace information is written only once per record, by dbunloader.
+        '''
+
+        doc = Document()
+        ur = doc.createElement('sr:StorageUsageRecord')
+
+        record_id = self.get_field('RecordId')
+        rec_id = doc.createElement('sr:RecordIdentity')
+        rec_id.setAttribute('sr:createTime', datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
+        rec_id.setAttribute('sr:recordId', record_id)
+        ur.appendChild(rec_id)
+
+        storage_system = self.get_field('StorageSystem')
+        s_system = doc.createElement('sr:StorageSystem')
+        s_system.appendChild(doc.createTextNode(storage_system))
+        ur.appendChild(s_system)
+
+        if self.get_field('Site') is not None:
+            site = self.get_field('Site')
+            s_site = doc.createElement('sr:Site')
+            s_site.appendChild(doc.createTextNode(site))
+            ur.appendChild(s_site)
+
+        if self.get_field('StorageShare') is not None:
+            storage_share = self.get_field('StorageShare')
+            s_share = doc.createElement('sr:StorageShare')
+            s_share.appendChild(doc.createTextNode(storage_share))
+            ur.appendChild(s_share)
+
+        if self.get_field('StorageMedia') is not None:
+            storage_media = self.get_field('StorageMedia')
+            s_media = doc.createElement('sr:StorageMedia')
+            s_media.appendChild(doc.createTextNode(storage_media))
+            ur.appendChild(s_media)
+
+        if self.get_field('StorageClass') is not None:
+            storage_class = self.get_field('StorageClass')
+            s_class = doc.createElement('sr:StorageClass')
+            s_class.appendChild(doc.createTextNode(storage_class))
+            ur.appendChild(s_class)
+
+        if self.get_field('FileCount') is not None:
+            file_count = self.get_field('FileCount')
+            f_count = doc.createElement('sr:FileCount')
+            f_count.appendChild(doc.createTextNode(str(file_count)))
+            ur.appendChild(f_count)
+
+        if self.get_field('DirectoryPath') is not None:
+            directory_path = self.get_field('DirectoryPath')
+            d_path = doc.createElement('sr:DirectoryPath')
+            d_path.appendChild(doc.createTextNode(directory_path))
+            ur.appendChild(d_path)
+
+        # Create Subject Identity Block
+        s_identity = doc.createElement('sr:SubjectIdentity')
+
+        if self.get_field('LocalUser') is not None:
+            local_user = self.get_field('LocalUser')
+            l_user = doc.createElement('sr:LocalUser')
+            l_user.appendChild(doc.createTextNode(local_user))
+            s_identity.appendChild(l_user)
+
+        if self.get_field('LocalGroup') is not None:
+            local_group = self.get_field('LocalGroup')
+            l_group = doc.createElement('sr:LocalGroup')
+            l_group.appendChild(doc.createTextNode(local_group))
+            s_identity.appendChild(l_group)
+
+        if self.get_field('UserIdentity') is not None:
+            user_identity = self.get_field('UserIdentity')
+            u_identity = doc.createElement('sr:UserIdentity')
+            u_identity.appendChild(doc.createTextNode(user_identity))
+            s_identity.appendChild(u_identity)
+
+        if self.get_field('Group') is not None:
+            group_field = self.get_field('Group')
+            group_node = doc.createElement('sr:Group')
+            group_node.appendChild(doc.createTextNode(group_field))
+            s_identity.appendChild(group_node)
+
+        # Append Subject Identity Block
+        ur.appendChild(s_identity)
+
+        start_text = time.strftime('%Y-%m-%dT%H:%M:%SZ', self.get_field('StartTime').timetuple())
+        s_time = doc.createElement('sr:StartTime')
+        s_time.appendChild(doc.createTextNode(start_text))
+        ur.appendChild(s_time)
+
+        end_text = time.strftime('%Y-%m-%dT%H:%M:%SZ', self.get_field('EndTime').timetuple())
+        e_time = doc.createElement('sr:EndTime')
+        e_time.appendChild(doc.createTextNode(end_text))
+        ur.appendChild(e_time)
+
+        resource_capacity_used = self.get_field('ResourceCapacityUsed')
+        r_capacity_used = doc.createElement('sr:ResourceCapacityUsed')
+        r_capacity_used.appendChild(doc.createTextNode(str(resource_capacity_used)))
+        ur.appendChild(r_capacity_used)
+
+        if self.get_field('LogicalCapacityUsed') is not None:
+            logical_capacity_used = self.get_field('LogicalCapacityUsed')
+            l_capacity_used = doc.createElement('sr:LogicalCapacityUsed')
+            l_capacity_used.appendChild(doc.createTextNode(str(logical_capacity_used)))
+            ur.appendChild(l_capacity_used)
+
+        if self.get_field('ResourceCapacityAllocated') is not None:
+            resource_capacity_allocated = self.get_field('ResourceCapacityAllocated')
+            r_capacity_allocated = doc.createElement('sr:ResourceCapacityAllocated')
+            r_capacity_allocated.appendChild(doc.createTextNode(str(resource_capacity_allocated)))
+            ur.appendChild(r_capacity_allocated)
+
+        doc.appendChild(ur)
+        return doc.documentElement.toxml()
