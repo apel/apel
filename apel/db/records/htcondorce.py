@@ -20,23 +20,22 @@ class HTCondorCERecord(Record):
     """
     Class to represent a record from BLAHP systems
     """
-    
+
     def __init__(self):
         '''
         Initializer for BlahdRecord
         '''
-        
+
         Record.__init__(self)
-        
+
         self._mandatory_fields = []
-        
+
         self._db_fields = ["TimeStamp", "GlobalUserName", "FQAN",
                         "VO", "VOGroup", "VORole", "CE", "GlobalJobId", "LrmsId",
                         "Site", "ValidFrom", "ValidUntil", "Processed"]
-        
+
         self._int_fields = ["Processed"]
-        
+
         self._all_fields = self._db_fields
-        
+
         self._datetime_fields = ["TimeStamp", "ValidFrom", "ValidUntil"]
-        

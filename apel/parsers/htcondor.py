@@ -47,7 +47,8 @@ class HTCondorParser(Parser):
             'JobName'       : lambda x: x['clusterid'] + "_" + self.machine_name,
             'LocalUserID'   : lambda x: x['owner'],
             'LocalUserGroup': lambda x: x['VO'],
-            'WallDuration'  : lambda x: float(x['cputmult'])*(float(x['walltime+suspensiontime'])-float(x['suspensiontime'])),
+            'WallDuration'  : lambda x: float(x['cputmult'])*
+              (float(x['walltime+suspensiontime'])-float(x['suspensiontime'])),
             'CpuDuration'   : lambda x: float(x['cputmult'])*(float(x['cputime'])+float(x['syscputime'])),
             'StartTime'     : lambda x: int(x['startdate']),
             'StopTime'      : lambda x: int(x['enddate']),
