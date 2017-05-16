@@ -57,7 +57,7 @@ class CloudRecord(Record):
                              "NetworkInbound", "NetworkOutbound", "PublicIPCount", "Memory", "Disk"]
         
         self._float_fields = ['Benchmark']
-        self._datetime_fields = ["StartTime", "EndTime"]
+        self._datetime_fields = ["RecordCreateTime", "StartTime", "EndTime"]
     
     def _check_fields(self):
         '''
