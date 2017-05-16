@@ -106,7 +106,7 @@ BEGIN
         -- other than field by field, and we can't get around making the greater than
         -- comparison everytime as we can only reference the current value in the
         -- 'ON DUPLICATE KEY UPDATE' block
-        CloudRecords.RecordCreateTime = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, recordCreateTimeNotNull, CloudRecords.RecordCreateTime)
+        CloudRecords.RecordCreateTime = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, recordCreateTimeNotNull, CloudRecords.RecordCreateTime),
         CloudRecords.SiteID = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, SiteLookup(site), CloudRecords.SiteID),
         CloudRecords.CloudComputeServiceID = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, CloudComputeServiceLookup(cloudComputeService), CloudRecords.CloudComputeServiceID),
         CloudRecords.MachineName = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, machineName, CloudRecords.MachineName),
