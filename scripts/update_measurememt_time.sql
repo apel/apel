@@ -1,10 +1,12 @@
 ALTER TABLE CloudRecords
+  ADD RecordCreateTime DATETIME NOT NULL AFTER UpdateTime,
   ADD MeasurementTime DATETIME NOT NULL AFTER EndTime,
   ADD MeasurementMonth INT NOT NULL AFTER MeasurementTime,
   ADD MeasurementYear INT NOT NULL AFTER MeasurementMonth;
 
 Update CloudRecords SET
   MeasurementTime = IFNULL(TIMESTAMPADD(SECOND, (IFNULL(SuspendDuration, 0) + IFNULL(WallDuration, 0)), StartTime), '00-00-00 00:00:00');
+  RecordCreateTime = IFNULL(TIMESTAMPADD(SECOND, (IFNULL(SuspendDuration, 0) + IFNULL(WallDuration, 0)), StartTime), '00-00-00 00:00:00');
 
 Update CloudRecords SET
   MeasurementMonth = Month(MeasurementTime),
@@ -13,17 +15,17 @@ Update CloudRecords SET
 DROP PROCEDURE IF EXISTS ReplaceCloudRecord;
 DELIMITER //
 CREATE PROCEDURE ReplaceCloudRecord(
-  VMUUID VARCHAR(255), site VARCHAR(255), cloudComputeService VARCHAR(255),
-  machineName VARCHAR(255), 
+  recordCreateTime DATETIME,VMUUID VARCHAR(255), site VARCHAR(255), cloudComputeService VARCHAR(255),
+  machineName VARCHAR(255),
   localUserId VARCHAR(255),
-  localGroupId VARCHAR(255), globalUserName VARCHAR(255), 
-  fqan VARCHAR(255), vo VARCHAR(255), 
+  localGroupId VARCHAR(255), globalUserName VARCHAR(255),
+  fqan VARCHAR(255), vo VARCHAR(255),
   voGroup VARCHAR(255), voRole VARCHAR(255), status VARCHAR(255),
-  startTime DATETIME, endTime DATETIME, 
+  startTime DATETIME, endTime DATETIME,
   suspendDuration INT,
-  wallDuration INT, cpuDuration INT, 
-  cpuCount INT, networkType VARCHAR(255),  networkInbound INT, 
-  networkOutbound INT, publicIPCount INT, memory INT, 
+  wallDuration INT, cpuDuration INT,
+  cpuCount INT, networkType VARCHAR(255),  networkInbound INT,
+  networkOutbound INT, publicIPCount INT, memory INT,
   disk INT, benchmarkType VARCHAR(50), benchmark DECIMAL(10,3), storageRecordId VARCHAR(255),
   imageId VARCHAR(255), cloudType VARCHAR(255),
   publisherDN VARCHAR(255))
@@ -33,39 +35,60 @@ BEGIN
     DECLARE cpuDurationNotNull INT;
     DECLARE wallDurationNotNull INT;
     DECLARE measurementTimeCalculated DATETIME;
-    
-    -- If the incoming suspendDuration is NULL, we can't compute a MeasurementTime
-    -- so set a resonable value in that case
-    -- DECLARE suspendDurationNotNull INT;
-    SET suspendDurationNotNull = IFNULL(suspendDuration, 0);
+    DECLARE recordCreateTimeNotNull DATETIME;
 
-    -- If the incoming cpuDuration is NULL, we may not be able to compute a MeasurementTime
-    -- as cpuDuration is used to calculate MeasurementTime if the incoming wallDuration is also NULL
-    -- so set a resonable value so we can use that if needed
-    SET cpuDurationNotNull = IFNULL(cpuDuration, 0);
+    IF(status='completed') THEN
+        -- in this case, the recordCreateTime and measurementTime could
+        -- be wildly different as the VM has ended.
 
-    -- If the incoming wallDuartion is NULL we can't compute a MeasurementTime.
-    -- Based off LRVMv1, we use cpuDurationNotNull, which from above is guaranteed
-    -- to be a resonable value
-    SET wallDurationNotNull = IFNULL(wallDuration,cpuDurationNotNull);
+        -- if we werent supplied a record create time
+        -- for a completed VM we have decided to use the end time
+        SET recordCreateTimeNotNull = IFNULL(recordCreateTime, endTime);
 
-    -- Calculated the time of measurement so we can use it later to determine which
-    -- accounting period this incoming record belongs too.
-    SET measurementTimeCalculated = TIMESTAMPADD(SECOND, (suspendDurationNotNull + wallDurationNotNull), StartTime);
-    -- We recieve and currently accept messages without a start time
-    -- which causes the mesaurementTimeCalculated to be NULL
-    -- which causes a loader reject on a previously accepted message
-    -- so for now, set it to the zero time stamp
-    SET measurementTimeCalculated = IFNULL(measurementTimeCalculated, '00-00-00 00:00:00');
+        -- Use the end time as the measurement time
+        SET measurementTimeCalculated = endTime;
 
-    INSERT INTO CloudRecords(VMUUID, SiteID, CloudComputeServiceID, MachineName,
+    ELSE
+        -- In the case of a running VM, the measurement time will
+        -- equal the record create time
+        IF(recordCreateTime IS NOT NULL) THEN
+            -- Use the supplied record create time as the measurement time
+            SET measurementTimeCalculated = recordCreateTime;
+            SET recordCreateTimeNotNull = recordCreateTime;
+        ELSE
+            -- Calculate the measurement time :(
+
+            -- If the incoming suspendDuration is NULL, we can't compute a MeasurementTime
+            -- so set a resonable value in that case
+            -- DECLARE suspendDurationNotNull INT;
+            SET suspendDurationNotNull = IFNULL(suspendDuration, 0);
+
+            -- If the incoming wallDuartion is NULL we can't compute a MeasurementTime.
+            -- Based off LRVMv1, we use cpuDurationNotNull, which from above is guaranteed
+            -- to be a resonable value
+            SET wallDurationNotNull = IFNULL(wallDuration,cpuDurationNotNull);
+
+            -- Calculated the time of measurement so we can use it later to determine which
+            -- accounting period this incoming record belongs too.
+            SET measurementTimeCalculated = TIMESTAMPADD(SECOND, (suspendDurationNotNull + wallDurationNotNull), StartTime);
+            -- We recieve and currently accept messages without a start time
+            -- which causes the mesaurementTimeCalculated to be NULL
+            -- which causes a loader reject on a previously accepted message
+            -- so for now, set it to the zero time stamp as is what happens currently
+            SET measurementTimeCalculated = IFNULL(measurementTimeCalculated, '00-00-00 00:00:00');
+            SET recordCreateTimeNotNull = measurementTimeCalculated;
+
+        END IF;
+    END IF;
+
+    INSERT INTO CloudRecords(RecordCreateTime, VMUUID, SiteID, CloudComputeServiceID, MachineName,
         LocalUserId, LocalGroupId, GlobalUserNameID, FQAN, VOID, VOGroupID,
         VORoleID, Status, StartTime, EndTime, MeasurementTime, MeasurementMonth,
         MeasurementYear, SuspendDuration, WallDuration, CpuDuration, CpuCount,
         NetworkType, NetworkInbound, NetworkOutbound, PublicIPCount, Memory, Disk,
         BenchmarkType, Benchmark, StorageRecordId, ImageId, CloudType, PublisherDNID)
       VALUES (
-        VMUUID, SiteLookup(site), CloudComputeServiceLookup(cloudComputeService), machineName,
+        recordCreateTimeNotNull, VMUUID, SiteLookup(site), CloudComputeServiceLookup(cloudComputeService), machineName,
         localUserId, localGroupId, DNLookup(globalUserName), fqan, VOLookup(vo), VOGroupLookup(voGroup),
         VORoleLookup(voRole), status, startTime, endTime, measurementTimeCalculated, Month(measurementTimeCalculated), Year(measurementTimeCalculated),
         suspendDurationNotNull, wallDurationNotNull, cpuDurationNotNull, cpuCount,
@@ -83,6 +106,7 @@ BEGIN
         -- other than field by field, and we can't get around making the greater than
         -- comparison everytime as we can only reference the current value in the
         -- 'ON DUPLICATE KEY UPDATE' block
+        CloudRecords.RecordCreateTime = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, recordCreateTimeNotNull, CloudRecords.RecordCreateTime)
         CloudRecords.SiteID = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, SiteLookup(site), CloudRecords.SiteID),
         CloudRecords.CloudComputeServiceID = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, CloudComputeServiceLookup(cloudComputeService), CloudRecords.CloudComputeServiceID),
         CloudRecords.MachineName = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, machineName, CloudRecords.MachineName),
@@ -133,6 +157,7 @@ BEGIN
   CREATE TEMPORARY TABLE TVMUsagePerMonth
     (INDEX index_VMUsagePerMonth USING BTREE (VMUUID, Month, Year))
     SELECT
+      ThisRecord.RecordCreateTime as RecordCreateTime,
       ThisRecord.VMUUID as VMUUID,
       ThisRecord.SiteID as SiteID,
       ThisRecord.CloudComputeServiceID as CloudComputeServiceID,
@@ -162,7 +187,7 @@ BEGIN
     FROM CloudRecords as ThisRecord
     LEFT JOIN CloudRecords as PrevRecord
     ON (ThisRecord.VMUUID = PrevRecord.VMUUID and
-	PrevRecord.MeasurementTime = (SELECT max(MeasurementTime)
+        PrevRecord.MeasurementTime = (SELECT max(MeasurementTime)
                                       FROM CloudRecords
                                       WHERE VMUUID = ThisRecord.VMUUID
                                       AND MeasurementTime < ThisRecord.MeasurementTime)
@@ -183,7 +208,7 @@ BEGIN
       SUM(ComputedCpuDuration),
       CpuCount,
       SUM(ComputedNetworkInbound),
-      SUM(ComputedNetworkOutbound), 
+      SUM(ComputedNetworkOutbound),
       SUM(Memory),
       SUM(Disk),
       BenchmarkType,
@@ -199,8 +224,9 @@ END //
 DELIMITER ;
 
 DROP VIEW IF EXISTS VCloudRecords;
+-- View on CloudRecords
 CREATE VIEW VCloudRecords AS
-    SELECT UpdateTime, VMUUID, site.name SiteName, cloudComputeService.name CloudComputeService, MachineName,
+    SELECT UpdateTime, RecordCreateTime, VMUUID, site.name SiteName, cloudComputeService.name CloudComputeService, MachineName,
            LocalUserId, LocalGroupId, userdn.name GlobalUserName, FQAN, vo.name VO,
            vogroup.name VOGroup, vorole.name VORole,
            Status, StartTime, EndTime, MeasurementTime, MeasurementMonth, MeasurementYear,
