@@ -47,7 +47,7 @@ class CloudRecord(Record):
                              "StorageRecordId", "ImageId", "CloudType"]
         
         # This list specifies the information that goes in the database.
-        self._db_fields = self._msg_fields[:8] + ['VO', 'VOGroup', 'VORole'] + self._msg_fields[8:]
+        self._db_fields = self._msg_fields[:9] + ['VO', 'VOGroup', 'VORole'] + self._msg_fields[9:]
         self._all_fields = self._db_fields
         
         self._ignored_fields = ["UpdateTime"]

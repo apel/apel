@@ -82,10 +82,22 @@ CREATE PROCEDURE ReplaceCloudRecord(
 
 BEGIN
     DECLARE suspendDurationNotNull INT;
-    DECLARE cpuDurationNotNull INT;
     DECLARE wallDurationNotNull INT;
     DECLARE measurementTimeCalculated DATETIME;
     DECLARE recordCreateTimeNotNull DATETIME;
+
+    -- If the incoming suspendDuration is NULL, we can't compute a MeasurementTime
+    -- so set a resonable value in that case
+    -- DECLARE suspendDurationNotNull INT;
+    -- Need to set this here as suspendDurationNotNull is used in the insert statement
+    -- rather than suspendDuration
+    SET suspendDurationNotNull = IFNULL(suspendDuration, 0);
+
+    -- If the incoming wallDuartion is NULL we can't compute a MeasurementTime.
+    -- so set it to zero
+    -- Need to set this here as wallDurationNotNull is used in the insert statement
+    -- rather than wallDuration
+    SET wallDurationNotNull = IFNULL(wallDuration, 0);
 
     IF(status='completed') THEN
         -- in this case, the recordCreateTime and measurementTime could
@@ -93,7 +105,7 @@ BEGIN
 
         -- if we werent supplied a record create time
         -- for a completed VM we have decided to use the end time
-        SET recordCreateTimeNotNull = IFNULL(recordCreateTime, endTime);
+        SET recordCreateTimeNotNull = IF(recordCreateTime='0000-00-00 00:00:00', endTime, recordCreateTime);
 
         -- Use the end time as the measurement time
         SET measurementTimeCalculated = endTime;
@@ -106,19 +118,7 @@ BEGIN
             SET measurementTimeCalculated = recordCreateTime;
             SET recordCreateTimeNotNull = recordCreateTime;
         ELSE
-            -- Calculate the measurement time :(
-
-            -- If the incoming suspendDuration is NULL, we can't compute a MeasurementTime
-            -- so set a resonable value in that case
-            -- DECLARE suspendDurationNotNull INT;
-            SET suspendDurationNotNull = IFNULL(suspendDuration, 0);
-
-            -- If the incoming wallDuartion is NULL we can't compute a MeasurementTime.
-            -- Based off LRVMv1, we use cpuDurationNotNull, which from above is guaranteed
-            -- to be a resonable value
-            SET wallDurationNotNull = IFNULL(wallDuration,cpuDurationNotNull);
-
-            -- Calculated the time of measurement so we can use it later to determine which
+            -- Calculate the time of measurement so we can use it later to determine which
             -- accounting period this incoming record belongs too.
             SET measurementTimeCalculated = TIMESTAMPADD(SECOND, (suspendDurationNotNull + wallDurationNotNull), StartTime);
             -- We recieve and currently accept messages without a start time
@@ -141,7 +141,7 @@ BEGIN
         recordCreateTimeNotNull, VMUUID, SiteLookup(site), CloudComputeServiceLookup(cloudComputeService), machineName,
         localUserId, localGroupId, DNLookup(globalUserName), fqan, VOLookup(vo), VOGroupLookup(voGroup),
         VORoleLookup(voRole), status, startTime, endTime, measurementTimeCalculated, Month(measurementTimeCalculated), Year(measurementTimeCalculated),
-        suspendDurationNotNull, wallDurationNotNull, cpuDurationNotNull, cpuCount,
+        suspendDurationNotNull, wallDurationNotNull, cpuDuration, cpuCount,
         networkType, networkInbound, networkOutbound, publicIPCount, memory, disk,
         benchmarkType, benchmark, storageRecordId, imageId, cloudType, DNLookup(publisherDN))
       ON DUPLICATE KEY UPDATE
@@ -172,7 +172,7 @@ BEGIN
         CloudRecords.EndTime = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, endTime, CloudRecords.EndTime),
         CloudRecords.SuspendDuration = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, suspendDurationNotNull, CloudRecords.SuspendDuration),
         CloudRecords.WallDuration = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, wallDurationNotNull, CloudRecords.WallDuration),
-        CloudRecords.CpuDuration = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, cpuDurationNotNull, CloudRecords.CpuDuration),
+        CloudRecords.CpuDuration = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, cpuDuration, CloudRecords.CpuDuration),
         CloudRecords.CpuCount = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, cpuCount, CloudRecords.CpuCount),
         CloudRecords.NetworkType = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, networkType, CloudRecords.NetworkType),
         CloudRecords.NetworkInbound = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, networkInbound, CloudRecords.NetworkInbound),
