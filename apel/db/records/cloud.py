@@ -38,7 +38,7 @@ class CloudRecord(Record):
         self._mandatory_fields = ["VMUUID", "SiteName"]
             
         # This list allows us to specify the order of lines when we construct records.
-        self._msg_fields  = ["VMUUID", "SiteName", "CloudComputeService", "MachineName", 
+        self._msg_fields  = ["RecordCreateTime", "VMUUID", "SiteName", "CloudComputeService", "MachineName", 
                              "LocalUserId", "LocalGroupId", "GlobalUserName", "FQAN",
                              "Status", "StartTime", "EndTime", "SuspendDuration", 
                              "WallDuration", "CpuDuration", "CpuCount", 
