@@ -5,7 +5,7 @@ ALTER TABLE CloudRecords
   ADD MeasurementYear INT NOT NULL AFTER MeasurementMonth;
 
 Update CloudRecords SET
-  MeasurementTime = IFNULL(TIMESTAMPADD(SECOND, (IFNULL(SuspendDuration, 0) + IFNULL(WallDuration, 0)), StartTime), '00-00-00 00:00:00');
+  MeasurementTime = IFNULL(TIMESTAMPADD(SECOND, (IFNULL(SuspendDuration, 0) + IFNULL(WallDuration, 0)), StartTime), '00-00-00 00:00:00'),
   RecordCreateTime = IFNULL(TIMESTAMPADD(SECOND, (IFNULL(SuspendDuration, 0) + IFNULL(WallDuration, 0)), StartTime), '00-00-00 00:00:00');
 
 Update CloudRecords SET
