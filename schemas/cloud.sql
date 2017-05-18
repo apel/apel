@@ -141,7 +141,7 @@ BEGIN
         recordCreateTimeNotNull, VMUUID, SiteLookup(site), CloudComputeServiceLookup(cloudComputeService), machineName,
         localUserId, localGroupId, DNLookup(globalUserName), fqan, VOLookup(vo), VOGroupLookup(voGroup),
         VORoleLookup(voRole), status, startTime, endTime, measurementTimeCalculated, Month(measurementTimeCalculated), Year(measurementTimeCalculated),
-        suspendDurationNotNull, wallDurationNotNull, cpuDuration, cpuCount,
+        suspendDuration, wallDuration, cpuDuration, cpuCount,
         networkType, networkInbound, networkOutbound, publicIPCount, memory, disk,
         benchmarkType, benchmark, storageRecordId, imageId, cloudType, DNLookup(publisherDN))
       ON DUPLICATE KEY UPDATE
@@ -170,8 +170,8 @@ BEGIN
         CloudRecords.Status = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, status, CloudRecords.Status),
         CloudRecords.StartTime = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, startTime, CloudRecords.StartTime),
         CloudRecords.EndTime = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, endTime, CloudRecords.EndTime),
-        CloudRecords.SuspendDuration = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, suspendDurationNotNull, CloudRecords.SuspendDuration),
-        CloudRecords.WallDuration = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, wallDurationNotNull, CloudRecords.WallDuration),
+        CloudRecords.SuspendDuration = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, suspendDuration, CloudRecords.SuspendDuration),
+        CloudRecords.WallDuration = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, wallDuration, CloudRecords.WallDuration),
         CloudRecords.CpuDuration = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, cpuDuration, CloudRecords.CpuDuration),
         CloudRecords.CpuCount = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, cpuCount, CloudRecords.CpuCount),
         CloudRecords.NetworkType = IF(measurementTimeCalculated > CloudRecords.MeasurementTime, networkType, CloudRecords.NetworkType),
