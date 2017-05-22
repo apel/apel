@@ -81,23 +81,8 @@ CREATE PROCEDURE ReplaceCloudRecord(
   publisherDN VARCHAR(255))
 
 BEGIN
-    DECLARE suspendDurationNotNull INT;
-    DECLARE wallDurationNotNull INT;
     DECLARE measurementTimeCalculated DATETIME;
     DECLARE recordCreateTimeNotNull DATETIME;
-
-    -- If the incoming suspendDuration is NULL, we can't compute a MeasurementTime
-    -- so set a resonable value in that case
-    -- DECLARE suspendDurationNotNull INT;
-    -- Need to set this here as suspendDurationNotNull is used in the insert statement
-    -- rather than suspendDuration
-    SET suspendDurationNotNull = IFNULL(suspendDuration, 0);
-
-    -- If the incoming wallDuartion is NULL we can't compute a MeasurementTime.
-    -- so set it to zero
-    -- Need to set this here as wallDurationNotNull is used in the insert statement
-    -- rather than wallDuration
-    SET wallDurationNotNull = IFNULL(wallDuration, 0);
 
     IF(status='completed') THEN
         -- in this case, the recordCreateTime and measurementTime could
@@ -120,7 +105,7 @@ BEGIN
         ELSE
             -- Calculate the time of measurement so we can use it later to determine which
             -- accounting period this incoming record belongs too.
-            SET measurementTimeCalculated = TIMESTAMPADD(SECOND, (suspendDurationNotNull + wallDurationNotNull), StartTime);
+            SET measurementTimeCalculated = TIMESTAMPADD(SECOND, (IFNULL(suspendDuration, 0) + IFNULL(wallDuration, 0)), StartTime);
             -- We recieve and currently accept messages without a start time
             -- which causes the mesaurementTimeCalculated to be NULL
             -- which causes a loader reject on a previously accepted message
