@@ -90,7 +90,7 @@ BEGIN
 
         -- if we werent supplied a record create time
         -- for a completed VM we have decided to use the end time
-        SET recordCreateTimeNotNull = IF(recordCreateTime='0000-00-00 00:00:00', endTime, recordCreateTime);
+        SET recordCreateTimeNotNull = IF(recordCreateTime IS NULL or recordCreateTime='0000-00-00 00:00:00', endTime, recordCreateTime);
 
         -- Use the end time as the measurement time
         SET measurementTimeCalculated = endTime;
@@ -98,21 +98,20 @@ BEGIN
     ELSE
         -- In the case of a running VM, the measurement time will
         -- equal the record create time
-        IF(recordCreateTime IS NOT NULL) THEN
-            -- Use the supplied record create time as the measurement time
-            SET measurementTimeCalculated = recordCreateTime;
-            SET recordCreateTimeNotNull = recordCreateTime;
-        ELSE
+        IF(recordCreateTime IS NULL or recordCreateTime='0000-00-00 00:00:00') THEN
             -- Calculate the time of measurement so we can use it later to determine which
             -- accounting period this incoming record belongs too.
-            SET measurementTimeCalculated = TIMESTAMPADD(SECOND, (IFNULL(suspendDuration, 0) + IFNULL(wallDuration, 0)), StartTime);
+            SET measurementTimeCalculated = TIMESTAMPADD(SECOND, (IFNULL(suspendDuration, 0) + IFNULL(wallDuration, 0)), startTime);
             -- We recieve and currently accept messages without a start time
             -- which causes the mesaurementTimeCalculated to be NULL
             -- which causes a loader reject on a previously accepted message
             -- so for now, set it to the zero time stamp as is what happens currently
             SET measurementTimeCalculated = IFNULL(measurementTimeCalculated, '00-00-00 00:00:00');
             SET recordCreateTimeNotNull = measurementTimeCalculated;
-
+        ELSE
+             -- Use the supplied record create time as the measurement time
+            SET measurementTimeCalculated = recordCreateTime;
+            SET recordCreateTimeNotNull = recordCreateTime;
         END IF;
     END IF;
 
