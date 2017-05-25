@@ -80,6 +80,13 @@ class MysqlTest(unittest.TestCase):
         self.assertEqual([item in items_out for item in items_in].count(True), len(items_in))
 
     def test_load_and_get_cloud(self):
+        '''
+        Test a CloudV0.2/0.4 message can be loaded into the database.
+
+        It currently can't test for pre/post database load equality
+        as the two are currently not the same for V0.2.
+        i.e Benchmark 'None', which gets saved a set to 0.0
+        '''
         schema_path = os.path.abspath(os.path.join('..', 'schemas',
                                                    'cloud.sql'))
         schema_handle = open(schema_path)
@@ -109,6 +116,23 @@ class MysqlTest(unittest.TestCase):
             self.db.load_records(record_list, source='testDN')
         except apel.db.apeldb.ApelDbException as err:
             self.fail(err.message)
+
+        # this code block would check for equality between the message passed
+        # to the database and the message retrieved from the database.
+        # but at the moment they are fundementally unequal, for example
+        # a cloud 0.2 message has Benchmark 'None', which gets saved to 0.0
+        # in the database
+
+        # records_out = self.db.get_records(apel.db.records.cloud.CloudRecord)
+        # # record_out_list is a list of lists, i.e. [[record0.2],[[record0.4]]
+        # record_out_list = list(records_out)
+        # items_out = []
+        # for record in record_out_list[0]:
+        #     items_out += record._record_content.items()
+        # Check that items_in is a subset of items_out
+        # Can't use 'all()' rather than comparing the length as Python 2.4
+        # self.assertEqual([item in items_out for item in items_in].count(True),
+        #                   len(items_in))
 
     def test_mixed_load(self):
         """
