@@ -49,7 +49,7 @@ class ApelMysqlDb(object):
                     JobRecord   : 'VJobRecords',
                     BlahdRecord : 'BlahdRecords',
                     SyncRecord  : 'SyncRecords',
-                    CloudRecord : 'CloudRecords',
+                    CloudRecord : 'VCloudRecords',
                     CloudSummaryRecord : 'VCloudSummaries',
                     NormalisedSummaryRecord : 'VNormalisedSummaries',
                     ProcessedRecord : 'VProcessedFiles',
