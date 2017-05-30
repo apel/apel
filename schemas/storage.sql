@@ -355,17 +355,22 @@ SELECT CreateTime,
        LocalGroup,
        UserIdentities.name AS UserIdentity,
        Groups.name AS `Group`,
+       Roles.name AS `Role`,
+       SubGroups.name AS SubGroup,
        StartTime,
        EndTime,
        ResourceCapacityUsed,
        LogicalCapacityUsed,
        ResourceCapacityAllocated 
 FROM StarRecords, StorageSystems, Sites, StorageShares,
-     StorageMedia, StorageClasses, UserIdentities, Groups
+     StorageMedia, StorageClasses, UserIdentities, Groups,
+     SubGroups, Roles
 WHERE StarRecords.StorageSystemID = StorageSystems.id
   AND StarRecords.SiteID = Sites.id
   AND StarRecords.StorageShareID = StorageShares.id
   AND StarRecords.StorageMediaID = StorageMedia.id
   AND StarRecords.StorageClassID = StorageClasses.id
   AND StarRecords.UserIdentityID = UserIdentities.id
-  AND StarRecords.GroupID = Groups.id;
+  AND StarRecords.GroupID = Groups.id
+  AND StarRecords.SubGroupID = SubGroups.id
+  AND StarRecords.RoleID = Roles.id;
