@@ -110,6 +110,7 @@ class StorageRecordTest(unittest.TestCase):
 
         parser = StarParser(XML_HEADER + UR_OPEN + ur + UR_CLOSE)
 
+        # This works as all dictionary values are hashable/immutable
         missmatched = (set(parser.get_records()[0]._record_content.items()) ^
                        set(record._record_content.items()))
         for item in list(missmatched):
