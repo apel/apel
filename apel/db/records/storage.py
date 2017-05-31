@@ -67,9 +67,8 @@ class StorageRecord(Record):
         self._datetime_fields = ["CreateTime", "StartTime", "EndTime"]
         # Fields which will have an integer stored in them
         self._int_fields = ["FileCount", "ResourceCapacityUsed", "LogicalCapacityUsed", "ResourceCapacityAllocated"]
-        
-    
-    def get_apel_db_insert(self, apel_db, source):
+
+    def get_apel_db_insert(self, source=None):
         '''
         Returns record content as a tuple, appending the source of the record 
         (i.e. the sender's DN).  Also returns the appropriate stored procedure.
@@ -78,10 +77,9 @@ class StorageRecord(Record):
         This is because only this object knows what type of record it is,
         and only the apel_db knows what the procedure details are. 
         '''
-        
-        values = self.get_db_tuple(self, source)
-        
-        
+
+        values = self.get_db_tuple(source)
+
         return values
 
     def get_db_tuple(self, source=None):
