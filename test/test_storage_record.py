@@ -79,6 +79,25 @@ class StorageRecordTest(unittest.TestCase):
         record.get_apel_db_insert()
         record.get_apel_db_insert(None)
 
+    def test_get_ur(self):
+        """Check that al input values are present in XML output of get_ur"""
+
+        data = ('host.example.org/sr/87912469269276', 1289293612,
+                'host.example.org', 'MySite', 'pool-003', 'disk', 'replicated',
+                42, '/home/projectA', 'johndoe', 'projectA',
+                '/O=Grid/OU=example.org/CN=John Doe',
+                'binarydataproject.example.org', 'uk', 'poweruser',
+                '2010-10-11T09:31:40Z', '2010-10-11T09:41:40Z', 14728, 13617, 0)
+
+        record = StorageRecord()
+        record.load_from_tuple(data)
+        ur = record.get_ur()
+
+        for value in data:
+            # Skip the createTime value as it's regenerated when calling get_ur
+            if value != 1289293612 and str(value) not in ur:
+                self.fail("Input value '%s' not found in XML output." % value)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -175,6 +175,18 @@ class StorageRecord(Record):
             group_node.appendChild(doc.createTextNode(group_field))
             s_identity.appendChild(group_node)
 
+        if self.get_field('SubGroup') is not None:
+            sub_attr = doc.createElement('sr:GroupAttribute')
+            sub_attr.setAttribute('sr:attributeType', 'subgroup')
+            sub_attr.appendChild(doc.createTextNode(self.get_field('SubGroup')))
+            s_identity.appendChild(sub_attr)
+
+        if self.get_field('Role') is not None:
+            role_attr = doc.createElement('sr:GroupAttribute')
+            role_attr.setAttribute('sr:attributeType', 'role')
+            role_attr.appendChild(doc.createTextNode(self.get_field('Role')))
+            s_identity.appendChild(role_attr)
+
         # Append Subject Identity Block
         ur.appendChild(s_identity)
 
