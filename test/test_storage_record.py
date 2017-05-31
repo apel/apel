@@ -1,5 +1,6 @@
 import unittest
 
+from apel.db.loader import StarParser
 from apel.db.records import StorageRecord
 
 
@@ -80,8 +81,12 @@ class StorageRecordTest(unittest.TestCase):
         record.get_apel_db_insert(None)
 
     def test_get_ur(self):
-        """Check that al input values are present in XML output of get_ur"""
+        """Check XML output of get_ur
 
+        This checks that all input values save for createTime are present in the
+        XML output, then it parses the XML back into a storage record and checks
+        that the only mismatching field is CreateTime.
+        """
         data = ('host.example.org/sr/87912469269276', 1289293612,
                 'host.example.org', 'MySite', 'pool-003', 'disk', 'replicated',
                 42, '/home/projectA', 'johndoe', 'projectA',
@@ -97,6 +102,19 @@ class StorageRecordTest(unittest.TestCase):
             # Skip the createTime value as it's regenerated when calling get_ur
             if value != 1289293612 and str(value) not in ur:
                 self.fail("Input value '%s' not found in XML output." % value)
+
+        XML_HEADER = '<?xml version="1.0" ?>'
+        UR_OPEN = ('<sr:StorageUsageRecords xmlns:sr="http://eu-emi.eu/namespac'
+                   'es/2011/02/storagerecord">')
+        UR_CLOSE = '</sr:StorageUsageRecords>'
+
+        parser = StarParser(XML_HEADER + UR_OPEN + ur + UR_CLOSE)
+
+        missmatched = (set(parser.get_records()[0]._record_content.items()) ^
+                       set(record._record_content.items()))
+        for item in list(missmatched):
+            # Only mismatched item should be CreateTime as it's regenerated
+            self.assertEqual(item[0], 'CreateTime')
 
 
 if __name__ == '__main__':
