@@ -61,6 +61,24 @@ class StorageRecordTest(unittest.TestCase):
         except Exception, e:
             self.fail('_check_fields method failed: %s [%s]' % (str(e), str(type(e))))
 
+    def test_get_apel_db_insert(self):
+        """Check that calling get_apel_db_insert raises no exceptions
+
+        Previously there was a mismatch between the number of arguments of this
+        and the parent Record class which led to a TypeError being raised.
+        """
+
+        record = StorageRecord()
+        record.set_field('RecordId', 'host.example.org/sr/87912469269276')
+        record.set_field('CreateTime', 1289293612)
+        record.set_field('StorageSystem', 'host.example.org')
+        record.set_field('StartTime', 1286785900)
+        record.set_field('EndTime', 1286786500)
+        record.set_field('ResourceCapacityUsed', 14728)
+
+        record.get_apel_db_insert()
+        record.get_apel_db_insert(None)
+
 
 if __name__ == '__main__':
     unittest.main()
