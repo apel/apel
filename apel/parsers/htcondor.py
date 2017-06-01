@@ -16,15 +16,12 @@
    @author: Pavel Demin
 '''
 
-
 import logging
 
 from apel.db.records.event import EventRecord
 from apel.parsers import Parser
 
-
 log = logging.getLogger(__name__)
-
 
 class HTCondorParser(Parser):
     '''
@@ -38,31 +35,35 @@ class HTCondorParser(Parser):
         '''
         Parses single line from accounting log file.
         '''
-        # condor_history -constraint "JobStartDate > 0" -format "%s|" GlobalJobId -format "%s|" Owner -format "%d|" RemoteWallClockTime -format "%d|" RemoteUserCpu -format "%d|" RemoteSysCpu -format "%d|" JobStartDate -format "%d|" EnteredCurrentStatus -format "%d|" ResidentSetSize_RAW -format "%d|" ImageSize_RAW -format "%d|" RequestCpus
-        # arcce.rl.ac.uk#2376.0#71589|tatls011|287|107|11|1435671643|1435671930|26636|26832|1|1
+        # Put here command that extracts log line
 
-        values = line.strip().split('|')
+        data = {}
 
-        mapping = {'Site'            : lambda x: self.site_name,
-                   'MachineName'     : lambda x: self.machine_name,
-                   'Infrastructure'  : lambda x: "APEL-CREAM-HTCONDOR",
-                   'JobName'         : lambda x: x[0],
-                   'LocalUserID'     : lambda x: x[1],
-                   'LocalUserGroup'  : lambda x: "",
-                   'WallDuration'    : lambda x: int(x[2]),
-                   'CpuDuration'     : lambda x: int(x[3])+int(x[4]),
-                   'StartTime'       : lambda x: x[5],
-                   'StopTime'        : lambda x: x[6],
-                   'MemoryReal'      : lambda x: int(x[7]),
-                   'MemoryVirtual'   : lambda x: int(x[8]),
-                   'Processors'      : lambda x: int(x[9]),
-                   'NodeCount'       : lambda x: 0
-                  }
+        for item in line.split("; ") :
+            key, value = item.split('=', 1)
+            data[key] = value
+
+        mapping = {'Site' : lambda x: self.site_name,
+            'JobName'       : lambda x: x['clusterid'] + "_" + self.machine_name,
+            'LocalUserID'   : lambda x: x['owner'],
+            'LocalUserGroup': lambda x: x['VO'],
+            'WallDuration'  : lambda x: float(x['cputmult'])*(float(x['walltime+suspensiontime'])-float(x['suspensiontime'])),
+            'CpuDuration'   : lambda x: float(x['cputmult'])*(float(x['cputime'])+float(x['syscputime'])),
+            'StartTime'     : lambda x: int(x['startdate']),
+            'StopTime'      : lambda x: int(x['enddate']),
+            'Infrastructure': lambda x: "APEL-HTCONDOR",
+            'MachineName'   : lambda x: self.machine_name,
+            # remove 'kb' string from the end
+            'MemoryReal'    : lambda x: int(x['pmem']),
+            'MemoryVirtual' : lambda x: int(x['vmem']),
+            'NodeCount'     : lambda x: 1,
+            'Processors'    : lambda x: int(x['request_cpus'])
+        }
 
         rc = {}
 
         for key in mapping:
-            rc[key] = mapping[key](values)
+            rc[key] = mapping[key](data)
 
         record = EventRecord()
         record.set_all(rc)
