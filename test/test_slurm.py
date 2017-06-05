@@ -95,31 +95,32 @@ class ParserSlurmTest(unittest.TestCase):
             self.assertRaises(ValueError, self.parser.parse, line)
 
     def test_job_status(self):
-        accepted = (
+        accepted = (  # These job statuses are all described as "terminated".
             '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|CANCELLED',
             '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|COMPLETED',
             '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|FAILED',
+            '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|NODE_FAIL',
             '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|PREEMPTED',
             '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|TIMEOUT',
         )
 
-        rejected = (
+        rejected = (  # These jobs would be unstarted or still running.
             '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|BOOT_FAIL',
             '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|CONFIGURING',
             '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|COMPLETING',
-            # It's possible that DEADLINE and NODE_FAIL should be accounted for
             '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|DEADLINE',
-            '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|NODE_FAIL',
             '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|PENDING',
             '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|RUNNING',
             '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|RESIZING',
             '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|SUSPENDED',
         )
         for line in accepted:
-            self.assertNotEqual(self.parser.parse(line), None)
+            self.assertNotEqual(self.parser.parse(line), None,
+                                "Line incorrectly rejected: %s" % line)
 
         for line in rejected:
-            self.assertEqual(self.parser.parse(line), None)
+            self.assertEqual(self.parser.parse(line), None,
+                             "Line incorrectly accepted: %s" % line)
 
 if __name__ == '__main__':
     unittest.main()

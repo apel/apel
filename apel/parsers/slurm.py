@@ -59,7 +59,7 @@ class SlurmParser(Parser):
         values = line.strip().split('|')
 
         if values[14] not in ('CANCELLED', 'COMPLETED', 'FAILED',
-                              'PREEMPTED', 'TIMEOUT'):
+                              'NODE_FAIL', 'PREEMPTED', 'TIMEOUT'):
             return None
 
         rmem = self._normalise_memory(values[12])
