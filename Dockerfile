@@ -18,7 +18,7 @@
 #   from within the container.)
 #
 # It has been placed in the repository root to allow for future
-# docker images to built 'commit by commit' from the exact
+# docker images to be built 'commit by commit' from the exact
 # state of the source in the repository. At the moment, it is 
 # limited to tagged versions that have RPMs, as that is the 
 # only way to install APEL.
