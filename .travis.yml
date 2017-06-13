@@ -10,8 +10,11 @@ matrix:
 
 # Route build to container-based infrastructure
 sudo: false
+
 # Cache the dependencies installed by pip
 cache: pip
+# Avoid pip log from affecting cache
+before_cache: rm -fv ~/.cache/pip/log/debug.log
 
 # Install defaults to "pip install -r requirements.txt"
 
@@ -20,7 +23,8 @@ before_script:
   - export PYTHONPATH=$PYTHONPATH:`pwd -P`
   - cd test
 
-# Command to run tests
-script: coverage run --source=apel,bin -m unittest2 discover --buffer
+# The coveralls module on PyPI (1.1) doesn't report branch coverage to
+# Coveralls, but should in the next release (1.2)
+script: coverage run --branch --source=apel,bin -m unittest2 discover --buffer
 
 after_success: coveralls
