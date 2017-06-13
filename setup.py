@@ -79,6 +79,9 @@ def main():
           download_url='https://github.com/apel/apel/releases',
           license='Apache License, Version 2.0',
           install_requires=['MySQL-python', 'iso8601', 'python-ldap', 'dirq'],
+          extras_require={
+              'python-daemon': ['python-daemon'],
+          },
           packages=find_packages(exclude=['bin']),
           scripts=['bin/apelclient',
                    'bin/apelparser',
