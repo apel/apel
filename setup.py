@@ -66,7 +66,7 @@ def main():
     log_rotate_dir = '/etc/logrotate.d'
     log_rotate_files = ['scripts/apel-client']
 
-    # For 'python setup.py install' to 
+    # For 'python setup.py install' to
     # work (on Linux SL6), 'python-daemon'
     # must be installed or included
     # in install_required
