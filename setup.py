@@ -3,6 +3,8 @@
 This script installs the APEL library, client, parsers and server. This
 should be similar to installing the RPMs for apel-lib, apel-client,
 apel-parsers, and apel-server, although there may be some differences.
+A known difference is the RPM installs pyc and pyo files,
+whereas this script does not.
 
 Usage: 'python setup.py install'
 
