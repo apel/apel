@@ -97,7 +97,9 @@ def main():
                       (log_rotate_dir, log_rotate_files)],
           # zip_safe allows setuptools to install the project
           # as a zipfile, for maximum performance!
-          zip_safe=True)
+          # We have disabled this feature so installing via the setup
+          # script is similar to installing the RPM apel-ssm
+          zip_safe=False)
 
     # Remove temporary files with deployment names
     if 'install' in sys.argv:
