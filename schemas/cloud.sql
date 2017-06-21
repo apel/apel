@@ -114,7 +114,7 @@ CREATE TABLE CloudSummaries (
   LatestStartTime DATETIME,
   WallDuration BIGINT,
   CpuDuration BIGINT,
-  CpuCount INT,
+  CpuCount INT NOT NULL,
 
   NetworkInbound BIGINT,
   NetworkOutbound BIGINT,
@@ -129,7 +129,7 @@ CREATE TABLE CloudSummaries (
   
   PublisherDNID VARCHAR(255),
 
-  PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId)
+  PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId, CpuCount)
 
 );
 
