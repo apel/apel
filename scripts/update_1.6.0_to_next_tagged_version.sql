@@ -1,0 +1,54 @@
+-- UPDATE SCRIPT FOR CLIENT SCHEMA
+-- This script will set any null UpdateTimes to the zero timestamp
+-- (to prevent issues determining how recent a record is)
+-- and then explicitly set the UpdateTimes of 
+-- future rows to update
+
+UPDATE JobRecords SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
+ALTER TABLE JobRecords MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+UPDATE SuperSummaries SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
+ALTER TABLE SuperSummaries MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
+ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+-- UPDATE SCRIPT FOR CLOUD SCHEMA
+-- This script will set any null Cloud UpdateTimes to the zero timestamp
+-- (to prevent issues determining how recent a record is)
+-- and then explicitly set the UpdateTimes of 
+-- future rows to update
+
+UPDATE CloudRecords SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
+ALTER TABLE CloudRecords MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+UPDATE CloudSummaries SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
+ALTER TABLE CloudSummaries MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
+ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+-- UPDATE SCRIPT FOR SERVER SCHEMA
+-- This script will set any null UpdateTimes to the zero timestamp
+-- (to prevent issues determining how recent a record is)
+-- and then explicitly set the UpdateTimes of 
+-- future rows to update
+
+UPDATE JobRecords SET UpdateTime = '0000-00-00 00:00:00'  WHERE UpdateTime IS NULL;
+ALTER TABLE JobRecords MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+UPDATE Summaries SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
+ALTER TABLE Summaries MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+UPDATE NormalisedSummaries SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
+ALTER TABLE NormalisedSummaries MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+UPDATE HybridSuperSummaries SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
+ALTER TABLE HybridSuperSummaries MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+UPDATE SyncRecords SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
+ALTER TABLE SyncRecords MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
+ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
