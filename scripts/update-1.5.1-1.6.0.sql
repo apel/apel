@@ -1,14 +1,22 @@
+-- This script is a single comment block that applies to
+-- APEL Version 1.5.1, Cloud Database.
+
+-- If you have a Cloud Database and wish to
+-- upgrade to APEL Version 1.6.0, remove the block comment
+-- symbols /* and */ and run this script
+   
+/*
 -- Create / Update Tables
 
-/* Update CloudRecords
+-- Update CloudRecords
 
-Existing rows get set to the following:
+-- Existing rows get set to the following:
 
-CloudComputeServiceID - set afterwards
-PublicIPCount - null (NULL)
-BenchmarkType - empty VARCHAR ("")
-Benchmark - decimal zero (0.00)
-*/
+-- CloudComputeServiceID - set afterwards
+-- PublicIPCount - null (NULL)
+-- BenchmarkType - empty VARCHAR ("")
+-- Benchmark - decimal zero (0.00)
+
 ALTER TABLE CloudRecords
   ADD CloudComputeServiceID INT NOT NULL AFTER SiteID,
   ADD PublicIPCount INT AFTER NetworkOutbound,
@@ -16,12 +24,11 @@ ALTER TABLE CloudRecords
   ADD Benchmark DECIMAL(10,3) NOT NULL AFTER BenchmarkType;
 
 
-/* Update CloudSummaries
+-- Update CloudSummaries
 
-Existing rows get same values as for CloudRecords
+-- Existing rows get same values as for CloudRecords
+-- PublicIPCount is not currently used in summaries
 
-PublicIPCount is not currently used in summaries
-*/
 ALTER TABLE CloudSummaries
   ADD CloudComputeServiceID INT NOT NULL AFTER SiteID,
   ADD CpuCount INT AFTER CpuDuration,
@@ -204,3 +211,4 @@ BEGIN
     ORDER BY NULL;
 END //
 DELIMITER ;
+/*
