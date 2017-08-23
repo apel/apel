@@ -119,16 +119,6 @@ class ParserLSFTest(unittest.TestCase):
                 ' 87722 0 0 0 -1 0 0 0 0 0 -1 "" "default" 0 1 "" "" 0 310424 339112 "" "" ""')
         
         self.assertRaises(IndexError, self.parser.parse, line)
-    
-    def test_invalid_version(self):
-        # unsupported version
-        line = ('"JOB_FINISH" "10.1" 1089407406 699195 283 33554482 1 1089290023 0 0 1089406862 '
-                '"raortega" "8nm" "" "" "" "lxplus015" "prog/step3c" "" "/afs/cern.ch/user/r/raortega/log/bstep3c-362.txt" '
-                '"/afs/cern.ch/user/r/raortega/log/berr-step3c-362.txt" "1089290023.699195" 0 1 "tbed0079" 64 3.3 "" '
-                '"/afs/cern.ch/user/r/raortega/prog/step3c/startEachset.pl362 7 8" 277.210000 17.280000 0 0 -1 0 0 927804'
-                ' 87722 0 0 0 -1 0 0 0 0 0 -1 "" "default" 0 1 "" "" 0 310424 339112 "" "" ""')
-        
-        self.assertRaises(KeyError, self.parser.parse, line)
 
 if __name__ == '__main__':
     unittest.main()
