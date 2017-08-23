@@ -1,5 +1,18 @@
+-- This script is contains multiple comments block that apply to
+-- APEL Version 1.6.0, and the following databases:
+--  - Client Grid Accounting Database
+--  - Server Grid Accounting Database
+--  - Cloud Accounting Database
+
+/*
+
 -- UPDATE SCRIPT FOR CLIENT SCHEMA
--- This script will set any null UpdateTimes to the zero timestamp
+
+-- If you have a Client Grid Accounting Database and wish to
+-- upgrade to APEL Version next, remove the block comment
+-- symbols around this section and run this script
+
+-- This section will set any null Client Grid UpdateTimes to the zero timestamp
 -- (to prevent issues determining how recent a record is)
 -- and then explicitly set the UpdateTimes of 
 -- future rows to update
@@ -13,7 +26,15 @@ ALTER TABLE SuperSummaries MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT C
 UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
 ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 
+*/
+/*
+
 -- UPDATE SCRIPT FOR CLOUD SCHEMA
+
+-- If you have a Cloud Accounting Database and wish to
+-- upgrade to APEL Version next, remove the block comment
+-- symbols around this section and run this script
+
 -- This script will set any null Cloud UpdateTimes to the zero timestamp
 -- (to prevent issues determining how recent a record is)
 -- and then explicitly set the UpdateTimes of 
@@ -28,8 +49,16 @@ ALTER TABLE CloudSummaries MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT C
 UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
 ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 
+*/
+/*
+
 -- UPDATE SCRIPT FOR SERVER SCHEMA
--- This script will set any null UpdateTimes to the zero timestamp
+
+-- If you have a Server Grid Accounting Database and wish to
+-- upgrade to APEL Version next, remove the block comment
+-- symbols around this section and run this script
+
+-- This script will set any null Server Grid UpdateTimes to the zero timestamp
 -- (to prevent issues determining how recent a record is)
 -- and then explicitly set the UpdateTimes of 
 -- future rows to update
@@ -52,3 +81,4 @@ ALTER TABLE SyncRecords MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURR
 UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
 ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 
+*/
