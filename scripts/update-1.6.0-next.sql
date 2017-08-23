@@ -29,29 +29,6 @@ ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURR
 */
 /*
 
--- UPDATE SCRIPT FOR CLOUD SCHEMA
-
--- If you have a Cloud Accounting Database and wish to
--- upgrade to APEL Version next, remove the block comment
--- symbols around this section and run this script
-
--- This script will set any null Cloud UpdateTimes to the zero timestamp
--- (to prevent issues determining how recent a record is)
--- and then explicitly set the UpdateTimes of 
--- future rows to update
-
-UPDATE CloudRecords SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
-ALTER TABLE CloudRecords MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
-
-UPDATE CloudSummaries SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
-ALTER TABLE CloudSummaries MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
-
-UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
-ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
-
-*/
-/*
-
 -- UPDATE SCRIPT FOR SERVER SCHEMA
 
 -- If you have a Server Grid Accounting Database and wish to
@@ -82,3 +59,27 @@ UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NU
 ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 
 */
+/*
+
+-- UPDATE SCRIPT FOR CLOUD SCHEMA
+
+-- If you have a Cloud Accounting Database and wish to
+-- upgrade to APEL Version next, remove the block comment
+-- symbols around this section and run this script
+
+-- This script will set any null Cloud UpdateTimes to the zero timestamp
+-- (to prevent issues determining how recent a record is)
+-- and then explicitly set the UpdateTimes of
+-- future rows to update
+
+UPDATE CloudRecords SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
+ALTER TABLE CloudRecords MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+UPDATE CloudSummaries SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
+ALTER TABLE CloudSummaries MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
+ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+*/
+
