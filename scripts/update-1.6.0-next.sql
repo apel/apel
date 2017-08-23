@@ -5,7 +5,6 @@
 --  - Cloud Accounting Database
 
 /*
-
 -- UPDATE SCRIPT FOR CLIENT SCHEMA
 
 -- If you have a Client Grid Accounting Database and wish to
@@ -25,10 +24,9 @@ ALTER TABLE SuperSummaries MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT C
 
 UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
 ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
-
 */
-/*
 
+/*
 -- UPDATE SCRIPT FOR SERVER SCHEMA
 
 -- If you have a Server Grid Accounting Database and wish to
@@ -57,10 +55,9 @@ ALTER TABLE SyncRecords MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURR
 
 UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
 ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
-
 */
-/*
 
+/*
 -- UPDATE SCRIPT FOR CLOUD SCHEMA
 
 -- If you have a Cloud Accounting Database and wish to
@@ -80,6 +77,4 @@ ALTER TABLE CloudSummaries MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT C
 
 UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
 ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
-
 */
-
