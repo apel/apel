@@ -2,6 +2,7 @@ from datetime import datetime
 import unittest
 
 from apel.db.loader import AurParser
+from apel.db.loader.xml_parser import XMLParserException
 from test_car_parser import datetimes_equal
 
 
@@ -107,6 +108,13 @@ class AurParserTest(unittest.TestCase):
 
             # This should pass
             # record.get_db_tuple()
+
+    def test_empty_xml(self):
+        """
+        Check that correct exception is raised for an XML file with no records.
+        """
+        parser = AurParser("<something></something>")
+        self.assertRaises(XMLParserException, parser.get_records)
 
 
 if __name__ == '__main__':
