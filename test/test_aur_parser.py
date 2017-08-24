@@ -28,12 +28,12 @@ class AurParserTest(unittest.TestCase):
         values1 = {"Site": "aur:Site",
                    "Month": 1,
                    "Year": 2012,
-                   #"Infrastructure": "grid",
+                   "Infrastructure": "grid",
                    "WallDuration": 86400,
                    "CpuDuration": 86400,
                    "EarliestEndTime": datetime(2012, 1, 1, 12, 00, 00),
                    "LatestEndTime": datetime(2012, 1, 31, 12, 00, 00),
-                   # "ServiceLevel": Decimal(0.0),
+                   #"ServiceLevel": Decimal('0.0'),
                    "NumberOfJobs": 1
                    }
 
@@ -44,7 +44,7 @@ class AurParserTest(unittest.TestCase):
   <aur:Year>2012</aur:Year>
   <aur:UserIdentity>
     <urf:GlobalUserName urf:type="opensslCompat">urf:GlobalUserName</urf:GlobalUserName>
-    <urf:Group>urf:Group</urf:Group>
+    <urf:Group>TestGroup</urf:Group>
     <urf:GroupAttribute urf:type="vo-group">vogroup</urf:GroupAttribute>
   </aur:UserIdentity>
   <aur:MachineName urf:description="">aur:MachineName</aur:MachineName>
@@ -69,9 +69,9 @@ class AurParserTest(unittest.TestCase):
                    "Month": 1,
                    "Year": 2012,
                    "SubmitHost": "aur:SubmitHost",
-                   "VO": "urf:Group",
-                   #"VOGroup": "vogroup",
-                   #"Infrastructure": "grid",
+                   "VO": "TestGroup",
+                   "VOGroup": "vogroup",
+                   "Infrastructure": "grid",
                    "WallDuration": 86400,
                    "CpuDuration": 86400,
                    "EarliestEndTime": datetime(2012, 1, 1, 12, 00, 00),
@@ -95,7 +95,7 @@ class AurParserTest(unittest.TestCase):
             # Mandatory fields - need checking.
             for field in ('Site', 'Month', 'Year',
                           'WallDuration', 'CpuDuration', 'NumberOfJobs'):
-                # 'ServiceLevel',
+                # Also need: 'NormalisedWallDuration', 'NormalisedCpuDuration'
                 self.assertTrue(field in cont, "Field '%s' not found" % field)
 
             for key in cases[aur]:
@@ -104,6 +104,9 @@ class AurParserTest(unittest.TestCase):
                         self.fail("Datetimes don't match for key %s: %s, %s" % (key, cont[key], cases[aur][key]))
                 else:
                     self.assertEqual(cont[key], cases[aur][key], "%s != %s for key %s" % (cont[key], cases[aur][key], key))
+
+            # This should pass
+            # record.get_db_tuple()
 
 
 if __name__ == '__main__':

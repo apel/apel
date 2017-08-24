@@ -45,7 +45,7 @@ class AurParser(XMLParser):
     
     def get_records(self):
         '''
-        Returns list of parsed records from CAR file.
+        Returns list of parsed records from AUR file.
         
         Please notice that this parser _requires_ valid
         structure of XML document, including namespace
@@ -81,14 +81,13 @@ class AurParser(XMLParser):
             'VO'               : lambda nodes: self.getText(nodes['Group'][0].childNodes),
             'VOGroup'          : lambda nodes: self.getText(
                                         self.getTagByAttr(nodes['GroupAttribute'], 
-                                                          'type', 'vo-group')[0].childNodes, CarParser.NAMESPACE),
+                                                          'type', 'vo-group', CarParser.NAMESPACE)[0].childNodes),
             'VORole'           : lambda nodes: self.getText(
                                         self.getTagByAttr(nodes['GroupAttribute'],
-                                                          'type', 'role')[0].childNodes),
+                                                          'type', 'role', CarParser.NAMESPACE)[0].childNodes),
             'MachineName'      : lambda nodes: self.getText(nodes['MachineName'][0].childNodes),
             'SubmitHost'       : lambda nodes: self.getText(nodes['SubmitHost'][0].childNodes),
-            'Infrastructure': lambda nodes: self.getText(
-                nodes['Infrastructure'][0].childNodes),
+            'Infrastructure'   : lambda nodes: self.getAttr(nodes['Infrastructure'][0], 'type', CarParser.NAMESPACE),
             'EarliestEndTime'  : lambda nodes: parse_timestamp(self.getText(
                                         nodes['EarliestEndTime'][0].childNodes)),
             'LatestEndTime'  : lambda nodes: parse_timestamp(self.getText(
@@ -114,13 +113,18 @@ class AurParser(XMLParser):
 
         nodes = {}.fromkeys(tags)
         data = {}
-        
-        for node in nodes:
 
-            nodes[node] = xml_record.getElementsByTagNameNS(AurParser.NAMESPACE, node)
-            # Some of the nodes are in the CAR namespace.
-            nodes[node].extend(xml_record.getElementsByTagNameNS(CarParser.NAMESPACE, node))
-        
+        for node in nodes:
+            if node in ('GroupAttribute',):
+                # For these attributes we need to dig into the GroupAttribute
+                # elements to get the values so we save the whole elements.
+                nodes[node] = xml_record.getElementsByTagNameNS(
+                    CarParser.NAMESPACE, 'GroupAttribute')
+            else:
+                nodes[node] = xml_record.getElementsByTagNameNS(self.NAMESPACE, node)
+                # Some of the nodes are in the CAR namespace.
+                nodes[node].extend(xml_record.getElementsByTagNameNS(CarParser.NAMESPACE, node))
+
         for field in functions:
             try:
                 data[field] = functions[field](nodes)
