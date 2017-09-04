@@ -85,7 +85,7 @@ class MysqlTest(unittest.TestCase):
 
         It currently can't test for pre/post database load equality
         as the two are currently not the same for V0.2.
-        i.e Benchmark 'None', which gets saved a set to 0.0
+        i.e Benchmark 'None', which gets set to 0.0
         '''
         schema_path = os.path.abspath(os.path.join('..', 'schemas',
                                                    'cloud.sql'))
