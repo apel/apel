@@ -211,7 +211,7 @@ DELIMITER ;
 
 -- -----------------------------------------------------------------------------
 -- Sites
-
+DROP TABLE IF EXISTS Sites;
 CREATE TABLE Sites (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY
  ,  name VARCHAR(255) NOT NULL
@@ -237,7 +237,7 @@ DELIMITER ;
 
 -- -----------------------------------------------------------------------------
 -- CloudComputeService
-
+DROP TABLE IF EXISTS CloudComputeServices;
 CREATE TABLE CloudComputeServices (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY
  ,  name VARCHAR(255) NOT NULL
@@ -263,7 +263,7 @@ DELIMITER ;
 
 -- -----------------------------------------------------------------------------
 -- DNs
-
+DROP TABLE IF EXISTS DNs;
 CREATE TABLE DNs (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY
  ,  name VARCHAR(255) NOT NULL

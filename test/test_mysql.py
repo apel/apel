@@ -58,7 +58,7 @@ class MysqlTest(unittest.TestCase):
         self.assertRaises(apel.db.apeldb.ApelDbException,
                           self.db.load_records, [1234], source='testDN')
 
-    def test_load_and_get(self):
+    def test_load_and_get_job(self):
         job = apel.db.records.job.JobRecord()
         job._record_content = {'Site': 'testSite', 'LocalJobId': 'testJob',
                                'SubmitHost': 'testHost',
@@ -78,6 +78,61 @@ class MysqlTest(unittest.TestCase):
         # Check that items_in is a subset of items_out
         # Can't use 'all()' rather than comparing the length as Python 2.4
         self.assertEqual([item in items_out for item in items_in].count(True), len(items_in))
+
+    def test_load_and_get_cloud(self):
+        '''
+        Test a CloudV0.2/0.4 message can be loaded into the database.
+
+        It currently can't test for pre/post database load equality
+        as the two are currently not the same for V0.2.
+        i.e Benchmark 'None', which gets set to 0.0
+        '''
+        schema_path = os.path.abspath(os.path.join('..', 'schemas',
+                                                   'cloud.sql'))
+        schema_handle = open(schema_path)
+        subprocess.call(['mysql', '-u', 'root', 'apel_unittest'],
+                        stdin=schema_handle)
+        schema_handle.close()
+
+        # loading messages like this does indirectly test
+        # the load_from_msg() code, but it also ensures
+        # we this test checks we can load a message,
+        # and not just what we think the message
+        # looks like as a python dictionary
+        cloud2 = apel.db.records.cloud.CloudRecord()
+        cloud2.load_from_msg(CLOUD2)
+
+        cloud4 = apel.db.records.cloud.CloudRecord()
+        cloud4.load_from_msg(CLOUD4)
+
+        items_in = cloud2._record_content.items()
+        items_in += cloud4._record_content.items()
+
+        record_list = [cloud2, cloud4]
+
+        # load_records changes the 'cloud' cloud record as it calls _check_fields
+        # which adds placeholders to empty fields
+        try:
+            self.db.load_records(record_list, source='testDN')
+        except apel.db.apeldb.ApelDbException as err:
+            self.fail(err.message)
+
+        # this code block would check for equality between the message passed
+        # to the database and the message retrieved from the database.
+        # but at the moment they are fundementally unequal, for example
+        # a cloud 0.2 message has Benchmark 'None', which gets saved to 0.0
+        # in the database
+
+        # records_out = self.db.get_records(apel.db.records.cloud.CloudRecord)
+        # # record_out_list is a list of lists, i.e. [[record0.2],[[record0.4]]
+        # record_out_list = list(records_out)
+        # items_out = []
+        # for record in record_out_list[0]:
+        #     items_out += record._record_content.items()
+        # Check that items_in is a subset of items_out
+        # Can't use 'all()' rather than comparing the length as Python 2.4
+        # self.assertEqual([item in items_out for item in items_in].count(True),
+        #                   len(items_in))
 
     def test_mixed_load(self):
         """
@@ -149,6 +204,57 @@ class MysqlTest(unittest.TestCase):
         self.assertTrue(self.db.set_updated())
         self.assertTrue(type(self.db.get_last_updated()) is datetime.datetime)
 
+CLOUD2 = '''VMUUID: 12345 Site1 vm-1
+SiteName: Site1
+MachineName: '1'
+LocalUserId: 1
+LocalGroupId: 1
+GlobalUserName: NULL
+FQAN: NULL
+Status: completed
+StartTime: 1318842264
+EndTime: 1318849976
+SuspendDuration: NULL
+WallDuration: NULL
+CpuDuration: NULL
+CpuCount: 1
+NetworkType: NULL
+NetworkInbound: 0
+NetworkOutbound: 0
+Memory: 512
+Disk: NULL
+StorageRecordId: NULL
+ImageId: 1
+CloudType: Cloud Technology 1
+'''
+
+CLOUD4 = '''VMUUID: 12345 Site2 Accounting Test
+SiteName: Site2
+CloudComputeService: Cloud Technology 2 Instance 1
+MachineName: Accounting Test
+LocalUserId: 1
+LocalGroupId: 1
+GlobalUserName: /DC=XX/DC=XX/O=XX/CN=XX
+FQAN: /ops/Role=NULL/Capability=NULL
+Status: started
+StartTime: 1343362725
+EndTime: NULL
+SuspendDuration: NULL
+WallDuration: 1582876
+CpuDuration: 437
+CpuCount: 1
+NetworkType: NULL
+NetworkInbound: NULL
+NetworkOutbound: NULL
+PublicIPCount: 1
+Memory: 512
+Disk: 0
+BenchmarkType: Si2k
+Benchmark: 200
+StorageRecordId: NULL
+ImageId: 1
+CloudType: Cloud Technology 2
+'''
 
 if __name__ == '__main__':
     unittest.main()
