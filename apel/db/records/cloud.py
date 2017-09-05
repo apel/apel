@@ -76,6 +76,16 @@ class CloudRecord(Record):
             group = 'None'
         if vo is None:
             vo = 'None'
+
+        if self._record_content['Benchmark'] is None:
+            # If Benchmark is not present in the original record
+            # the Record class level type checking will set
+            # it to None. We can't pass None as a Benchmark
+            # as the filed is NOT NULL in the database.
+            # So we set it to something meaningful. In this
+            # case the empty 0.0
+            self._record_content['Benchmark'] = 0.0
+            
             
         self._record_content['VORole'] = role
         self._record_content['VOGroup'] = group
