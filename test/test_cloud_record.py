@@ -166,7 +166,7 @@ CloudType: OpenNebula
                          'PublicIPCount': None,
                          'Memory': 512,
                          'BenchmarkType': 'None',
-                         'Benchmark': None,
+                         'Benchmark': 0.0,
                          'ImageId': '\'scilin6\'',
                          'CloudType': 'OpenNebula'}
         self.cases = {}
