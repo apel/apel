@@ -1,11 +1,20 @@
--- This script is a single comment block that applies to
--- APEL Version 1.5.1, Cloud Database.
+-- This script contains multiple comment blocks that can update
+-- APEL version 1.5.1 databases of the following types to 1.6.0:
+--  - Cloud Accounting Database
+--  - Storage Accounting Database
 
--- If you have a Cloud Database and wish to
--- upgrade to APEL Version 1.6.0, remove the block comment
--- symbols /* and */ and run this script
+-- To update, find the relevent comment block below and remove
+-- its block comment symbols /* and */ then run this script.
+
+
    
 /*
+-- UPDATE SCRIPT FOR CLOUD SCHEMA
+
+-- If you have a Cloud Accounting Database and wish to
+-- upgrade to APEL Version 1.6.0, remove the block comment
+-- symbols around this section and then run this script.
+
 -- Create / Update Tables
 
 -- Update CloudRecords
@@ -211,4 +220,146 @@ BEGIN
     ORDER BY NULL;
 END //
 DELIMITER ;
+*/
+
+
 /*
+-- UPDATE SCRIPT FOR STORAGE SCHEMA
+
+-- If you have a Storage Accounting Database and wish to
+-- upgrade to APEL version 1.6.0, remove the block comment
+-- symbols around this section and then run this script.
+
+-- This script adds tables SubGroups and Roles, and two matching Lookup tables.
+-- It then adds defualt values to first two tables, expands the StarRecords
+-- table with two matching ID columns, then sets those to default values. Lastly
+-- the ReplaceStarRecord is updated to include the new fields.
+
+
+DROP TABLE IF EXISTS SubGroups;
+CREATE TABLE SubGroups (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255),
+  INDEX (name)
+);
+
+DROP FUNCTION IF EXISTS SubGroupLookup;
+DELIMITER //
+CREATE FUNCTION SubGroupLookup(lookup VARCHAR(255)) RETURNS INTEGER DETERMINISTIC
+BEGIN
+  DECLARE result INTEGER;
+  SELECT id FROM SubGroups WHERE name=lookup INTO result;
+  IF result IS NULL THEN
+    INSERT INTO SubGroups(name) VALUES (lookup);
+    SET result=LAST_INSERT_ID();
+  END IF;
+RETURN result;
+END //
+DELIMITER ;
+
+
+DROP TABLE IF EXISTS Roles;
+CREATE TABLE Roles (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255),
+  INDEX (name)
+);
+
+DROP FUNCTION IF EXISTS RoleLookup;
+DELIMITER //
+CREATE FUNCTION RoleLookup(lookup VARCHAR(255)) RETURNS INTEGER DETERMINISTIC
+BEGIN
+  DECLARE result INTEGER;
+  SELECT id FROM Roles WHERE name=lookup INTO result;
+  IF result IS NULL THEN
+    INSERT INTO Roles(name) VALUES (lookup);
+    SET result=LAST_INSERT_ID();
+  END IF;
+RETURN result;
+END //
+DELIMITER ;
+
+
+INSERT INTO SubGroups VALUES(1,'None');
+INSERT INTO Roles VALUES(1,'None');
+
+
+ALTER TABLE StarRecords
+  ADD COLUMN SubGroupID INT NOT NULL AFTER GroupID,
+  ADD COLUMN RoleID INT NOT NULL AFTER SubGroupID;
+
+Update StarRecords SET SubGroupID=1;
+Update StarRecords SET RoleID=1;
+
+
+DROP PROCEDURE IF EXISTS ReplaceStarRecord;
+DELIMITER //
+CREATE PROCEDURE ReplaceStarRecord(
+  recordId                  VARCHAR(255),
+  createTime                DATETIME,
+  storageSystem             VARCHAR(255),
+  site                      VARCHAR(255),
+  storageShare              VARCHAR(255),
+  storageMedia              VARCHAR(255),
+  storageClass              VARCHAR(255),
+  fileCount                 INTEGER,
+  directoryPath             VARCHAR(255),
+  localUser                 VARCHAR(255),
+  localGroup                VARCHAR(255),
+  userIdentity              VARCHAR(255),
+  groupName                 VARCHAR(255),
+  subGroupName              VARCHAR(255),
+  roleName                  VARCHAR(255),
+  startTime                 DATETIME,
+  endTime                   DATETIME,
+  resourceCapacityUsed      BIGINT,
+  logicalCapacityUsed       BIGINT,
+  resourceCapacityAllocated BIGINT
+)
+BEGIN
+  REPLACE INTO StarRecords(
+    RecordId,
+    CreateTime,
+    StorageSystemID,
+    SiteID,
+    StorageShareID,
+    StorageMediaID,
+    StorageClassID,
+    FileCount,
+    DirectoryPath,
+    LocalUser,
+    LocalGroup,
+    UserIdentityID,
+    GroupID,
+    SubGroupID,
+    RoleID,
+    StartTime,
+    EndTime,
+    ResourceCapacityUsed,
+    LogicalCapacityUsed,
+    ResourceCapacityAllocated)
+  VALUES (
+    recordId,
+    createTime,
+    StorageSystemLookup(storageSystem),
+    SiteLookup(site),
+    StorageShareLookup(storageShare),
+    StorageMediaLookup(storageMedia),
+    StorageClassLookup(storageClass),
+    fileCount,
+    directoryPath,
+    localUser,
+    localGroup,
+    UserIdentityLookup(userIdentity),
+    GroupLookup(groupName),
+    SubGroupLookup(subGroupName),
+    RoleLookup(roleName),
+    startTime,
+    endTime,
+    resourceCapacityUsed,
+    logicalCapacityUsed,
+    resourceCapacityAllocated
+);
+END //
+DELIMITER ;
+*/
