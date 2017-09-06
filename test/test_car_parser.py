@@ -2,6 +2,7 @@ import datetime
 import unittest
 
 from apel.db.loader import CarParser
+from apel.db.loader.xml_parser import XMLParserException
 
 
 def datetimes_equal(dt1, dt2):
@@ -183,6 +184,13 @@ class CarParserTest(unittest.TestCase):
                         self.fail("Datetimes don't match for key %s: %s, %s" % (key, cont[key], cases[car][key]))
                 else:
                     self.assertEqual(cont[key], cases[car][key], '%s != %s for key %s' % (cont[key], cases[car][key], key))
+
+    def test_empty_xml(self):
+        """
+        Check that correct exception is raised for an XML file with no records.
+        """
+        parser = CarParser("<something></something>")
+        self.assertRaises(XMLParserException, parser.get_records)
 
 if __name__ == '__main__':
     unittest.main()
