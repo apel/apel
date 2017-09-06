@@ -60,7 +60,7 @@ class AllParsersRecognizeTest(unittest.TestCase):
 
         for test in tests:
             parser_object = getattr(apel.parsers, test + 'Parser')
-            parser = parser_object('testSite', 'testHost', False)
+            parser = parser_object('testSite', 'testHost', True)
             self.assertTrue(parser.recognize(tests[test]), test)
 
     def test_none(self):
@@ -81,7 +81,7 @@ class AllParsersRecognizeTest(unittest.TestCase):
 
         for test in tests:
             parser_object = getattr(apel.parsers, test + 'Parser')
-            parser = parser_object('testSite', 'testHost', False)
+            parser = parser_object('testSite', 'testHost', True)
             self.assertFalse(parser.recognize(tests[test]), test)
 
 
