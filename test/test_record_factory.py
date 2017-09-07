@@ -6,30 +6,22 @@ Created on 4 Jul 2011
 Tests for the RecordFactory.
 '''
 import unittest
+
 from apel.db.loader.record_factory import RecordFactory, RecordFactoryException
 from apel.db.records import JobRecord
 from apel.db.records import SummaryRecord
 
-class Test(unittest.TestCase):
 
+class Test(unittest.TestCase):
 
     def setUp(self):
         self._get_msg_text()
         self._rf = RecordFactory()
 
-
-    def tearDown(self):
-        pass
-
-
     def test_create_records(self):
-        
-        try:
-            self._rf.create_records(self._rubbish_text)
-            self.fail('No exception thrown by nonsense message.')
-        except RecordFactoryException:
-            # We expect the nonsense message to fail.
-            pass
+        """Check that a nonsense message raises an exception."""
+        self.assertRaises(RecordFactoryException,
+                          self._rf.create_records, self._rubbish_text)
 
     def test_create_jrs(self):
         try:
@@ -40,9 +32,8 @@ class Test(unittest.TestCase):
                 if not isinstance(record, JobRecord):
                     self.fail('Expected JobRecord object.')
         except Exception, e:
-            self.fail('Exception thrown when creating records from object: ' + str(e))
+            self.fail('Exception thrown when creating records from object: %s' % e)
 
-            
     def test_create_srs(self):
         try:
             records = self._rf.create_records(self._sr_text)
@@ -52,19 +43,17 @@ class Test(unittest.TestCase):
                 if not isinstance(record, SummaryRecord):
                     self.fail('Expected SummaryRecord object.')
         except Exception, e:
-            self.fail('Exception thrown when creating records from object: ' + str(e))
-            
-    
+            self.fail('Exception thrown when creating records from object: %s' % e)
+
     def _get_msg_text(self):
-    
     # Below, I've just got some test data hard-coded.
-        self._rubbish_text = '''In 1869, the stock ticker was invented. 
-        It was an electro-mechanical machine consisting of a typewriter, 
-        a long pair of wires and a ticker tape printer, 
-        and its purpose was to distribute stock prices over long 
-        distances in realtime. This concept gradually evolved into 
-        the faster, ASCII-based teletype.''' 
-    
+        self._rubbish_text = '''In 1869, the stock ticker was invented.
+        It was an electro-mechanical machine consisting of a typewriter,
+        a long pair of wires and a ticker tape printer,
+        and its purpose was to distribute stock prices over long
+        distances in realtime. This concept gradually evolved into
+        the faster, ASCII-based teletype.'''
+
         self._jr_text = '''\
 APEL-individual-job-message: v0.1
 Site: RAL-LCG2
@@ -101,8 +90,7 @@ MemoryVirtual: 2000
 ServiceLevelType: Si2k
 ServiceLevel: 1000
 %%'''
-    
-    
+
         self._sr_text = '''\
 APEL-summary-job-message: v0.2
 Site: RAL-LCG2
