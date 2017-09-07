@@ -102,8 +102,24 @@ class TestSummaryRecord(unittest.TestCase):
                 print values
                 self.fail('Values changed when creating a summary record: ' +
                           str(item1) + ": " + str(item2))
-                
-        
+
+    def test_get_ur(self):
+        """Check that get_ur outputs correct XML."""
+        sr = SummaryRecord()
+        sr.load_from_msg(self._records[0])
+        xml = ('<aur:SummaryRecord><aur:Site>RAL-LCG2</aur:Site><aur:Month>3</a'
+               'ur:Month><aur:Year>2010</aur:Year><aur:UserIdentity><urf:GroupA'
+               'ttribute urf:type="vo-group">/atlas</urf:GroupAttribute><urf:Gr'
+               'oupAttribute urf:type="vo-role">Role=production</urf:GroupAttri'
+               'bute></aur:UserIdentity><aur:SubmitHost>some.host.org</aur:Subm'
+               'itHost><aur:Infrastructure urf:type="grid"/><aur:EarliestEndTim'
+               'e>2010-03-01T01:00:00Z</aur:EarliestEndTime><aur:LatestEndTime>'
+               '2010-03-20T01:00:00Z</aur:LatestEndTime><aur:WallDuration>PT234'
+               '256S</aur:WallDuration><aur:CpuDuration>PT244435S</aur:CpuDurat'
+               'ion><aur:ServiceLevel urf:type="Si2k">1000.0</aur:ServiceLevel>'
+               '<aur:NumberOfJobs>100</aur:NumberOfJobs></aur:SummaryRecord>')
+        self.assertEqual(sr.get_ur(), xml)
+
 ############################################################################
 # Private helper method below
 ############################################################################

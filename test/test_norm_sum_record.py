@@ -95,6 +95,25 @@ class TestNormalisedSummaryRecord(unittest.TestCase):
                 self.fail("Summary record values don't match: %s != %s" %
                           (item1, item2))
 
+    def test_get_ur(self):
+        """Check that get_ur outputs correct XML."""
+        nsr = NormalisedSummaryRecord()
+        nsr.load_from_msg(self._records[0])
+        xml = ('<aur:SummaryRecord><aur:Site>RAL-LCG2</aur:Site><aur:Month>3</a'
+               'ur:Month><aur:Year>2010</aur:Year><aur:UserIdentity><urf:GroupA'
+               'ttribute urf:type="vo-group">/atlas</urf:GroupAttribute><urf:Gr'
+               'oupAttribute urf:type="vo-role">Role=production</urf:GroupAttri'
+               'bute></aur:UserIdentity><aur:SubmitHost>some.host.org</aur:Subm'
+               'itHost><aur:Infrastructure urf:type="grid"/><aur:EarliestEndTim'
+               'e>2010-03-01T01:00:00Z</aur:EarliestEndTime><aur:LatestEndTime>'
+               '2010-03-20T01:00:00Z</aur:LatestEndTime><aur:WallDuration>PT234'
+               '256S</aur:WallDuration><aur:CpuDuration>PT244435S</aur:CpuDurat'
+               'ion><aur:NormalisedWallDuration>PT234256S</aur:NormalisedWallDu'
+               'ration><aur:NormalisedCpuDuration>PT244435S</aur:NormalisedCpuD'
+               'uration><aur:NumberOfJobs>100</aur:NumberOfJobs></aur:SummaryRe'
+               'cord>')
+        self.assertEqual(nsr.get_ur(), xml)
+
     def _get_record_text(self):
         """Gets some sample valid records, as a tuple of strings.  The contents
         must match the values in _get_record_tuples."""
