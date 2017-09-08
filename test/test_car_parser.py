@@ -2,6 +2,7 @@ import datetime
 import unittest
 
 from apel.db.loader import CarParser
+from apel.db.loader.xml_parser import XMLParserException
 
 
 def datetimes_equal(dt1, dt2):
@@ -183,6 +184,19 @@ class CarParserTest(unittest.TestCase):
                         self.fail("Datetimes don't match for key %s: %s, %s" % (key, cont[key], cases[car][key]))
                 else:
                     self.assertEqual(cont[key], cases[car][key], '%s != %s for key %s' % (cont[key], cases[car][key], key))
+
+    def test_empty_xml(self):
+        """
+        Check that exception is raised for XML not in computerecord namepsace.
+        """
+        parser = CarParser("<something></something>")
+        self.assertRaises(XMLParserException, parser.get_records)
+
+    #def test_empty_record(self):
+    #    # Not sure what should be returned with an empty record like this.
+    #    parser = CarParser('<urf:UsageRecord xmlns:urf="http://eu-emi.eu/namesp'
+    #                       'aces/2012/11/computerecord"></urf:UsageRecord>')
+    #    print parser.get_records()[0]._record_content
 
 if __name__ == '__main__':
     unittest.main()
