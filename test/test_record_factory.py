@@ -13,9 +13,11 @@ from apel.db.records import (CloudRecord, CloudSummaryRecord, JobRecord,
                              SummaryRecord, SyncRecord)
 
 
-class Test(unittest.TestCase):
+class TestRecordFactory(unittest.TestCase):
+    """Unit tests for the record factory class."""
 
     def setUp(self):
+        """Create message variables and record factory instance."""
         self._get_msg_text()
         self._rf = RecordFactory()
 
@@ -49,7 +51,7 @@ class Test(unittest.TestCase):
         self.assertTrue(isinstance(record_list[0], StorageRecord))
 
     def test_create_bad_xml(self):
-        """Check that trying to create a record from non-record XML fials."""
+        """Check that trying to create a record from non-record XML fails."""
         self.assertRaises(RecordFactoryException, self._rf.create_records,
                           '<nonrecordxml></nonrecordxml>')
 
@@ -59,30 +61,36 @@ class Test(unittest.TestCase):
                           'APEL-individual-bad-message: v0.1')
 
     def test_create_jrs(self):
+        """Check that creating job records returns JobRecords."""
         records = self._rf.create_records(self._jr_text)
         self.assertTrue(len(records), 2)
         for record in records:
             self.assertTrue(isinstance(record, JobRecord))
 
     def test_create_srs(self):
+        """Check that creating summary records returns SummaryRecords."""
         records = self._rf.create_records(self._sr_text)
         self.assertTrue(len(records), 2)
         for record in records:
             self.assertTrue(isinstance(record, SummaryRecord))
 
     def test_create_normalised_summary(self):
+        """Check that creating a normalised summary returns the right record."""
         records = self._rf.create_records(self._nsr_text)
         self.assertTrue(isinstance(records[0], NormalisedSummaryRecord))
 
     def test_create_sync(self):
+        """Check that creating a sync record returns a SyncRecord."""
         records = self._rf.create_records(self._sync_text)
         self.assertTrue(isinstance(records[0], SyncRecord))
 
     def test_create_cloud(self):
+        """Check that creating a cloud record returns a CloudRecord."""
         records = self._rf.create_records(self._cr_text)
         self.assertTrue(isinstance(records[0], CloudRecord))
 
     def test_create_cloud_summary(self):
+        """Check that creating a cloud summary returns a CloudSummaryRecord."""
         records = self._rf.create_records(self._csr_text)
         self.assertTrue(isinstance(records[0], CloudSummaryRecord))
 

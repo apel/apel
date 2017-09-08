@@ -1,3 +1,5 @@
+"""Test cases for logging function in apel.common.__init__."""
+
 from cStringIO import StringIO
 import logging
 import os
@@ -9,6 +11,7 @@ from apel.common import set_up_logging
 
 
 class LoggingTest(unittest.TestCase):
+    """Test cases for set_up_logging function."""
     def setUp(self):
         # Capture stdout in a StringIO object for inspection.
         self._stdout = sys.stdout

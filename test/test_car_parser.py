@@ -187,10 +187,16 @@ class CarParserTest(unittest.TestCase):
 
     def test_empty_xml(self):
         """
-        Check that correct exception is raised for an XML file with no records.
+        Check that exception is raised for XML not in computerecord namepsace.
         """
         parser = CarParser("<something></something>")
         self.assertRaises(XMLParserException, parser.get_records)
+
+    #def test_empty_record(self):
+    #    # Not sure what should be returned with an empty record like this.
+    #    parser = CarParser('<urf:UsageRecord xmlns:urf="http://eu-emi.eu/namesp'
+    #                       'aces/2012/11/computerecord"></urf:UsageRecord>')
+    #    print parser.get_records()[0]._record_content
 
 if __name__ == '__main__':
     unittest.main()

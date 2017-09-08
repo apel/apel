@@ -1,3 +1,5 @@
+"""Test cases for functionality given by base parser."""
+
 import unittest
 
 import apel.parsers
@@ -64,7 +66,13 @@ class AllParsersRecognizeTest(unittest.TestCase):
             self.assertTrue(parser.recognize(tests[test]), test)
 
     def test_none(self):
-        """Check that parsers that can return None fail on appropriate lines."""
+        """
+        Check that parsers that can return None fail on appropriate lines.
+
+        Only these parsers have the extra functionality to return None when they
+        parse a syntactically valid line that should be ignored e.g. unfinished.
+        The others either return the record or raise an exception.
+        """
         tests = {
             'LSF': (
                 '"JOB_RESIZE" "5.1" 1089407406 699195 283 33554482 1 1089290023'
