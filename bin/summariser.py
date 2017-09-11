@@ -83,8 +83,8 @@ def runprocess(db_config_file, config_file, log_config_file):
             error = "Cannot start summariser.  Pidfile %s already exists." % pidfile
 
             log.error("A pidfile %s already exists.", pidfile)
-            log.warn("Check that the dbloader is not running, then remove the file.")
-            raise Exception("The dbloader cannot start while pidfile exists.")
+            log.warn("Check that the summariser is not running, then remove the file.")
+            raise Exception("The summariser cannot start while pidfile exists.")
     except Exception, err:
         print "Error initialising summariser: " + err
         sys.exit(1)
