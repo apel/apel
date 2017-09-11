@@ -95,6 +95,8 @@ def runprocess(db_config_file, config_file, log_config_file):
         f.close()
     except IOError, e:
         log.warn("Failed to create pidfile %s: %s", pidfile, e)
+        # If we fail to create a pidfile, don't start the summariser
+        sys.exit(1)
 
     # Log into the database
     try:
