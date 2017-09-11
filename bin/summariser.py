@@ -124,8 +124,14 @@ def runprocess(db_config_file, config_file, log_config_file):
     except ApelDbException, err:
         log.error('Error summarising: ' + str(err))
         log.error('Summarising has been cancelled.')
-        log.info(LOG_BREAK)
         sys.exit(1)
+    finally:
+        # Clean up pidfile regardless of any excpetions
+        # This even executes if sys.exit() is called
+        log.info('Removing Pidfile')
+        os.remove(pidfile)
+        log.info(LOG_BREAK)
+        
 
 
 if __name__ == '__main__':
