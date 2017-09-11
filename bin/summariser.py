@@ -86,7 +86,7 @@ def runprocess(db_config_file, config_file, log_config_file):
             log.warn("Check that the summariser is not running, then remove the file.")
             raise Exception("The summariser cannot start while pidfile exists.")
     except Exception, err:
-        print "Error initialising summariser: " + err
+        print "Error initialising summariser: %s" % err
         sys.exit(1)
     try:
         f = open(pidfile, "w")
