@@ -53,7 +53,8 @@ class ApelMysqlDb(object):
                     CloudSummaryRecord : 'VCloudSummaries',
                     NormalisedSummaryRecord : 'VNormalisedSummaries',
                     ProcessedRecord : 'VProcessedFiles',
-                    SummaryRecord : 'VSummaries'}
+                    SummaryRecord : 'VSummaries',
+                    StorageRecord: 'VStarRecords'}
     
     # These simply need to have the same number of arguments as the stored procedures defined in the database schemas.
     INSERT_PROCEDURES = {

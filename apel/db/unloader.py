@@ -19,7 +19,7 @@ from apel.db import (Query, ApelDbException, JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
                      NORMALISED_SUMMARY_MSG_HEADER, SYNC_MSG_HEADER,
                      CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER)
 from apel.db.records import (JobRecord, SummaryRecord, NormalisedSummaryRecord,
-                             SyncRecord, CloudRecord, CloudSummaryRecord)
+                             SyncRecord, CloudRecord, CloudSummaryRecord, StorageRecord)
 from dirq.QueueSimple import QueueSimple
 try:
     import cStringIO as StringIO
@@ -48,7 +48,8 @@ class DbUnloader(object):
                     'VNormalisedSuperSummaries': NormalisedSummaryRecord,
                     'VSyncRecords': SyncRecord,
                     'VCloudRecords': CloudRecord,
-                    'VCloudSummaries': CloudSummaryRecord}
+                    'VCloudSummaries': CloudSummaryRecord,
+                    'VStarRecords': StorageRecord}
 
     # all record types for which withholding DNs is a valid option
     MAY_WITHHOLD_DNS = [JobRecord, SyncRecord, CloudRecord]
@@ -198,6 +199,8 @@ class DbUnloader(object):
         '''
         if self._withhold_dns and record_type not in self.MAY_WITHHOLD_DNS:
             raise ApelDbException('Cannot withhold DNs for %s' % record_type.__name__)
+        if record_type == StorageRecord and not ur:
+            raise ApelDbException('Cannot unload StorageRecords in APEL format')
         
         msgs = 0
         records = 0
@@ -235,8 +238,12 @@ class DbUnloader(object):
         #                'schemaLocation="http://eu-emi.eu/namespaces/2012/11/a'
         #                'ggregatedcomputerecord ">')
         #     UR_CLOSE = '</aur:SummaryRecords>'
+        elif type(records[0]) == StorageRecord:
+            XML_HEADER = '<?xml version="1.0" ?>'
+            UR_OPEN = ('<sr:StorageUsageRecords xmlns:sr="http://eu-emi.eu/namespaces/2011/02/storagerecord">')
+            UR_CLOSE = '</sr:StorageUsageRecords>'
         else:
-            raise ApelDbException('Can only send URs for JobRecords.')
+            raise ApelDbException('Can only send URs for JobRecords and StorageRecords.')
             
         buf.write(XML_HEADER + '\n')
         buf.write(UR_OPEN + '\n')

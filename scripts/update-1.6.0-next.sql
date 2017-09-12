@@ -1,8 +1,12 @@
--- This script is contains multiple comments block that apply to
--- APEL Version 1.6.0, and the following databases:
+-- This script contains multiple comment blocks that can update
+-- APEL version 1.6.0 databases of the following types:
 --  - Client Grid Accounting Database
 --  - Server Grid Accounting Database
 --  - Cloud Accounting Database
+--  - Storage Accounting Database
+
+-- To update, find the relevent comment block below and remove
+-- its block comment symbols /* and */ then run this script.
 
 /*
 -- UPDATE SCRIPT FOR CLIENT SCHEMA
@@ -25,6 +29,7 @@ ALTER TABLE SuperSummaries MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT C
 UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
 ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 */
+
 
 /*
 -- UPDATE SCRIPT FOR SERVER SCHEMA
@@ -57,6 +62,7 @@ UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NU
 ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 */
 
+
 /*
 -- UPDATE SCRIPT FOR CLOUD SCHEMA
 
@@ -77,4 +83,51 @@ ALTER TABLE CloudSummaries MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT C
 
 UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
 ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+*/
+
+
+/*
+-- UPDATE SCRIPT FOR STORAGE SCHEMA
+
+-- If you have a Storage Accounting Database and wish to
+-- upgrade to the next APEL version, remove the block comment
+-- symbols around this section and then run this script.
+
+-- This script adds the VStarRecords view.
+
+DROP VIEW IF EXISTS VStarRecords;
+
+CREATE VIEW VStarRecords AS
+SELECT CreateTime,
+       RecordId,
+       StorageSystems.name AS StorageSystem,
+       Sites.name AS Site,
+       StorageShares.name AS StorageShare,
+       StorageMedia.name AS StorageMedia,
+       StorageClasses.name AS StorageClass,
+       FileCount,
+       DirectoryPath,
+       LocalUser,
+       LocalGroup,
+       UserIdentities.name AS UserIdentity,
+       Groups.name AS `Group`,
+       Roles.name AS `Role`,
+       SubGroups.name AS SubGroup,
+       StartTime,
+       EndTime,
+       ResourceCapacityUsed,
+       LogicalCapacityUsed,
+       ResourceCapacityAllocated 
+FROM StarRecords, StorageSystems, Sites, StorageShares,
+     StorageMedia, StorageClasses, UserIdentities, Groups,
+     SubGroups, Roles
+WHERE StarRecords.StorageSystemID = StorageSystems.id
+  AND StarRecords.SiteID = Sites.id
+  AND StarRecords.StorageShareID = StorageShares.id
+  AND StarRecords.StorageMediaID = StorageMedia.id
+  AND StarRecords.StorageClassID = StorageClasses.id
+  AND StarRecords.UserIdentityID = UserIdentities.id
+  AND StarRecords.GroupID = Groups.id
+  AND StarRecords.SubGroupID = SubGroups.id
+  AND StarRecords.RoleID = Roles.id;
 */
