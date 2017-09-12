@@ -97,6 +97,7 @@ class StorageRecord(Record):
 
         Namespace information is written only once per record, by dbunloader.
         '''
+        del withhold_dns  # Unused
 
         doc = Document()
         ur = doc.createElement('sr:StorageUsageRecord')
