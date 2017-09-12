@@ -36,14 +36,18 @@ class BinSummariserTest(unittest.TestCase):
         _pid_file, pid_path = tempfile.mkstemp(prefix='pid',
                                                dir=self._tmp_dir)
 
+        # Create a temporary log file for the summariser
+        _sum_log, sum_log_path = tempfile.mkstemp(prefix='sum',
+                                                  dir=self._tmp_dir)
+
         # Create a temporary summariser config that refers to the Pidfile above
         sum_conf = ('[summariser]\n'
                     'pidfile = %s\n'
                     '\n'
                     '[logging]\n'
-                    'logfile = /tmp/apel/summariser.log\n'
+                    'logfile = %s\n'
                     'level = INFO\n'
-                    'console = true\n' % pid_path)
+                    'console = true\n' % (sum_log_path, pid_path))
 
         # Write temporary config to the temporary file
         os.write(self.sum_cfg, sum_conf)
