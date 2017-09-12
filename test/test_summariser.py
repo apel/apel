@@ -50,7 +50,7 @@ class BinSummariserTest(unittest.TestCase):
         os.close(self.sum_cfg)
 
         # Run the summariser with the temporary config files
-        summariser = Popen(['python', 'bin/summariser.py',
+        summariser = Popen(['python', '../bin/summariser.py',
                             '-d', self.db_cfg_path,
                             '-c', self.sum_cfg_path],
                            stdout=PIPE)
