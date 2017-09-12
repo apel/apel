@@ -98,6 +98,7 @@ def runprocess(db_config_file, config_file, log_config_file):
         # If we fail to create a pidfile, don't start the summariser
         sys.exit(1)
 
+    log.info('Created Pidfile')
     # Log into the database
     try:
 
