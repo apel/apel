@@ -68,7 +68,9 @@ class BinSummariserTest(unittest.TestCase):
                 self.fail('A summariser started despite existing pidfile.')
             else:
                 # Something else has happened.
-                self.fail('An unexpected summariser error has occured.')
+                self.fail('An unexpected summariser error has occured.\n'
+                          'See output below:\n'
+                          '%s' % output)
 
     def tearDown(self):
         """Remove test directory and all contents."""
