@@ -63,8 +63,8 @@ def runprocess(db_config_file, config_file, log_config_file):
 
     # set up logging
     try:
-        if os.path.exists(options.log_config):
-            logging.config.fileConfig(options.log_config)
+        if os.path.exists(log_config_file):
+            logging.config.fileConfig(log_config_file)
         else:
             set_up_logging(cp.get('logging', 'logfile'), 
                            cp.get('logging', 'level'),
