@@ -47,7 +47,7 @@ class BinSummariserTest(unittest.TestCase):
                     '[logging]\n'
                     'logfile = %s\n'
                     'level = INFO\n'
-                    'console = true\n' % (sum_log_path, pid_path))
+                    'console = true\n' % (pid_path, sum_log_path))
 
         # Write temporary config to the temporary file
         os.write(self.sum_cfg, sum_conf)
