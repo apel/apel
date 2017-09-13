@@ -130,7 +130,16 @@ def runprocess(db_config_file, config_file, log_config_file):
         # Clean up pidfile regardless of any excpetions
         # This even executes if sys.exit() is called
         log.info('Removing Pidfile')
-        os.remove(pidfile)
+        try:
+            if os.path.exists(pidfile):
+                os.remove(pidfile)
+            else:
+                log.warn("pidfile %s not found.", pidfile)
+
+        except IOError, e:
+            log.warn("Failed to remove pidfile %s: %s", pidfile, e)
+            log.warn("The summariser may not start again until it is removed.")
+
         log.info(LOG_BREAK)
         
 
