@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 
-from subprocess import Popen, PIPE
+from bin import summariser
 
 
 class BinSummariserTest(unittest.TestCase):
@@ -54,27 +54,30 @@ class BinSummariserTest(unittest.TestCase):
         os.close(self.sum_cfg)
 
         # Run the summariser with the temporary config files
-        summariser = Popen(['python', '../bin/summariser.py',
-                            '-d', self.db_cfg_path,
-                            '-c', self.sum_cfg_path],
-                           stdout=PIPE)
+        try:
+            summariser.runprocess(self.db_cfg_path, self.sum_cfg_path, '')
+        except SystemExit:
+            # A SystemExit is raised regardless of what happens
+            # in the summariser, so we must look at the log output
 
-        output, error = summariser.communicate()
+            # Note: Because we need to be compatible with Python 2.4, we can't
+            # use "with" here - we need to call the open() and close()
+            # methods manually.
+            log_file = open(sum_log_path, 'r')
+            output = log_file.read()
+            log_file.close()
 
-        if error is not None:
-            # Then it errored in some unforseen way
-            self.fail(error)
-
-        if 'pidfile exists' not in output:
-            if 'Created Pidfile' in output:
-                # Then we have errored in an expected way
-                # and a summariser was started
-                self.fail('A summariser started despite existing pidfile.')
-            else:
-                # Something else has happened.
-                self.fail('An unexpected summariser error has occured.\n'
-                          'See output below:\n'
-                          '%s' % output)
+            expected_error = 'A pidfile %s already exists.' % pid_path
+            if expected_error not in output:
+                if 'Created Pidfile' in output:
+                    # Then we have errored in an expected way
+                    # and a summariser was started
+                    self.fail('A summariser started despite existing pidfile.')
+                else:
+                    # Something else has happened.
+                    self.fail('An unexpected summariser error has occured.\n'
+                              'See output below:\n'
+                              '%s' % output)
 
     def tearDown(self):
         """Remove test directory and all contents."""
