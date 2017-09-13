@@ -80,8 +80,6 @@ def runprocess(db_config_file, config_file, log_config_file):
     # If the pidfile exists, don't start up.
     try:
         if os.path.exists(pidfile):
-            error = "Cannot start summariser.  Pidfile %s already exists." % pidfile
-
             log.error("A pidfile %s already exists.", pidfile)
             log.warn("Check that the summariser is not running, then remove the file.")
             raise Exception("The summariser cannot start while pidfile exists.")
