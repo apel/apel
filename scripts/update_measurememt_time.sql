@@ -174,7 +174,13 @@ BEGIN
         PrevRecord.MeasurementTime = (SELECT max(MeasurementTime)
                                       FROM CloudRecords
                                       WHERE VMUUID = ThisRecord.VMUUID
-                                      AND MeasurementTime < ThisRecord.MeasurementTime)
+                                      AND MeasurementTime < ThisRecord.MeasurementTime
+                                      -- This prevents negative summaries being caused
+                                      -- by 'completed' records without an EndTime.
+                                      -- Now, such Records are not included in this 
+                                      -- LEFT JOIN statement
+                                      AND PrevRecord.MeasurementMonth<>0
+                                      AND PrevRecord.MeasurementYear<>0)
 );
 
     REPLACE INTO CloudSummaries(SiteID, CloudComputeServiceID, Month, Year,
