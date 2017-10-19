@@ -106,9 +106,9 @@ CREATE TABLE CloudSummaries (
   VOGroupID INT NOT NULL, -- Foreign key
   VORoleID INT NOT NULL, -- Foreign key
 
-  Status VARCHAR(255),
-  CloudType VARCHAR(255),
-  ImageId VARCHAR(255),
+  Status VARCHAR(255) NOT NULL,
+  CloudType VARCHAR(255) NOT NULL,
+  ImageId VARCHAR(255) NOT NULL,
 
   EarliestStartTime DATETIME,
   LatestStartTime DATETIME,
