@@ -70,7 +70,7 @@ ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURR
 -- upgrade to APEL Version next, remove the block comment
 -- symbols around this section and run this script
 
--- This script will set any null Cloud UpdateTimes to the zero timestamp
+-- This section will set any null Cloud UpdateTimes to the zero timestamp
 -- (to prevent issues determining how recent a record is)
 -- and then explicitly set the UpdateTimes of
 -- future rows to update
@@ -83,6 +83,28 @@ ALTER TABLE CloudSummaries MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT C
 
 UPDATE LastUpdated SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
 ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+-- This section will add the outstanding fields that are part of the
+-- GROUP BY statement in the summariser to the CloudSummaries
+-- table primary key.
+-- If it is grouped on as part of the summariser,
+-- it should be part of the primary key.
+
+-- It's possible CpuCount could be NULL, and to add it to the
+-- primary key the cloumn has to be set to NOT NULL,
+-- so set any NULL values to a reasonable default.
+UPDATE CloudSummaries SET CpuCount=0 WHERE CpuCount IS NULL;
+
+-- Set CpuCount column to NOT NULL,
+ALTER TABLE CloudSummaries MODIFY CpuCount INT NOT NULL;
+
+-- Add fields to primary key to prevent summaries overriding each other.
+ALTER TABLE CloudSummaries DROP PRIMARY KEY, ADD PRIMARY KEY(
+  SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID,
+  VOID, VOGroupID, VORoleID, Status, CloudType, ImageId, CpuCount,
+  BenchmarkType, Benchmark
+  );
+
 */
 
 

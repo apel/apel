@@ -106,15 +106,15 @@ CREATE TABLE CloudSummaries (
   VOGroupID INT NOT NULL, -- Foreign key
   VORoleID INT NOT NULL, -- Foreign key
 
-  Status VARCHAR(255),
-  CloudType VARCHAR(255),
-  ImageId VARCHAR(255),
+  Status VARCHAR(255) NOT NULL,
+  CloudType VARCHAR(255) NOT NULL,
+  ImageId VARCHAR(255) NOT NULL,
 
   EarliestStartTime DATETIME,
   LatestStartTime DATETIME,
   WallDuration BIGINT,
   CpuDuration BIGINT,
-  CpuCount INT,
+  CpuCount INT NOT NULL,
 
   NetworkInbound BIGINT,
   NetworkOutbound BIGINT,
@@ -129,7 +129,9 @@ CREATE TABLE CloudSummaries (
   
   PublisherDNID VARCHAR(255),
 
-  PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId)
+  PRIMARY KEY (SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID,
+    VOID, VOGroupID, VORoleID, Status, CloudType, ImageId, CpuCount,
+    BenchmarkType, Benchmark)
 
 );
 
