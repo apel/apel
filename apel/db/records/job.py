@@ -146,12 +146,12 @@ class JobRecord(Record):
         Check for the validity of the ScalingFactorUnit and ScalingFactor fields.
         We accept neither field included or both.  If only one of the fields is 
         included, it doesn't really make sense so we reject it.
-    
+
         We expect that:
-           - As ServiceLevel is a float field,
-             a null sf has been converted to None.
-           - As ServiceLevelType is a msg field,
-             a null sf has been converted to the string 'None'.
+        - as ServiceLevel is a float field,
+          a null ScalingFactor is passed in as the null object None.
+        - as ServiceLevelType is a msg field,
+          a null ScalingFactorUnit is passed in as the string 'None'.
         '''
         if sf == None:
             if sfu != 'None':

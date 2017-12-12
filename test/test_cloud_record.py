@@ -175,7 +175,7 @@ CloudType: OpenNebula
         self.cases[self._msg3] = self._values3
 
     def test_load_from_msg_value_check(self):
-        """Check self._values# is a subset of the CloudRecord object generated from self._msg#."""
+        """Check for correct values in CloudRecords generated from messages."""
         for msg in self.cases.keys():
         
             cr = CloudRecord()
@@ -187,7 +187,7 @@ CloudType: OpenNebula
                 self.assertEqual(cont[key], self.cases[msg][key], "%s != %s for key %s" % (cont[key], self.cases[msg][key], key))
 
     def test_load_from_msg_type_check(self):
-        """Check the fields of a loaded message are the correct type."""
+        """Check the fields of a parsed message are of the correct type."""
         for msg in self.cases.keys():
 
             cr = CloudRecord()
@@ -195,30 +195,30 @@ CloudType: OpenNebula
 
             for key in cr._int_fields:
                 value = cr._record_content[key]
-                # check the value we are going to be passing to MySQL is an integer or None
-                # MySQL 5.6.X rejects the value otherwise, whereas 5.1.X would have
-                # interpreted it as the 0
+                # Check the value we are going to be passing to MySQL
+                # is an integer or None. MySQL 5.6.x rejects the value
+                # otherwise, whereas 5.1.x interprets it as integer 0.
                 valid_value = isinstance(value, int) or value is None
-                # The 'repr' expression shows the quote marks if value is a string
                 self.assertTrue(valid_value, 'Integer %s with value: %s\n%s' % (key, repr(value), msg))
+                # Use 'repr' to show quote marks if value is a string.
 
             for key in cr._float_fields:
                 value = cr._record_content[key]
-                # check the value we are going to be passing to MySQL is an float or None
-                # MySQL 5.6.X rejects the value otherwise, whereas 5.1.X would have
-                # interpreted it as 0.00
+                # Check the value we are going to be passing to MySQL
+                # is a float or None. MySQL 5.6.x rejects the value
+                # otherwise, whereas 5.1.x interprets it as 0.00.
                 valid_value = isinstance(value, float) or value is None
-                # The 'repr' expression shows the quote marks if value is a string
                 self.assertTrue(valid_value, 'Decimal %s with value: %s\n%s' % (key, repr(value), msg))
+                # Use 'repr' to show quote marks if value is a string.
 
             for key in cr._datetime_fields:
                 value = cr._record_content[key]
-                # check the value we are going to be passing to MySQL is an datetime or None
-                # MySQL 5.6.X rejects the value otherwise, whereas 5.1.X would have
-                # interpreted it as the zero time stamp
+                # Check the value we are going to be passing to MySQL
+                # is a datetime or None. MySQL 5.6.x rejects the value
+                # otherwise, whereas 5.1.x interprets it as a zero timestamp.
                 valid_value = isinstance(value, datetime) or value is None
-                # The 'repr' expression shows the quote marks if value is a string
                 self.assertTrue(valid_value, 'Datetime %s with value: %s\n%s' % (key, repr(value), msg))
+                # Use 'repr' to show quote marks if value is a string.
 
     def test_mandatory_fields(self):
         record = CloudRecord()
