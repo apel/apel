@@ -88,11 +88,11 @@ ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURR
 -- GROUP BY statement in the summariser to the CloudSummaries
 -- table primary key.
 -- If it is grouped on as part of the summariser,
--- it should be part of the primary key
+-- it should be part of the primary key.
 
--- it's possible CpuCount could be NULL, and to add it to the
--- primary key the cloumn has to be set to NOT NULL
--- So set any NULL values to a reasonable default
+-- It's possible CpuCount could be NULL, and to add it to the
+-- primary key the cloumn has to be set to NOT NULL,
+-- so set any NULL values to a reasonable default.
 UPDATE CloudSummaries SET CpuCount=0 WHERE CpuCount IS NULL;
 
 -- Set CpuCount column to NOT NULL,
