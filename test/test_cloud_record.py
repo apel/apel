@@ -1,5 +1,4 @@
 import unittest
-
 from datetime import datetime
 
 from apel.db.records import CloudRecord
@@ -199,8 +198,9 @@ CloudType: OpenNebula
                 # is an integer or None. MySQL 5.6.x rejects the value
                 # otherwise, whereas 5.1.x interprets it as integer 0.
                 valid_value = isinstance(value, int) or value is None
-                self.assertTrue(valid_value, 'Integer %s with value: %s\n%s' % (key, repr(value), msg))
                 # Use 'repr' to show quote marks if value is a string.
+                self.assertTrue(valid_value, 'Integer %s with value: %s\n%s' %
+                                (key, repr(value), msg))
 
             for key in cr._float_fields:
                 value = cr._record_content[key]
@@ -208,8 +208,9 @@ CloudType: OpenNebula
                 # is a float or None. MySQL 5.6.x rejects the value
                 # otherwise, whereas 5.1.x interprets it as 0.00.
                 valid_value = isinstance(value, float) or value is None
-                self.assertTrue(valid_value, 'Decimal %s with value: %s\n%s' % (key, repr(value), msg))
                 # Use 'repr' to show quote marks if value is a string.
+                self.assertTrue(valid_value, 'Decimal %s with value: %s\n%s' %
+                                (key, repr(value), msg))
 
             for key in cr._datetime_fields:
                 value = cr._record_content[key]
@@ -217,8 +218,9 @@ CloudType: OpenNebula
                 # is a datetime or None. MySQL 5.6.x rejects the value
                 # otherwise, whereas 5.1.x interprets it as a zero timestamp.
                 valid_value = isinstance(value, datetime) or value is None
-                self.assertTrue(valid_value, 'Datetime %s with value: %s\n%s' % (key, repr(value), msg))
                 # Use 'repr' to show quote marks if value is a string.
+                self.assertTrue(valid_value, 'Datetime %s with value: %s\n%s' %
+                                (key, repr(value), msg))
 
     def test_mandatory_fields(self):
         record = CloudRecord()

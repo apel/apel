@@ -153,7 +153,7 @@ class JobRecord(Record):
         - as ServiceLevelType is a msg field,
           a null ScalingFactorUnit is passed in as the string 'None'.
         '''
-        if sf == None:
+        if sf is None:
             if sfu != 'None':
                 raise InvalidRecordException('Unit but not value supplied for ScalingFactor.')
             else:
