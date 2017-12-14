@@ -105,10 +105,15 @@ class MysqlTest(unittest.TestCase):
         cloud4 = apel.db.records.cloud.CloudRecord()
         cloud4.load_from_msg(CLOUD4)
 
+        # Test a BenchmarkType/Benchmark - less Cloud v0.4 Record
+        cloud4_nb = apel.db.records.cloud.CloudRecord()
+        cloud4_nb.load_from_msg(CLOUD4_NULL_BENCHMARKS)
+
         items_in = cloud2._record_content.items()
         items_in += cloud4._record_content.items()
+        items_in += cloud4_nb._record_content.items()
 
-        record_list = [cloud2, cloud4]
+        record_list = [cloud2, cloud4, cloud4_nb]
 
         # load_records changes the 'cloud' cloud record as it calls _check_fields
         # which adds placeholders to empty fields
@@ -251,6 +256,35 @@ Memory: 512
 Disk: 0
 BenchmarkType: Si2k
 Benchmark: 200
+StorageRecordId: NULL
+ImageId: 1
+CloudType: Cloud Technology 2
+'''
+
+# A Cloud V0.4 Record, but with NULL Benchmark / BenchmarkType fields
+CLOUD4_NULL_BENCHMARKS = '''VMUUID: 12346 Site2 Accounting Test
+SiteName: Site2
+CloudComputeService: Cloud Technology 2 Instance 1
+MachineName: Accounting Test 2
+LocalUserId: 1
+LocalGroupId: 1
+GlobalUserName: /DC=XX/DC=XX/O=XX/CN=XX
+FQAN: /ops/Role=NULL/Capability=NULL
+Status: started
+StartTime: 1343362825
+EndTime: NULL
+SuspendDuration: NULL
+WallDuration: 1583876
+CpuDuration: 438
+CpuCount: 1
+NetworkType: NULL
+NetworkInbound: NULL
+NetworkOutbound: NULL
+PublicIPCount: 1
+Memory: 512
+Disk: 0
+BenchmarkType: NULL
+Benchmark: NULL
 StorageRecordId: NULL
 ImageId: 1
 CloudType: Cloud Technology 2
