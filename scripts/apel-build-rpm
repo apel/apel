@@ -10,7 +10,7 @@
 rpmdev-setuptree
 
 RPMDIR=/home/rpmb/rpmbuild
-VERSION=1.6.0-1
+VERSION=1.6.1-1
 APELDIR=apel-$VERSION
 
 # Remove old sources and RPMS
