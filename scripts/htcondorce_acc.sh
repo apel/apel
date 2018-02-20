@@ -1,6 +1,5 @@
 #!/bin/bash
 
-CONDOR_CE_HISTORY_LOCATION=/bin
 OUTPUT_LOCATION=/var/log/condor-ce/accounting
 
 if [ ! -d "$OUTPUT_LOCATION" ]; then
@@ -16,7 +15,7 @@ NOW=$(date +"%Y%m%dT%H%M%S")
 OUTPUT_FILE=$OUTPUT_LOCATION/accounting.$NOW
 
 # Build the filter for the history command
-CONSTR="(JobStartDate>0)&&(CompletionDate>`date +%s -d "01 Jan 2014"`)"
+CONSTR="(JobStartDate>0)&&(CompletionDate>$(date +%s -d "01 Jan 2014"))"
 
 # Populate the temporary file
 for HF in $HISTORY_FILES

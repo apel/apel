@@ -19,11 +19,11 @@ A parser for HTCondorCE record file.
 '''
 
 from apel.db.records.blahd import BlahdRecord
-from apel.common import valid_from, valid_until, parse_timestamp
+from apel.common import valid_from, valid_until
 from apel.common.parsing_utils import parse_fqan
 from apel.parsers import Parser
 
-import re,datetime,logging
+import datetime, logging
 
 log = logging.getLogger(__name__)
 
@@ -53,9 +53,9 @@ Geonmo Ryu|/cms/Role=NULL/Capability=NULL|cms|1|0|0|1492418156|1492418167|0|100|
             'TimeStamp'      : lambda x: dates,
             'GlobalUserName' : lambda x: x[3],
             'FQAN'           : lambda x: x[4],
-            'VO'             : lambda x: parse_fqan( x[4])[2],
-            'VOGroup'        : lambda x: parse_fqan( x[4])[1],
-            'VORole'         : lambda x: parse_fqan( x[4])[0],
+            'VO'             : lambda x: parse_fqan(x[4])[2],
+            'VOGroup'        : lambda x: parse_fqan(x[4])[1],
+            'VORole'         : lambda x: parse_fqan(x[4])[0],
             'CE'             : lambda x: self.machine_name + ":" + "9619" + "/" + self.machine_name + "-" + "condor",
             'GlobalJobId'    : lambda x: x[0],
             'LrmsId'         : lambda x: x[1]+'.'+self.machine_name,

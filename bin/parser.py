@@ -165,7 +165,7 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                 # HTCondorCE has specific hash name.
                 # first, calculate the hash of the file:
                 if parserName == "HTCondorCEParser":
-                   file_hash = "htce_" + calculate_hash(abs_file)
+                    file_hash = "htce_" + calculate_hash(abs_file)
                 else:
                     file_hash = calculate_hash(abs_file)
                 found = False
@@ -246,7 +246,7 @@ def handle_parsing(log_type, apel_db, cp):
     if log_type == 'blah':
         section = 'blah'
     elif log_type == 'htcondorce':
-        section = 'htcondorce'    
+        section = 'htcondorce'
     else:
         section = 'batch'
         
@@ -398,7 +398,7 @@ def main():
         log.fatal('Parser will exit.')
         log.info(LOG_BREAK)
         sys.exit(1)
-    # htcondorce parsing 
+    # htcondorce parsing
     try:
         if cp.getboolean('htcondorce', 'enabled'):
             handle_parsing('htcondorce', apel_db, cp)
