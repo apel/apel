@@ -15,7 +15,7 @@
 
 A parser for HTCondorCE record file.
 
-    @author: Jordi Casals and Geonmo Ryu modified BlahdParser using Konrad Jopek's code
+    @author: Jordi Casals, Geonmo Ryu
 '''
 
 from apel.db.records.blahd import BlahdRecord
