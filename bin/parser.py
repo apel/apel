@@ -389,28 +389,12 @@ def main():
         sys.exit(1)
 
     log.info(LOG_BREAK)
-    # blah parsing 
+    # batch and (blah or htcondorce) parsing 
     try:
         if cp.getboolean('blah', 'enabled'):
             handle_parsing('blah', apel_db, cp)
-    except (ParserConfigException, ConfigParser.NoOptionError), e:
-        log.fatal('Parser misconfigured: %s', e)
-        log.fatal('Parser will exit.')
-        log.info(LOG_BREAK)
-        sys.exit(1)
-    # htcondorce parsing
-    try:
-        if cp.getboolean('htcondorce', 'enabled'):
+        elif cp.getboolean('htcondorce', 'enabled'):
             handle_parsing('htcondorce', apel_db, cp)
-    except (ParserConfigException, ConfigParser.NoOptionError), e:
-        log.fatal('Parser misconfigured: %s', e)
-        log.fatal('Parser will exit.')
-        log.info(LOG_BREAK)
-        sys.exit(1)
-        
-    log.info(LOG_BREAK)
-    # batch parsing
-    try:
         if cp.getboolean('batch', 'enabled'):
             handle_parsing(cp.get('batch', 'type'), apel_db, cp)
     except (ParserConfigException, ConfigParser.NoOptionError), e:
