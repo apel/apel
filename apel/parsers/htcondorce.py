@@ -31,7 +31,7 @@ class HTCondorCEParser(Parser):
     '''
     HTCondorCE parses accounting files from HTCondorCE system.
     '''
-    def __init__(self, site, machine_name, mpi) :
+    def __init__(self, site, machine_name, mpi):
         Parser.__init__(self, site, machine_name, mpi)
         log.info('Site: %s; batch system: %s'%(self.site_name, self.machine_name))
     def parse(self, line):
