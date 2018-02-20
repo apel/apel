@@ -44,6 +44,7 @@ from apel.parsers.sge import SGEParser
 from apel.parsers.pbs import PBSParser
 from apel.parsers.slurm import SlurmParser
 from apel.parsers.htcondor import HTCondorParser
+from apel.parsers.htcondorce import HTCondorCEParser
 
 
 LOGGER_ID = 'parser'
@@ -58,6 +59,7 @@ PARSERS = {
            'SLURM': SlurmParser,
            'blah' : BlahParser,
            'HTCondor': HTCondorParser,
+           'htcondorce' : HTCondorCEParser,
            }
 
 
@@ -160,8 +162,12 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
         for item in sorted(os.listdir(dirpath)):
             abs_file = os.path.join(dirpath, item)
             if os.path.isfile(abs_file) and expr.match(item):
+                # HTCondorCE has specific hash name.
                 # first, calculate the hash of the file:
-                file_hash = calculate_hash(abs_file)
+                if parserName == "HTCondorCEParser":
+                   file_hash = "htce_" + calculate_hash(abs_file)
+                else:
+                    file_hash = calculate_hash(abs_file)
                 found = False
                 unparsed = False
                 # next, try to find corresponding entry
@@ -236,8 +242,11 @@ def handle_parsing(log_type, apel_db, cp):
     '''
     log = logging.getLogger(LOGGER_ID)
     log.info('Setting up parser for %s files', log_type)
+    ## batch + blah or batch + htcondorce is acceptabled.
     if log_type == 'blah':
         section = 'blah'
+    elif log_type == 'htcondorce':
+        section = 'htcondorce'    
     else:
         section = 'batch'
         
@@ -384,6 +393,15 @@ def main():
     try:
         if cp.getboolean('blah', 'enabled'):
             handle_parsing('blah', apel_db, cp)
+    except (ParserConfigException, ConfigParser.NoOptionError), e:
+        log.fatal('Parser misconfigured: %s', e)
+        log.fatal('Parser will exit.')
+        log.info(LOG_BREAK)
+        sys.exit(1)
+    # htcondorce parsing 
+    try:
+        if cp.getboolean('htcondorce', 'enabled'):
+            handle_parsing('htcondorce', apel_db, cp)
     except (ParserConfigException, ConfigParser.NoOptionError), e:
         log.fatal('Parser misconfigured: %s', e)
         log.fatal('Parser will exit.')
