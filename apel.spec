@@ -5,7 +5,7 @@
 
 Name:           apel
 Version:        1.6.1
-%define releasenumber 0.1.rc1
+%define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
 
@@ -375,4 +375,3 @@ exit 0
  
  * Tue Nov 13 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.1-0
  - First tag
-
