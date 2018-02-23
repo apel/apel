@@ -368,8 +368,8 @@ def main():
     log.info(LOG_BREAK)
     log.info('Starting apel parser version %s.%s.%s', *__version__)
 
-    # database connection
     try:
+        # database connection
         apel_db = ApelDb(DB_BACKEND,
                          cp.get('db', 'hostname'),
                          cp.getint('db', 'port'),
@@ -378,9 +378,22 @@ def main():
                          cp.get('db', 'name'))
         apel_db.test_connection()
         log.info('Connection to DB established')
+        # batch, blah or htcondorce parsing.
+        if cp.getboolean('blah', 'enabled'):
+            handle_parsing('blah', apel_db, cp)
+        elif cp.getboolean('htcondorce', 'enabled'):
+            handle_parsing('htcondorce', apel_db, cp)
+        if cp.getboolean('batch', 'enabled'):
+            handle_parsing(cp.get('batch', 'type'), apel_db, cp)
     except KeyError, e:
         log.fatal('Database configured incorrectly.')
         log.fatal('Check the database section for option: %s', e)
+        log.info(LOG_BREAK)
+        sys.exit(1)
+    except (ParserConfigException, ConfigParser.NoOptionError), e:
+        log.fatal('Parser misconfigured: %s', e)
+        log.fatal('Parser will exit.')
+        log.info(LOG_BREAK)
         sys.exit(1)
     except Exception, e:
         log.fatal("Database exception: %s", e)
@@ -388,21 +401,6 @@ def main():
         log.info(LOG_BREAK)
         sys.exit(1)
 
-    log.info(LOG_BREAK)
-    # batch, blah or htcondorce parsing.
-    try:
-        if cp.getboolean('blah', 'enabled'):
-            handle_parsing('blah', apel_db, cp)
-        elif cp.getboolean('htcondorce', 'enabled'):
-            handle_parsing('htcondorce', apel_db, cp)
-        if cp.getboolean('batch', 'enabled'):
-            handle_parsing(cp.get('batch', 'type'), apel_db, cp)
-    except (ParserConfigException, ConfigParser.NoOptionError), e:
-        log.fatal('Parser misconfigured: %s', e)
-        log.fatal('Parser will exit.')
-        log.info(LOG_BREAK)
-        sys.exit(1)
-        
     log.info('Parser has completed.')
     log.info(LOG_BREAK)
     sys.exit(0)
