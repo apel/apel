@@ -31,12 +31,19 @@ class HTCondorCEParser(HTCondorParser):
     '''
     HTCondorCE parses accounting files from HTCondorCE system.
     '''
-    parserName = None
+    mapping = None
+    isParsed= False
     def __init__(self, site, machine_name, mpi):
         HTCondorParser.__init__(self, site, machine_name, mpi)
-        parserName = "HTCondorCEParser"
-    def parserName(self) :
-        return self.parserName
+    def getMapping(self):
+        '''
+        Return the parsed mapping. 
+        '''
+        if (isParsed) :
+            return self.mapping
+        else :
+            print "The log files are not yet parsed by HTCondorCEParser."
+            return None
     def parse(self, line):
         '''
         Parses single line from accounting log file.
@@ -52,7 +59,7 @@ Geonmo Ryu|/cms/Role=NULL/Capability=NULL|cms|1|0|0|1492418156|1492418167|0|100|
         values = line.strip().split('|')
         dateinfo = datetime.datetime.fromtimestamp(float(values[9]))
         dates = dateinfo.isoformat()+'Z'
-        mapping = {
+        self.mapping = {
             'TimeStamp'      : lambda x: dates,
             'GlobalUserName' : lambda x: x[3],
             'FQAN'           : lambda x: x[4],
@@ -68,10 +75,8 @@ Geonmo Ryu|/cms/Role=NULL/Capability=NULL|cms|1|0|0|1492418156|1492418167|0|100|
             'Processed'      : lambda x: Parser.UNPROCESSED
         }
         rc = {}
-
-        for key in mapping:
-            rc[key] = mapping[key](values)
-
+        for key in self.mapping:
+            rc[key] = self.mapping[key](values)
         record = BlahdRecord()
         record.set_all(rc)
         return record
