@@ -392,7 +392,7 @@ def main():
         sys.exit(1)
     except (ParserConfigException, ConfigParser.NoOptionError), e:
         log.fatal('Parser misconfigured: %s', e)
-        log.fatal('Parser will exit.')
+        log.fatal('Please, check your parser.cfg file.')
         log.info(LOG_BREAK)
         sys.exit(1)
     except Exception, e:
