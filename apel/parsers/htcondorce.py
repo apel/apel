@@ -47,7 +47,6 @@ class HTCondorCEParser(HTCondorParser):
     def parse(self, line):
         '''
         Parses single line from accounting log file.
-
         Example line of accounting log file:
         "cms-t2-ce01.sdfarm.kr#2.0#1492418148|3.0|geonmo|/C=KR/O=KISTI/O=GRID/O=KISTI/CN=58079576
 Geonmo Ryu|/cms/Role=NULL/Capability=NULL|cms|1|0|0|1492418156|1492418167|0|100|1|"
