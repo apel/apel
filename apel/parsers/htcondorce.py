@@ -21,19 +21,22 @@ A parser for HTCondorCE record file.
 from apel.db.records.blahd import BlahdRecord
 from apel.common import valid_from, valid_until
 from apel.common.parsing_utils import parse_fqan
-from apel.parsers import Parser
+from apel.parsers import HTCondorParser
 
 import datetime, logging
 
 log = logging.getLogger(__name__)
 
-class HTCondorCEParser(Parser):
+class HTCondorCEParser(HTCondorParser):
     '''
     HTCondorCE parses accounting files from HTCondorCE system.
     '''
+    parserName = None
     def __init__(self, site, machine_name, mpi):
-        Parser.__init__(self, site, machine_name, mpi)
-        log.info('Site: %s; batch system: %s'%(self.site_name, self.machine_name))
+        HTCondorParser.__init__(self, site, machine_name, mpi)
+        parserName = "HTCondorCEParser"
+    def parserName(self) :
+        return self.parserName
     def parse(self, line):
         '''
         Parses single line from accounting log file.
