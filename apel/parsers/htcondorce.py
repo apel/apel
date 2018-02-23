@@ -79,4 +79,5 @@ Geonmo Ryu|/cms/Role=NULL/Capability=NULL|cms|1|0|0|1492418156|1492418167|0|100|
             rc[key] = self.mapping[key](values)
         record = BlahdRecord()
         record.set_all(rc)
+        self.isParsed = True
         return record
