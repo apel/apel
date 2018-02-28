@@ -108,34 +108,27 @@ class LSFParser(Parser):
         else:
             nnodes = 0
             ncores = 0
-        
-        mapping_lsf = {'Site'          : lambda x: self.site_name,
-                       'JobName'       : lambda x: x[3],
-                       'LocalUserID'   : lambda x: x[11],
-                       'LocalUserGroup': lambda x: "",
-                       'WallDuration'  : lambda x: int(host_factor * (int(x[2]) - int(x[10]))),
-                       'CpuDuration'   : lambda x: int(round(host_factor * (float(x[28+offset]) + float(x[29+offset])))),
-                       'StartTime'     : lambda x: int(x[10]),
-                       'StopTime'      : lambda x: int(x[2]),
-                       'Infrastructure': lambda x: "APEL-CREAM-LSF",
-                       'Queue'         : lambda x: x[12],
-                       'MachineName'   : lambda x: self.machine_name,
-                       'MemoryReal'    : lambda x: int(x[54+offset]) > 0 and int(x[54+offset]) or 0,
-                       'MemoryVirtual' : lambda x: int(x[55+offset]) > 0 and int(x[55+offset]) or 0,
-                       'Processors'    : lambda x: ncores,
-                       'NodeCount'     : lambda x: nnodes}
-        
-        mapping = {'5': mapping_lsf,
-                   '6': mapping_lsf,
-                   '7': mapping_lsf,
-                   '8': mapping_lsf,
-                   '9': mapping_lsf}
-        
-        version = items[1][0]
+
+        mapping = {'Site'          : lambda x: self.site_name,
+                   'JobName'       : lambda x: x[3],
+                   'LocalUserID'   : lambda x: x[11],
+                   'LocalUserGroup': lambda x: "",
+                   'WallDuration'  : lambda x: int(host_factor * (int(x[2]) - int(x[10]))),
+                   'CpuDuration'   : lambda x: int(round(host_factor * (float(x[28+offset]) + float(x[29+offset])))),
+                   'StartTime'     : lambda x: int(x[10]),
+                   'StopTime'      : lambda x: int(x[2]),
+                   'Infrastructure': lambda x: "APEL-CREAM-LSF",
+                   'Queue'         : lambda x: x[12],
+                   'MachineName'   : lambda x: self.machine_name,
+                   'MemoryReal'    : lambda x: int(x[54+offset]) > 0 and int(x[54+offset]) or 0,
+                   'MemoryVirtual' : lambda x: int(x[55+offset]) > 0 and int(x[55+offset]) or 0,
+                   'Processors'    : lambda x: ncores,
+                   'NodeCount'     : lambda x: nnodes}
+
         data = {}
-    
-        for key in mapping[version]:
-            data[key] = mapping[version][key](items)
+
+        for key in mapping:
+            data[key] = mapping[key](items)
 
         # Input checking
         if data['CpuDuration'] < 0:

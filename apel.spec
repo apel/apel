@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.6.0
+Version:        1.6.1
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -34,7 +34,7 @@ apel-lib provides required libraries for the rest of APEL system.
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apel-lib >= 1.6.0
+Requires:       apel-lib >= 1.6.1
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -44,7 +44,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.6.0, apel-ssm
+Requires:       apel-lib >= 1.6.1, apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -55,7 +55,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.6.0, apel-ssm
+Requires:       apel-lib >= 1.6.1, apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -109,7 +109,8 @@ cp schemas/server-extra.sql %{buildroot}%_datadir/apel/
 cp schemas/cloud.sql %{buildroot}%_datadir/apel/
 cp schemas/storage.sql %{buildroot}%_datadir/apel/
 
-cp scripts/update_schema.sql %{buildroot}%_datadir/apel/
+cp scripts/update-1.5.1-1.6.0.sql %{buildroot}%_datadir/apel/
+cp scripts/update-1.6.0-1.6.1.sql %{buildroot}%_datadir/apel/
 
 # accounting scripts
 cp scripts/slurm_acc.sh %{buildroot}%_datadir/apel/
@@ -134,14 +135,18 @@ exit 0
 
 %files lib
 %defattr(-,root,root,-)
+
 %{python_sitelib}/apel
 
 # ------------------------------------------------------------------------------
 
 %files parsers
 %defattr(-,root,root,-)
+
 %attr(755,root,root) %_bindir/apelparser
+
 %config(noreplace) %attr(600,-,-) %{apelconf}/parser.cfg
+
 %attr(755,root,root) %_datadir/apel/slurm_acc.sh
 %attr(755,root,root) %_datadir/apel/htcondor_acc.sh
 
@@ -158,11 +163,9 @@ exit 0
 %attr(755,root,root) %_bindir/apelclient
 
 %config(noreplace) %attr(600,-,-) %{apelconf}/client.cfg
-
-# ------------------------------------------------------------------------------
-
 %config(noreplace) %{_sysconfdir}/logrotate.d/apel-client
 
+# ------------------------------------------------------------------------------
 
 %files server
 %defattr(-,root,root,-)
@@ -171,9 +174,12 @@ exit 0
 %_datadir/apel/server-extra.sql
 %_datadir/apel/cloud.sql
 %_datadir/apel/storage.sql
-%_datadir/apel/update_schema.sql
-# Use wildcard to match .py, .pyc, and .pyo
-%attr(755,root,root) %_datadir/apel/msg_status.py*
+%_datadir/apel/update-1.5.1-1.6.0.sql
+%_datadir/apel/update-1.6.0-1.6.1.sql
+
+%attr(755,root,root) %_datadir/apel/msg_status.py
+%exclude %_datadir/apel/msg_status.pyc
+%exclude %_datadir/apel/msg_status.pyo
 
 # Directories for logs, PID files
 %dir %{_localstatedir}/log/apel
@@ -193,6 +199,14 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Thu Dec 14 2017 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.6.1-1
+ - [Parsers] Removed version restriction from LSF parser so that it can
+   additionally work with version 10 onwards.
+ - Added more columns to cloud summaries primary key to prevent mis-grouping.
+ - Added Python setup script to enable installation on non-RHEL-based systems.
+ - Made the updating of record timestamps in the database explicit.
+ - Added type checking to float and datetime fields in the Python code.
+
  * Fri Mar 10 2017 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.6.0-1
  - Added support for mixed time formats used in Torque 5.1.3.
  - Changed the way core count is parsed to support Torque 5.1.0.
@@ -361,4 +375,3 @@ exit 0
  
  * Tue Nov 13 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.1-0
  - First tag
-

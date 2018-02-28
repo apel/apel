@@ -1,5 +1,4 @@
-from apel.common import valid_from, valid_until, parse_timestamp, \
-    iso2seconds
+from apel.common import valid_from, valid_until, parse_timestamp, iso2seconds
 import unittest
 import datetime
 

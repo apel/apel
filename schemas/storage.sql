@@ -336,3 +336,41 @@ BEGIN
         );
 END //
 DELIMITER ;
+
+-- -----------------------------------------------------------------------------
+-- VStarRecords
+DROP VIEW IF EXISTS VStarRecords;
+
+CREATE VIEW VStarRecords AS
+SELECT CreateTime,
+       RecordId,
+       StorageSystems.name AS StorageSystem,
+       Sites.name AS Site,
+       StorageShares.name AS StorageShare,
+       StorageMedia.name AS StorageMedia,
+       StorageClasses.name AS StorageClass,
+       FileCount,
+       DirectoryPath,
+       LocalUser,
+       LocalGroup,
+       UserIdentities.name AS UserIdentity,
+       Groups.name AS `Group`,
+       Roles.name AS `Role`,
+       SubGroups.name AS SubGroup,
+       StartTime,
+       EndTime,
+       ResourceCapacityUsed,
+       LogicalCapacityUsed,
+       ResourceCapacityAllocated 
+FROM StarRecords, StorageSystems, Sites, StorageShares,
+     StorageMedia, StorageClasses, UserIdentities, Groups,
+     SubGroups, Roles
+WHERE StarRecords.StorageSystemID = StorageSystems.id
+  AND StarRecords.SiteID = Sites.id
+  AND StarRecords.StorageShareID = StorageShares.id
+  AND StarRecords.StorageMediaID = StorageMedia.id
+  AND StarRecords.StorageClassID = StorageClasses.id
+  AND StarRecords.UserIdentityID = UserIdentities.id
+  AND StarRecords.GroupID = Groups.id
+  AND StarRecords.SubGroupID = SubGroups.id
+  AND StarRecords.RoleID = Roles.id;

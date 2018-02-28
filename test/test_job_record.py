@@ -63,4 +63,41 @@ class TestJobRecord(unittest.TestCase):
             record._check_fields()
         except:
             self.fail('Minimal record was not accepted!')
-        
+
+    def test_get_ur(self):
+        """Check that get_ur outputs correct XML."""
+        jr = JobRecord()
+        jr.load_from_msg('''
+Site: UK-UTOPIA
+LocalJobId: some-id
+WallDuration: 6704
+CpuDuration: 19872
+StartTime: 1504779367
+EndTime: 1504786071''')
+
+        xml = (
+            '<urf:UsageRecord><urf:RecordIdentity urf:createTime="xxxx-xx-xxTxx'
+            ':xx:xx" urf:recordId="None some-id 2017-09-07 12:07:51"/><urf:JobI'
+            'dentity><urf:LocalJobId>some-id</urf:LocalJobId></urf:JobIdentity>'
+            '<urf:UserIdentity><urf:GlobalUserName urf:type="opensslCompat">Non'
+            'e</urf:GlobalUserName><urf:Group>None</urf:Group><urf:GroupAttribu'
+            'te urf:type="FQAN">None</urf:GroupAttribute><urf:GroupAttribute ur'
+            'f:type="vo-group">None</urf:GroupAttribute><urf:GroupAttribute urf'
+            ':type="vo-role">None</urf:GroupAttribute><urf:LocalUserId>None</ur'
+            'f:LocalUserId></urf:UserIdentity><urf:Status>completed</urf:Status'
+            '><urf:Infrastructure urf:type="None"/><urf:WallDuration>PT6704S</u'
+            'rf:WallDuration><urf:CpuDuration urf:usageType="all">PT19872S</urf'
+            ':CpuDuration><urf:ServiceLevel urf:type="custom">1</urf:ServiceLev'
+            'el><urf:EndTime>2017-09-07T12:07:51Z</urf:EndTime><urf:StartTime>2'
+            '017-09-07T10:16:07Z</urf:StartTime><urf:MachineName>None</urf:Mach'
+            'ineName><urf:SubmitHost>None</urf:SubmitHost><urf:Queue>None</urf:'
+            'Queue><urf:Site>UK-UTOPIA</urf:Site></urf:UsageRecord>'
+        )
+        xml_out = jr.get_ur()
+
+        # We have to avoid comparing the createTime as that changes.
+        self.assertEqual(xml_out[:53], xml[:53])
+        self.assertEqual(xml_out[72:], xml[72:])
+
+if __name__ == '__main__':
+    unittest.main()

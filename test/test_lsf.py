@@ -117,18 +117,49 @@ class ParserLSFTest(unittest.TestCase):
                 '"/afs/cern.ch/user/r/raortega/log/berr-step3c-362.txt""1089290023.699195" 0 1 "tbed0079" 64 3.3 "" '
                 '"/afs/cern.ch/user/r/raortega/prog/step3c/startEachset.pl362 7 8" 277.210000 17.280000 0 0 -1 0 0 927804'
                 ' 87722 0 0 0 -1 0 0 0 0 0 -1 "" "default" 0 1 "" "" 0 310424 339112 "" "" ""')
-        
+
         self.assertRaises(IndexError, self.parser.parse, line)
-    
-    def test_invalid_version(self):
-        # unsupported version
-        line = ('"JOB_FINISH" "10.1" 1089407406 699195 283 33554482 1 1089290023 0 0 1089406862 '
-                '"raortega" "8nm" "" "" "" "lxplus015" "prog/step3c" "" "/afs/cern.ch/user/r/raortega/log/bstep3c-362.txt" '
-                '"/afs/cern.ch/user/r/raortega/log/berr-step3c-362.txt" "1089290023.699195" 0 1 "tbed0079" 64 3.3 "" '
-                '"/afs/cern.ch/user/r/raortega/prog/step3c/startEachset.pl362 7 8" 277.210000 17.280000 0 0 -1 0 0 927804'
-                ' 87722 0 0 0 -1 0 0 0 0 0 -1 "" "default" 0 1 "" "" 0 310424 339112 "" "" ""')
-        
-        self.assertRaises(KeyError, self.parser.parse, line)
+
+    def test_wall_value_error(self):
+        """Check that stop before start raises a ValueError."""
+        line = ('"JOB_FINISH" "5.1" 1089407406 699195 283 33554482 1 1089290023'
+                ' 0 0 1089409862 "raortega" "8nm" "" "" "" "lxplus015" "prog/st'
+                'ep3c" "" "/step3c-362.txt" "/berr-step3c-362.txt" "1089290023.'
+                '699195" 0 1 "tbed0079" 64 3.3 "" "/artEachset.j 362 7 8" 277.2'
+                '10000 17.280000 0 0 -1 0 0 927804 87722 0 0 0 -1 0 0 0 0 0 -1 '
+                '"" "default" 0 1 "" "" 0 310424 339112 "" "" ""')
+        self.assertRaises(ValueError, self.parser.parse, line)
+
+    def test_unfinished(self):
+        """Check that a valid line without JOB_FINISH returns None."""
+        line = ('"JOB_RESIZE" "5.1" 1089407406 699195 283 33554482 1 1089290023'
+                ' 0 0 1089406862 "raortega" "8nm" "" "" "" "lxplus015" "prog/st'
+                'ep3c" "" "/step3c-362.txt" "/berr-step3c-362.txt" "1089290023.'
+                '699195" 0 1 "tbed0079" 64 3.3 "" "/artEachset.j 362 7 8" 277.2'
+                '10000 17.280000 0 0 -1 0 0 927804 87722 0 0 0 -1 0 0 0 0 0 -1 '
+                '"" "default" 0 1 "" "" 0 310424 339112 "" "" ""')
+
+        self.assertEqual(self.parser.parse(line), None)
+
+    def test_non_mpi(self):
+        """Test that node and cpu count are set to zero if MPI isn't used."""
+        parser = LSFParser('testSite', 'testHost', False)
+
+        line = ('"JOB_FINISH" "5.1" 1089407406 699195 283 33554482 1 1089290023'
+                ' 0 0 1089406862 "raortega" "8nm" "" "" "" "lxplus015" "prog/st'
+                'ep3c" "" "/af/step3c-362.txt" "/af/epc-362.txt" "1089290023.69'
+                '9195" 0 1 "tbed0079" 64 3.3 "" "/af/hset.pl 362 7 8" 277.2100 '
+                '17.280000 0 0 -1 0 0 927804 87722 0 0 0 -1 0 0 0 0 0 -1 "" "de'
+                'fault" 0 1 "" "" 0 310424 339112 "" "" ""')
+
+        record = parser.parse(line)
+        cont = record._record_content
+
+        self.assertEquals(cont['NodeCount'], 0,
+                          "Node count not zero for non-mpi parser")
+        self.assertEquals(cont['Processors'], 0,
+                          "Processors not zero for non-mpi parser")
+
 
 if __name__ == '__main__':
     unittest.main()

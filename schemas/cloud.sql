@@ -2,7 +2,7 @@
 -- CloudRecords
 
 CREATE TABLE CloudRecords ( 
-  UpdateTime TIMESTAMP, 
+  UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
 
   VMUUID VARCHAR(255) NOT NULL, 
   SiteID INT NOT NULL,                -- Foreign key
@@ -93,7 +93,7 @@ DELIMITER ;
 
 DROP TABLE IF EXISTS CloudSummaries;
 CREATE TABLE CloudSummaries (
-  UpdateTime TIMESTAMP,
+  UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
   SiteID INT NOT NULL, -- Foreign key
   CloudComputeServiceID INT NOT NULL, -- Foreign key
@@ -106,15 +106,15 @@ CREATE TABLE CloudSummaries (
   VOGroupID INT NOT NULL, -- Foreign key
   VORoleID INT NOT NULL, -- Foreign key
 
-  Status VARCHAR(255),
-  CloudType VARCHAR(255),
-  ImageId VARCHAR(255),
+  Status VARCHAR(255) NOT NULL,
+  CloudType VARCHAR(255) NOT NULL,
+  ImageId VARCHAR(255) NOT NULL,
 
   EarliestStartTime DATETIME,
   LatestStartTime DATETIME,
   WallDuration BIGINT,
   CpuDuration BIGINT,
-  CpuCount INT,
+  CpuCount INT NOT NULL,
 
   NetworkInbound BIGINT,
   NetworkOutbound BIGINT,
@@ -129,7 +129,9 @@ CREATE TABLE CloudSummaries (
   
   PublisherDNID VARCHAR(255),
 
-  PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VOGroupID, VORoleID, Status, CloudType, ImageId)
+  PRIMARY KEY (SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID,
+    VOID, VOGroupID, VORoleID, Status, CloudType, ImageId, CpuCount,
+    BenchmarkType, Benchmark)
 
 );
 
@@ -195,7 +197,7 @@ DELIMITER ;
 -- LastUpdated
 DROP TABLE IF EXISTS LastUpdated;
 CREATE TABLE LastUpdated (
-  UpdateTime TIMESTAMP NOT NULL,
+  UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   Type VARCHAR(255) PRIMARY KEY
 );
 
@@ -211,7 +213,7 @@ DELIMITER ;
 
 -- -----------------------------------------------------------------------------
 -- Sites
-
+DROP TABLE IF EXISTS Sites;
 CREATE TABLE Sites (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY
  ,  name VARCHAR(255) NOT NULL
@@ -237,7 +239,7 @@ DELIMITER ;
 
 -- -----------------------------------------------------------------------------
 -- CloudComputeService
-
+DROP TABLE IF EXISTS CloudComputeServices;
 CREATE TABLE CloudComputeServices (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY
  ,  name VARCHAR(255) NOT NULL
@@ -263,7 +265,7 @@ DELIMITER ;
 
 -- -----------------------------------------------------------------------------
 -- DNs
-
+DROP TABLE IF EXISTS DNs;
 CREATE TABLE DNs (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY
  ,  name VARCHAR(255) NOT NULL

@@ -20,17 +20,17 @@ Created on 27 Oct 2011
 
 
 from apel.db import ApelDbException
-from apel.db.records import BlahdRecord, \
-                            CloudRecord, \
-                            CloudSummaryRecord, \
-                            EventRecord, \
-                            GroupAttributeRecord, \
-                            JobRecord, \
-                            NormalisedSummaryRecord, \
-                            ProcessedRecord, \
-                            StorageRecord, \
-                            SummaryRecord, \
-                            SyncRecord
+from apel.db.records import (BlahdRecord,
+                             CloudRecord,
+                             CloudSummaryRecord,
+                             EventRecord,
+                             GroupAttributeRecord,
+                             JobRecord,
+                             NormalisedSummaryRecord,
+                             ProcessedRecord,
+                             StorageRecord,
+                             SummaryRecord,
+                             SyncRecord)
 import MySQLdb.cursors
 import datetime
 import logging
@@ -49,11 +49,12 @@ class ApelMysqlDb(object):
                     JobRecord   : 'VJobRecords',
                     BlahdRecord : 'BlahdRecords',
                     SyncRecord  : 'SyncRecords',
-                    CloudRecord : 'CloudRecords',
+                    CloudRecord : 'VCloudRecords',
                     CloudSummaryRecord : 'VCloudSummaries',
                     NormalisedSummaryRecord : 'VNormalisedSummaries',
                     ProcessedRecord : 'VProcessedFiles',
-                    SummaryRecord : 'VSummaries'}
+                    SummaryRecord : 'VSummaries',
+                    StorageRecord: 'VStarRecords'}
     
     # These simply need to have the same number of arguments as the stored procedures defined in the database schemas.
     INSERT_PROCEDURES = {

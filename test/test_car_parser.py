@@ -1,27 +1,25 @@
-from unittest import TestCase
 import datetime
+import unittest
+
 from apel.db.loader import CarParser
+from apel.db.loader.xml_parser import XMLParserException
 
 
 def datetimes_equal(dt1, dt2):
-    '''
-    Compare if datetimes are equal to the nearest second.
-    '''
+    """Compare if datetimes are equal to the nearest second."""
     diff = dt1 - dt2
-    return abs(diff) < datetime.timedelta(seconds = 1)
+    return abs(diff) < datetime.timedelta(seconds=1)
 
-class CarParserTest(TestCase):
-    '''
-    Test case for Car Parser
-    '''
-    
+
+class CarParserTest(unittest.TestCase):
+    """Test case for Car Parser"""
+
     def setUp(self):
         pass
         #self.parser = CarParser(self.example_data)
-    
+
     def test_car_parser(self):
-        
-        # Careful!  I added a Z to the end of the dates here but they weren't there in the CAR spec...
+        # Careful! I added a Z to the end of the dates here but they weren't there in the CAR spec...
         car1 = '''<?xml version="1.0" encoding="UTF-8"?>
 <urf:UsageRecord xmlns:urf="http://eu-emi.eu/namespaces/2012/11/computerecord" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://eu-emi.eu/namespaces/2012/11/computerecord ../../../org.glite.dgas_B_4_0_0/config-consumers/car_v1.2.xsd ">
   <urf:RecordIdentity urf:createTime="2001-12-31T12:00:00Z" urf:recordId="token"/>
@@ -43,17 +41,17 @@ class CarParserTest(TestCase):
   <urf:Site>urf:Site</urf:Site>
 </urf:UsageRecord>
 '''
-        
-        values1 = {'Site': 'urf:Site', 
-                        'MachineName':'MachineName',
-                        'LocalJobId':'urf:LocalJobId', 
-                        'LocalUserId': 'urf:LocalUserId', 
-                        'WallDuration': 86400,
-                        'CpuDuration': 86400,
-                        'StartTime': datetime.datetime(2001, 12, 31, 12, 00, 00),
-                        'EndTime': datetime.datetime(2001, 12, 31, 12, 00, 00),
-                        }
-        
+
+        values1 = {'Site': 'urf:Site',
+                   'MachineName': 'MachineName',
+                   'LocalJobId': 'urf:LocalJobId',
+                   'LocalUserId': 'urf:LocalUserId',
+                   'WallDuration': 86400,
+                   'CpuDuration': 86400,
+                   'StartTime': datetime.datetime(2001, 12, 31, 12, 00, 00),
+                   'EndTime': datetime.datetime(2001, 12, 31, 12, 00, 00),
+                   }
+
         car2 = '''<?xml version="1.0"?>
 <UsageRecords xmlns="http://eu-emi.eu/namespaces/2012/11/computerecord">
   <UsageRecord xmlns:urf="http://eu-emi.eu/namespaces/2012/11/computerecord" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -87,23 +85,22 @@ class CarParserTest(TestCase):
     <Host urf:primary="true">pgs03</Host>
     <Host>pgs03.grid.upjs.sk</Host></UsageRecord>
 </UsageRecords>'''
-            
-        values2 = {"Site": "PGS03-GRID-UPJS-SK", 
-                        "MachineName":"pgs03.grid.upjs.sk", 
-                        "LocalJobId":"jobid10", 
-                        "LocalUserId": "gridtest", 
-                        "WallDuration":4,
-                        "CpuDuration": 3,
-                        "ServiceLevelType": "Si2K",
-                        "ServiceLevel": 1,
-                        "NodeCount": 2,
-                        "StartTime": datetime.datetime(2013, 2, 9, 15, 9, 16),
-                        "EndTime": datetime.datetime(2013, 2, 9, 15, 11, 41),
-                        "SubmitHost": "gsiftp://pgs03.grid.upjs.sk:2811/jobs",
-                        "Queue": "gridlong"
-                        }
-        
-        
+
+        values2 = {"Site": "PGS03-GRID-UPJS-SK",
+                   "MachineName": "pgs03.grid.upjs.sk",
+                   "LocalJobId": "jobid10",
+                   "LocalUserId": "gridtest",
+                   "WallDuration": 4,
+                   "CpuDuration": 3,
+                   "ServiceLevelType": "Si2K",
+                   "ServiceLevel": 1,
+                   "NodeCount": 2,
+                   "StartTime": datetime.datetime(2013, 2, 9, 15, 9, 16),
+                   "EndTime": datetime.datetime(2013, 2, 9, 15, 11, 41),
+                   "SubmitHost": "gsiftp://pgs03.grid.upjs.sk:2811/jobs",
+                   "Queue": "gridlong"
+                   }
+
         car3 = '''<com:UsageRecord xmlns:com="http://eu-emi.eu/namespaces/2012/11/computerecord">
         <com:RecordIdentity com:recordId="62991a08-909b-4516-aa30-3732ab3d8998" com:createTime="2013-02-22T15:58:44.567+01:00"/>
         <com:JobIdentity>
@@ -142,50 +139,64 @@ class CarParserTest(TestCase):
         <com:Site>zam052v15.zam.kfa-juelich.de</com:Site>
         <com:Host com:primary="false" com:description="CPUS=2;SLOTS=1,0">zam052v15</com:Host>
         </com:UsageRecord>'''
-        
-        values3 = {
-                        "LocalJobId":"7005", 
-                        "GlobalUserName": "CN=Bjoern Hagemeier,OU=Forschungszentrum Juelich GmbH,O=GridGermany,C=DE",
-                        "LocalUserId": "bjoernh", 
-                        "InfrastructureType": "grid",
-                        'WallDuration': 0,
-                        'CpuDuration': 0,
-                        'ServiceLevelType': 'HEPSPEC',
-                        'ServiceLevel': 1,
-                        'NodeCount': 1,
-                        'Processors': 2,
-                        'StartTime': datetime.datetime(2013, 2, 22, 14, 58, 45),
-                        'EndTime': datetime.datetime(2013, 2, 22, 14, 58, 45),
-                        'MachineName':'zam052v15.zam.kfa-juelich.de', 
-                        'SubmitHost': 'zam052v02',
-                        'Queue': 'batch',
-                        'Site': 'zam052v15.zam.kfa-juelich.de' 
-                        }
+
+        values3 = {"LocalJobId": "7005",
+                   "GlobalUserName": "CN=Bjoern Hagemeier,OU=Forschungszentrum Juelich GmbH,O=GridGermany,C=DE",
+                   "LocalUserId": "bjoernh",
+                   "InfrastructureType": "grid",
+                   'WallDuration': 0,
+                   'CpuDuration': 0,
+                   'ServiceLevelType': 'HEPSPEC',
+                   'ServiceLevel': 1,
+                   'NodeCount': 1,
+                   'Processors': 2,
+                   'StartTime': datetime.datetime(2013, 2, 22, 14, 58, 45),
+                   'EndTime': datetime.datetime(2013, 2, 22, 14, 58, 45),
+                   'MachineName': 'zam052v15.zam.kfa-juelich.de',
+                   'SubmitHost': 'zam052v02',
+                   'Queue': 'batch',
+                   'Site': 'zam052v15.zam.kfa-juelich.de'
+                   }
 
         cases = {}
         cases[car1] = values1
         cases[car2] = values2
         cases[car3] = values3
-        
+
         for car in cases:
-            
-            parser  = CarParser(car)
+
+            parser = CarParser(car)
             record = parser.get_records()[0]
             cont = record._record_content
-            
+
             #  Mandatory fields - need checking.
-            self.assertTrue(cont.has_key('Site'))
-            self.assertTrue(cont.has_key('Queue'))
-            self.assertTrue(cont.has_key('LocalJobId'))
-            self.assertTrue(cont.has_key('WallDuration'))
-            self.assertTrue(cont.has_key('CpuDuration'))
-            self.assertTrue(cont.has_key('StartTime'))
-            self.assertTrue(cont.has_key('EndTime'))
-        
-        
+            self.assertTrue('Site' in cont)
+            self.assertTrue('Queue' in cont)
+            self.assertTrue('LocalJobId' in cont)
+            self.assertTrue('WallDuration' in cont)
+            self.assertTrue('CpuDuration' in cont)
+            self.assertTrue('StartTime' in cont)
+            self.assertTrue('EndTime' in cont)
+
             for key in cases[car].keys():
                 if isinstance(cont[key], datetime.datetime):
                     if not datetimes_equal(cont[key], cases[car][key]):
                         self.fail("Datetimes don't match for key %s: %s, %s" % (key, cont[key], cases[car][key]))
                 else:
                     self.assertEqual(cont[key], cases[car][key], '%s != %s for key %s' % (cont[key], cases[car][key], key))
+
+    def test_empty_xml(self):
+        """
+        Check that exception is raised for XML not in computerecord namepsace.
+        """
+        parser = CarParser("<something></something>")
+        self.assertRaises(XMLParserException, parser.get_records)
+
+    #def test_empty_record(self):
+    #    # Not sure what should be returned with an empty record like this.
+    #    parser = CarParser('<urf:UsageRecord xmlns:urf="http://eu-emi.eu/namesp'
+    #                       'aces/2012/11/computerecord"></urf:UsageRecord>')
+    #    print parser.get_records()[0]._record_content
+
+if __name__ == '__main__':
+    unittest.main()

@@ -104,12 +104,12 @@ def iso2seconds(isoduration):
             intvals.append(0)
 
     # ignore group 0 ("P") and group 5 ("T")
-    seconds = intvals[1] * 31536000 + \
-            intvals[2] * 2628000 + \
-            intvals[3] * 604800 + \
-            intvals[4] * 86400 + \
-            intvals[6] * 3600 + \
-            intvals[7] * 60 + \
-            intvals[8] 
-    
+    seconds = (intvals[1] * 31536000 +
+               intvals[2] * 2628000 +
+               intvals[3] * 604800 +
+               intvals[4] * 86400 +
+               intvals[6] * 3600 +
+               intvals[7] * 60 +
+               intvals[8])
+
     return seconds

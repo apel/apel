@@ -331,8 +331,8 @@ class Record(object):
                 value = contents[key]
             except KeyError:
                 value = None
-                    
-            # check if we have an integer in this field
+
+            # Check if we have an integer by trying to cast to an int.
             try:
                 value = int(value)
             except (ValueError, TypeError):
@@ -344,3 +344,44 @@ class Record(object):
                 elif value is not None:
                     raise InvalidRecordException("Int field " + key + 
                                     " doesn't contain an integer.")
+
+        # Change null values for floats to the null object -> NULL in the DB.
+        for key in self._float_fields:
+            try:
+                value = contents[key]
+            except KeyError:
+                value = None
+
+            # Check if we have an float by trying to cast to a float.
+            try:
+                value = float(value)
+            except (ValueError, TypeError):
+                if key in self._mandatory_fields:
+                    raise InvalidRecordException("Mandatory decimal field " + key +
+                                    " doesn't contain a float.")
+                elif check_for_null(value):
+                    contents[key] = None
+                elif value is not None:
+                    raise InvalidRecordException("Decimal field " + key +
+                                    " doesn't contain a float.")
+
+        # Change null values for Datetimes to the null object -> NULL in the DB.
+        for key in self._datetime_fields:
+            try:
+                value = contents[key]
+            except KeyError:
+                value = None
+
+            # Check if we have a datetime in this field.
+            # We have to check this slightly differently than an int/float
+            # as there doesn't seem to be a nice function to attempt to
+            # cast an object to a datetime.
+            if not isinstance(value, datetime):
+                if key in self._mandatory_fields:
+                    raise InvalidRecordException("Mandatory datetime field " + key +
+                                   " doesn't contain a datetime.")
+                elif check_for_null(value):
+                    contents[key] = None
+                elif value is not None:
+                    raise InvalidRecordException("Datetime field " + key +
+                                    " doesn't contain an datetime.")

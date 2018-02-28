@@ -120,7 +120,7 @@ class ParserSGETest(unittest.TestCase):
         Univa Grid Engine timestamps changed from seconds to milliseconds in
         version 8.2.0. This tests the new format accounting log.
         """
-        self.parser._ms_timestamps = True
+        self.parser.set_ms_timestamps(True)
 
         line = ("grid.q:node101.cm.cluster:atlas:atlas235:cream_814542935:38725"
                 "61:sge:0:1412932860657:1412932865141:1412933085629:0:0:220.488"
@@ -151,6 +151,16 @@ class ParserSGETest(unittest.TestCase):
             self.assertEqual(cont[key], values[key],
                              "%s != %s for key %s" % (cont[key], values[key],
                                                       key))
+
+    def test_set_ms_timestamp(self):
+        """Check that this method works as exepected."""
+        self.assertFalse(self.parser._ms_timestamps, "Non-default ms setting")
+
+        self.parser.set_ms_timestamps(True)
+        self.assertTrue(self.parser._ms_timestamps, "_ms_timestamps not set")
+
+        self.parser.set_ms_timestamps(False)
+        self.assertFalse(self.parser._ms_timestamps, "_ms_timestamps not unset")
 
     def test_parse_line_with_multiplier(self):
         '''
@@ -344,6 +354,18 @@ class ParserSGETest(unittest.TestCase):
                 self.assertEqual(d, parser._load_multipliers())
             finally:
                 patcher.stop()
+
+    def test_mpi_false(self):
+        """Check that non-mpi parsers return zero procs even if at least 1."""
+        line = ('dteam:testce.test:dteam:dteam041:STDIN:43:sge:19:1200093286:12'
+                '00093294:1200093295:0:0:1:0:0:0.000000:0:0:0:0:46206:0:0:0.0:0'
+                ':0:0:0:337:257:NONE:defaultdepartment:NONE:1:0:0.09:0.000213:0'
+                '.0:-U dteam -q dteam:0.0:NONE:30171136.0')
+        parser = apel.parsers.SGEParser('testSite', 'testHost', False)
+        record = parser.parse(line)
+        self.assertEqual(record._record_content['Processors'], 0,
+                         "Processors not zero for non-mpi parser")
+
 
 if __name__ == '__main__':
     unittest.main()

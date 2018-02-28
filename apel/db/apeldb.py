@@ -130,8 +130,8 @@ class Query(object):
                     wh += '"' + item + '",'
                     
                 wh = wh[:-1] + ')'
-                
-                elems.append(column + ' in ' + wh)
+
+                elems.append(column + ' IN ' + wh)
             elif elem.endswith("_notin"):
                 column = elem[:-6]
                 wh = '('
@@ -139,14 +139,14 @@ class Query(object):
                     wh += '"' + item + '",'
                     
                 wh = wh[:-1] + ')'
-                
-                elems.append(column + ' not in ' + wh)
+
+                elems.append(column + ' NOT IN ' + wh)
             elif '_' in elem:
                 column, relation = elem.split('_')
                 if relation not in RELATIONS:
                     raise ApelDbException('Unknown relation: %s' % relation)
                 elems.append( column + RELATIONS[relation] + "'" + str(self.__dict__[elem]) + "'" )
             else:
-                elems.append( elem + '=' + "'" + str(self.__dict__[elem]) + "'")
-        
+                elems.append(elem + ' = ' + "'" + str(self.__dict__[elem]) + "'")
+
         return elems
