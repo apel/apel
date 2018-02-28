@@ -1,5 +1,5 @@
 -- This script contains multiple comment blocks that can update
--- APEL version 1.6.0 databases of the following types:
+-- APEL version 1.6.0 databases of the following types to 1.6.1:
 --  - Client Grid Accounting Database
 --  - Server Grid Accounting Database
 --  - Cloud Accounting Database
