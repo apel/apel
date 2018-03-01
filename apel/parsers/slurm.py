@@ -98,9 +98,7 @@ class SlurmParser(Parser):
         # Input checking
         if rc['CpuDuration'] < 0:
             raise ValueError('Negative CpuDuration value')
-
-        if rc['WallDuration'] < 0:
-            raise ValueError('Negative WallDuration value')
+        # No negative WallDuration test as parse_time prevents that.
 
         if rc['StopTime'] < rc['StartTime']:
             raise ValueError('StopTime less than StartTime')

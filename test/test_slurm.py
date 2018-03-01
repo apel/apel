@@ -36,7 +36,6 @@ class ParserSlurmTest(unittest.TestCase):
                        '324554.batch|batch|||2013-10-28T04:28:30|2013-10-28T04:28:33|00:00:03|3||1|1|wn65|0|0|COMPLETED',  # Zero memory
                        '324554.batch|batch|||2013-10-28T04:28:30|2013-10-28T04:28:33|00:00:03|3||1|1|wn65|20H|54J|COMPLETED',  # Invalid unit prefix
                        '324554.batch|batch|||2013-10-28T04:28:33|2013-10-28T04:28:30|00:00:03|3||1|1|wn65|28K|80K|COMPLETED',  # StopTime < StartTime
-                       '297720.batch|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|-00:00:16|16||1|1|wn37|3228K|23820K|COMPLETED',  # -ve WallDuration
                        '297720.batch|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|-16||1|1|wn37|3228K|23820K|COMPLETED',)  # -ve CpuDuration
 
         # Examples for correct lines
@@ -45,7 +44,8 @@ class ParserSlurmTest(unittest.TestCase):
             ('278952.batch|batch|||2013-10-23T21:37:24|2013-10-25T00:01:37|1-02:24:13|95053||1|1|wn36|438.50M|1567524K|COMPLETED'),
             ('297720.batch|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn37|3228K|23820K|COMPLETED'),
             ('321439.batch|batch|||2013-10-27T17:09:35|2013-10-28T04:47:20|11:37:45|41865||1|1|wn16|770728K|1.40G|COMPLETED'),
-            ('320816.batch|batch|||2013-10-27T14:56:03|2013-10-28T05:03:50|14:07:47|50867||1|1|wn33|1325232K|2.22G|COMPLETED'),)
+            ('320816.batch|batch|||2013-10-27T14:56:03|2013-10-28T05:03:50|14:07:47|50867||1|1|wn33|1325232K|2.22G|COMPLETED'),
+        )
 
         values = (
             ('1000', 'dteam005', 'dteam', 2, 2,
@@ -67,7 +67,8 @@ class ParserSlurmTest(unittest.TestCase):
             ('320816.batch', None, None, 50867, 50867,
              datetime.utcfromtimestamp(mktime((2013, 10, 27, 14, 56, 3, 0, 1, -1))),
              datetime.utcfromtimestamp(mktime((2013, 10, 28, 5, 3, 50, 0, 1, -1))),
-             None, 1325232, int(2.22*1024*1024), 1, 1))
+             None, 1325232, int(2.22*1024*1024), 1, 1),
+        )
 
         cases = {}
         for line, value in zip(lines, values):
