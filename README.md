@@ -1,5 +1,6 @@
 # APEL client and server source code
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3fd919315f4b49e7b99df6d5512eca35)](https://app.codacy.com/app/apel/apel?utm_source=github.com&utm_medium=referral&utm_content=apel/apel&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/apel/apel.svg?branch=dev)](https://travis-ci.org/apel/apel)
 [![Coverage Status](https://coveralls.io/repos/apel/apel/badge.svg?branch=dev)](https://coveralls.io/github/apel/apel?branch=dev)
 [![Code Health](https://landscape.io/github/apel/apel/dev/landscape.svg?style=flat)](https://landscape.io/github/apel/apel/dev)
