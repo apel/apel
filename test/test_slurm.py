@@ -95,6 +95,7 @@ class ParserSlurmTest(unittest.TestCase):
             self.assertRaises(ValueError, self.parser.parse, line)
 
     def test_job_status(self):
+        """Check that the right statuses are accepted."""
         accepted = (  # These job statuses are all described as "terminated".
             '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|CANCELLED',
             '123|batch|||2013-10-25T12:11:20|2013-10-25T12:11:36|00:00:16|16||1|1|wn|28K|20K|COMPLETED',

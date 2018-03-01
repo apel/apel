@@ -58,6 +58,7 @@ class SlurmParser(Parser):
         # log.info('line: %s' % (line));
         values = line.strip().split('|')
 
+        # These statuses indicate the job has stopped and resources were used.
         if values[14] not in ('CANCELLED', 'COMPLETED', 'FAILED',
                               'NODE_FAIL', 'PREEMPTED', 'TIMEOUT'):
             return None
