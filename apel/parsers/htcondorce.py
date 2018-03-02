@@ -56,10 +56,9 @@ Geonmo Ryu|/cms/Role=NULL/Capability=NULL|cms|1|0|0|1492418156|1492418167|0|100|
 
         '''
         values = line.strip().split('|')
-        dateinfo = datetime.datetime.fromtimestamp(float(values[9]))
-        dates = dateinfo.isoformat()+'Z'
+        dateinfo = datetime.datetime.fromtimestamp(float(line.strip().split('|')[9]))
         self.mapping = {
-            'TimeStamp'      : lambda x: dates,
+            'TimeStamp'      : lambda x: dateinfo.isoformat()+'Z',
             'GlobalUserName' : lambda x: x[3],
             'FQAN'           : lambda x: x[4],
             'VO'             : lambda x: parse_fqan(x[4])[2],
