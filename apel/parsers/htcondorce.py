@@ -32,16 +32,16 @@ class HTCondorCEParser(HTCondorParser):
     HTCondorCE parses accounting files from HTCondorCE system.
     '''
     mapping = None
-    isParsed= False
+    isParsed = False
     def __init__(self, site, machine_name, mpi):
         HTCondorParser.__init__(self, site, machine_name, mpi)
     def getMapping(self):
         '''
-        Return the parsed mapping. 
+        Return the parsed mapping.
         '''
-        if (isParsed) :
+        if isParsed:
             return self.mapping
-        else :
+        else:
             print "The log files are not yet parsed by HTCondorCEParser."
             return None
     def parse(self, line):
