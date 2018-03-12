@@ -83,6 +83,7 @@ CREATE PROCEDURE ReplaceCloudRecord(
 BEGIN
     DECLARE measurementTimeCalculated DATETIME;
     DECLARE recordCreateTimeNotNull DATETIME;
+    DECLARE endTimeNotNull DATETIME;
 
     IF(status='completed') THEN
         -- in this case, the recordCreateTime and measurementTime could
@@ -90,10 +91,13 @@ BEGIN
 
         -- if we werent supplied a record create time
         -- for a completed VM we have decided to use the end time
-        SET recordCreateTimeNotNull = IF(recordCreateTime IS NULL or recordCreateTime='0000-00-00 00:00:00', endTime, recordCreateTime);
+        -- We have to check the EndTime is not null because we can't guarantee this as we
+        -- previously loaded completed messages with no EndTime.
+        SET endTimeNotNull = IFNULL(endTime, '0000-00-00 00:00:00');
+        SET recordCreateTimeNotNull = IF(recordCreateTime IS NULL or recordCreateTime='0000-00-00 00:00:00', endTimeNotNull, recordCreateTime);
 
         -- Use the end time as the measurement time
-        SET measurementTimeCalculated = endTime;
+        SET measurementTimeCalculated = endTimeNotNull;
         
     ELSE
         -- In the case of a running VM, the measurement time will
