@@ -1,3 +1,23 @@
+-- This script contains multiple comment blocks that can update
+-- APEL version 1.6.1 databases of the following types to the next version:
+--  - Cloud Accounting Database
+
+-- UPDATE SCRIPT FOR CLOUD SCHEMA
+
+-- If you have a Cloud Accounting Database and wish to
+-- upgrade to APEL Version next, remove the block comment
+-- symbols around this section and run this script
+
+-- This section will:
+-- - Add new database fields for RecordCreateTime
+--   and MeasurementTime (where MeasurementTime is an approximation
+--   of the actual record's create time) to allow for proper
+--   accounting of long running VMs
+-- - Updates the view on the CloudRecords table showing the new fields
+-- - Defines a new ReplaceCloudRecord and SummariseVMs
+--   procedure for the same purpose
+-- - Updates the view on the CloudRecords table showing the new fields
+
 ALTER TABLE CloudRecords
   ADD RecordCreateTime DATETIME NOT NULL AFTER UpdateTime,
   ADD MeasurementTime DATETIME NOT NULL AFTER EndTime,
