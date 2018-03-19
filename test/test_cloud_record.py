@@ -197,7 +197,7 @@ CloudComputeService: Test Service'''
                          'SuspendDuration': None,
                          'WallDuration': None,
                          'CpuDuration': None,
-                         'CpuCount': None,
+                         'CpuCount': 0,
                          'NetworkType': 'None',
                          'NetworkInbound': None,
                          'NetworkOutbound': None,
