@@ -109,11 +109,16 @@ class MysqlTest(unittest.TestCase):
         cloud4_nb = apel.db.records.cloud.CloudRecord()
         cloud4_nb.load_from_msg(CLOUD4_NULL_BENCHMARKS)
 
+        # Test a Cloud V0.4 Record with mising fields
+        cloud4_mf = apel.db.records.cloud.CloudRecord()
+        cloud4_mf.load_from_msg(CLOUD4_MISSING_FIELDS)
+
         items_in = cloud2._record_content.items()
         items_in += cloud4._record_content.items()
         items_in += cloud4_nb._record_content.items()
+        items_in += cloud4_mf._record_content.items()
 
-        record_list = [cloud2, cloud4, cloud4_nb]
+        record_list = [cloud2, cloud4, cloud4_nb, cloud4_mf]
 
         # load_records changes the 'cloud' cloud record as it calls _check_fields
         # which adds placeholders to empty fields
@@ -288,6 +293,25 @@ Benchmark: NULL
 StorageRecordId: NULL
 ImageId: 1
 CloudType: Cloud Technology 2
+'''
+
+# A Cloud V0.4 Record, but missing a lot of fields.
+# We need to check we can load this record as we receive
+# messages with records like this and currently
+# load them.
+CLOUD4_MISSING_FIELDS = '''
+BenchmarkType: HEPSPEC06
+Status: completed
+SiteName: Test Site
+MachineName: Test Machine
+ImageId: Test Image ID
+LocalUserId: Test Local User ID
+FQAN: NULL
+LocalGroupId: Test Local Group ID
+VMUUID: Test VM ID
+CloudType: caso/0.3.4 (OpenStack)
+GlobalUserName: Test User
+CloudComputeService: Test Service
 '''
 
 if __name__ == '__main__':
