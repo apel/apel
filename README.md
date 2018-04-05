@@ -12,7 +12,7 @@ Python and uses MySQL. It has the following components:
 ### apel-parsers
 
 These extract data from the following batch systems:
-* LSF 5.x to 9.x
+* LSF
 * PBS
 * SGE/OGE
 * SLURM
