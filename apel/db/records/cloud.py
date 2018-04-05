@@ -89,7 +89,16 @@ class CloudRecord(Record):
         self._record_content['VORole'] = role
         self._record_content['VOGroup'] = group
         self._record_content['VO'] = vo
-        
+
+        # If the message was missing a CpuCount, assume it used
+        # zero Cpus, to prevent a NULL being written into the column
+        # in the CloudRecords tables.
+        # Doing so would be a problem despite the CloudRecords
+        # table allowing it because the CloudSummaries table
+        # doesn't allow it, creating a problem at summariser time.
+        if self._record_content['CpuCount'] is None:
+            self._record_content['CpuCount'] = 0
+
         # Check the values of StartTime and EndTime
         # self._check_start_end_times()
 

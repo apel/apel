@@ -168,10 +168,50 @@ CloudType: OpenNebula
                          'Benchmark': 0.0,
                          'ImageId': '\'scilin6\'',
                          'CloudType': 'OpenNebula'}
+
+        self._msg4 = '''
+BenchmarkType: HEPSPEC06
+Status: completed
+SiteName: Test Site
+MachineName: Test Machine
+ImageId: Test Image ID
+LocalUserId: Test Local User ID
+FQAN: NULL
+LocalGroupId: Test Local Group ID
+VMUUID: Test VM ID
+CloudType: caso/0.3.4 (OpenStack)
+GlobalUserName: Test User
+CloudComputeService: Test Service'''
+
+        self._values4 = {'VMUUID': 'Test VM ID',
+                         'SiteName': 'Test Site',
+                         'CloudComputeService': 'Test Service',
+                         'MachineName': 'Test Machine',
+                         'LocalUserId': 'Test Local User ID',
+                         'LocalGroupId': 'Test Local Group ID',
+                         'GlobalUserName': 'Test User',
+                         'FQAN': 'None',
+                         'Status': 'completed',
+                         'StartTime': None,
+                         'EndTime': None,
+                         'SuspendDuration': None,
+                         'WallDuration': None,
+                         'CpuDuration': None,
+                         'CpuCount': 0,
+                         'NetworkType': 'None',
+                         'NetworkInbound': None,
+                         'NetworkOutbound': None,
+                         'Memory': None,
+                         'Disk': None,
+                         'StorageRecordId': 'None',
+                         'ImageId': 'Test Image ID',
+                         'CloudType': 'caso/0.3.4 (OpenStack)'}
+
         self.cases = {}
         self.cases[self._msg1] = self._values1
         self.cases[self._msg2] = self._values2
         self.cases[self._msg3] = self._values3
+        self.cases[self._msg4] = self._values4
 
     def test_load_from_msg_value_check(self):
         """Check for correct values in CloudRecords generated from messages."""
