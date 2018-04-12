@@ -111,6 +111,7 @@ cp schemas/storage.sql %{buildroot}%_datadir/apel/
 
 cp scripts/update-1.5.1-1.6.0.sql %{buildroot}%_datadir/apel/
 cp scripts/update-1.6.0-1.6.1.sql %{buildroot}%_datadir/apel/
+cp scripts/update-1.6.1-1.6.2.sql %{buildroot}%_datadir/apel/
 
 # accounting scripts
 cp scripts/slurm_acc.sh %{buildroot}%_datadir/apel/
