@@ -29,12 +29,7 @@ log = logging.getLogger(__name__)
 
 class LSFParser(Parser):
     '''
-    LSFParser parses LSF accounting logs from versions:
-     - 5.x
-     - 6.x
-     - 7.x
-     - 8.x
-     - 9.x
+    LSFParser parses LSF accounting logs from all LSF versions.
 
     The expression below describes elements which we are looking for.
     Here is some explanation:

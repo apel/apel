@@ -1,7 +1,14 @@
 Changelog for apel
 ==================
+ * Mon Apr 16 2018 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.6.2-1
+ - [parsers] Added remaining job statuses for SLURM that indicate the job has
+   stopped and that resources have been used.
+ - [server] Fix CpuCount being NULL in cloud accounting records and leading to
+   warnings when summarising.
+ - [docs] Remove references to specific LSF versions as all now allowed.
+
  * Thu Dec 14 2017 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.6.1-1
- - [Parsers] Removed version restriction from LSF parser so that it can
+ - [parsers] Removed version restriction from LSF parser so that it can
    additionally work with version 10 onwards.
  - Added more columns to cloud summaries primary key to prevent mis-grouping.
  - Added Python setup script to enable installation on non-RHEL-based systems.

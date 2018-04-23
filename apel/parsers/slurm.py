@@ -58,7 +58,9 @@ class SlurmParser(Parser):
         # log.info('line: %s' % (line));
         values = line.strip().split('|')
 
-        if values[14] != 'COMPLETED':
+        # These statuses indicate the job has stopped and resources were used.
+        if values[14] not in ('CANCELLED', 'COMPLETED', 'FAILED',
+                              'NODE_FAIL', 'PREEMPTED', 'TIMEOUT'):
             return None
 
         rmem = self._normalise_memory(values[12])
@@ -96,9 +98,7 @@ class SlurmParser(Parser):
         # Input checking
         if rc['CpuDuration'] < 0:
             raise ValueError('Negative CpuDuration value')
-
-        if rc['WallDuration'] < 0:
-            raise ValueError('Negative WallDuration value')
+        # No negative WallDuration test as parse_time prevents that.
 
         if rc['StopTime'] < rc['StartTime']:
             raise ValueError('StopTime less than StartTime')
