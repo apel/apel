@@ -109,9 +109,8 @@ cp schemas/server-extra.sql %{buildroot}%_datadir/apel/
 cp schemas/cloud.sql %{buildroot}%_datadir/apel/
 cp schemas/storage.sql %{buildroot}%_datadir/apel/
 
-cp scripts/update-1.5.1-1.6.0.sql %{buildroot}%_datadir/apel/
-cp scripts/update-1.6.0-1.6.1.sql %{buildroot}%_datadir/apel/
-cp scripts/update-1.6.1-1.6.2.sql %{buildroot}%_datadir/apel/
+# All update scripts matched by wildcard
+cp scripts/update-*.sql %{buildroot}%_datadir/apel/
 
 # accounting scripts
 cp scripts/slurm_acc.sh %{buildroot}%_datadir/apel/
@@ -175,8 +174,8 @@ exit 0
 %_datadir/apel/server-extra.sql
 %_datadir/apel/cloud.sql
 %_datadir/apel/storage.sql
-%_datadir/apel/update-1.5.1-1.6.0.sql
-%_datadir/apel/update-1.6.0-1.6.1.sql
+# Include all update scripts by wildcard matching
+%_datadir/apel/update-*.sql
 
 %attr(755,root,root) %_datadir/apel/msg_status.py
 %exclude %_datadir/apel/msg_status.pyc
