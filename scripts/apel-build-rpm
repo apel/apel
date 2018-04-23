@@ -1,11 +1,13 @@
 #!/bin/bash
 
-# Execute the following as root to install build tools and create a build user:
+# Execute the following as root to install build tools and create a build user
+# (to allow copying as non-root add the option "-K UMASK=0022" to useradd):
+
 # yum install fedora-packager
 # useradd -m rpmb
 # usermod -a -G mock rpmb
 
-# Then swtich to the rpmb user (su - rpmb) and run this file, altering version.
+# Then swtich to the rpmb user (su - rpmb) and run this file, altering VERSION.
 
 rpmdev-setuptree
 
