@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.6.1
+Version:        1.6.2
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -34,7 +34,7 @@ apel-lib provides required libraries for the rest of APEL system.
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apel-lib >= 1.6.1
+Requires:       apel-lib >= 1.6.2
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -44,7 +44,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.6.1, apel-ssm
+Requires:       apel-lib >= 1.6.2, apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -55,7 +55,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.6.1, apel-ssm
+Requires:       apel-lib >= 1.6.2, apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -109,8 +109,8 @@ cp schemas/server-extra.sql %{buildroot}%_datadir/apel/
 cp schemas/cloud.sql %{buildroot}%_datadir/apel/
 cp schemas/storage.sql %{buildroot}%_datadir/apel/
 
-cp scripts/update-1.5.1-1.6.0.sql %{buildroot}%_datadir/apel/
-cp scripts/update-1.6.0-1.6.1.sql %{buildroot}%_datadir/apel/
+# All update scripts matched by wildcard
+cp scripts/update-*.sql %{buildroot}%_datadir/apel/
 
 # accounting scripts
 cp scripts/slurm_acc.sh %{buildroot}%_datadir/apel/
@@ -174,8 +174,8 @@ exit 0
 %_datadir/apel/server-extra.sql
 %_datadir/apel/cloud.sql
 %_datadir/apel/storage.sql
-%_datadir/apel/update-1.5.1-1.6.0.sql
-%_datadir/apel/update-1.6.0-1.6.1.sql
+# Include all update scripts by wildcard matching
+%_datadir/apel/update-*.sql
 
 %attr(755,root,root) %_datadir/apel/msg_status.py
 %exclude %_datadir/apel/msg_status.pyc
@@ -199,8 +199,15 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Mon Apr 16 2018 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.6.2-1
+ - [parsers] Added remaining job statuses for SLURM that indicate the job has
+   stopped and that resources have been used.
+ - [server] Fix CpuCount being NULL in cloud accounting records and leading to
+   warnings when summarising.
+ - [docs] Remove references to specific LSF versions as all now allowed.
+
  * Thu Dec 14 2017 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.6.1-1
- - [Parsers] Removed version restriction from LSF parser so that it can
+ - [parsers] Removed version restriction from LSF parser so that it can
    additionally work with version 10 onwards.
  - Added more columns to cloud summaries primary key to prevent mis-grouping.
  - Added Python setup script to enable installation on non-RHEL-based systems.
