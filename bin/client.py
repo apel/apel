@@ -272,7 +272,10 @@ def run_client(ccp):
                 log.warn('Unrecognised interval: %s', interval)
                 log.warn('Will not start unloader.')
 
-            log.info('Unloaded %d records in %d messages.', recs, msgs)
+            if recs > 0:
+                log.info('Unloaded %d records in %d messages.', recs, msgs)
+            else:
+                log.warning('No records unloaded. Please check your config.')
 
         except KeyError:
             log.warn('Invalid table name: %s, omitting', table_name)
@@ -282,7 +285,10 @@ def run_client(ccp):
         # Always send sync messages
         msgs, recs = unloader.unload_sync()
 
-        log.info('Unloaded %d sync records in %d messages.', recs, msgs)
+        if recs > 0:
+            log.info('Unloaded %d sync records in %d messages.', recs, msgs)
+        else:
+            log.warning('No sync records unloaded. Please check your config.')
 
         log.info('Unloading complete.')
         log.info(LOG_BREAK)
