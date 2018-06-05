@@ -38,7 +38,7 @@ class CloudRecord(Record):
         self._mandatory_fields = ["VMUUID", "SiteName"]
             
         # This list allows us to specify the order of lines when we construct records.
-        self._msg_fields  = ["VMUUID", "SiteName", "CloudComputeService", "MachineName", 
+        self._msg_fields  = ["RecordCreateTime", "VMUUID", "SiteName", "CloudComputeService", "MachineName", 
                              "LocalUserId", "LocalGroupId", "GlobalUserName", "FQAN",
                              "Status", "StartTime", "EndTime", "SuspendDuration", 
                              "WallDuration", "CpuDuration", "CpuCount", 
@@ -47,7 +47,7 @@ class CloudRecord(Record):
                              "StorageRecordId", "ImageId", "CloudType"]
         
         # This list specifies the information that goes in the database.
-        self._db_fields = self._msg_fields[:8] + ['VO', 'VOGroup', 'VORole'] + self._msg_fields[8:]
+        self._db_fields = self._msg_fields[:9] + ['VO', 'VOGroup', 'VORole'] + self._msg_fields[9:]
         self._all_fields = self._db_fields
         
         self._ignored_fields = ["UpdateTime"]
@@ -57,7 +57,7 @@ class CloudRecord(Record):
                              "NetworkInbound", "NetworkOutbound", "PublicIPCount", "Memory", "Disk"]
         
         self._float_fields = ['Benchmark']
-        self._datetime_fields = ["StartTime", "EndTime"]
+        self._datetime_fields = ["RecordCreateTime", "StartTime", "EndTime"]
     
     def _check_fields(self):
         '''
