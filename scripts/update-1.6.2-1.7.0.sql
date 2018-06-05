@@ -1,5 +1,5 @@
 -- This script contains multiple comment blocks that can update
--- APEL version 1.6.1 databases of the following types to the next version:
+-- APEL version 1.6.2 databases of the following types to 1.7.0:
 --  - Cloud Accounting Database
 
 -- UPDATE SCRIPT FOR CLOUD SCHEMA
