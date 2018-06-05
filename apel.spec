@@ -199,6 +199,10 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Tue Jun 05 2018 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.7.0-1
+ - [server] Long running VM support: Cloud VMs that run over month boundaries
+   will now have their usage in each month assigned to the correct month.
+
  * Mon Apr 16 2018 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.6.2-1
  - [parsers] Added remaining job statuses for SLURM that indicate the job has
    stopped and that resources have been used.
