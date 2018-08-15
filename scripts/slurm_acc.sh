@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-/bin/sleep 2
+sleep 2
 
 NOW=$(date +"%Y%m%d")
 FILE="/var/log/apel/slurm_acc.$NOW"
