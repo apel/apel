@@ -46,12 +46,12 @@ class SlurmParser(Parser):
         log.info('Site: %s; batch system: %s', self.site_name, self.machine_name)
 
     def parse(self, line):
-        '''
-        Parses single line from accounting log file.
-        '''
-        # /usr/local/bin/sacct -P -n --format=JobID,JobName,User,Group,Start,End
-        # ,Elapsed,CPUTimeRAW,Partition,NCPUS,NNodes,NodeList,MaxRSS,MaxVMSize,S
-        # tate -j $JOBID >> /var/log/apel/slurm_acc.20130311
+        """Parse single line from accounting log file."""
+        # Some sites will use TotalCPU rather than CPUTimeRAW
+
+        # sacct -P -n --format=JobID,JobName,User,Group,Start,End,Elapsed,
+        # CPUTimeRAW,Partition,NCPUS,NNodes,NodeList,MaxRSS,MaxVMSize,State -j
+        #  $JOBID >> /var/log/apel/slurm_acc.20130311
 
         # 1007|cream_612883006|dteam005|dteam|2013-03-27T17:13:41|2013-03-27T17:13:44|00:00:03|3|prod|1|1|cert-40|||COMPLETED
 
@@ -62,6 +62,14 @@ class SlurmParser(Parser):
         if values[14] not in ('CANCELLED', 'COMPLETED', 'FAILED',
                               'NODE_FAIL', 'PREEMPTED', 'TIMEOUT'):
             return None
+
+        # Select CPU time parsing function based on field used.
+        if ':' not in values[7]:
+            # CPUTimeRAW used which is a plain integer (as a string).
+            cput_function = int
+        else:
+            # TotalCPU used which has the form d-h:m:s, h:m:s or m:s.s.
+            cput_function = parse_time
 
         rmem = self._normalise_memory(values[12])
 
@@ -74,7 +82,7 @@ class SlurmParser(Parser):
                    'LocalUserID'     : lambda x: x[2],
                    'LocalUserGroup'  : lambda x: x[3],
                    'WallDuration'    : lambda x: parse_time(x[6]),
-                   'CpuDuration'     : lambda x: int(x[7]), 
+                   'CpuDuration'     : lambda x: cput_function(x[7]),
                    # SLURM gives timestamps which are in system time.
                    'StartTime'       : lambda x: parse_local_timestamp(x[4]),
                    'StopTime'        : lambda x: parse_local_timestamp(x[5]),

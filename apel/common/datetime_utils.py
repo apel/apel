@@ -58,14 +58,19 @@ def parse_timestamp(datetime_string):
 
 
 def parse_time(timestring):
-    '''
-    Return seconds from times of the form d-h:m:s or h:m:s.
-    '''
+    """Return integer seconds from times of form d-h:m:s, h:m:s or m:s.s."""
     if '-' in timestring:
         days, sub_days = timestring.split('-')
     else:
         days, sub_days = 0, timestring
-    hours, minutes, seconds = sub_days.split(':')
+
+    if '.' in sub_days:
+        hours = 0
+        minutes, decimal_s = sub_days.split(':')
+        seconds = int(round(float(decimal_s)))
+    else:
+        hours, minutes, seconds = sub_days.split(':')
+
     return 86400*int(days) + 3600*int(hours) + 60*int(minutes) + int(seconds)
 
 
