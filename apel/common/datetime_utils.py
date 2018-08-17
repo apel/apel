@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
    @author Konrad Jopek, Will Rogers
 '''
 
@@ -25,7 +25,7 @@ def valid_from(date, days=1):
     '''
     Method for BlahParser
     Returns calculated value for ValidFrom field.
-    
+
     By default it returns Timestamp - 1 day
     '''
     delta = datetime.timedelta(days=days)
@@ -36,7 +36,7 @@ def valid_until(date, days=28):
     '''
     Method for BlahParser
     Returns calculated value for ValidUntil field.
-    
+
     By default it returns Timestamp + 28 days
     '''
     delta = datetime.timedelta(days=days)
@@ -47,9 +47,9 @@ def parse_timestamp(datetime_string):
     '''
     Parse timestamp encoded as a string in various forms.  Return
     a TZ-unaware datetime object, which is in UTC.
-    
+
     If timezone information is not present in the string, it
-    assumes that the timezone is UTC.  
+    assumes that the timezone is UTC.
     '''
     dt = iso8601.parse_date(datetime_string)
     utcdt = dt.astimezone(iso8601.iso8601.UTC)
