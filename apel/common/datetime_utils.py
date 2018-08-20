@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
    @author Konrad Jopek, Will Rogers
 '''
 
@@ -25,7 +25,7 @@ def valid_from(date, days=1):
     '''
     Method for BlahParser
     Returns calculated value for ValidFrom field.
-    
+
     By default it returns Timestamp - 1 day
     '''
     delta = datetime.timedelta(days=days)
@@ -36,7 +36,7 @@ def valid_until(date, days=28):
     '''
     Method for BlahParser
     Returns calculated value for ValidUntil field.
-    
+
     By default it returns Timestamp + 28 days
     '''
     delta = datetime.timedelta(days=days)
@@ -47,9 +47,9 @@ def parse_timestamp(datetime_string):
     '''
     Parse timestamp encoded as a string in various forms.  Return
     a TZ-unaware datetime object, which is in UTC.
-    
+
     If timezone information is not present in the string, it
-    assumes that the timezone is UTC.  
+    assumes that the timezone is UTC.
     '''
     dt = iso8601.parse_date(datetime_string)
     utcdt = dt.astimezone(iso8601.iso8601.UTC)
@@ -58,14 +58,19 @@ def parse_timestamp(datetime_string):
 
 
 def parse_time(timestring):
-    '''
-    Return seconds from times of the form d-h:m:s or h:m:s.
-    '''
+    """Return integer seconds from times of form d-h:m:s, h:m:s or m:s.s."""
     if '-' in timestring:
         days, sub_days = timestring.split('-')
     else:
         days, sub_days = 0, timestring
-    hours, minutes, seconds = sub_days.split(':')
+
+    if '.' in sub_days:
+        hours = 0
+        minutes, decimal_s = sub_days.split(':')
+        seconds = int(round(float(decimal_s)))
+    else:
+        hours, minutes, seconds = sub_days.split(':')
+
     return 86400*int(days) + 3600*int(hours) + 60*int(minutes) + int(seconds)
 
 
