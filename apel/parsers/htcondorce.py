@@ -33,8 +33,10 @@ class HTCondorCEParser(HTCondorParser):
     '''
     mapping = None
     isParsed = False
+
     def __init__(self, site, machine_name, mpi):
         HTCondorParser.__init__(self, site, machine_name, mpi)
+        
     def getMapping(self):
         '''
         Return the parsed mapping.
@@ -44,6 +46,7 @@ class HTCondorCEParser(HTCondorParser):
         else:
             print "The log files are not yet parsed by HTCondorCEParser."
             return None
+
     def parse(self, line):
         '''
         Parses single line from accounting log file.
