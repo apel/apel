@@ -44,6 +44,7 @@ from apel.parsers.sge import SGEParser
 from apel.parsers.pbs import PBSParser
 from apel.parsers.slurm import SlurmParser
 from apel.parsers.htcondor import HTCondorParser
+from apel.parsers.htcondorce import HTCondorCEParser
 
 
 LOGGER_ID = 'parser'
@@ -58,6 +59,7 @@ PARSERS = {
            'SLURM': SlurmParser,
            'blah' : BlahParser,
            'HTCondor': HTCondorParser,
+           'htcondorce' : HTCondorCEParser,
            }
 
 
@@ -160,8 +162,12 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
         for item in sorted(os.listdir(dirpath)):
             abs_file = os.path.join(dirpath, item)
             if os.path.isfile(abs_file) and expr.match(item):
+                # HTCondorCE has specific hash name.
                 # first, calculate the hash of the file:
-                file_hash = calculate_hash(abs_file)
+                if parser.__class__.__name__ == "HTCondorCEParser":
+                    file_hash = "htce_" + calculate_hash(abs_file)
+                else:
+                    file_hash = calculate_hash(abs_file)
                 found = False
                 unparsed = False
                 # next, try to find corresponding entry
@@ -236,8 +242,11 @@ def handle_parsing(log_type, apel_db, cp):
     '''
     log = logging.getLogger(LOGGER_ID)
     log.info('Setting up parser for %s files', log_type)
+    ## batch + blah or batch + htcondorce is acceptabled.
     if log_type == 'blah':
         section = 'blah'
+    elif log_type == 'htcondorce':
+        section = 'htcondorce'
     else:
         section = 'batch'
         
@@ -359,8 +368,8 @@ def main():
     log.info(LOG_BREAK)
     log.info('Starting apel parser version %s.%s.%s', *__version__)
 
-    # database connection
     try:
+        # database connection
         apel_db = ApelDb(DB_BACKEND,
                          cp.get('db', 'hostname'),
                          cp.getint('db', 'port'),
@@ -369,9 +378,22 @@ def main():
                          cp.get('db', 'name'))
         apel_db.test_connection()
         log.info('Connection to DB established')
+        # batch, blah or htcondorce parsing.
+        if cp.getboolean('blah', 'enabled'):
+            handle_parsing('blah', apel_db, cp)
+        elif cp.getboolean('htcondorce', 'enabled'):
+            handle_parsing('htcondorce', apel_db, cp)
+        if cp.getboolean('batch', 'enabled'):
+            handle_parsing(cp.get('batch', 'type'), apel_db, cp)
     except KeyError, e:
         log.fatal('Database configured incorrectly.')
         log.fatal('Check the database section for option: %s', e)
+        log.info(LOG_BREAK)
+        sys.exit(1)
+    except (ParserConfigException, ConfigParser.NoOptionError), e:
+        log.fatal('Parser misconfigured: %s', e)
+        log.fatal('Please, check your parser.cfg file.')
+        log.info(LOG_BREAK)
         sys.exit(1)
     except Exception, e:
         log.fatal("Database exception: %s", e)
@@ -379,28 +401,6 @@ def main():
         log.info(LOG_BREAK)
         sys.exit(1)
 
-    log.info(LOG_BREAK)
-    # blah parsing 
-    try:
-        if cp.getboolean('blah', 'enabled'):
-            handle_parsing('blah', apel_db, cp)
-    except (ParserConfigException, ConfigParser.NoOptionError), e:
-        log.fatal('Parser misconfigured: %s', e)
-        log.fatal('Parser will exit.')
-        log.info(LOG_BREAK)
-        sys.exit(1)
-        
-    log.info(LOG_BREAK)
-    # batch parsing
-    try:
-        if cp.getboolean('batch', 'enabled'):
-            handle_parsing(cp.get('batch', 'type'), apel_db, cp)
-    except (ParserConfigException, ConfigParser.NoOptionError), e:
-        log.fatal('Parser misconfigured: %s', e)
-        log.fatal('Parser will exit.')
-        log.info(LOG_BREAK)
-        sys.exit(1)
-        
     log.info('Parser has completed.')
     log.info(LOG_BREAK)
     sys.exit(0)

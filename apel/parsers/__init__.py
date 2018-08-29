@@ -23,6 +23,7 @@ LOGGER_ID = 'parser'
 from parser import Parser
 from blah import BlahParser
 from htcondor import HTCondorParser
+from htcondorce import HTCondorCEParser
 from lsf import LSFParser
 from pbs import PBSParser
 from sge import SGEParser
