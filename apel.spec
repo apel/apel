@@ -115,6 +115,7 @@ cp scripts/update-*.sql %{buildroot}%_datadir/apel/
 # accounting scripts
 cp scripts/slurm_acc.sh %{buildroot}%_datadir/apel/
 cp scripts/htcondor_acc.sh %{buildroot}%_datadir/apel/
+cp scripts/htcondorce_acc.sh %{buildroot}%_datadir/apel/
 
 # message status script
 cp scripts/msg_status.py %{buildroot}%_datadir/apel/
@@ -149,7 +150,7 @@ exit 0
 
 %attr(755,root,root) %_datadir/apel/slurm_acc.sh
 %attr(755,root,root) %_datadir/apel/htcondor_acc.sh
-
+%attr(755,root,root) %_datadir/apel/htcondorce_acc.sh
 # ------------------------------------------------------------------------------
 
 %files client
