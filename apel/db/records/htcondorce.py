@@ -17,7 +17,7 @@
 from apel.db.records.record import Record
 
 
-class BlahdRecord(Record):
+class HTCondorCERecord(Record):
     """
     Class to represent a record from BLAHP systems
     """
