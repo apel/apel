@@ -164,7 +164,7 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
             abs_file = os.path.join(dirpath, item)
             if os.path.isfile(abs_file) and expr.match(item):
                 # first, calculate the hash of the file:
-                if parseName == "HTCondorCEParser":
+                if parserName == "HTCondorCEParser":
                     file_hash = "htce_" + calculate_hash(abs_file)
                 else:
                     file_hash = calculate_hash(abs_file)
