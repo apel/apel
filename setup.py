@@ -11,6 +11,7 @@ Usage: 'python setup.py install'
 Requires setuptools.
 """
 
+import glob
 from os import remove, path
 from shutil import copyfile
 import sys
@@ -50,7 +51,9 @@ def main():
                     'schemas/cloud.sql',
                     'schemas/storage.sql']
 
-    update_scripts = ['scripts/update_schema.sql']
+    # Wildcarding for update scripts (like we do in the spec file)
+    # prevents having to manually update this variable.
+    update_scripts = glob.glob('scripts/update-*.sql')
 
     accounting_files = ['scripts/slurm_acc.sh', 'scripts/htcondor_acc.sh']
 
