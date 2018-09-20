@@ -1,6 +1,6 @@
-# Constraints on requirements below
+# Constraints on the requirements below
 -c constraints.txt
-# Requirements for testing
+# Additional requirements for running unit and coverage tests
 unittest2
 coveralls
 mock
