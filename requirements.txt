@@ -2,7 +2,3 @@ MySQL-python
 python-ldap
 iso8601
 dirq
-# Dependencies for testing
-unittest2
-coveralls
-mock

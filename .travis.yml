@@ -16,7 +16,9 @@ cache: pip
 # Avoid pip log from affecting cache
 before_cache: rm -fv ~/.cache/pip/log/debug.log
 
-# Install defaults to "pip install -r requirements.txt"
+install:
+  - pip install -r requirements.txt
+  - pip install -r requirements-test.txt
 
 # Commands that prepare things for the test
 before_script:

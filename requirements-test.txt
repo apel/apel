@@ -1,0 +1,6 @@
+# Constraints on requirements below
+-c constraints.txt
+# Requirements for testing
+unittest2
+coveralls
+mock
