@@ -1,3 +1,5 @@
+# Base requirements for apel
+
 MySQL-python
 python-ldap
 iso8601

@@ -17,12 +17,12 @@ cache: pip
 before_cache: rm -fv ~/.cache/pip/log/debug.log
 
 install:
-  # Base requirements
+  # Base requirements for apel
   - pip install -r requirements.txt
   # Additional requirements for the unit and coverage tests
   - pip install -r requirements-test.txt
 
-# Commands that prepare things for the test
+# Commands to prepare environment for the test
 before_script:
   - export PYTHONPATH=$PYTHONPATH:`pwd -P`
   - cd test
