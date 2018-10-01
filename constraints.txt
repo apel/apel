@@ -1,4 +1,4 @@
-# Constraints that apply to requirements-test.txt
+# Constraints that apply to pip installed requirements
 
 # coveralls dependency that needs an older version for Python 2.6
 pycparser<2.19
