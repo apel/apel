@@ -29,4 +29,6 @@ before_script:
 
 script: coverage run --branch --source=apel,bin -m unittest2 discover --buffer
 
-after_success: coveralls
+after_success:
+  - coveralls
+  - codecov
