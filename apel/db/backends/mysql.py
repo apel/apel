@@ -21,7 +21,6 @@ Created on 27 Oct 2011
 
 from apel.db import ApelDbException
 from apel.db.records import (BlahdRecord,
-                             HTCondorCERecord,
                              CloudRecord,
                              CloudSummaryRecord,
                              EventRecord,

@@ -36,7 +36,6 @@ class HTCondorCEParser(HTCondorParser):
 
     def __init__(self, site, machine_name, mpi):
         HTCondorParser.__init__(self, site, machine_name, mpi)
-        
     def getMapping(self):
         '''
         Return the parsed mapping.

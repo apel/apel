@@ -399,7 +399,7 @@ def main():
         sys.exit(1)
         
     log.info(LOG_BREAK)
-    # htcondorce parsing 
+    # htcondorce parsing
     try:
         if cp.getboolean('htcondorce', 'enabled'):
             handle_parsing('htcondorce', apel_db, cp)
