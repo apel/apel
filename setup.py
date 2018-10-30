@@ -94,7 +94,8 @@ def main():
                       (log_rotate_dir, log_rotate_files),
                       # Create empty directories
                       ('/var/log/apel', []),
-                      ('/var/run/apel', [])],
+                      ('/var/run/apel', [])
+                      ],
           # zip_safe allows setuptools to install the project
           # as a zipfile, for maximum performance!
           # We have disabled this feature so installing via the setup
