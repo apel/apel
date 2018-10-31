@@ -12,7 +12,7 @@ Requires setuptools.
 """
 
 import glob
-from os import remove, path
+from os import remove
 from shutil import copyfile
 import sys
 
