@@ -11,7 +11,8 @@ Usage: 'python setup.py install'
 Requires setuptools.
 """
 
-from os import remove, path, makedirs
+import glob
+from os import remove
 from shutil import copyfile
 import sys
 
@@ -30,12 +31,6 @@ def main():
         copyfile('bin/dbunloader.py', 'bin/apeldbunloader')
         copyfile('bin/summariser.py', 'bin/apelsummariser')
         copyfile('bin/retrieve_dns.py', 'bin/apelauth')
-
-        if not path.exists('/var/log/apel'):
-            makedirs('/var/log/apel')
-
-        if not path.exists('/var/run/apel'):
-            makedirs('/var/run/apel')
 
     # conf_files will later be copied to conf_dir
     conf_dir = '/etc/apel/'
@@ -56,7 +51,9 @@ def main():
                     'schemas/cloud.sql',
                     'schemas/storage.sql']
 
-    update_scripts = ['scripts/update_schema.sql']
+    # Wildcarding for update scripts (like we do in the spec file)
+    # prevents having to manually update this variable.
+    update_scripts = glob.glob('scripts/update-*.sql')
 
     accounting_files = ['scripts/slurm_acc.sh', 'scripts/htcondor_acc.sh']
 
@@ -94,7 +91,11 @@ def main():
                       (data_dir, accounting_files),
                       (data_dir, message_files),
                       (data_dir, update_scripts),
-                      (log_rotate_dir, log_rotate_files)],
+                      (log_rotate_dir, log_rotate_files),
+                      # Create empty directories
+                      ('/var/log/apel', []),
+                      ('/var/run/apel', []),
+                      ],
           # zip_safe allows setuptools to install the project
           # as a zipfile, for maximum performance!
           # We have disabled this feature so installing via the setup
@@ -109,6 +110,7 @@ def main():
         remove('bin/apeldbunloader')
         remove('bin/apelsummariser')
         remove('bin/apelauth')
+
 
 if __name__ == "__main__":
     main()

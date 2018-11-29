@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.7.0
+Version:        1.7.1
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -34,7 +34,7 @@ apel-lib provides required libraries for the rest of APEL system.
 %package parsers
 Summary:        Parsers for APEL system
 Group:          Development/Languages
-Requires:       apel-lib >= 1.7.0
+Requires:       apel-lib >= %{version}
 Requires(pre):  shadow-utils
 
 %description parsers
@@ -44,7 +44,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.7.0, apel-ssm
+Requires:       apel-lib >= %{version}, apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
@@ -55,7 +55,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib >= 1.7.0, apel-ssm
+Requires:       apel-lib >= %{version}, apel-ssm
 Requires(pre):  shadow-utils
 
 %description server
@@ -199,6 +199,11 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Thu Nov 29 2018 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.7.1-1
+ - [parsers] Added support for SLURM parser to use TotalCPU rather than
+   CPUTimeRAW for CPU duration and updated suggested sacct script to match.
+ - Minor improvements to build process and setup.py script.
+
  * Tue Jun 05 2018 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.7.0-1
  - [server] Long running VM support: Cloud VMs that run over month boundaries
    will now have their usage in each month assigned to the correct month.

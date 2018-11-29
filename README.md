@@ -1,8 +1,9 @@
 # APEL client and server source code
 
 [![Build Status](https://travis-ci.org/apel/apel.svg?branch=dev)](https://travis-ci.org/apel/apel)
-[![Coverage Status](https://coveralls.io/repos/apel/apel/badge.svg?branch=dev)](https://coveralls.io/github/apel/apel?branch=dev)
-[![Code Health](https://landscape.io/github/apel/apel/dev/landscape.svg?style=flat)](https://landscape.io/github/apel/apel/dev)
+[![Coverage Status](https://coveralls.io/repos/github/apel/apel/badge.svg?branch=dev)](https://coveralls.io/github/apel/apel?branch=dev)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b614b03d576a4f5cbb6efa2e64e5f7ef)](https://www.codacy.com/app/apel/apel)
+[![Maintainability](https://api.codeclimate.com/v1/badges/03094b74f5fc4f728bc7/maintainability)](https://codeclimate.com/github/apel/apel/maintainability)
 
 ## Project overview
 
