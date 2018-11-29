@@ -70,7 +70,4 @@ class HTCondorParser(Parser):
 
         record = EventRecord()
         record.set_all(rc)
-
-        cont = record._record_content
-
         return record
