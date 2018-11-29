@@ -1,5 +1,10 @@
 Changelog for apel
 ==================
+ * Thu Nov 29 2018 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.7.1-1
+ - [parsers] Added support for SLURM parser to use TotalCPU rather than
+   CPUTimeRAW for CPU duration and updated suggested sacct script to match.
+ - Minor improvements to build process and setup.py script.
+
  * Tue Jun 05 2018 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.7.0-1
  - [server] Long running VM support: Cloud VMs that run over month boundaries
    will now have their usage in each month assigned to the correct month.
