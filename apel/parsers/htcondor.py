@@ -53,7 +53,7 @@ class HTCondorParser(Parser):
                    'LocalUserID'     : lambda x: x[1],
                    'LocalUserGroup'  : lambda x: "",
                    'WallDuration'    : lambda x: int(x[2]) * cputmult,
-                   'CpuDuration'     : lambda x: ((int(x[3])+int(x[4])) 
+                   'CpuDuration'     : lambda x: ((int(x[3])+int(x[4]))
                                                   * cputmult),
                    'StartTime'       : lambda x: x[5],
                    'StopTime'        : lambda x: x[6],
