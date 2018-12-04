@@ -139,7 +139,6 @@ def runprocess(db_config_file, config_file, log_config_file):
             log.warn("The summariser may not start again until it is removed.")
 
         log.info(LOG_BREAK)
-        
 
 
 if __name__ == '__main__':
@@ -156,4 +155,3 @@ if __name__ == '__main__':
     (options,args) = opt_parser.parse_args()
     
     runprocess(options.db, options.config, options.log_config)
-
