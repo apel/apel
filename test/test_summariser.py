@@ -1,5 +1,6 @@
 """This file contains the BinSummariserTest class."""
 
+import logging
 import os
 import shutil
 import tempfile
@@ -21,7 +22,7 @@ class BinSummariserTest(unittest.TestCase):
                                                          dir=self._tmp_dir)
 
         # Create an empty summariser config file
-        self.sum_cfg, self.sum_cfg_path = tempfile.mkstemp(prefix='sum',
+        self.sum_cfg, self.sum_cfg_path = tempfile.mkstemp(prefix='conf',
                                                            dir=self._tmp_dir)
 
         # Populate the database config (with junk)
@@ -35,10 +36,12 @@ class BinSummariserTest(unittest.TestCase):
         # everything in self._tmp_dir
         _pid_file, pid_path = tempfile.mkstemp(prefix='pid',
                                                dir=self._tmp_dir)
+        os.close(_pid_file)  # Close allows deletion later on.
 
         # Create a temporary log file for the summariser
-        _sum_log, sum_log_path = tempfile.mkstemp(prefix='sum',
+        _sum_log, sum_log_path = tempfile.mkstemp(prefix='log',
                                                   dir=self._tmp_dir)
+        os.close(_sum_log)  # Close allows deletion later on.
 
         # Create a temporary summariser config that refers to the Pidfile above
         sum_conf = ('[summariser]\n'
@@ -56,16 +59,12 @@ class BinSummariserTest(unittest.TestCase):
         # Run the summariser with the temporary config files
         try:
             summariser.runprocess(self.db_cfg_path, self.sum_cfg_path, '')
-        except SystemExit:
+        except SystemExit as e:
+            self.assertEqual(e.code, 1, "Exit code '%s' is not 1." % e.code)
             # A SystemExit is raised regardless of what happens
             # in the summariser, so we must look at the log output
-
-            # Note: Because we need to be compatible with Python 2.4, we can't
-            # use "with" here - we need to call the open() and close()
-            # methods manually.
-            log_file = open(sum_log_path, 'r')
-            output = log_file.read()
-            log_file.close()
+            with open(sum_log_path, 'r') as log_file:
+                output = log_file.read()
 
             expected_error = 'A pidfile %s already exists.' % pid_path
             if expected_error not in output:
@@ -78,14 +77,22 @@ class BinSummariserTest(unittest.TestCase):
                     self.fail('An unexpected summariser error has occured.\n'
                               'See output below:\n'
                               '%s' % output)
+        else:
+            self.fail('Summariser did not raise expected error.')
 
     def tearDown(self):
         """Remove test directory and all contents."""
+        # Force close logger's file handler to close log file so that it
+        # can be deleted. The summariser doesn't shutdown neatly.
+        logger = logging.getLogger('')
+        logger.handlers[0].close()
+
         try:
             shutil.rmtree(self._tmp_dir)
         except OSError, error:
             print 'Error removing temporary directory %s' % self._tmp_dir
             print error
+
 
 DB_CONF = """[db]
 # type of database
