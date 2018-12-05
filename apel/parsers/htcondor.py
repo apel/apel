@@ -42,6 +42,8 @@ class HTCondorParser(Parser):
         # arcce.rl.ac.uk#2376.0#71589|tatls011|287|107|11|1435671643|1435671930|26636|26832|1|1
 
         values = line.strip().split('|')
+
+        # Set scaling factor using value from log if appended to log line.
         cputmult = float(1.0)
         if len(values) > 10:
             cputmult = float(values[10])
@@ -53,8 +55,8 @@ class HTCondorParser(Parser):
                    'LocalUserID'     : lambda x: x[1],
                    'LocalUserGroup'  : lambda x: "",
                    'WallDuration'    : lambda x: int(x[2]) * cputmult,
-                   'CpuDuration'     : lambda x: ((int(x[3])+int(x[4]))
-                                                  * cputmult),
+                   'CpuDuration'     : lambda x: (int(x[3]) + int(x[4]))
+                                                 * cputmult,
                    'StartTime'       : lambda x: x[5],
                    'StopTime'        : lambda x: x[6],
                    'MemoryReal'      : lambda x: int(x[7]),
