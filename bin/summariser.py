@@ -29,6 +29,7 @@ from apel.db import ApelDb, ApelDbException
 from apel.common import set_up_logging, LOG_BREAK
 from apel import __version__
 
+
 def runprocess(db_config_file, config_file, log_config_file):
     '''Parse the configuration file, connect to the database and run the 
        summarising process.'''
@@ -37,6 +38,9 @@ def runprocess(db_config_file, config_file, log_config_file):
         # Read configuration from file
         cp = ConfigParser.ConfigParser()
         cp.read(config_file)
+
+        pidfile = cp.get('summariser', 'pidfile')
+
         dbcp = ConfigParser.ConfigParser()
         dbcp.read(db_config_file)
         
@@ -59,8 +63,8 @@ def runprocess(db_config_file, config_file, log_config_file):
 
     # set up logging
     try:
-        if os.path.exists(options.log_config):
-            logging.config.fileConfig(options.log_config)
+        if os.path.exists(log_config_file):
+            logging.config.fileConfig(log_config_file)
         else:
             set_up_logging(cp.get('logging', 'logfile'), 
                            cp.get('logging', 'level'),
@@ -72,7 +76,27 @@ def runprocess(db_config_file, config_file, log_config_file):
         sys.exit(1)
         
     log.info('Starting apel summariser version %s.%s.%s', *__version__)
-        
+
+    # If the pidfile exists, don't start up.
+    try:
+        if os.path.exists(pidfile):
+            log.error("A pidfile %s already exists.", pidfile)
+            log.warn("Check that the summariser is not running, then remove the file.")
+            raise Exception("The summariser cannot start while pidfile exists.")
+    except Exception, err:
+        print "Error initialising summariser: %s" % err
+        sys.exit(1)
+    try:
+        f = open(pidfile, "w")
+        f.write(str(os.getpid()))
+        f.write("\n")
+        f.close()
+    except IOError, e:
+        log.warn("Failed to create pidfile %s: %s", pidfile, e)
+        # If we fail to create a pidfile, don't start the summariser
+        sys.exit(1)
+
+    log.info('Created Pidfile')
     # Log into the database
     try:
 
@@ -99,8 +123,22 @@ def runprocess(db_config_file, config_file, log_config_file):
     except ApelDbException, err:
         log.error('Error summarising: ' + str(err))
         log.error('Summarising has been cancelled.')
-        log.info(LOG_BREAK)
         sys.exit(1)
+    finally:
+        # Clean up pidfile regardless of any excpetions
+        # This even executes if sys.exit() is called
+        log.info('Removing Pidfile')
+        try:
+            if os.path.exists(pidfile):
+                os.remove(pidfile)
+            else:
+                log.warn("pidfile %s not found.", pidfile)
+
+        except IOError, e:
+            log.warn("Failed to remove pidfile %s: %s", pidfile, e)
+            log.warn("The summariser may not start again until it is removed.")
+
+        log.info(LOG_BREAK)
 
 
 if __name__ == '__main__':
@@ -117,4 +155,3 @@ if __name__ == '__main__':
     (options,args) = opt_parser.parse_args()
     
     runprocess(options.db, options.config, options.log_config)
-
