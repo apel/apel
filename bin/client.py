@@ -275,7 +275,8 @@ def run_client(ccp):
             if recs > 0:
                 log.info('Unloaded %d records in %d messages.', recs, msgs)
             else:
-                log.warning('No records unloaded. Please check your config.')
+                log.warning('No usage records unloaded. If this is unexpected,'
+                            ' please check your config.')
 
         except KeyError:
             log.warn('Invalid table name: %s, omitting', table_name)
@@ -288,7 +289,8 @@ def run_client(ccp):
         if recs > 0:
             log.info('Unloaded %d sync records in %d messages.', recs, msgs)
         else:
-            log.warning('No sync records unloaded. Please check your config.')
+            log.warning('No sync records unloaded. If this is unexpected,'
+                        ' please check your config.')
 
         log.info('Unloading complete.')
         log.info(LOG_BREAK)
