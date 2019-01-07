@@ -199,6 +199,12 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Mon Jan 07 2019 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.8.0-1
+ - [client] Added warning in log if no records are unloaded during a run.
+ - [parsers] Added optional 'cputmult' factor to HTCondor parser to support its
+   use as a parser for HTCondorCE set ups.
+ - [server] Added PID/process check to summariser to prevent overlapping runs.
+
  * Thu Nov 29 2018 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.7.1-1
  - [parsers] Added support for SLURM parser to use TotalCPU rather than
    CPUTimeRAW for CPU duration and updated suggested sacct script to match.
