@@ -43,14 +43,20 @@ class HTCondorParser(Parser):
 
         values = line.strip().split('|')
 
+        # Set scaling factor using value from log if appended to log line.
+        cputmult = float(1.0)
+        if len(values) > 10:
+            cputmult = float(values[10])
+
         mapping = {'Site'            : lambda x: self.site_name,
                    'MachineName'     : lambda x: self.machine_name,
                    'Infrastructure'  : lambda x: "APEL-CREAM-HTCONDOR",
                    'JobName'         : lambda x: x[0],
                    'LocalUserID'     : lambda x: x[1],
                    'LocalUserGroup'  : lambda x: "",
-                   'WallDuration'    : lambda x: int(x[2]),
-                   'CpuDuration'     : lambda x: int(x[3])+int(x[4]),
+                   'WallDuration'    : lambda x: int(x[2]) * cputmult,
+                   'CpuDuration'     : lambda x: (int(x[3]) + int(x[4]))
+                                                 * cputmult,
                    'StartTime'       : lambda x: x[5],
                    'StopTime'        : lambda x: x[6],
                    'MemoryReal'      : lambda x: int(x[7]),

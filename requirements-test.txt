@@ -4,6 +4,6 @@
 -c constraints.txt
 
 unittest2
-coveralls
+coveralls<=1.2.0
 mock
 codecov

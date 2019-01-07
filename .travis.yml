@@ -8,9 +8,6 @@ matrix:
     - python: "nightly"
   fast_finish: true
 
-# Route build to container-based infrastructure
-sudo: false
-
 # Cache the dependencies installed by pip
 cache: pip
 # Avoid pip log from affecting cache
