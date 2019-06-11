@@ -209,29 +209,31 @@ def run_client(ccp):
     log.info('Manual spec updater.')
     specs = []
     index = 0
-    while (True):
+    while True:
         key = 'manual_spec' + str(index)
         try:
             spec = ccp.get('spec_updater', key)
         except ConfigParser.NoOptionError:
             break
         specs.append(spec)
-        index = index + 1
+        index += 1
 
-    if (index > 0):
+    if index > 0:
         try:
             s = ccp.get('spec_updater', 'site_name')
         except ConfigParser.NoOptionError:
-            log.error('Site name must be configured for manual_spec definitions.')
+            log.error('Site name must be configured '
+                      'for manual_spec definitions.')
             sys.exit(1)
         for spec in specs:
             parts = spec.split(',')
-            if (len(parts) != 3 ):
+            if len(parts) != 3:
                 log.warn('Check manual_spec definitions.')
             try:
                 sl = float(parts[2])
             except ValueError:
-                log.error('Service level must be a number for manual_spec definitions.')
+                log.error('Service level must be a number '
+                          'for manual_spec definitions.')
                 sys.exit(1)
             ce = parts[0]
             slt = parts[1]
