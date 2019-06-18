@@ -206,9 +206,9 @@ def run_client(ccp):
         log.info(LOG_BREAK)
         sys.exit(1)
 
-    log.info('Manual spec updater.')
+    log.info('Running manual spec update.')
     specs = []
-    index = 0
+    index = 1
     while True:
         key = 'manual_spec' + str(index)
         try:
@@ -218,7 +218,7 @@ def run_client(ccp):
         specs.append(spec)
         index += 1
 
-    if index > 0:
+    if len(specs) > 0:
         try:
             s = ccp.get('spec_updater', 'site_name')
         except ConfigParser.NoOptionError:
@@ -238,6 +238,7 @@ def run_client(ccp):
             ce = parts[0]
             slt = parts[1]
             db.update_spec(s, ce, slt, sl)
+    log.info('Manual spec update finished. %s updated.', len(specs))
 
     if spec_updater_enabled:
         log.info(LOG_BREAK)
