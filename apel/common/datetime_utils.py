@@ -51,6 +51,12 @@ def parse_timestamp(datetime_string):
     If timezone information is not present in the string, it
     assumes that the timezone is UTC.
     '''
+
+    # If format is YYYYMMDDhhmmssZ (no T) add time designator so it is strictly
+    # compliant with ISO 8601. (Some versions of iso8601 module are fussy.)
+    if re.match(r'[0-9]{14}Z', datetime_string) is not None:
+        datetime_string = datetime_string[:8] + 'T' + datetime_string[8:]
+
     dt = iso8601.parse_date(datetime_string)
     utcdt = dt.astimezone(iso8601.iso8601.UTC)
     # internal representation of datetimes is UTC without timezones
