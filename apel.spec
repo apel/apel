@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.8.0
+Version:        1.8.1
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -199,6 +199,10 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Wed Jul 03 2019 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.8.1-1
+ - [client] Added option to update benchmarks/spec levels using a local
+   configuration option rather than the BDII.
+
  * Mon Jan 07 2019 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.8.0-1
  - [client] Added warning in log if no records are unloaded during a run.
  - [parsers] Added optional 'cputmult' factor to HTCondor parser to support its
