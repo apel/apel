@@ -8,6 +8,13 @@ matrix:
     - python: "nightly"
   fast_finish: true
 
+# MySQL doesn't start automatically in newer build environments
+services:
+  - mysql
+
+# Pin Ubuntu to Trusty for the moment for Python 2.6 support
+dist: trusty
+
 # Cache the dependencies installed by pip
 cache: pip
 # Avoid pip log from affecting cache
