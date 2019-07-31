@@ -28,6 +28,11 @@ from optparse import OptionParser
 import ConfigParser
 
 
+RECORDS_PER_MESSAGE_MIN = 1
+RECORDS_PER_MESSAGE_DEFAULT = 1000
+RECORDS_PER_MESSAGE_MAX = 5000
+
+
 if __name__ == '__main__':
     opt_parser = OptionParser()
     opt_parser.add_option('-d', '--db', help='location of configuration file for database',
@@ -113,7 +118,29 @@ if __name__ == '__main__':
 
     interval = cp.get('unloader', 'interval')
 
-    records_per_message = cp.get('unloader', 'records_per_message')
+    records_per_message = 1000
+    try:
+        rpm = int(cp.get('unloader', 'records_per_message'))
+        if rpm < RECORDS_PER_MESSAGE_MIN:
+            records_per_message = RECORDS_PER_MESSAGE_MIN
+            log.warn('records_per_message too small, increasing from %d to %d', rpm, RECORDS_PER_MESSAGE_MIN)
+        elif rpm > RECORDS_PER_MESSAGE_MAX:
+            records_per_message = RECORDS_PER_MESSAGE_MAX
+            log.warn('records_per_message too large, decreasing from %d to %d', rpm, RECORDS_PER_MESSAGE_MAX)
+        else:
+            records_per_message = rpm
+    except ConfigParser.NoOptionError:
+        log.info(
+            'records_per_message not specified, defaulting to %d.',
+            RECORDS_PER_MESSAGE_DEFAULT,
+        )
+        unloader.records_per_message = RECORDS_PER_MESSAGE_DEFAULT
+    except ValueError:
+        log.error(
+            'Invalid records_per_message value, must be a postive integer. Defaulting to %d.',
+            RECORDS_PER_MESSAGE_DEFAULT,
+        )
+        unloader.records_per_message = RECORDS_PER_MESSAGE_DEFAULT
 
     unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns, records_per_message)
 
