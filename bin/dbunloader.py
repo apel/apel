@@ -118,17 +118,25 @@ if __name__ == '__main__':
 
     interval = cp.get('unloader', 'interval')
 
-    records_per_message = 1000
+    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns)
     try:
-        rpm = int(cp.get('unloader', 'records_per_message'))
-        if rpm < RECORDS_PER_MESSAGE_MIN:
-            records_per_message = RECORDS_PER_MESSAGE_MIN
-            log.warn('records_per_message too small, increasing from %d to %d', rpm, RECORDS_PER_MESSAGE_MIN)
-        elif rpm > RECORDS_PER_MESSAGE_MAX:
-            records_per_message = RECORDS_PER_MESSAGE_MAX
-            log.warn('records_per_message too large, decreasing from %d to %d', rpm, RECORDS_PER_MESSAGE_MAX)
+        records_per_message = int(cp.get('unloader', 'records_per_message'))
+        if records_per_message < RECORDS_PER_MESSAGE_MIN:
+            unloader.records_per_message = RECORDS_PER_MESSAGE_MIN
+            log.warn(
+                'records_per_message too small, increasing from %d to %d',
+                records_per_message,
+                RECORDS_PER_MESSAGE_MIN,
+            )
+        elif records_per_message > RECORDS_PER_MESSAGE_MAX:
+            unloader.records_per_message = RECORDS_PER_MESSAGE_MAX
+            log.warn(
+                'records_per_message too large, decreasing from %d to %d',
+                records_per_message,
+                RECORDS_PER_MESSAGE_MAX,
+            )
         else:
-            records_per_message = rpm
+            unloader.records_per_message = records_per_message
     except ConfigParser.NoOptionError:
         log.info(
             'records_per_message not specified, defaulting to %d.',
@@ -142,7 +150,6 @@ if __name__ == '__main__':
         )
         unloader.records_per_message = RECORDS_PER_MESSAGE_DEFAULT
 
-    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns, records_per_message)
 
     try:
         if interval == 'latest':
