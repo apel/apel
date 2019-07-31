@@ -64,20 +64,26 @@ class TestRepublish(unittest.TestCase):
                 "Status": "started",
                 "StartTime": datetime.datetime.fromtimestamp(1559818218),
                 "WallDuration": wall_duration,
+                "SuspendDuration": 100,
             }
 
             # Load the record.
             database.load_records([record], source="testDN")
 
-            # Create a timedelta object from the WallDuration for later
-            # datetime addition.
+            # Create a timedelta object from the WallDuration and
+            # SuspendDuration for later datetime addition.
             wall_delta = datetime.timedelta(
                 seconds=record._record_content["WallDuration"]
+            )
+            suspend_delta = datetime.timedelta(
+                seconds=record._record_content["SuspendDuration"]
             )
 
             # Calculate an expected MeasurementTime.
             expected_measurement_time = (
-                record._record_content["StartTime"] + wall_delta
+                record._record_content["StartTime"]
+                + wall_delta
+                + suspend_delta
             )
 
             # Now check the database to see which record has been saved.
