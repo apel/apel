@@ -205,7 +205,7 @@ class DbUnloader(object):
 
         msgs = 0
         records = 0
-        for batch in self._db.get_records(record_type, table_name, query=query):
+        for batch in self._db.get_records(record_type, table_name, query=query, records_per_message=self.records_per_message):
             records += len(batch)
             if ur:
                 self._write_xml(batch)
