@@ -40,51 +40,55 @@ class TestRepublish(unittest.TestCase):
                 )
 
     def test_cloud_republish(self):
-        """Test the newest cloud record per month/VM is the one saved."""
+        """Test the most recently processed cloud record per month/VM is the one saved."""
         database = apel.db.apeldb.ApelDb(
             "mysql", "localhost", 3306, "root", "", "apel_unittest"
         )
 
-        # The following StartTimes and WallDurations have been crafted so that
-        # the two records (record1 and record2) generated produce
-        # MeasurementTimes in the database of same month. The second
-        # WallDuration has been crafted to be less than the first, to test the
-        # case of a republish reducing the usage reported.
-        vm_start_time = 1559818218
-        first_wall_duration = 1582
-        second_wall_duration = 158
+        # This will be used to generate records that only differ by the wall
+        # duration for later simulated (re)publishing.
+        # They have been crafted so that:
+        # - the corresponding records generated produce MeasurementTimes in
+        #   same month.
+        # - they test decreasing and increasing wall durations during
+        #   republishing.
 
-        record1 = apel.db.records.cloud.CloudRecord()
-        record1._record_content = {
-            "VMUUID": "1559818218-Site1-VM12345",
-            "SiteName": "Site1",
-            "Status": "started",
-            "StartTime": datetime.datetime.fromtimestamp(vm_start_time),
-            "WallDuration": first_wall_duration,
-        }
+        wall_duration_list = [1582, 158, 851, 200]
 
-        record2 = apel.db.records.cloud.CloudRecord()
-        record2._record_content = {
-            "VMUUID": "1559818218-Site1-VM12345",
-            "SiteName": "Site1",
-            "Status": "started",
-            "StartTime": datetime.datetime.fromtimestamp(vm_start_time),
-            "WallDuration": second_wall_duration,
-        }
+        for wall_duration in wall_duration_list:
+            # Create a record object
+            record = apel.db.records.cloud.CloudRecord()
+            record._record_content = {
+                "VMUUID": "1559818218-Site1-VM12345",
+                "SiteName": "Site1",
+                "Status": "started",
+                "StartTime": datetime.datetime.fromtimestamp(1559818218),
+                "WallDuration": wall_duration,
+            }
 
-        record_list = [record1]
-        database.load_records(record_list, source="testDN")
+            # Load the record.
+            database.load_records([record], source="testDN")
 
-        record_list = [record2]
-        database.load_records(record_list, source="testDN")
+            # Create a timedelta object from the WallDuration for later
+            # datetime addition.
+            wall_delta = datetime.timedelta(
+                seconds=record._record_content["WallDuration"]
+            )
 
-        # Expected result based on the records above is a MeasurementTime equal
-        # to the StartTime plus the WallDuration reported in the second record.
-        expected_measurement_time = datetime.datetime.fromtimestamp(
-            vm_start_time + second_wall_duration
-        )
+            # Calculate an expected MeasurementTime.
+            expected_measurement_time = (
+                record._record_content["StartTime"] + wall_delta
+            )
 
-        # Now check the database to see which record has been saved.
+            # Now check the database to see which record has been saved.
+            self._check_measurement_time_equals(expected_measurement_time)
+
+    def _check_measurement_time_equals(self, expected_measurement_time):
+        """
+        Check MeasurementTime in database is what we would expect.
+
+        This method assumes there is only one record in VCloudRecords.
+        """
         query = ("SELECT MeasurementTime FROM VCloudRecords;")
         mysql_process = Popen(
             ["mysql", "-N", "-u", "root", "apel_unittest", "-e", query],
