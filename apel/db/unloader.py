@@ -54,7 +54,7 @@ class DbUnloader(object):
     # all record types for which withholding DNs is a valid option
     MAY_WITHHOLD_DNS = [JobRecord, SyncRecord, CloudRecord]
 
-    def __init__(self, db, qpath, inc_vos=None, exc_vos=None, local=False, withhold_dns=False):
+    def __init__(self, db, qpath, inc_vos=None, exc_vos=None, local=False, withhold_dns=False, records_per_message=1000):
         self._db = db
         outpath = os.path.join(qpath, "outgoing")
         self._msgq = QueueSimple(outpath)
@@ -62,6 +62,7 @@ class DbUnloader(object):
         self._exc_vos = exc_vos
         self._local = local
         self._withhold_dns = withhold_dns
+        self.records_per_message = records_per_message
 
     def _get_base_query(self, record_type):
         '''
@@ -105,7 +106,7 @@ class DbUnloader(object):
         query = self._get_base_query(SyncRecord)
         msgs = 0
         records = 0
-        for batch in self._db.get_sync_records(query=query):
+        for batch in self._db.get_sync_records(query=query, records_per_message=self.records_per_message):
             records += len(batch)
             self._write_apel(batch)
             msgs += 1

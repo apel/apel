@@ -113,7 +113,10 @@ if __name__ == '__main__':
 
     interval = cp.get('unloader', 'interval')
 
-    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns)
+    records_per_message = cp.get('unloader', 'records_per_message')
+
+    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns, records_per_message)
+
     try:
         if interval == 'latest':
             msgs, recs = unloader.unload_latest(table_name, send_ur)
