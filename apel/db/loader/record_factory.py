@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
 @author Will Rogers
 
 Module containing the RecordFactory class.
@@ -45,7 +45,7 @@ class RecordFactoryException(Exception):
 
 class RecordFactory(object):
     '''
-    Class to create message objects for the appropriate message.  We only 
+    Class to create message objects for the appropriate message.  We only
     expect to make JobRecord and SummaryRecord objects, but this shouldn't
     restrict the capability to make more.
     '''
@@ -59,9 +59,9 @@ class RecordFactory(object):
 
     def create_records(self, msg_text):
         '''
-        Given the text from a message, create a list of record objects and 
+        Given the text from a message, create a list of record objects and
         return that list.
-        '''    
+        '''
         # remove any whitespace
         msg_text = msg_text.strip()
         try:
@@ -82,13 +82,13 @@ class RecordFactory(object):
             # APEL format
             else:
                 lines = msg_text.splitlines()
-                
+
                 header = lines.pop(0)
                 # recreate message as string having removed header
-                msg_text = '\n'.join(lines)        
-                
+                msg_text = '\n'.join(lines)
+
                 created_records = []
-            
+
                 # crop the string to before the first ':'
                 index = header.index(':')
                 if (header[0:index].strip() == RecordFactory.JR_HEADER):
@@ -105,9 +105,9 @@ class RecordFactory(object):
                     created_records = self._create_cloud_summaries(msg_text)
                 else:
                     raise RecordFactoryException('Message type %s not recognised.' % header)
-                
+
             return created_records
-        
+
         except ValueError, e:
             raise RecordFactoryException('Message header is incorrect: %s' % e)
 
@@ -117,31 +117,31 @@ class RecordFactory(object):
 
     def _create_jrs(self, msg_text):
         '''
-        Given the text from a job record message, create a list of 
+        Given the text from a job record message, create a list of
         JobRecord objects and return it.
         '''
-        
+
         msg_text = msg_text.strip()
 
         records = msg_text.split('%%')
         msgs = []
-        
+
         for record in records:
             # unnecessary hack?
             if (record != '') and not (record.isspace()):
                 j = JobRecord()
                 j.load_from_msg(record)
                 msgs.append(j)
-                
+
         return msgs
-                
+
 
     def _create_srs(self, msg_text):
         '''
-        Given the text from a summary record message, create a list of 
+        Given the text from a summary record message, create a list of
         JobRecord objects and return it.
         '''
-        
+
         msg_text = msg_text.strip()
 
         records = msg_text.split('%%')
@@ -152,9 +152,9 @@ class RecordFactory(object):
                 s = SummaryRecord()
                 s.load_from_msg(record)
                 msgs.append(s)
-        
+
         return msgs
-                
+
 
     def _create_nsrs(self, msg_text):
         """
@@ -177,10 +177,10 @@ class RecordFactory(object):
 
     def _create_syncs(self, msg_text):
         '''
-        Given the text from a sync message, create a list of 
+        Given the text from a sync message, create a list of
         SyncRecord objects and return it.
         '''
-        
+
         msg_text = msg_text.strip()
 
         records = msg_text.split('%%')
@@ -191,16 +191,16 @@ class RecordFactory(object):
                 s = SyncRecord()
                 s.load_from_msg(record)
                 msgs.append(s)
-        
+
         return msgs
-              
-                
+
+
     def _create_clouds(self, msg_text):
         '''
-        Given the text from a cloud message, create a list of 
+        Given the text from a cloud message, create a list of
         SyncRecord objects and return it.
         '''
-        
+
         msg_text = msg_text.strip()
 
         records = msg_text.split('%%')
@@ -211,15 +211,15 @@ class RecordFactory(object):
                 c = CloudRecord()
                 c.load_from_msg(record)
                 msgs.append(c)
-        
+
         return msgs
-    
+
     def _create_cloud_summaries(self, msg_text):
         '''
-        Given the text from a cloud summary message, create a list of 
+        Given the text from a cloud summary message, create a list of
         SyncRecord objects and return it.
         '''
-        
+
         msg_text = msg_text.strip()
 
         records = msg_text.split('%%')
@@ -230,9 +230,9 @@ class RecordFactory(object):
                 c = CloudSummaryRecord()
                 c.load_from_msg(record)
                 msgs.append(c)
-        
+
         return msgs
-    
+
     def _create_cars(self, msg_text):
         '''
         Given a CAR message in XML format, create a list of JobRecord
@@ -240,8 +240,8 @@ class RecordFactory(object):
         '''
         parser = CarParser(msg_text)
         records = parser.get_records()
-        return records 
-    
+        return records
+
     def _create_aurs(self, msg_text):
         '''
         Given a CAR message in XML format, create a list of JobRecord
@@ -249,8 +249,8 @@ class RecordFactory(object):
         '''
         parser = AurParser(msg_text)
         records = parser.get_records()
-        return records 
-    
+        return records
+
     def _create_stars(self, msg_text):
         '''
         Given a StAR message in XML format, create a list of StorageRecord
@@ -259,6 +259,6 @@ class RecordFactory(object):
 
         parser = StarParser(msg_text)
         records = parser.get_records()
-        return records 
-    
-    
+        return records
+
+
