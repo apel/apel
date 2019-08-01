@@ -27,7 +27,7 @@ from apel import __version__
 from optparse import OptionParser
 import ConfigParser
 
-    
+
 if __name__ == '__main__':
     opt_parser = OptionParser()
     opt_parser.add_option('-d', '--db', help='location of configuration file for database',
@@ -36,7 +36,7 @@ if __name__ == '__main__':
                           default='/etc/apel/unloader.cfg')
     opt_parser.add_option('-l', '--log_config', help='Location of logging configuration file for dbloader',
                           default='/etc/apel/logging.cfg')
-    
+
     (options, args) = opt_parser.parse_args()
 
     # Set default for 'interval' as it is a new option so may not be in config.
@@ -48,7 +48,7 @@ if __name__ == '__main__':
         if os.path.exists(options.log_config):
             logging.config.fileConfig(options.log_config)
         else:
-            set_up_logging(cp.get('logging', 'logfile'), 
+            set_up_logging(cp.get('logging', 'logfile'),
                            cp.get('logging', 'level'),
                            cp.getboolean('logging', 'console'))
         log = logging.getLogger('dbunloader')
@@ -56,12 +56,12 @@ if __name__ == '__main__':
         print 'Error configuring logging: %s' % str(err)
         print 'The system will exit.'
         sys.exit(1)
-        
+
     db = None
-    
+
     dbcp = ConfigParser.ConfigParser()
     dbcp.read([options.db])
-    
+
     try:
         db = ApelDb(dbcp.get('db', 'backend'),
                     dbcp.get('db', 'hostname'),
@@ -69,35 +69,35 @@ if __name__ == '__main__':
                     dbcp.get('db', 'username'),
                     dbcp.get('db', 'password'),
                     dbcp.get('db', 'name'))
-        
+
     except ApelDbException, e:
         log.fatal('Error: %s', e)
         sys.exit(1)
     except Exception, e:
         log.fatal('Cannot get configuration: %s', e)
         sys.exit(1)
-    
+
     log.info('=====================')
     log.info('Starting APEL dbunloader %s.%s.%s', *__version__)
-    
+
     unload_dir       = cp.get('unloader', 'dir_location')
     table_name       = cp.get('unloader', 'table_name')
-    
+
     try:
         send_ur = cp.getboolean('unloader', 'send_ur')
     except ConfigParser.NoOptionError:
         send_ur = False
-        
+
     try:
         local_jobs = cp.getboolean('unloader', 'local_jobs')
     except ConfigParser.NoOptionError:
         local_jobs = False
-        
+
     try:
         withhold_dns     = cp.getboolean('unloader', 'withhold_dns')
     except ConfigParser.NoOptionError:
         withhold_dns = False
-        
+
     include_vos      = None
     exclude_vos      = None
     try:
@@ -133,4 +133,4 @@ if __name__ == '__main__':
         log.error('Unloading failed: %s', e)
 
     log.info('Unloading complete.')
-    log.info('=====================') 
+    log.info('=====================')
