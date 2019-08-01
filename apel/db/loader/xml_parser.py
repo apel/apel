@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
    @author: Konrad Jopek
 '''
 import xml.dom.minidom
@@ -26,28 +26,28 @@ class XMLParserException(Exception):
 class XMLParser(object):
     '''
     Base class for CarParser and StarParser
-    
+
     Implements general functionality for parsing XML files
     '''
     # for XMLParser NAMESPACE is empty
     NAMESPACE = ''
-    
+
     def __init__(self, text):
         '''
         Initializes XMLParser (CarParser/StarParser) with content from XML file
         '''
         self.text = text
         self.doc = xml.dom.minidom.parseString(self.text)
-    
-    
+
+
     def getText(self, nodes):
         '''
         Returns content of text nodes.
         '''
         data = (''.join([ node.nodeType == node.TEXT_NODE and node.data or '' for node in nodes ]))
-        return data       
-    
-    
+        return data
+
+
     def getAttr(self, node, name, namespace=None):
         '''
         Returns attribute value for given node and attribute name
@@ -56,30 +56,30 @@ class XMLParser(object):
             return node.getAttributeNS(self.NAMESPACE, name)
         else:
             return node.getAttributeNS(namespace, name)
-    
-    
+
+
     def getTagByAttr(self, nodes, name, value, namespace=None):
         '''
         Looks for all tags having attribute 'name' with value 'value'
         '''
         if namespace is None:
             namespace = self.NAMESPACE
-            
+
         retList = []
         for node in nodes:
             if (node.hasAttributeNS(namespace, name) and
                     self.getAttr(node, name, namespace) == value):
                 retList.append(node)
         return retList
-    
+
 
 def get_primary_ns(msg_text):
     '''
-    Return the XML namespace value for the top-level element in the 
+    Return the XML namespace value for the top-level element in the
     XML document.
     Note that this has to load the XML document.
     '''
     d = xml.dom.minidom.parseString(msg_text)
-    return d.firstChild.namespaceURI 
+    return d.firstChild.namespaceURI
 
-    
+
