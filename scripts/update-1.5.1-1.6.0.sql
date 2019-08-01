@@ -7,7 +7,7 @@
 -- its block comment symbols /* and */ then run this script.
 
 
-   
+
 /*
 -- UPDATE SCRIPT FOR CLOUD SCHEMA
 
@@ -66,8 +66,8 @@ UPDATE CloudSummaries SET CloudComputeServiceID=1;
 -- View on CloudRecords
 DROP VIEW IF EXISTS VCloudRecords;
 CREATE VIEW VCloudRecords AS
-    SELECT UpdateTime, VMUUID, site.name SiteName, cloudComputeService.name CloudComputeService, MachineName, 
-           LocalUserId, LocalGroupId, userdn.name GlobalUserName, FQAN, vo.name VO, 
+    SELECT UpdateTime, VMUUID, site.name SiteName, cloudComputeService.name CloudComputeService, MachineName,
+           LocalUserId, LocalGroupId, userdn.name GlobalUserName, FQAN, vo.name VO,
            vogroup.name VOGroup, vorole.name VORole,
            Status, StartTime, EndTime,
            SuspendDuration, WallDuration, CpuDuration, CpuCount, NetworkType,
@@ -84,7 +84,7 @@ CREATE VIEW VCloudRecords AS
 DROP VIEW IF EXISTS VAnonCloudRecords;
 CREATE VIEW VAnonCloudRecords AS
     SELECT UpdateTime, VMUUID, site.name SiteName, cloudComputeService.name CloudComputeService,
-           MachineName, LocalUserId, LocalGroupId, GlobalUserNameID, FQAN, vo.name VO,  Status, 
+           MachineName, LocalUserId, LocalGroupId, GlobalUserNameID, FQAN, vo.name VO,  Status,
            StartTime, EndTime, SuspendDuration, WallDuration, CpuDuration, CpuCount, NetworkType,
            NetworkInbound, NetworkOutbound, PublicIPCount, Memory, Disk, BenchmarkType, Benchmark,
            StorageRecordId, ImageId, CloudType
@@ -100,7 +100,7 @@ CREATE VIEW VCloudSummaries AS
     SELECT UpdateTime, site.name SiteName, cloudComputeService.name CloudComputeService, Month, Year,
            userdn.name GlobalUserName, vo.name VO, vogroup.name VOGroup, vorole.name VORole, Status,
            CloudType, ImageId, EarliestStartTime, LatestStartTime, WallDuration, CpuDuration,
-           CpuCount, NetworkInbound, NetworkOutbound, Memory, Disk, BenchmarkType, Benchmark,  
+           CpuCount, NetworkInbound, NetworkOutbound, Memory, Disk, BenchmarkType, Benchmark,
            NumberOfVMs
     FROM CloudSummaries, Sites site, CloudComputeServices cloudComputeService, DNs userdn, VOs vo, VOGroups vogroup, VORoles vorole WHERE
         SiteID = site.id
@@ -134,7 +134,7 @@ CREATE PROCEDURE ReplaceCloudRecord(
   VMUUID VARCHAR(255), site VARCHAR(255), cloudComputeService VARCHAR(255),
   machineName VARCHAR(255),
   localUserId VARCHAR(255),
-  localGroupId VARCHAR(255), globalUserName VARCHAR(255), 
+  localGroupId VARCHAR(255), globalUserName VARCHAR(255),
   fqan VARCHAR(255), vo VARCHAR(255),
   voGroup VARCHAR(255), voRole VARCHAR(255), status VARCHAR(255),
   startTime DATETIME, endTime DATETIME,
@@ -153,8 +153,8 @@ BEGIN
       VALUES (
         VMUUID, SiteLookup(site), CloudComputeServiceLookup(cloudComputeService), machineName,
         localUserId, localGroupId, DNLookup(globalUserName), fqan, VOLookup(vo), VOGroupLookup(voGroup),
-        VORoleLookup(voRole), status, startTime, endTime, suspendDuration, 
-        wallDuration, 
+        VORoleLookup(voRole), status, startTime, endTime, suspendDuration,
+        wallDuration,
         cpuDuration, cpuCount, networkType, networkInbound, networkOutbound, publicIPCount, memory,
         disk, benchmarkType, benchmark, storageRecordId, imageId, cloudType, DNLookup(publisherDN)
         );
@@ -165,17 +165,17 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS ReplaceCloudSummaryRecord;
 DELIMITER //
 CREATE PROCEDURE ReplaceCloudSummaryRecord(
-  site VARCHAR(255), cloudComputeService VARCHAR(255), month INT, year INT, globalUserName VARCHAR(255), 
+  site VARCHAR(255), cloudComputeService VARCHAR(255), month INT, year INT, globalUserName VARCHAR(255),
   vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255), status VARCHAR(255),
-  cloudType VARCHAR(255), imageId VARCHAR(255), 
-  earliestStartTime DATETIME, latestStartTime DATETIME, 
+  cloudType VARCHAR(255), imageId VARCHAR(255),
+  earliestStartTime DATETIME, latestStartTime DATETIME,
   wallDuration BIGINT, cpuDuration BIGINT, cpuCount INT,
   networkInbound BIGINT, networkOutbound BIGINT, memory BIGINT,
   disk BIGINT, benchmarkType VARCHAR(50), benchmark DECIMAL(10,3), numberOfVMs BIGINT,
   publisherDN VARCHAR(255))
 BEGIN
     REPLACE INTO CloudSummaries(SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID,
-        VOGroupID, VORoleID, Status, CloudType, ImageId, EarliestStartTime, LatestStartTime, 
+        VOGroupID, VORoleID, Status, CloudType, ImageId, EarliestStartTime, LatestStartTime,
         WallDuration, CpuDuration, CpuCount, NetworkInbound, NetworkOutbound, Memory, Disk,
         BenchmarkType, Benchmark, NumberOfVMs,  PublisherDNID)
       VALUES (
