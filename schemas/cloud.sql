@@ -48,7 +48,7 @@ CREATE TABLE CloudRecords (
   ImageId VARCHAR(255),
   CloudType VARCHAR(255),
 
-  PublisherDNID INT NOT NULL,	    -- Foreign key
+  PublisherDNID INT NOT NULL, -- Foreign key
 
   -- Measurement(Month, Year) allows for usage to be assigned
   -- to accounting periods at load time
@@ -248,7 +248,7 @@ BEGIN
     FROM CloudRecords as ThisRecord
     LEFT JOIN CloudRecords as PrevRecord
     ON (ThisRecord.VMUUID = PrevRecord.VMUUID and
-	PrevRecord.MeasurementTime = (SELECT max(MeasurementTime)
+        PrevRecord.MeasurementTime = (SELECT max(MeasurementTime)
                                       FROM CloudRecords
                                       WHERE VMUUID = ThisRecord.VMUUID
                                       AND MeasurementTime < ThisRecord.MeasurementTime
