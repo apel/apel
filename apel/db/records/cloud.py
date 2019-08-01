@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
 @author Will Rogers
 '''
 
@@ -23,50 +23,50 @@ from datetime import datetime, timedelta
 
 class CloudRecord(Record):
     '''
-    Class to represent one cloud record. 
-    
+    Class to represent one cloud record.
+
     It knows about the structure of the MySQL table and the message format.
-    It stores its information in a dictionary self._record_content.  The keys 
+    It stores its information in a dictionary self._record_content.  The keys
     are in the same format as in the messages, and are case-sensitive.
     '''
     def __init__(self):
         '''Provide the necessary lists containing message information.'''
-        
+
         Record.__init__(self)
-        
+
         # Fields which are required by the message format.
         self._mandatory_fields = ["VMUUID", "SiteName"]
-            
+
         # This list allows us to specify the order of lines when we construct records.
-        self._msg_fields  = ["RecordCreateTime", "VMUUID", "SiteName", "CloudComputeService", "MachineName", 
+        self._msg_fields  = ["RecordCreateTime", "VMUUID", "SiteName", "CloudComputeService", "MachineName",
                              "LocalUserId", "LocalGroupId", "GlobalUserName", "FQAN",
-                             "Status", "StartTime", "EndTime", "SuspendDuration", 
-                             "WallDuration", "CpuDuration", "CpuCount", 
-                             "NetworkType", "NetworkInbound", "NetworkOutbound", "PublicIPCount", 
-                             "Memory", "Disk", "BenchmarkType", "Benchmark", 
+                             "Status", "StartTime", "EndTime", "SuspendDuration",
+                             "WallDuration", "CpuDuration", "CpuCount",
+                             "NetworkType", "NetworkInbound", "NetworkOutbound", "PublicIPCount",
+                             "Memory", "Disk", "BenchmarkType", "Benchmark",
                              "StorageRecordId", "ImageId", "CloudType"]
-        
+
         # This list specifies the information that goes in the database.
         self._db_fields = self._msg_fields[:9] + ['VO', 'VOGroup', 'VORole'] + self._msg_fields[9:]
         self._all_fields = self._db_fields
-        
+
         self._ignored_fields = ["UpdateTime", "MeasurementTime",
                                 "MeasurementMonth", "MeasurementYear"]
-        
+
         # Fields which will have an integer stored in them
-        self._int_fields = [ "SuspendDuration", "WallDuration", "CpuDuration", "CpuCount", 
+        self._int_fields = [ "SuspendDuration", "WallDuration", "CpuDuration", "CpuCount",
                              "NetworkInbound", "NetworkOutbound", "PublicIPCount", "Memory", "Disk"]
-        
+
         self._float_fields = ['Benchmark']
         self._datetime_fields = ["RecordCreateTime", "StartTime", "EndTime"]
-    
+
     def _check_fields(self):
         '''
         Add extra checks to those made in every record.
         '''
         # First, call the parent's version.
         Record._check_fields(self)
-        
+
         # Extract the relevant information from the user fqan.
         # Keep the fqan itself as other methods in the class use it.
         role, group, vo = parse_fqan(self._record_content['FQAN'])
@@ -85,8 +85,8 @@ class CloudRecord(Record):
             # NOT NULL in the database, so we set it to something
             # meaningful. In this case the float 0.0.
             self._record_content['Benchmark'] = 0.0
-            
-            
+
+
         self._record_content['VORole'] = role
         self._record_content['VOGroup'] = group
         self._record_content['VO'] = vo
@@ -103,13 +103,13 @@ class CloudRecord(Record):
         # Check the values of StartTime and EndTime
         # self._check_start_end_times()
 
-        
+
     def _check_start_end_times(self):
         '''Checks the values of StartTime and EndTime in _record_content.
         StartTime should be less than or equal to EndTime.
         Neither StartTime or EndTime should be zero.
         EndTime should not be in the future.
-        
+
         This is merely factored out for simplicity.
         '''
         try:
@@ -117,17 +117,17 @@ class CloudRecord(Record):
             end = int(self._record_content['EndTime'])
             if end < start:
                 raise InvalidRecordException("EndTime is before StartTime.")
-            
+
             if start == 0 or end == 0:
                 raise InvalidRecordException("Epoch times StartTime and EndTime mustn't be 0.")
-            
+
             now = datetime.now()
             # add two days to prevent timezone problems
             tomorrow = now + timedelta(2)
             if datetime.fromtimestamp(end) > tomorrow:
                 raise InvalidRecordException("Epoch time " + str(end) + " is in the future.")
-            
+
         except ValueError:
             raise InvalidRecordException("Cannot parse an integer from StartTime or EndTime.")
-        
-        
+
+
