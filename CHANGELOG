@@ -196,9 +196,9 @@ Changelog for apel
  - Loader accepts StAR messages, database updated
  - Move to using one specfile, hyphenated rpm names
  - Stored procedure improvements
- 
+
  * Thu Dec 13 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.2-0
  - Correct database logic.  Improve logging.
- 
+
  * Tue Nov 13 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.1-0
  - First release
