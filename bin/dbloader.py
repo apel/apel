@@ -35,20 +35,20 @@ log = None
 
 def runprocess(db_config_file, config_file, log_config_file):
     '''Parse the configuration file and start the loader.'''
-    
-    # Read configuration from file 
+
+    # Read configuration from file
     cp = ConfigParser.ConfigParser()
     cp.read(config_file)
 
     dbcp = ConfigParser.ConfigParser()
     dbcp.read(db_config_file)
-    
+
     # set up logging
     try:
         if os.path.exists(options.log_config):
             logging.config.fileConfig(options.log_config)
         else:
-            set_up_logging(cp.get('logging', 'logfile'), 
+            set_up_logging(cp.get('logging', 'logfile'),
                            cp.get('logging', 'level'),
                            cp.getboolean('logging', 'console'))
         global log
@@ -68,17 +68,17 @@ def runprocess(db_config_file, config_file, log_config_file):
         db_name = dbcp.get('db', 'name')
         db_username = dbcp.get('db', 'username')
         db_password = dbcp.get('db', 'password')
-        
-        interval = cp.getint('loader', 'interval')               
-        
+
+        interval = cp.getint('loader', 'interval')
+
         pidfile = cp.get('loader', 'pidfile')
-        
+
         save_msgs =  cp.getboolean('loader', 'save_messages')
-        
+
     except Exception, err:
         print "Error in configuration file: " + str(err)
         sys.exit(1)
-        
+
     # Create a Loader object
     try:
         if os.path.exists(pidfile):
@@ -88,11 +88,11 @@ def runprocess(db_config_file, config_file, log_config_file):
     except Exception, err:
         print "Error initialising loader: " + str(err)
         sys.exit(1)
-        
+
     # Once it's initialised correctly, set it going.
     run_as_daemon(loader, interval)
 
-        
+
 def run_as_daemon(loader, interval):
     """
     Given a loader object, start it as a daemon process.
@@ -132,7 +132,7 @@ def run_as_daemon(loader, interval):
 
 
 
-if __name__ == '__main__':   
+if __name__ == '__main__':
     ver = "Starting APEL dbloader %s.%s.%s" % __version__
     opt_parser = OptionParser(version=ver)
     opt_parser.add_option('-d', '--db', help='location of DB config file',
@@ -141,8 +141,7 @@ if __name__ == '__main__':
                           default='/etc/apel/loader.cfg')
     opt_parser.add_option('-l', '--log_config', help='Location of logging config file (optional)',
                           default='/etc/apel/logging.cfg')
-    
+
     (options, args) = opt_parser.parse_args()
-    
+
     runprocess(options.db, options.config, options.log_config)
-    
