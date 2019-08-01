@@ -15,7 +15,7 @@ class TestJobRecord(unittest.TestCase):
         '''
         Tests _check_factor method.
         '''
-        
+
         record = JobRecord()
         self.assertRaises(InvalidRecordException, record._check_factor, 'unknown', 1)
         # currently only si2k and hepspec are supported
@@ -26,8 +26,8 @@ class TestJobRecord(unittest.TestCase):
                 record._check_factor(factor, 1)
             except:
                 self.fail('Unsupported service level type: %s' % factor)
-    
-    
+
+
     def test_check_start_end_times(self):
         '''
         Tests _check_start_end_times method.
@@ -35,21 +35,21 @@ class TestJobRecord(unittest.TestCase):
         record = JobRecord()
         record.set_field('StartTime', 10)
         record.set_field('EndTime', 5)
-        
+
         # error: StartTime > EndTime
         self.assertRaises(InvalidRecordException, record._check_start_end_times)
-        
+
         # EndTime is in future
         record.set_field('EndTime', datetime.datetime.now() + datetime.timedelta(days=4))
         self.assertRaises(InvalidRecordException, record._check_start_end_times)
-    
-    
+
+
     def test_check_fields(self):
-        
+
         record = JobRecord()
         # empty record
         self.assertRaises(InvalidRecordException, record._check_fields)
-        
+
         # minimal record must be accepted
         record.set_field('Site', 'some_site')
         record.set_field('SubmitHost', 'submithost.pl')
@@ -58,7 +58,7 @@ class TestJobRecord(unittest.TestCase):
         record.set_field('CpuDuration', 3600)
         record.set_field('StartTime', 1234)
         record.set_field('EndTime', 14234)
-        
+
         try:
             record._check_fields()
         except:
