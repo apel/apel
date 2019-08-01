@@ -30,7 +30,7 @@ CREATE TABLE JobRecords (
   StartTime DATETIME NOT NULL,
   EndTime DATETIME NOT NULL,
   EndYear INT,                        -- Used for indexing
-  EndMonth INT,	                      -- Used for indexing
+  EndMonth INT,                       -- Used for indexing
 
   InfrastructureDescription VARCHAR(100),
   InfrastructureType VARCHAR(20),
@@ -46,7 +46,7 @@ CREATE TABLE JobRecords (
   -- Try to reuse this index as much as you can
   INDEX SummaryIdx (SiteID, VOID, GlobalUserNameID, VOGroupID, VORoleID,
         EndYear, EndMonth, InfrastructureType, SubmitHostID, ServiceLevelType, ServiceLevel,
-	    NodeCount, Processors, EndTime, WallDuration, CpuDuration)
+        NodeCount, Processors, EndTime, WallDuration, CpuDuration)
 
 );
 
@@ -198,7 +198,7 @@ CREATE FUNCTION SpecLookup(
   _serviceLevelType  VARCHAR(50),
   _lookupTime        DATETIME) RETURNS DECIMAL(10,3) READS SQL DATA
 BEGIN
-    DECLARE result	 DECIMAL(10,3);
+    DECLARE result DECIMAL(10,3);
     SELECT ServiceLevel
     FROM SpecRecords
     WHERE
@@ -303,7 +303,7 @@ BEGIN
         EventRecords.StartTime as StartTime,               -- JobRecord.StartTime
         EventRecords.EndTime as EndTime,                   -- JobRecord.EndTime
         EventRecords.Infrastructure as InfrastructureDescription,     -- JobRecord.Infrastructure
-        "grid",                               	       	   -- JobRecord.InfrastructureType
+        "grid",                                            -- JobRecord.InfrastructureType
         EventRecords.MemoryReal as MemoryReal,             -- JobRecord.MemoryReal
         EventRecords.MemoryVirtual as MemoryVirtual,       -- JobRecord.MemoryVirtual
         SpecRecords.ServiceLevelType as ServiceLevelType,
@@ -408,7 +408,7 @@ BEGIN
         dnlocalid,                                      -- JobRecords.PublisherDN
         YEAR(EventRecords.EndTime),
         MONTH(EventRecords.EndTime)
-	FROM SpecRecords
+    FROM SpecRecords
     INNER JOIN EventRecords ON ((SpecRecords.StopTime > EventRecords.EndTime
                              OR
                              SpecRecords.StopTime IS NULL)
@@ -802,12 +802,12 @@ CREATE VIEW VJobRecords AS
            WallDuration, CpuDuration, Processors, NodeCount, StartTime, EndTime, InfrastructureDescription, InfrastructureType,
            MemoryReal, MemoryVirtual, ServiceLevelType, ServiceLevel
     FROM JobRecords, Sites site, SubmitHosts subhost, MachineNames machine,
-    	 Queues queue, DNs userdn, VORoles vorole, VOs vos, VOGroups vogroup
-   	WHERE
+         Queues queue, DNs userdn, VORoles vorole, VOs vos, VOGroups vogroup
+    WHERE
         SiteID = site.id
         AND SubmitHostID = subhost.id
-	    AND MachineNameID = machine.id
-	    AND QueueID = queue.id
+        AND MachineNameID = machine.id
+        AND QueueID = queue.id
         AND GlobalUserNameID = userdn.id
         AND VORoleID = vorole.id
         AND VOID = vos.id
@@ -818,4 +818,3 @@ CREATE VIEW VJobRecords AS
 DROP VIEW IF EXISTS VProcessedFiles;
 CREATE VIEW VProcessedFiles AS
     SELECT HostName, FileName, Hash, StopLine, Parsed FROM ProcessedFiles;
-
