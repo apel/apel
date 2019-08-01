@@ -292,7 +292,7 @@ CREATE PROCEDURE ReplaceStarRecord(
     resourceCapacityAllocated BIGINT
     )
 BEGIN
-    REPLACE INTO StarRecords(RecordId, 
+    REPLACE INTO StarRecords(RecordId,
         CreateTime,
         StorageSystemID,
         SiteID,
@@ -361,7 +361,7 @@ SELECT CreateTime,
        EndTime,
        ResourceCapacityUsed,
        LogicalCapacityUsed,
-       ResourceCapacityAllocated 
+       ResourceCapacityAllocated
 FROM StarRecords, StorageSystems, Sites, StorageShares,
      StorageMedia, StorageClasses, UserIdentities, Groups,
      SubGroups, Roles
