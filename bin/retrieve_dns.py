@@ -14,8 +14,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-# Retrieves glite-APEL DNs from a query to GOCDB and then adds any extra 
-# DNs from a file.  Writes these to second file, which contains a list of 
+# Retrieves glite-APEL DNs from a query to GOCDB and then adds any extra
+# DNs from a file.  Writes these to second file, which contains a list of
 # trusted DNs.
 #
 # This is checked by the SSM when a message is received to see if the message
@@ -54,32 +54,32 @@ def get_config(config_file):
     # Read configuration from file
     cp = ConfigParser.ConfigParser()
     cp.read(config_file)
-    
+
     c = Configuration()
-    
+
     try:
         c.gocdb_url = cp.get('auth', 'gocdb_url')
     except ConfigParser.NoOptionError:
         c.gocdb_url = None
-        
+
     try:
         extra_dns = cp.get('auth', 'extra-dns')
         c.extra_dns = os.path.normpath(os.path.expandvars(extra_dns))
     except ConfigParser.NoOptionError:
         c.extra_dns = None
-    
+
     try:
         banned_dns = cp.get('auth', 'banned-dns')
         c.banned_dns = os.path.normpath(os.path.expandvars(banned_dns))
     except ConfigParser.NoOptionError:
         c.banned_dns = None
-    
+
     try:
         dn_file = cp.get('auth', 'allowed-dns')
         c.dn_file = os.path.normpath(os.path.expandvars(dn_file))
     except ConfigParser.NoOptionError:
         c.dn_file = None
-        
+
     try:
         proxy = cp.get('auth', 'proxy')
         c.proxy = proxy
@@ -96,20 +96,20 @@ def get_config(config_file):
         if os.path.exists(options.log_config):
             logging.config.fileConfig(options.log_config)
         else:
-            set_up_logging(cp.get('logging', 'logfile'), 
+            set_up_logging(cp.get('logging', 'logfile'),
                            cp.get('logging', 'level'),
                            cp.getboolean('logging', 'console'))
     except (ConfigParser.Error, ValueError, IOError), err:
         print 'Error configuring logging: %s' % str(err)
         print 'The system will exit.'
         sys.exit(1)
-        
+
     return c
 
 
 def get_xml(url, proxy):
     '''
-    Given a URL, fetch the contents.  We expect the URL to be https and 
+    Given a URL, fetch the contents.  We expect the URL to be https and
     the contents to be XML.
     '''
     try:
@@ -126,9 +126,9 @@ def get_xml(url, proxy):
             conn.close()
         else:
             raise
-        
+
     return dn_xml
-    
+
 
 def dns_from_dom(dom):
     """
@@ -137,9 +137,9 @@ def dns_from_dom(dom):
     Returns a list of strings.
     """
     dn_nodes = dom.getElementsByTagName('HOSTDN')
-    
+
     log.info('Found ' + str(len(dn_nodes)) + ' HOSTDN tags.' )
-    
+
     dns = []
     for dn in dn_nodes:
         # The text is a child node of the HOSTDN element.
@@ -147,18 +147,18 @@ def dns_from_dom(dom):
         children = dn.childNodes
         for node in children:
             dns.append(node.data)
-    
+
     # remove any whitespace
     dns = [dn.strip() for dn in dns]
-    
+
     return dns
 
 def dns_from_file(path):
     '''
-    Get all the lines in a file and return them as a list of strings.  We 
+    Get all the lines in a file and return them as a list of strings.  We
     assume that they're DNs, but we'll check later.
     '''
-    
+
     dn_file = open(path)
     dns = dn_file.readlines()
     # get rid of any whitespace in the list of strings
@@ -267,7 +267,7 @@ def runprocess(config_file, log_config_file):
     except IOError:
         log.warn("Failed to retrieve extra DNs from file %s.", cfg.extra_dns)
         log.warn("Check the configuration.")
-        
+
     dns_to_remove = []
     try:
         dns_to_remove = dns_from_file(cfg.banned_dns)
@@ -275,10 +275,10 @@ def runprocess(config_file, log_config_file):
     except IOError:
         log.warn("Failed to retrieve banned DNs from file %s.", cfg.banned_dns)
         log.warn("Check the configuration.")
-    
+
     # remove all items from the list dns which are in the list dns_to_remove
     dns = [ dn for dn in dns if dn not in dns_to_remove ]
-    
+
     # print all the the dns to a file, with the discarded ones to a second file
     try:
         new_dn_file = open(cfg.dn_file, 'w')
@@ -308,15 +308,15 @@ def runprocess(config_file, log_config_file):
 
     log.info("auth has finished.")
     log.info(LOG_BREAK)
-    
-    
+
+
 if __name__ == '__main__':
     ver = "APEL auth %s.%s.%s" % __version__
     opt_parser = OptionParser(description=__doc__, version=ver)
-    opt_parser.add_option('-c', '--config', help='location of the config file', 
+    opt_parser.add_option('-c', '--config', help='location of the config file',
                           default='/etc/apel/auth.cfg')
     opt_parser.add_option('-l', '--log_config', help='Location of logging config file (optional)',
                           default='/etc/apel/logging.cfg')
     (options, args) = opt_parser.parse_args()
-    
+
     runprocess(options.config, options.log_config)
