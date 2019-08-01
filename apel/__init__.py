@@ -16,3 +16,11 @@
    @author Konrad Jopek, Will Rogers
 '''
 __version__ = (1, 9, 1)
+
+# Define the database schema version which this version of the code
+# is expecting to use.
+# The two numbers need not necessarily be in sync.
+# A check is made immediately after the first DB
+# connection by reading the SchemaVersionHistory table to compare what
+# is found there (most recent update) with the string defined here.
+EXPECTED_SCHEMA_VERSION = '1.9.1'

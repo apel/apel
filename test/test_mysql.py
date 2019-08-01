@@ -1,3 +1,5 @@
+from apel import EXPECTED_SCHEMA_VERSION
+
 import datetime
 import os
 import subprocess
@@ -32,10 +34,10 @@ class MysqlTest(unittest.TestCase):
         self.db = apel.db.apeldb.ApelDb('mysql', 'localhost', 3306, 'root', '',
                                         'apel_unittest')
 
-    # This method seems to run really slowly on Travis CI
-    #def tearDown(self):
-    #    query = "DROP DATABASE apel_unittest;"
-    #    subprocess.call(['mysql', '-u', 'root', '-e', query])
+    def tearDown(self):
+        # Delete to avoid unexplained hangs in setUp when dropping database
+        #
+        del self.db
 
     def test_test_connection(self):
         """Basic check that test_connection works without error."""
@@ -56,6 +58,22 @@ class MysqlTest(unittest.TestCase):
         self.db._db_host = 'badhost'
         self.assertRaises(apel.db.apeldb.ApelDbException,
                           self.db.test_connection)
+
+    def test_schema_version(self):
+        """
+        Verify that the schema version checks function correctly
+        """
+        # The database server.sql script initialises with the current versions
+        # so the initial state should be consistent
+        self.assertTrue(self.db.check_versions() is None)
+
+        # Now verify the check will fail if the versions don't match
+        # Update the test data with a value that shouldn't match.
+        query = ('INSERT INTO SchemaVersionHistory (VersionNumber) Values ("0.0.0");')
+
+        subprocess.call(['mysql', '-u', 'root', 'apel_unittest', '-e', query])
+
+        self.assertRaises(apel.db.apeldb.ApelDbException, self.db.check_versions)
 
     def test_bad_loads(self):
         """Check that empty loads return None and bad types raise exception."""

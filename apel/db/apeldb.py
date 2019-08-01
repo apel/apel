@@ -60,7 +60,14 @@ class ApelDb(object):
         '''Connects to the database then closes the connection.'''
         pass
 
-    def load_records(self, record_list, source):
+    def check_versions(self):
+        '''
+        Verify that the database schema and codebase versions match requirements
+        given in apel/__init__.py
+        '''
+        pass
+
+    def load_records(self, record_list, source=None):
         '''Given a list of records, and the DN of the sender,
         loads them into the database.'''
         pass
@@ -71,6 +78,17 @@ class ApelDb(object):
         Query object specifies which rows from database should be loaded.
         '''
         pass
+
+    def get_last_updated(self):
+        '''
+        Find the last time that messages were sent.
+        '''
+        pass
+    
+    def set_updated(self):
+        '''
+        Set the current time as the last time messages were sent.
+        '''    
 
 
 class Query(object):
