@@ -31,7 +31,7 @@ def parse_fqan(fqan):
     if fqan.find('/') != 0:
         # if not, just return FQAN as VO
         return (None, None, fqan)
-           
+
     pieces = fqan.split('/')
 
     # Set default value for role (but not 'Role=NULL' as we don't want to assert
@@ -51,9 +51,9 @@ def parse_fqan(fqan):
                 break
             else:
                 group += '/' + piece
-       
-        return (role, group, vo)       
-    
+
+        return (role, group, vo)
+
     except Exception:
         log.warn("FQAN in non-standard format: " + fqan)
         return (None, None, fqan)
