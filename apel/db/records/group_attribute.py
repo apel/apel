@@ -20,21 +20,21 @@ class GroupAttributeRecord(Record):
     '''
     GroupAttributeRecord represents single attribute record
     associated with StarRecord.
-    
+
     Single StarRecord can have multiple GroupAttributeRecords.
     '''
-    
+
     DB_FIELDS = ["StarRecordID", "AttributeType", "AttributeValue"]
     MANDATORY_FIELDS = ["StarRecordID"]
-    
+
     ALL_FIELDS = DB_FIELDS
-    
+
     def __init__(self):
         '''
         Initializer for GroupAttributeRecord
         '''
         Record.__init__(self)
-        
+
         self._db_fields = self.DB_FIELDS
         self._mandatory_fields = self.MANDATORY_FIELDS
         self._all_fields = self._db_fields
