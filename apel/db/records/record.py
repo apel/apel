@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
     @author: Will Rogers
 
 Module containing the Record class.
@@ -32,10 +32,10 @@ class InvalidRecordException(Exception):
 
 def get_unix_time(py_date):
     '''Converts a python datetime object into Unix time.'''
-    return time.mktime(py_date.timetuple()) 
+    return time.mktime(py_date.timetuple())
 
 def check_for_null(value):
-    '''Check if a string is one of the different message values 
+    '''Check if a string is one of the different message values
     which we accept as null.  This returns True if value is None.'''
     nulls = ['none', 'null', '']
     return str(value).lower() in nulls
@@ -43,7 +43,7 @@ def check_for_null(value):
 class Record(object):
     '''
     Represents one APEL database row or record.
-    
+
     The class is designed so that each record type should inherit from this
     one.  There is some logic which is a little tricky used to convert
     the contents of a message into a sensible python format.
@@ -51,11 +51,11 @@ class Record(object):
     # used to protect user DN information
     DN_FIELD = 'GlobalUserName'
     WITHHELD_DN = 'withheld'
-    
+
     def __init__(self):
         '''
         Just defines the required lists which give content and order
-        of a particular record.  These fields will be populated by 
+        of a particular record.  These fields will be populated by
         subclasses.
         '''
         # Fields which are required by the message format.
@@ -65,7 +65,7 @@ class Record(object):
         # The information that goes in the database.
         self._db_fields = []
         # Fields which are permitted in a message, but are currently ignored.
-        self._ignored_fields = [] 
+        self._ignored_fields = []
         # All possible information, including some which may not go in
         # a message and fields ignored in received messages
         self._all_fields = []
@@ -77,7 +77,7 @@ class Record(object):
         self._datetime_fields = []
         # The dictionary into which all the information goes
         self._record_content = {}
-    
+
     def set_all(self, fielddict):
         '''
         Copies all values for given dictionary to internal record's storage.
@@ -89,7 +89,7 @@ class Record(object):
             else:
                 if key not in self._ignored_fields:
                     raise InvalidRecordException('Unknown field: %s' % key)
-                
+
     def set_field(self, key, value):
         '''
         Sets one field in the record's internal storage.
@@ -137,21 +137,21 @@ class Record(object):
 
             elif value is None:
                 return value
-            
+
             if name in self._int_fields: # integer values
                 try:
                     return int(value)
                 except ValueError:
                     raise InvalidRecordException('Invalid int value %s in field %s' % (value, name))
-                
+
             elif name in self._float_fields: # float values
                 try:
                     return float(value)
                 except ValueError:
                     raise InvalidRecordException('Invalid float value %s in field %s' % (value, name))
-                
-            elif name in self._datetime_fields: 
-                
+
+            elif name in self._datetime_fields:
+
                 # if it is already a datetime, return it
                 if type(value) == datetime:
                     return value
@@ -163,7 +163,7 @@ class Record(object):
                     # We get ISO format dates when parsing CAR or StAR.
                     isofmt = '%Y-%m-%dT%H:%M:%S%Z' # %Z denotes timezone
                     # A trailing Z in the ISO format denotes UTC.  We make this explicit for parsing.
-                    dtval = value.replace('Z', 'UTC') 
+                    dtval = value.replace('Z', 'UTC')
                     try:
                         dt = datetime.utcfromtimestamp(time.mktime(time.strptime(dtval, isofmt)))
                         return dt
@@ -188,16 +188,16 @@ class Record(object):
 
     def load_from_msg(self, text):
         '''
-        Given text extracted from a message, load fields.  
-        This uses the lists defined as part of any subclass to know 
+        Given text extracted from a message, load fields.
+        This uses the lists defined as part of any subclass to know
         how to deal with any part of a message.
         '''
         if (text == "") or text.isspace():
             # log.info("Empty record: can't load.")
             return
-            
+
         lines = text.strip().splitlines()
-                
+
         # remove the bit before ': '
         self._record_content = {}
         for line in lines:
@@ -211,29 +211,29 @@ class Record(object):
                                              "without a key-value pair: %s" % line)
         # Now, go through the logic to fill the contents[] dictionary.
         # The logic can get a bit involved here.
-        
+
         self._check_fields()
-        
-    
+
+
     def get_msg(self, withhold_dns=False):
         '''
         Get the information about the record as a string in the format used
         for APEL's messages.  self._record_content holds the appropriate
         keys and values.
-        
+
         If there is no relevant information for the key, its value should be
         None.  In this case, no line is included in the message unless
-        it is a mandatory field.  If the field is mandatory, an 
+        it is a mandatory field.  If the field is mandatory, an
         exception is raised.
         '''
         # Check that the record is consistent.
-        self._check_fields() 
+        self._check_fields()
         # for certain records, we can replace GlobalUserName with 'withheld'
         # to protect private data
         dn = self.get_field(Record.DN_FIELD)
         if dn is not None and withhold_dns:
             self.set_field(Record.DN_FIELD, Record.WITHHELD_DN)
-            
+
         msg = ""
         for key in self._msg_fields:
             # reset value each time.
@@ -244,10 +244,10 @@ class Record(object):
                     # assume that the datetime is UTC
                     ttuple = self._record_content[key].timetuple()
                     value = str(int(calendar.timegm(ttuple)))
-                else:    
+                else:
                     value = str(self._record_content[key]) # make sure we have a string
             except (KeyError, AttributeError):
-                # It's only a problem if a mandatory field is missing; 
+                # It's only a problem if a mandatory field is missing;
                 # otherwise just don't write the line to the message.
                 if key in self._mandatory_fields:
                     raise InvalidRecordException('No mandatory key: %s found' % key)
@@ -255,25 +255,25 @@ class Record(object):
                 # Don't write a line to the message unless there's something
                 # to say.
                 continue
-                
+
             # otherwise, add the line
             msg += key + ": " + value + "\n"
-        
+
         return msg
-    
-    
+
+
     def get_db_tuple(self, source=None):
         '''
-        Returns record content as a tuple. Appends the source of the record 
-        (i.e. the sender's DN) if this is supplied.  Includes exactly the 
+        Returns record content as a tuple. Appends the source of the record
+        (i.e. the sender's DN) if this is supplied.  Includes exactly the
         fields used in the DB by using the self._db_fields list.
         '''
-        # firstly, we must ensure, that record is completed 
+        # firstly, we must ensure, that record is completed
         # and no field is missing
         # _check_fields method may also check the internal logic inside the
         # record
-        self._check_fields() 
-        # Order is crucial here, so we use the list of DB fields to 
+        self._check_fields()
+        # Order is crucial here, so we use the list of DB fields to
         # get the right values, then append the user's DN.
         l = []
         for key in self._db_fields:
@@ -284,22 +284,22 @@ class Record(object):
                     raise InvalidRecordException('Mandatory field: %s was not found' % key)
                 else:
                     l.append('None')
-                    
+
         if source is not None:
             l.append(source)
-            
+
         # create a tuple from all the relevant info
         return tuple(l)
-    
+
     ##########################################################################
     # Private methods below
     ##########################################################################
-    
+
     def _check_fields(self):
-        
+
         # shorthand
         contents = self._record_content
-        
+
         # Check that all the required information is present.
         for key in self._mandatory_fields:
             if key not in contents:
@@ -315,7 +315,7 @@ class Record(object):
                 raise InvalidRecordException("Unexpected field " + key + " in message.")
 
         # Fill the dictionary even if we don't have the relevant data.
-        # The string values are getting 'None' (not None!) instead of going into the 
+        # The string values are getting 'None' (not None!) instead of going into the
         # DB as NULL.
         current_keys = contents.keys()
         for key in self._msg_fields:
@@ -323,8 +323,8 @@ class Record(object):
                 contents[key] = "None"
             if check_for_null(contents[key]):
                 contents[key] = "None"
-        
-        
+
+
         # Change the null values for integers to None (not 'None'!) -> NULL in the DB.
         for key in self._int_fields:
             try:
@@ -337,12 +337,12 @@ class Record(object):
                 value = int(value)
             except (ValueError, TypeError):
                 if key in self._mandatory_fields:
-                    raise InvalidRecordException("Mandatory int field " + key + 
+                    raise InvalidRecordException("Mandatory int field " + key +
                                     " doesn't contain an integer.")
                 elif check_for_null(value):
                     contents[key] = None
                 elif value is not None:
-                    raise InvalidRecordException("Int field " + key + 
+                    raise InvalidRecordException("Int field " + key +
                                     " doesn't contain an integer.")
 
         # Change null values for floats to the null object -> NULL in the DB.
