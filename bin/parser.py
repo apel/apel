@@ -47,7 +47,7 @@ from apel.parsers.htcondor import HTCondorParser
 
 
 LOGGER_ID = 'parser'
-# How many records should be put/fetched to/from database 
+# How many records should be put/fetched to/from database
 # in single query
 BATCH_SIZE = 1000
 DB_BACKEND = 'mysql'
@@ -69,29 +69,29 @@ class ParserConfigException(Exception):
 
 def find_sub_dirs(dirpath):
     '''
-    Given a directory path, return a list of paths of any subdirectories, 
+    Given a directory path, return a list of paths of any subdirectories,
     including the directory itself.
     '''
     alldirs = []
     for root, unused_dirs, unused_files in os.walk(dirpath):
         alldirs.append(root)
-    
+
     return alldirs
-    
+
 
 def parse_file(parser, apel_db, fp, replace):
     '''
     Parses file from blah/batch system
-    
+
     @param parser: parser object of correct type
     @param apel_db: object to access APEL database
     @param fp: file object with log
-    @return: number of correctly parsed files from file, 
-             total number of lines in file 
+    @return: number of correctly parsed files from file,
+             total number of lines in file
     '''
     log = logging.getLogger(LOGGER_ID)
     records = []
-    
+
     # we will save information about errors
     # default behaviour: show the list of errors with information
     # how many times given error was raised
@@ -126,9 +126,9 @@ def parse_file(parser, apel_db, fp, replace):
                 apel_db.load_records(records, replace=replace)
                 del records
                 records = []
-        
+
     apel_db.load_records(records, replace=replace)
-    
+
     if index == 0:
         log.info('Ignored empty file.')
     elif parsed == 0:
@@ -140,23 +140,23 @@ def parse_file(parser, apel_db, fp, replace):
 
         for error in exceptions:
             log.error('%s raised %d times', error, exceptions[error])
-    
+
     return parsed, line_number
 
-        
+
 def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
     '''
     Check all files in a directory and parse them if:
      - the names match the regular expression
      - the file is not already in the list of processed files
-     
+
      Add newly parsed files to the processed files list and return it.
     '''
     log = logging.getLogger(LOGGER_ID)
     updated = []
     try:
         log.info('Scanning directory: %s', dirpath)
-        
+
         for item in sorted(os.listdir(dirpath)):
             abs_file = os.path.join(dirpath, item)
             if os.path.isfile(abs_file) and expr.match(item):
@@ -219,19 +219,19 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                     log.info('Skipping file (already parsed): %s ', abs_file)
             elif os.path.isfile(abs_file):
                 log.info('Filename does not match pattern: %s', item)
-        
+
         return updated
-    
+
     except KeyError, e:
         log.fatal('Improperly configured.')
         log.fatal('Check the section for %s , %s', parser, e)
         sys.exit(1)
-    
+
 def handle_parsing(log_type, apel_db, cp):
     '''
     Create the appropriate parser, and scan the configured directory
     for log files, parsing them.
-    
+
     Update the database with the parsed files.
     '''
     log = logging.getLogger(LOGGER_ID)
@@ -240,37 +240,37 @@ def handle_parsing(log_type, apel_db, cp):
         section = 'blah'
     else:
         section = 'batch'
-        
+
     site = cp.get('site_info', 'site_name')
     if site is None or site == '':
         raise ParserConfigException('Site name must be configured.')
-        
+
     machine_name = cp.get('site_info', 'lrms_server')
     if machine_name is None or machine_name == '':
         raise ParserConfigException('LRMS hostname must be configured.')
-    
+
     processed_files = []
     updated_files = []
     # get all processed records from generator
     for record_list in apel_db.get_records(ProcessedRecord):
         processed_files.extend(
-                [record for record in record_list 
+                [record for record in record_list
                  if record.get_field('HostName') == machine_name])
-        
+
     root_dir = cp.get(section, 'dir')
-    
+
     try:
         reparse = cp.getboolean(section, 'reparse')
         if reparse:
             log.warn('Parser will reparse all logfiles found.')
     except ConfigParser.NoOptionError:
         reparse = False
-    
+
     try:
         mpi = cp.getboolean(section, 'parallel')
     except ConfigParser.NoOptionError:
         mpi = False
-        
+
     try:
         parser = PARSERS[log_type](site, machine_name, mpi)
     except (NotImplementedError), e:
@@ -303,7 +303,7 @@ def handle_parsing(log_type, apel_db, cp):
             log.warning('No pattern specified for %s log file names.', log_type)
             log.warning('Parser will try to parse all files in directory')
             expr = re.compile('(.*)')
-    
+
     if os.path.isdir(root_dir):
         if cp.getboolean(section, 'subdirs'):
             to_scan = find_sub_dirs(root_dir)
@@ -313,41 +313,41 @@ def handle_parsing(log_type, apel_db, cp):
             updated_files.extend(scan_dir(parser, directory, reparse, expr, apel_db, processed_files))
     else:
         log.warn('Directory for %s logs was not set correctly, omitting', log_type)
-    
+
     apel_db.load_records(updated_files)
     log.info('Finished parsing %s log files.', log_type)
-    
-    
+
+
 def main():
     '''
-    Parse command line arguments, do initial setup, then initiate 
+    Parse command line arguments, do initial setup, then initiate
     parsing process.
     '''
     install_exc_handler(default_handler)
-    
+
     ver = "APEL parser %s.%s.%s" % __version__
     opt_parser = OptionParser(description=__doc__, version=ver)
-    opt_parser.add_option("-c", "--config", help="location of config file", 
+    opt_parser.add_option("-c", "--config", help="location of config file",
                           default="/etc/apel/parser.cfg")
-    opt_parser.add_option("-l", "--log_config", help="location of logging config file (optional)", 
+    opt_parser.add_option("-l", "--log_config", help="location of logging config file (optional)",
                           default="/etc/apel/parserlog.cfg")
     options, unused_args = opt_parser.parse_args()
-    
-    # Read configuration from file 
+
+    # Read configuration from file
     try:
         cp = ConfigParser.ConfigParser()
-        cp.read(options.config) 
+        cp.read(options.config)
     except Exception, e:
         sys.stderr.write(str(e))
         sys.stderr.write('\n')
         sys.exit(1)
-    
+
     # set up logging
     try:
         if os.path.exists(options.log_config):
             logging.config.fileConfig(options.log_config)
         else:
-            set_up_logging(cp.get('logging', 'logfile'), 
+            set_up_logging(cp.get('logging', 'logfile'),
                            cp.get('logging', 'level'),
                            cp.getboolean('logging', 'console'))
     except (ConfigParser.Error, ValueError, IOError), err:
@@ -380,7 +380,7 @@ def main():
         sys.exit(1)
 
     log.info(LOG_BREAK)
-    # blah parsing 
+    # blah parsing
     try:
         if cp.getboolean('blah', 'enabled'):
             handle_parsing('blah', apel_db, cp)
@@ -389,7 +389,7 @@ def main():
         log.fatal('Parser will exit.')
         log.info(LOG_BREAK)
         sys.exit(1)
-        
+
     log.info(LOG_BREAK)
     # batch parsing
     try:
@@ -400,10 +400,10 @@ def main():
         log.fatal('Parser will exit.')
         log.info(LOG_BREAK)
         sys.exit(1)
-        
+
     log.info('Parser has completed.')
     log.info(LOG_BREAK)
     sys.exit(0)
-    
+
 if __name__ == '__main__':
     main()

@@ -7,7 +7,7 @@ class XMLParserTest(unittest.TestCase):
     '''
     Test case for XMLParser
     '''
-    
+
     data1 = '''<?xml version="1.0"?>
 <ns:node xmlns:ns="http://fake.namespace.org" xmlns:ons="http://fake.othernamespace.org">
    <ns:title>Some title</ns:title>
@@ -15,7 +15,7 @@ class XMLParserTest(unittest.TestCase):
      <ns:value>data1</ns:value>
      <ns:value>data2</ns:value>
    </ns:values>
-   
+
    <ns:attributes ns:attr="value">
       <ns:attribute ns:id="test1">attribute 1</ns:attribute>
       <ns:attribute ns:id="test2">attribute 2</ns:attribute>
@@ -31,12 +31,12 @@ class XMLParserTest(unittest.TestCase):
         self.parser = XMLParser(self.data1)
         self.parser.NAMESPACE = 'http://fake.namespace.org'
         self.parser.OTHERNAMESPACE = 'http://fake.othernamespace.org'
-    
+
     def test_get_text(self):
         values = self.parser.doc.getElementsByTagNameNS(self.parser.NAMESPACE, 'value')
         self.assertEqual('data1', self.parser.getText(values[0].childNodes))
         self.assertEqual('data2', self.parser.getText(values[1].childNodes))
-    
+
     def test_get_tag_by_attr(self):
         attributes = self.parser.doc.getElementsByTagNameNS(self.parser.NAMESPACE, 'attribute')
         #print len(attributes)

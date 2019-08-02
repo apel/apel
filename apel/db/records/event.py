@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
 Class representing a job from any batch system.
 '''
 
@@ -22,21 +22,20 @@ class EventRecord(Record):
     """
     Class to represent a batch system record.
     """
-    
+
     def __init__(self):
-        
+
         Record.__init__(self)
-        
+
         self._mandatory_fields = []
-        
+
         self._db_fields = ["Site", "JobName", "LocalUserID", "LocalUserGroup",
                            "WallDuration", "CpuDuration", "StartTime", "StopTime", "Infrastructure",
                            "MachineName", "Queue", "MemoryReal", "MemoryVirtual", "Processors", "NodeCount"]
-        
+
         self._all_fields = self._db_fields
-        
-        self._int_fields = ["WallDuration", "CpuDuration", "MemoryReal", 
+
+        self._int_fields = ["WallDuration", "CpuDuration", "MemoryReal",
                             "MemoryVirtual", "Processors", "NodeCount"]
-        
+
         self._datetime_fields = ["StartTime", "StopTime"]
-    

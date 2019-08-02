@@ -49,24 +49,24 @@ END'''
 
 REMOVE_PROC = 'DROP PROCEDURE IF EXISTS InsertJobRecord'
 
-SELECT_STMT = '''SELECT ExecutingSite, LocalJobID, LocalUserID, LCGUserVO, LcgUserID, 
-                ElapsedTimeSeconds, BaseCpuTimeSeconds, StartTimeUTC, StopTimeUTC, 
-                ExecutingCE, MemoryReal, MemoryVirtual, SpecInt2000 
+SELECT_STMT = '''SELECT ExecutingSite, LocalJobID, LocalUserID, LCGUserVO, LcgUserID,
+                ElapsedTimeSeconds, BaseCpuTimeSeconds, StartTimeUTC, StopTimeUTC,
+                ExecutingCE, MemoryReal, MemoryVirtual, SpecInt2000
                 from LcgRecords WHERE EventDate >= "%s"'''
 
-CALLPROC_STMT = """CALL InsertJobRecord(%s, %s, %s, 'None', %s, %s, %s, %s, %s, %s, %s, 
+CALLPROC_STMT = """CALL InsertJobRecord(%s, %s, %s, 'None', %s, %s, %s, %s, %s, %s, %s,
                   %s, %s, NULL, NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
-DUPLICATES_JOIN = """ FROM JobRecords AS t 
-                      LEFT JOIN MachineNames as m 
-		      on (t.MachineNameID = m.id) 
-		      INNER JOIN (SELECT LocalJobId, 
-		                  EndTime 
-				  FROM JobRecords 
-				  LEFT JOIN MachineNames 
-				  on (JobRecords.MachineNameID = MachineNames.id) 
-				  WHERE MachineNames.name != 'MachineName' ) 
-				  AS u 
+DUPLICATES_JOIN = """ FROM JobRecords AS t
+                      LEFT JOIN MachineNames as m
+		      on (t.MachineNameID = m.id)
+		      INNER JOIN (SELECT LocalJobId,
+		                  EndTime
+				  FROM JobRecords
+				  LEFT JOIN MachineNames
+				  on (JobRecords.MachineNameID = MachineNames.id)
+				  WHERE MachineNames.name != 'MachineName' )
+				  AS u
                       ON (m.name = 'MachineName' AND t.LocalJobId = u.LocalJobId AND t.EndTime = u.EndTime); """
 
 COUNT_DUPLICATES_STMT = "SELECT count(*) " + DUPLICATES_JOIN
@@ -120,7 +120,7 @@ def remove_proc(cursor):
 
 def copy_records(db1, db2, cutoff):
     '''
-    Copy all records from the LcgRecords table in db1 to the JobRecords 
+    Copy all records from the LcgRecords table in db1 to the JobRecords
     table in db2 whose EndTime is greater than the cutoff datetime.
     '''
     c1 = db1.cursor(cursorclass=MySQLdb.cursors.SSCursor)
@@ -156,7 +156,7 @@ def copy_records(db1, db2, cutoff):
         end_time = parse_timestamp(end_time)
 
         try:
-            c2.execute(CALLPROC_STMT, (site, submit_host, 'MachineName', jobid, userid, global_user_name, 
+            c2.execute(CALLPROC_STMT, (site, submit_host, 'MachineName', jobid, userid, global_user_name,
                                fqan, vo, group, role, wall_duration , cpu_duration, start_time, end_time,
                                'migration_script', 'grid', memory_real, memory_virtual, SPECINT, specint, 'Import'))
             inserted += 1
@@ -169,7 +169,7 @@ def copy_records(db1, db2, cutoff):
                 errors[str(err)] += 1
             except (KeyError, TypeError):
                 errors[str(err)] = 1
-                
+
         counter += 1
         if counter % COMMIT_THRESHOLD == 0:
             db2.commit()
@@ -184,7 +184,7 @@ def copy_records(db1, db2, cutoff):
     db2.commit()
 
     for item in errors:
-        
+
         sys.stderr.write("    Error: ")
         sys.stderr.write(str(item))
         sys.stderr.write(" occurred ")
@@ -202,7 +202,7 @@ def delete_old_records(db, cutoff):
     c.execute('DELETE FROM JobRecords where date(EndTime) < "%s"' % cutoff)
     c.execute(REMOVE_PROC)
     db.commit()
-    
+
 def delete_duplicates(db):
     '''
     Delete all records that have been migrated but are duplicates of records

@@ -17,7 +17,7 @@
 
 -- This section will set any null Client Grid UpdateTimes to the zero timestamp
 -- (to prevent issues determining how recent a record is)
--- and then explicitly set the UpdateTimes of 
+-- and then explicitly set the UpdateTimes of
 -- future rows to update
 
 UPDATE JobRecords SET UpdateTime = '0000-00-00 00:00:00' WHERE UpdateTime IS NULL;
@@ -40,7 +40,7 @@ ALTER TABLE LastUpdated MODIFY COLUMN UpdateTime TIMESTAMP NOT NULL DEFAULT CURR
 
 -- This script will set any null Server Grid UpdateTimes to the zero timestamp
 -- (to prevent issues determining how recent a record is)
--- and then explicitly set the UpdateTimes of 
+-- and then explicitly set the UpdateTimes of
 -- future rows to update
 
 UPDATE JobRecords SET UpdateTime = '0000-00-00 00:00:00'  WHERE UpdateTime IS NULL;
@@ -139,7 +139,7 @@ SELECT CreateTime,
        EndTime,
        ResourceCapacityUsed,
        LogicalCapacityUsed,
-       ResourceCapacityAllocated 
+       ResourceCapacityAllocated
 FROM StarRecords, StorageSystems, Sites, StorageShares,
      StorageMedia, StorageClasses, UserIdentities, Groups,
      SubGroups, Roles

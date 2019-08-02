@@ -20,7 +20,7 @@ class ProcessedRecord(Record):
     '''
     A simple class for inserting data into
     ProcessedFiles table.
-    
+
     This class is used for avoiding reparsing files
     that have been already parsed.
     '''
@@ -29,8 +29,8 @@ class ProcessedRecord(Record):
         Initializes ProcessedRecord
         '''
         Record.__init__(self)
-        
+
         self._db_fields = ["HostName", "FileName", "Hash", "StopLine", "Parsed"]
         self._int_fields = ["StopLine", "Parsed"]
-        
+
         self._all_fields = self._db_fields

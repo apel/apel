@@ -8,7 +8,7 @@ class ParserLSFTest(unittest.TestCase):
     '''
     Test case for LSF parser
     '''
-    
+
     def setUp(self):
         self.parser = LSFParser('testSite', 'testHost', True)
 
@@ -94,9 +94,9 @@ class ParserLSFTest(unittest.TestCase):
         cases = {}
         for line, value in zip(lines, values):
             cases[line] = dict(zip(fields, value))
-        
+
         for line in cases.keys():
-        
+
             record = self.parser.parse(line)
             cont = record._record_content
 
@@ -109,7 +109,7 @@ class ParserLSFTest(unittest.TestCase):
 
             for key in cases[line].keys():
                 self.assertEqual(cont[key], cases[line][key], "%s != %s for key %s" % (cont[key], cases[line][key], key))
-        
+
     def test_invalid_expr(self):
         # two fields are not separated by space
         line = ('"JOB_FINISH" "5.1" 1089407406 699195 283 33554482 1 1089290023 0 0 1089406862 '

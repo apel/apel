@@ -12,17 +12,17 @@ class Test(unittest.TestCase):
 
 
     def test_parse_ce_capability(self):
-        
+
         nonsense = "hello"
         invalid_ce_cap = "CPUScalingReferenceSI00=value"
         int_ce_cap = "CPUScalingReferenceSI00=53"
         float_ce_cap = "CPUScalingReferenceSI00=53.53"
-        
+
         if apel.ldap.query.parse_ce_capability(nonsense) is not None:
             self.fail('parse_ce_capability should return None for %s' % nonsense)
         if apel.ldap.query.parse_ce_capability(invalid_ce_cap) is not None:
             self.fail('parse_ce_capability should return None for %s' % invalid_ce_cap)
-            
+
         dec = decimal.Decimal(53)
         if apel.ldap.query.parse_ce_capability(int_ce_cap) != dec:
             self.fail('parse_ce_capability should return a decimal for %s' % int_ce_cap)

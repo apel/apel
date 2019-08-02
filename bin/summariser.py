@@ -31,7 +31,7 @@ from apel import __version__
 
 
 def runprocess(db_config_file, config_file, log_config_file):
-    '''Parse the configuration file, connect to the database and run the 
+    '''Parse the configuration file, connect to the database and run the
        summarising process.'''
 
     try:
@@ -43,7 +43,7 @@ def runprocess(db_config_file, config_file, log_config_file):
 
         dbcp = ConfigParser.ConfigParser()
         dbcp.read(db_config_file)
-        
+
         db_backend = dbcp.get('db', 'backend')
         db_hostname = dbcp.get('db', 'hostname')
         db_port = int(dbcp.get('db', 'port'))
@@ -55,7 +55,7 @@ def runprocess(db_config_file, config_file, log_config_file):
         print 'Error in configuration file %s: %s' % (config_file, str(err))
         print 'The system will exit.'
         sys.exit(1)
-    
+
     try:
         db_type = dbcp.get('db', 'type')
     except ConfigParser.Error:
@@ -66,7 +66,7 @@ def runprocess(db_config_file, config_file, log_config_file):
         if os.path.exists(log_config_file):
             logging.config.fileConfig(log_config_file)
         else:
-            set_up_logging(cp.get('logging', 'logfile'), 
+            set_up_logging(cp.get('logging', 'logfile'),
                            cp.get('logging', 'level'),
                            cp.getboolean('logging', 'console'))
         log = logging.getLogger('summariser')
@@ -74,7 +74,7 @@ def runprocess(db_config_file, config_file, log_config_file):
         print 'Error configuring logging: %s' % str(err)
         print 'The system will exit.'
         sys.exit(1)
-        
+
     log.info('Starting apel summariser version %s.%s.%s', *__version__)
 
     # If the pidfile exists, don't start up.
@@ -101,8 +101,8 @@ def runprocess(db_config_file, config_file, log_config_file):
     try:
 
         log.info('Connecting to the database ... ')
-        db = ApelDb(db_backend, db_hostname, db_port, db_username, db_password, db_name) 
-   
+        db = ApelDb(db_backend, db_hostname, db_port, db_username, db_password, db_name)
+
         log.info('Connected.')
         # This is all the summarising logic, contained in ApelMysqlDb() and the stored procedures.
         if db_type == 'cpu':
@@ -116,7 +116,7 @@ def runprocess(db_config_file, config_file, log_config_file):
             db.summarise_cloud()
         else:
             raise ApelDbException('Unknown database type: %s' % db_type)
-        
+
         log.info('Summarising complete.')
         log.info(LOG_BREAK)
 
@@ -143,15 +143,15 @@ def runprocess(db_config_file, config_file, log_config_file):
 
 if __name__ == '__main__':
     # Main method for running the summariser.
-    
+
     ver = "APEL summariser %s.%s.%s" % __version__
     opt_parser = OptionParser(description=__doc__, version=ver)
     opt_parser.add_option('-d', '--db', help='the location of database config file',
                           default='/etc/apel/db.cfg')
-    opt_parser.add_option('-c', '--config', help='the location of config file', 
+    opt_parser.add_option('-c', '--config', help='the location of config file',
                           default='/etc/apel/summariser.cfg')
     opt_parser.add_option('-l', '--log_config', help='Location of logging config file (optional)',
                           default='/etc/apel/logging.cfg')
     (options,args) = opt_parser.parse_args()
-    
+
     runprocess(options.db, options.config, options.log_config)

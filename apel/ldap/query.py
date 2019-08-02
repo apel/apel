@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
    @author: Konrad Jopek
 '''
 
@@ -45,24 +45,24 @@ def parse_ce_capability(capability_string):
             decimal_value = Decimal(value)
     except (InvalidOperation, IndexError):
         log.info('Failed to parse scaling reference: %s', capability_string)
-        
-    return decimal_value
-    
 
-def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):    
+    return decimal_value
+
+
+def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):
     '''
-    Imports benchmark data from LDAP. Current implementation 
+    Imports benchmark data from LDAP. Current implementation
     is able to fetch data according to way described here:
-    
+
     https://svn.esc.rl.ac.uk/trac/apel-dev/wiki/KonradNotes/TaskEight
     '''
-    
+
     attrs = [GLUE_CE_CAPABILITY, GLUE_CE_UNIQUE_ID, GLUE_CLUSTER_UNIQUE_ID]
     values = []
     ldap_conn = ldap.initialize('ldap://%s:%d' % (host, port))
-    
+
     top_level = 'mds-vo-name=%s,mds-vo-name=local,o=grid' % site
-    
+
     try:
         # test query
         data = ldap_conn.search_s(top_level,
@@ -75,9 +75,9 @@ def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):
                               ldap.SCOPE_SUBTREE,
                               '(objectclass=GlueCE)',
                               attrs)
-        
+
     for entry in data:
-        
+
         try:
             ce_name = entry[1][GLUE_CE_UNIQUE_ID][0]
             ce_capabilities=entry[1][GLUE_CE_CAPABILITY]
@@ -90,16 +90,16 @@ def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):
             if si2k is not None:
                 log.debug('Found value in first query: '+
                          str(capability.split('=')[1]))
-                values.append((ce_name, 
+                values.append((ce_name,
                            Decimal(capability.split('=')[1])))
-                
+
     # not found? we have also second way to do this
     attrs = [GLUE_CHUNK_KEY, GLUE_HOST_BENCHMARK]
     data = ldap_conn.search_s(top_level,
                               ldap.SCOPE_SUBTREE,
                               '(objectclass=GlueSubcluster)',
                               attrs)
-    
+
     for item in data:
         try:
             cluster_name = item[1][GLUE_CHUNK_KEY][0].split('=')[1]
@@ -107,7 +107,7 @@ def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):
         except (KeyError, IndexError), e:
             log.error('Error during fetching Spec values: '+str(e))
             continue
-        
+
         subdata = ldap_conn.search_s(top_level,
                                      ldap.SCOPE_SUBTREE,
                                      '(GlueClusterName=%s)' % cluster_name,
@@ -118,7 +118,7 @@ def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):
             except (KeyError, IndexError), e:
                 log.error('Error during fetching Spec values: '+str(e))
                 continue
-            
+
             for fk in fks:
                 if fk.startswith(GLUE_CE_UNIQUE_ID):
                     name = fk.split('=')[1]
