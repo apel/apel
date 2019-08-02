@@ -50,7 +50,8 @@ class CloudRecord(Record):
         self._db_fields = self._msg_fields[:9] + ['VO', 'VOGroup', 'VORole'] + self._msg_fields[9:]
         self._all_fields = self._db_fields
         
-        self._ignored_fields = ["UpdateTime"]
+        self._ignored_fields = ["UpdateTime", "MeasurementTime",
+                                "MeasurementMonth", "MeasurementYear"]
         
         # Fields which will have an integer stored in them
         self._int_fields = [ "SuspendDuration", "WallDuration", "CpuDuration", "CpuCount", 
