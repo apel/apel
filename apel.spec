@@ -199,6 +199,11 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Mon Aug 19 2019 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.8.2-1
+ - [server] Tweaked how cloud records are loaded so that the last received
+   record for a VM in a month is kept (rather than the one with the latest
+   timestamp). This simplifies things when sites republish cloud VM accounting.
+
  * Wed Jul 03 2019 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.8.1-1
  - [client] Added option to update benchmarks/spec levels using a local
    configuration option rather than the BDII.
