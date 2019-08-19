@@ -69,7 +69,7 @@ CREATE PROCEDURE ReplaceJobRecord(
   publisherDN VARCHAR(255))
 BEGIN
     REPLACE INTO JobRecords(SiteID, SubmitHostID, MachineNameID, QueueID,
-	    LocalJobId, LocalUserId, GlobalUserNameID, FQAN,
+        LocalJobId, LocalUserId, GlobalUserNameID, FQAN,
         VOID, VOGroupID, VORoleID, WallDuration, CpuDuration, Processors, NodeCount,
         StartTime, EndTime, EndYear, EndMonth, InfrastructureDescription, InfrastructureType, MemoryReal, MemoryVirtual, ServiceLevelType,
         ServiceLevel, PublisherDNID)
@@ -181,13 +181,13 @@ BEGIN
         VOGroupID, VORoleID, SubmitHostId, Infrastructure,
         NodeCount, Processors, EarliestEndTime, LatestEndTime, WallDuration,
         CpuDuration, NormalisedWallDuration, NormalisedCpuDuration,
-	NumberOfJobs, PublisherDNID)
+        NumberOfJobs, PublisherDNID)
       VALUES (
         SiteLookup(site), month, year, DNLookup(globalUserName), VOLookup(vo),
         VOGroupLookup(voGroup), VORoleLookup(voRole), SubmitHostLookup(submitHost),
         infrastructure, nodeCount, processors, earliestEndTime,
         latestEndTime, wallDuration, cpuDuration, normalisedWallDuration, normalisedCpuDuration,
-       	numberOfJobs, DNLookup(publisherDN));
+        numberOfJobs, DNLookup(publisherDN));
 END //
 DELIMITER ;
 
@@ -681,8 +681,8 @@ CREATE VIEW VNormalisedSummaries AS
         LatestEndTime,
         WallDuration,
         CpuDuration,
-	NormalisedWallDuration,
-	NormalisedCpuDuration,
+        NormalisedWallDuration,
+        NormalisedCpuDuration,
         NumberOfJobs
     FROM NormalisedSummaries,
          Sites site,
@@ -835,12 +835,12 @@ CREATE VIEW VJobRecords AS
            WallDuration, CpuDuration, Processors, NodeCount, StartTime, EndTime, InfrastructureDescription, InfrastructureType,
            MemoryReal, MemoryVirtual, ServiceLevelType, ServiceLevel
     FROM JobRecords, Sites site, SubmitHosts subhost, MachineNames machine,
-    	 Queues queue, DNs userdn, VORoles vorole, VOs vos, VOGroups vogroup
-   	WHERE
+         Queues queue, DNs userdn, VORoles vorole, VOs vos, VOGroups vogroup
+    WHERE
         SiteID = site.id
         AND SubmitHostID = subhost.id
-	    AND MachineNameID = machine.id
-	    AND QueueID = queue.id
+        AND MachineNameID = machine.id
+        AND QueueID = queue.id
         AND GlobalUserNameID = userdn.id
         AND VORoleID = vorole.id
         AND VOID = vos.id
@@ -854,4 +854,4 @@ CREATE VIEW VSyncRecords AS
     SELECT UpdateTime, site.name Site, subhost.name SubmitHost, NumberOfJobs, Month, Year
     FROM SyncRecords, Sites site, SubmitHosts subhost WHERE
         SiteID = site.id
-	AND SubmitHostID = subhost.id;
+      AND SubmitHostID = subhost.id;

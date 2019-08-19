@@ -59,14 +59,14 @@ CALLPROC_STMT = """CALL InsertJobRecord(%s, %s, %s, 'None', %s, %s, %s, %s, %s, 
 
 DUPLICATES_JOIN = """ FROM JobRecords AS t
                       LEFT JOIN MachineNames as m
-		      on (t.MachineNameID = m.id)
-		      INNER JOIN (SELECT LocalJobId,
-		                  EndTime
-				  FROM JobRecords
-				  LEFT JOIN MachineNames
-				  on (JobRecords.MachineNameID = MachineNames.id)
-				  WHERE MachineNames.name != 'MachineName' )
-				  AS u
+                      on (t.MachineNameID = m.id)
+                      INNER JOIN (SELECT LocalJobId,
+                                  EndTime
+                                  FROM JobRecords
+                                  LEFT JOIN MachineNames
+                                  on (JobRecords.MachineNameID = MachineNames.id)
+                                  WHERE MachineNames.name != 'MachineName' )
+                                  AS u
                       ON (m.name = 'MachineName' AND t.LocalJobId = u.LocalJobId AND t.EndTime = u.EndTime); """
 
 COUNT_DUPLICATES_STMT = "SELECT count(*) " + DUPLICATES_JOIN
