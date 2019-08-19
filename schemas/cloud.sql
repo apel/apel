@@ -119,7 +119,7 @@ BEGIN
         END IF;
     END IF;
 
-    INSERT INTO CloudRecords(RecordCreateTime, VMUUID, SiteID, CloudComputeServiceID, MachineName,
+    REPLACE INTO CloudRecords(RecordCreateTime, VMUUID, SiteID, CloudComputeServiceID, MachineName,
         LocalUserId, LocalGroupId, GlobalUserNameID, FQAN, VOID, VOGroupID,
         VORoleID, Status, StartTime, EndTime, MeasurementTime, MeasurementMonth,
         MeasurementYear, SuspendDuration, WallDuration, CpuDuration, CpuCount,
@@ -132,53 +132,6 @@ BEGIN
         suspendDuration, wallDuration, cpuDuration, cpuCount,
         networkType, networkInbound, networkOutbound, publicIPCount, memory, disk,
         benchmarkType, benchmark, storageRecordId, imageId, cloudType, DNLookup(publisherDN))
-      ON DUPLICATE KEY UPDATE
-        -- Then the incoming record belong in a accounting period which we
-        -- already have some data (for this VM/Site)
-        -- If the incoming measurementTime is greater than the currently stored one
-        -- update all columns with the new values.
-        -- It's possible these updates do not occur in an "all or nothing" fashion
-        -- as per https://thewebfellas.com/blog/conditional-duplicate-key-updates-with-mysql
-        -- so measurementTime is the last thing to be updated.
-        -- There is no nicer way to do the 'ON DUPLICATE KEY UPDATE'
-        -- other than field by field, and we can't get around making the greater than
-        -- comparison everytime as we can only reference the current value in the
-        -- 'ON DUPLICATE KEY UPDATE' block
-        CloudRecords.RecordCreateTime = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, recordCreateTimeNotNull, CloudRecords.RecordCreateTime),
-        CloudRecords.SiteID = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, SiteLookup(site), CloudRecords.SiteID),
-        CloudRecords.CloudComputeServiceID = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, CloudComputeServiceLookup(cloudComputeService), CloudRecords.CloudComputeServiceID),
-        CloudRecords.MachineName = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, machineName, CloudRecords.MachineName),
-        CloudRecords.LocalUserId = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, localUserId, CloudRecords.LocalUserId),
-        CloudRecords.LocalGroupId = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, localGroupId, CloudRecords.LocalGroupId),
-        CloudRecords.GlobalUserNameID = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, DNLookup(globalUserName), CloudRecords.GlobalUserNameID),
-        CloudRecords.FQAN = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, fqan, CloudRecords.FQAN),
-        CloudRecords.VOID = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, VOLookup(vo), CloudRecords.VOID),
-        CloudRecords.VOGroupID = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, VOGroupLookup(voGroup), CloudRecords.VOGroupID),
-        CloudRecords.VORoleID = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, VORoleLookup(voRole), CloudRecords.VORoleID),
-        CloudRecords.Status = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, status, CloudRecords.Status),
-        CloudRecords.StartTime = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, startTime, CloudRecords.StartTime),
-        CloudRecords.EndTime = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, endTime, CloudRecords.EndTime),
-        CloudRecords.SuspendDuration = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, suspendDuration, CloudRecords.SuspendDuration),
-        CloudRecords.WallDuration = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, wallDuration, CloudRecords.WallDuration),
-        CloudRecords.CpuDuration = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, cpuDuration, CloudRecords.CpuDuration),
-        CloudRecords.CpuCount = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, cpuCount, CloudRecords.CpuCount),
-        CloudRecords.NetworkType = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, networkType, CloudRecords.NetworkType),
-        CloudRecords.NetworkInbound = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, networkInbound, CloudRecords.NetworkInbound),
-        CloudRecords.NetworkOutbound = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, networkOutbound, CloudRecords.NetworkOutbound),
-        CloudRecords.PublicIPCount = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, publicIPCount, CloudRecords.PublicIPCount),
-        CloudRecords.Memory = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, memory, CloudRecords.Memory),
-        CloudRecords.Disk = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, disk, CloudRecords.Disk),
-        CloudRecords.BenchmarkType = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, benchmarkType, CloudRecords.BenchmarkType),
-        CloudRecords.Benchmark = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, Benchmark, CloudRecords.Benchmark),
-        CloudRecords.StorageRecordId = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, storageRecordId, CloudRecords.StorageRecordId),
-        CloudRecords.ImageId = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, imageId, CloudRecords.ImageId),
-        CloudRecords.CloudType = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, cloudType, CloudRecords.CloudType),
-        CloudRecords.PublisherDNID = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, DNLookup(publisherDN), CloudRecords.PublisherDNID),
-
-        CloudRecords.MeasurementMonth = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, Month(measurementTimeCalculated), CloudRecords.MeasurementMonth),
-        CloudRecords.MeasurementYear = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, Year(measurementTimeCalculated), CloudRecords.MeasurementYear),
-
-        CloudRecords.MeasurementTime = IF(measurementTimeCalculated >= CloudRecords.MeasurementTime, measurementTimeCalculated, CloudRecords.MeasurementTime)
     ;
 END //
 DELIMITER ;
@@ -555,4 +508,3 @@ CREATE VIEW VCloudSummaries AS
         AND VOID = vo.id
         AND VOGroupID = vogroup.id
         AND VORoleID = vorole.id;
-
