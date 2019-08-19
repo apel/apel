@@ -1,4 +1,4 @@
-"""This file contains tests expected behaviour around republishing."""
+"""This file contains tests for expected behaviour around republishing."""
 
 import datetime
 import os
@@ -44,7 +44,7 @@ class TestRepublish(unittest.TestCase):
                 )
 
     def test_cloud_republish(self):
-        """Test the most recently processed cloud record per month/VM is the one saved."""
+        """Check that the last loaded record per month/VM is the one saved."""
         database = apel.db.apeldb.ApelDb(
             "mysql", "localhost", 3306, "root", "", "apel_unittest"
         )
