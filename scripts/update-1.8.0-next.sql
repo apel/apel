@@ -1,5 +1,5 @@
 -- This script contains multiple comment blocks that can update
--- APEL version 1.8.0 databases of the following types to next:
+-- APEL version 1.7.0 databases of the following types to 1.8.2:
 --  - Cloud Accounting Database
 
 /*
