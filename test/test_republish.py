@@ -10,6 +10,10 @@ import apel.db.loader.record_factory
 import apel.db.records
 
 
+if os.name == 'nt':
+    os.environ['PATH'] += ';C:/Program Files/MySQL/MySQL Server 5.1/bin/'
+
+
 class TestRepublish(unittest.TestCase):
     """This class contains tests for expected behaviour around republishing."""
 
