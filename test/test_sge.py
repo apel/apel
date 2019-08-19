@@ -10,20 +10,20 @@ class ParserSGETest(unittest.TestCase):
     '''
     Test case for SGE parser
     '''
-    
+
     def setUp(self):
         self.parser = apel.parsers.SGEParser('testSite', 'testHost', True)
-    
+
     def test_parse_line(self):
-        
-        line1 = ('dteam:testce.test:dteam:dteam041:STDIN:43:sge:' 
+
+        line1 = ('dteam:testce.test:dteam:dteam041:STDIN:43:sge:'
                +'19:1200093286:1200093294:1200093295:0:0:1:0:0:0.000000:0:0:0:0:'
-               +'46206:0:0:0.000000:0:0:0:0:337:257:NONE:defaultdepartment:NONE:1' 
+               +'46206:0:0:0.000000:0:0:0:0:337:257:NONE:defaultdepartment:NONE:1'
                +':0:0.090000:0.000213:0.000000:-U dteam -q dteam:0.000000:NONE:30171136.000000')
-        
-        line1_values = {"JobName": "43", 
-                        "LocalUserID":"dteam041", 
-                        "LocalUserGroup": "dteam", 
+
+        line1_values = {"JobName": "43",
+                        "LocalUserID":"dteam041",
+                        "LocalUserGroup": "dteam",
                         "WallDuration":1,
                         "CpuDuration": 0,
                         "StartTime": datetime.utcfromtimestamp(1200093294),
@@ -33,19 +33,19 @@ class ParserSGETest(unittest.TestCase):
                         "NodeCount": 0,
                         "Processors": 1
                         }
-        
+
         cases = {line1:line1_values}
-        
+
         line2 = ('large:compute-4-19.local:csic:csfiylfl:s001.sh:6972834:sge:0:1318560244:1318560254:1318740255:'
         '100:138:180001:0.005999:0.012998:1448.000000:0:0:0:0:1060:0:0:0.000000:168:0:0:0:89:2:por_defecto:'
         'defaultdepartment:mpi:9:0:1026706.540000:60207.223310:0.001862:-u csfiylfl -q big_small*,large*,offline*,small* -l '
         'arch=x86_64,h_fsize=1G,h_rt=180300,h_stack=16M,h_vmem=1124M,num_proc=1,processor=opteron_6174,s_rt=180000,s_vmem=1G '
         '-pe mpi 9:0.000000:NONE:821923840.000000:0:0')
-        
-        line2_values = {"JobName": "6972834", 
-                        "LocalUserID":"csfiylfl", 
-                        "LocalUserGroup": "csic", 
-                        "WallDuration": 180001, 
+
+        line2_values = {"JobName": "6972834",
+                        "LocalUserID":"csfiylfl",
+                        "LocalUserGroup": "csic",
+                        "WallDuration": 180001,
                         "CpuDuration": 1026707,
                         "StartTime": datetime.utcfromtimestamp(1318560254),
                         "StopTime": datetime.utcfromtimestamp(1318740255),
@@ -55,13 +55,13 @@ class ParserSGETest(unittest.TestCase):
                         "Processors": 9
                         }
         cases[line2] = line2_values
-        
+
         line3 = 'lcg_analysis:cn446.htc.esc.qmul:pilatl:pilatl10:cream_297073580:1630912:sge:5:1358189999:1358190002:1358210574:0:1:20365.78:1211.1274098:61.49143143:385648.000000:0:0:0:0:2236317:1450:0:0.000000:0:0:0:0:245899:291449:pilatl.p:defaultdepartment:NONE:1:0:1272.61884123:430.743820:37.845289:-q lcg_analysis:0.000000:NONE:1546682368.000000:0:0'
-        
-        line3_values = {"JobName": "1630912", 
-                        "LocalUserID":"pilatl10", 
-                        "LocalUserGroup": "pilatl", 
-                        "WallDuration": 20366, 
+
+        line3_values = {"JobName": "1630912",
+                        "LocalUserID":"pilatl10",
+                        "LocalUserGroup": "pilatl",
+                        "WallDuration": 20366,
                         "CpuDuration": 1273,
                         "StartTime": datetime.utcfromtimestamp(1358190002),
                         "StopTime": datetime.utcfromtimestamp(1358210574),
@@ -70,7 +70,7 @@ class ParserSGETest(unittest.TestCase):
                         "NodeCount": 0,
                         "Processors": 1
                         }
-        
+
         cases[line3] = line3_values
 
         line4 = ("grid.q:node101.cm.cluster:prdatl:prdatl26:cream_324080374:329"
@@ -99,7 +99,7 @@ class ParserSGETest(unittest.TestCase):
         for line in cases.keys():
             record = self.parser.parse(line)
             cont = record._record_content
-            
+
             self.assertTrue(cont.has_key("Site"))
             self.assertTrue(cont.has_key("JobName"))
             self.assertTrue(cont.has_key("LocalUserID"))
@@ -110,8 +110,8 @@ class ParserSGETest(unittest.TestCase):
             self.assertTrue(cont.has_key("StopTime"))
             self.assertTrue(cont.has_key("MemoryReal"))
             self.assertTrue(cont.has_key("MemoryReal"))
-        
-        
+
+
             for key in cases[line].keys():
                 self.assertEqual(cont[key], cases[line][key], "%s != %s for key %s" % (cont[key], cases[line][key], key))
 
@@ -173,11 +173,11 @@ class ParserSGETest(unittest.TestCase):
         'defaultdepartment:mpi:9:0:1026706.540000:60207.223310:0.001862:-u csfiylfl -q big_small*,large*,offline*,small* -l '
         'arch=x86_64,h_fsize=1G,h_rt=180300,h_stack=16M,h_vmem=1124M,num_proc=1,processor=opteron_6174,s_rt=180000,s_vmem=1G '
         '-pe mpi 9:0.000000:NONE:821923840.000000:0:0')
-        
-        line_values = {"JobName": "6972834", 
-                        "LocalUserID":"csfiylfl", 
-                        "LocalUserGroup": "csic", 
-                        "WallDuration": int(wallmult*180001), 
+
+        line_values = {"JobName": "6972834",
+                        "LocalUserID":"csfiylfl",
+                        "LocalUserGroup": "csic",
+                        "WallDuration": int(wallmult*180001),
                         "CpuDuration": int(cputmult*1026707),
                         "StartTime": datetime.utcfromtimestamp(1318560254),
                         "StopTime": datetime.utcfromtimestamp(1318740255),
@@ -217,7 +217,7 @@ class ParserSGETest(unittest.TestCase):
                 self.assertEqual(v, parser._get_cpu_multiplier('compute-4-19.local'))
             finally:
                 patcher.stop()
-    
+
     def test_get_wall_multiplier(self):
         '''
         Testing _get_wall_multiplier() function with the following arguments:
@@ -236,10 +236,10 @@ class ParserSGETest(unittest.TestCase):
                 self.assertEqual(v, parser._get_wall_multiplier('compute-4-19.local'))
             finally:
                 patcher.stop()
-    
+
     def test_load_multipliers_qhost_error(self):
         '''
-        Testing load_multipliers() when qhost command exits with error. 
+        Testing load_multipliers() when qhost command exits with error.
         '''
         try:
             patcher = mock.patch('apel.parsers.sge.subprocess')
@@ -301,7 +301,7 @@ class ParserSGETest(unittest.TestCase):
                 self.assertEqual(d, parser._load_multipliers())
             finally:
                 patcher.stop()
-        
+
     def test_load_multipliers_xml_both(self):
         '''
         For the sake of completeness with regard to the function above: testing both 'cputmult' and 'wallmult'

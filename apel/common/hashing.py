@@ -24,13 +24,13 @@ def calculate_hash(fname):
     '''
     Calculates MD5 hash from content of file with name='fname'.  Also opens gzip
     files.
-    
+
     Used in parsers to avoid double parsing of files.
     For sample usage please go to: apel2/bin/client.py
     '''
-    
+
     data = 'initial'
-    
+
     md = md5()
 
     # try opening as a gzip file, and if it fails
@@ -46,8 +46,8 @@ def calculate_hash(fname):
         while data != '':
             # 128kiB buffer
             data = fp.read(131072)
-            md.update(data)    
+            md.update(data)
 
-    
+
     fp.close()
     return md.hexdigest()

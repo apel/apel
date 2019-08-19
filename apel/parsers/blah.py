@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
 A parser for BLAH record file.
 I've used a regular expression here. Maybe import csv would be better?
 
@@ -30,8 +30,8 @@ class BlahParser(Parser):
     '''
     BlahParser parses accounting files from Blah system.
     '''
-    
-    # expression below is used to divide 
+
+    # expression below is used to divide
     # single line from log file into array
     # of values which are later parsed.
     LINE_EXPR = re.compile(r'\"|\"_\"')
@@ -39,21 +39,21 @@ class BlahParser(Parser):
     def parse(self, line):
         '''
         Parses single line from accounting log file.
-        
+
         Example line of accounting log file:
         "timestamp=2012-05-20 23:59:47" "userDN=/O=GermanGrid/OU=UniWuppertal/CN=Torsten Harenberg"
         "userFQAN=/atlas/Role=production/Capability=NULL" "ceID=cream-2-fzk.gridka.de:8443/cream-pbs-atlasXL"
         "jobID=CREAM410741480" "lrmsID=9575064.lrms1" "localUser=11999"
-        
+
         Line was split, if you want to rejoin use ' ' as a joiner.
         '''
         data = {}
         rc = {}
         record = BlahdRecord()
-        
+
         #  split file and remove parts which contain only space (like ' ')
         parts = [x.split('=',1) for x in [y for y in self.LINE_EXPR.split(line) if len(y) > 1]]
-        
+
         # Simple mapping between keys in a log file and a table's columns
         mapping = {
             'TimeStamp'      : lambda x: 'T'.join(x['timestamp'].split()) + 'Z',
@@ -80,6 +80,5 @@ class BlahParser(Parser):
             rc[key] = mapping[key](data)
 
         record.set_all(rc)
-        
+
         return record
-    

@@ -7,7 +7,7 @@
 
 ## Project overview
 
-The APEL project provides grid accounting for EGI. It is written in 
+The APEL project provides grid accounting for EGI. It is written in
 Python and uses MySQL. It has the following components:
 
 ### apel-parsers
@@ -27,7 +27,7 @@ This processes the data and sends it to the APEL server using SSM.
 
 ### apel-server
 
-This processes data from all sites and sends it on to the accounting 
+This processes data from all sites and sends it on to the accounting
 portal using SSM.
 
 ### apel-lib
@@ -37,5 +37,5 @@ and apel-server.
 
 ### apel-ssm
 
-This is a messaging system, which has its own GitHub repository at 
+This is a messaging system, which has its own GitHub repository at
 [apel/ssm](https://github.com/apel/ssm)

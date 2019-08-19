@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
    @author: Konrad Jopek
 '''
 import sys
@@ -32,24 +32,24 @@ def default_handler(exc_type, value, traceback):
     Default handler for unhandled exception.
     Current version stores information about exception
     and saves traceback for debugging process.
-    
+
     In future this handler can be able to log problems
     with applications to Nagios or other monitoring system.
     '''
-    
+
     log.critical('Unhandled exception raised!')
     log.critical('Please send a bug report with following information:')
     log.critical('%s: %s', exc_type.__name__, value)
 
     tbstack = []
-    
+
     while traceback:
         tbstack.append(
-            (traceback.tb_frame.f_code.co_filename, 
-             traceback.tb_frame.f_code.co_name, 
+            (traceback.tb_frame.f_code.co_filename,
+             traceback.tb_frame.f_code.co_name,
              traceback.tb_lineno))
         traceback = traceback.tb_next
-    
+
     tbstack.reverse()
 
     log.critical('%s [%s %s]', tbstack[0][1], tbstack[0][0], tbstack[0][2])

@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.8.1
+Version:        1.8.2
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -19,8 +19,8 @@ BuildArch:      noarch
 %define apelconf %_sysconfdir/apel
 
 %description
-The apel packages. 
-The project is written in Python. 
+The apel packages.
+The project is written in Python.
 
 %package lib
 Summary:        Libraries required for Apel Client, Server and Parsers
@@ -29,7 +29,7 @@ Requires:       MySQL-python python-ldap python-iso8601
 Requires(pre):  shadow-utils
 
 %description lib
-apel-lib provides required libraries for the rest of APEL system. 
+apel-lib provides required libraries for the rest of APEL system.
 
 %package parsers
 Summary:        Parsers for APEL system
@@ -39,7 +39,7 @@ Requires(pre):  shadow-utils
 
 %description parsers
 The apel-parsers package contains parsers for all the batch systems
-supported by the APEL system: Torque, SGE and LSF. 
+supported by the APEL system: Torque, SGE and LSF.
 
 %package client
 Summary:        APEL client package
@@ -48,8 +48,8 @@ Requires:       apel-lib >= %{version}, apel-ssm
 Requires(pre):  shadow-utils
 
 %description client
-The apel-client package contains all code needed to retrieve data from 
-the accounting database, process it and send it to the apel server using 
+The apel-client package contains all code needed to retrieve data from
+the accounting database, process it and send it to the apel server using
 SSM.
 
 %package server
@@ -122,7 +122,7 @@ cp scripts/msg_status.py %{buildroot}%_datadir/apel/
 # client logrotate script
 cp scripts/apel-client %{buildroot}%{_sysconfdir}/logrotate.d
 
-%clean 
+%clean
 rm -rf $RPM_BUILD_ROOT
 
 %pre server
@@ -199,6 +199,11 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Mon Aug 19 2019 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.8.2-1
+ - [server] Tweaked how cloud records are loaded so that the last received
+   record for a VM in a month is kept (rather than the one with the latest
+   timestamp). This simplifies things when sites republish cloud VM accounting.
+
  * Wed Jul 03 2019 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.8.1-1
  - [client] Added option to update benchmarks/spec levels using a local
    configuration option rather than the BDII.
@@ -340,7 +345,7 @@ exit 0
  - Changed client.py to fetch site_name if joiner is enabled to fix crash.
 
  * Fri May 31 2013 Stuart Pullinger <stuart.pullinger@stfc.ac.uk> - 1.1.2-0
- - Changed file permissions for parser.cfg, client.cfg and db.cfg 
+ - Changed file permissions for parser.cfg, client.cfg and db.cfg
    to 0600, owner and group of db.cfg to apel:apel, in apel.spec
 
  * Mon Apr 29 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.1.1-0
@@ -369,11 +374,11 @@ exit 0
  - Fixed crash when parsing empty files
  - Corrections to CAR syntax
  - Fix include_vos and exclude_vos in dbunloader
- 
+
  * Wed Feb 20 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.2-0
  - Correct VHepSpecHistory view
  - Correct handling of omitted Processors, NodeCount info
- 
+
  * Thu Feb 14 2013 Will Rogers <will.rogers@stfc.ac.uk>  - 1.0.1-0
  - Remove unnecessary dbld file
  - Handle incorrect BDII value for CPUScalingReference
@@ -395,9 +400,9 @@ exit 0
  - Loader accepts StAR messages, database updated
  - Move to using one specfile, hyphenated rpm names
  - Stored procedure improvements
- 
+
  * Thu Dec 13 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.2-0
  - Correct database logic.  Improve logging.
- 
+
  * Tue Nov 13 2012 Will Rogers <will.rogers@stfc.ac.uk>  - 0.0.1-0
  - First tag

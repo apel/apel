@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
    @author: Konrad Jopek
 '''
 import logging
@@ -24,10 +24,10 @@ class ParserException(Exception):
 
 class Parser(object):
     ''' The base class for all parsers '''
-    
+
     UNPROCESSED = '0'
     PROCESSED = '1'
-    
+
     def __init__(self, site, machine_name, mpi=False):
         '''
         Sets machine name and site name, and whether MPI information
@@ -52,7 +52,7 @@ class Parser(object):
     def recognize(self, line):
         '''
         Method to recognize if the given line of file can be parsed with this parser
-        
+
         @param line: Line from log file to recognize
         @return bool
         '''
@@ -61,6 +61,5 @@ class Parser(object):
                 return True
         except Exception:  # An exception means we can't parse the file!
             pass
-        
+
         return False
-    

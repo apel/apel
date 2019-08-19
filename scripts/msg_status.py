@@ -14,7 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 '''
-    This is a simple script to check the status of the APEL messages 
+    This is a simple script to check the status of the APEL messages
     on the filesystem.  It uses the python-dirq library.  If any messages
     are locked, it gives the option to remove the lock.
     @author: Will Rogers
@@ -31,15 +31,15 @@ except ImportError:
     print 'The apel package must be in the PYTHONPATH.'
     print 'Exiting.'
     sys.exit(1)
-    
-    
+
+
 def check_dir(root):
     '''
     Check the directory for incoming, outgoing, reject
-    or accept directories.  If they exist, check them for 
+    or accept directories.  If they exist, check them for
     messages.
-    ''' 
-    print '\nStarting message status script.' 
+    '''
+    print '\nStarting message status script.'
     print 'Root directory: %s\n' % root
     queues = []
     incoming = os.path.join(root, 'incoming')
@@ -55,21 +55,21 @@ def check_dir(root):
     accept = os.path.join(root, 'accept')
     if os.path.isdir(accept):
         queues.append(Queue(accept, schema=QSCHEMA))
-    
+
     for q in queues:
         msgs, locked = check_queue(q)
         #check_empty_dirs(q)
-        print '    Messages: %s' % msgs 
+        print '    Messages: %s' % msgs
         print '    Locked:   %s\n' % locked
         if locked > 0:
             question = 'Unlock %s messages?' % locked
             if ask_user(question):
                 clear_locks(q)
-                
-    
+
+
 def check_queue(q):
     '''
-    Given a queue, check through all messages to 
+    Given a queue, check through all messages to
     see if any are locked.  Return <total>, <number locked>.
     '''
     print 'Checking directory: %s' % q.path
@@ -84,7 +84,7 @@ def check_queue(q):
         else:
             q.unlock(name)
             name = q.next()
-    
+
     return q.count(), locked
 
 def check_empty_dirs(q):
@@ -98,13 +98,13 @@ def check_empty_dirs(q):
             if len(os.listdir(ipath)) == 0:
                 #empty_dirs.append(ipath)
                 os.rmdir(ipath)
-                
-                
+
+
     print empty_dirs
-                
-   
-    
-    
+
+
+
+
 def clear_locks(q):
     '''
     Go through all messages and remove any locks.
@@ -114,8 +114,8 @@ def clear_locks(q):
         if not q.lock(name):
             q.unlock(name)
             name = q.next()
-    
-    
+
+
 def ask_user(question):
     '''
     Ask the user to confirm the specified yes/no question.
@@ -129,18 +129,18 @@ def ask_user(question):
         else:
             print 'Choose y or n:'
             continue
-        
-        
+
+
 if __name__ == '__main__':
-    
+
     if len(sys.argv) != 2:
         print "Usage: %s <path to messages directory>"
         sys.exit()
-    
+
     if not os.path.isdir(sys.argv[1]):
         print 'Directory %s does not exist. Exiting.' % sys.argv[1]
         sys.exit()
-        
+
     check_dir(sys.argv[1])
-    
+
 

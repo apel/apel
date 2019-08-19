@@ -12,7 +12,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
    @author: Will Rogers, Konrad Jopek, Stuart Pullinger
 '''
 
@@ -28,8 +28,8 @@ log = logging.getLogger('loader')
 class AurParser(XMLParser):
     '''
     Parser for Aggregated Usage Records
-    
-    For documentation please visit: 
+
+    For documentation please visit:
     https://twiki.cern.ch/twiki/bin/view/EMI/ComputeAccountingRecord
 
     The record format now conforms to the Normalised Summary format here:
@@ -39,36 +39,36 @@ class AurParser(XMLParser):
     ServiceLevel and ServiceLevelType. The field formerly called
     InfrastructureType is now called Infrastructure.
     '''
-    
+
     # main namespace for records
     NAMESPACE = "http://eu-emi.eu/namespaces/2012/11/aggregatedcomputerecord"
-    
+
     def get_records(self):
         '''
         Returns list of parsed records from AUR file.
-        
+
         Please notice that this parser _requires_ valid
         structure of XML document, including namespace
         information and prefixes in XML tag (like urf:UsageRecord).
         '''
         records = []
-        
+
         xml_storage_records = self.doc.getElementsByTagNameNS(self.NAMESPACE, 'SummaryRecord')
-        
+
         if len(xml_storage_records) == 0:
             raise XMLParserException('File does not contain AUR records!')
-        
+
         for xml_storage_record in xml_storage_records:
             record = self.parseAurRecord(xml_storage_record)
             records.append(record)
 
         return records
-    
-    
+
+
     def parseAurRecord(self, xml_record):
         '''
         Main function for parsing AUR record.
-        
+
         Interesting data can be fetched from 2 places:
          * as a content of node (here called text node)
          * as a attribute value (extracted by getAttr)
@@ -80,7 +80,7 @@ class AurParser(XMLParser):
             'GlobalUserName'   : lambda nodes: self.getText(nodes['GlobalUserName'][0].childNodes),
             'VO'               : lambda nodes: self.getText(nodes['Group'][0].childNodes),
             'VOGroup'          : lambda nodes: self.getText(
-                                        self.getTagByAttr(nodes['GroupAttribute'], 
+                                        self.getTagByAttr(nodes['GroupAttribute'],
                                                           'type', 'vo-group', CarParser.NAMESPACE)[0].childNodes),
             'VORole'           : lambda nodes: self.getText(
                                         self.getTagByAttr(nodes['GroupAttribute'],
@@ -105,9 +105,9 @@ class AurParser(XMLParser):
             'Processors'       : lambda nodes: self.getText(nodes['Processors'][0].childNodes),
             }
 
-        tags = ['Site', 'Month', 'Year', 'GlobalUserName', 'Group', 
+        tags = ['Site', 'Month', 'Year', 'GlobalUserName', 'Group',
                 'GroupAttribute', 'SubmitHost', 'Infrastructure',
-                'EarliestEndTime', 'LatestEndTime', 'WallDuration', 'CpuDuration', 
+                'EarliestEndTime', 'LatestEndTime', 'WallDuration', 'CpuDuration',
                 'NormalisedWallDuration', 'NormalisedCpuDuration',
                 'NumberOfJobs', 'NodeCount', 'Processors']
 
@@ -132,8 +132,8 @@ class AurParser(XMLParser):
                 log.debug('Failed to parse field %s: %s', field, e)
             except KeyError, e:
                 log.debug('Failed to parse field %s: %s', field, e)
-        
+
         nsr = NormalisedSummaryRecord()
         nsr.set_all(data)
-        
+
         return nsr

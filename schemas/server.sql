@@ -2,16 +2,16 @@
 -- ------------------------------------------------------------------------------
 -- JobRecords
 DROP TABLE IF EXISTS JobRecords;
-CREATE TABLE JobRecords ( 
-  UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
+CREATE TABLE JobRecords (
+  UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
   SiteID INT NOT NULL,                -- Foreign key
   SubmitHostID INT NOT NULL,          -- Foreign key
   MachineNameID INT NOT NULL,         -- Foreign key
   QueueID INT NOT NULL,               -- Foreign key
 
-  LocalJobId VARCHAR(255) NOT NULL, 
-  LocalUserId VARCHAR(255), 
+  LocalJobId VARCHAR(255) NOT NULL,
+  LocalUserId VARCHAR(255),
 
   GlobalUserNameID INT NOT NULL,      -- Foreign key
   FQAN VARCHAR(255) DEFAULT NULL,
@@ -19,19 +19,19 @@ CREATE TABLE JobRecords (
   VOGroupID INT NOT NULL,             -- Foreign key
   VORoleID INT NOT NULL,              -- Foreign key
 
-  WallDuration BIGINT UNSIGNED, 
+  WallDuration BIGINT UNSIGNED,
   CpuDuration BIGINT UNSIGNED,
-  NodeCount INT UNSIGNED NOT NULL DEFAULT 0,  
-  Processors INT UNSIGNED NOT NULL DEFAULT 0, 
-  
+  NodeCount INT UNSIGNED NOT NULL DEFAULT 0,
+  Processors INT UNSIGNED NOT NULL DEFAULT 0,
+
   MemoryReal BIGINT UNSIGNED,
   MemoryVirtual BIGINT UNSIGNED,
 
-  StartTime DATETIME NOT NULL, 
-  EndTime DATETIME NOT NULL, 
+  StartTime DATETIME NOT NULL,
+  EndTime DATETIME NOT NULL,
   EndYear INT,
   EndMonth INT,
-  
+
   InfrastructureDescription VARCHAR(100),
   InfrastructureType VARCHAR(20),
 
@@ -41,27 +41,27 @@ CREATE TABLE JobRecords (
   PublisherDNID INT NOT NULL,        -- Foreign key
 
   PRIMARY KEY (SiteID, LocalJobId, EndTime),
-  
-  -- index for SummariseJobs() procedure. 
+
+  -- index for SummariseJobs() procedure.
   -- Try to reuse this index as much as you can
-  INDEX SummaryIdx (SiteID, VOID, GlobalUserNameID, VOGroupID, VORoleID, 
-        EndYear, EndMonth, InfrastructureType, SubmitHostID, ServiceLevelType, ServiceLevel, 
+  INDEX SummaryIdx (SiteID, VOID, GlobalUserNameID, VOGroupID, VORoleID,
+        EndYear, EndMonth, InfrastructureType, SubmitHostID, ServiceLevelType, ServiceLevel,
         NodeCount, Processors, EndTime, WallDuration, CpuDuration),
 
   -- special index for retrieving data for UAS system
   INDEX UASIdx (VOID, UpdateTime)
 );
- 
- 
+
+
 DROP PROCEDURE IF EXISTS ReplaceJobRecord;
 DELIMITER //
 CREATE PROCEDURE ReplaceJobRecord(
-  site VARCHAR(255), submitHost VARCHAR(255), machineName VARCHAR(255), 
+  site VARCHAR(255), submitHost VARCHAR(255), machineName VARCHAR(255),
   queue VARCHAR(100), localJobId VARCHAR(255),
   localUserId VARCHAR(255), globalUserName VARCHAR(255),
   fullyQualifiedAttributeName VARCHAR(255),
-  vo VARCHAR(255), 
-  voGroup VARCHAR(255), voRole VARCHAR(255), 
+  vo VARCHAR(255),
+  voGroup VARCHAR(255), voRole VARCHAR(255),
   wallDuration INT, cpuDuration INT, processors INT, nodeCount INT,
   startTime DATETIME, endTime DATETIME, infrastructureDescription VARCHAR(100), infrastructureType VARCHAR(20),
   memoryReal INT, memoryVirtual INT,
@@ -69,16 +69,16 @@ CREATE PROCEDURE ReplaceJobRecord(
   publisherDN VARCHAR(255))
 BEGIN
     REPLACE INTO JobRecords(SiteID, SubmitHostID, MachineNameID, QueueID,
-	    LocalJobId, LocalUserId, GlobalUserNameID, FQAN,
-        VOID, VOGroupID, VORoleID, WallDuration, CpuDuration, Processors, NodeCount, 
+        LocalJobId, LocalUserId, GlobalUserNameID, FQAN,
+        VOID, VOGroupID, VORoleID, WallDuration, CpuDuration, Processors, NodeCount,
         StartTime, EndTime, EndYear, EndMonth, InfrastructureDescription, InfrastructureType, MemoryReal, MemoryVirtual, ServiceLevelType,
         ServiceLevel, PublisherDNID)
     VALUES (
-        SiteLookup(site), SubmitHostLookup(submitHost), MachineNameLookup(machineName), 
+        SiteLookup(site), SubmitHostLookup(submitHost), MachineNameLookup(machineName),
         QueueLookup(queue), localJobId, localUserId,
         DNLookup(globalUserName), fullyQualifiedAttributeName, VOLookup(vo),
         VOGroupLookup(voGroup), VORoleLookup(voRole), wallDuration, cpuDuration,
-        IFNULL(processors, 0), IFNULL(nodeCount, 0), startTime, endTime, 
+        IFNULL(processors, 0), IFNULL(nodeCount, 0), startTime, endTime,
         YEAR(endTime), MONTH(endTime), infrastructureDescription, infrastructureType, memoryReal,
         memoryVirtual, serviceLevelType, serviceLevel, DNLookup(publisherDN)
         );
@@ -111,7 +111,7 @@ CREATE TABLE Summaries (
   NumberOfJobs BIGINT UNSIGNED NOT NULL,
   PublisherDNID INT NOT NULL,
 
-  PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VORoleID, VOGroupID, 
+  PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VORoleID, VOGroupID,
                SubmitHostId, ServiceLevelType, ServiceLevel, NodeCount, Processors)
 );
 
@@ -119,20 +119,20 @@ CREATE TABLE Summaries (
 DROP PROCEDURE IF EXISTS ReplaceSummary;
 DELIMITER //
 CREATE PROCEDURE ReplaceSummary(
-  site VARCHAR(255),  month INT,  year INT, 
-  globalUserName VARCHAR(255), vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255), 
+  site VARCHAR(255),  month INT,  year INT,
+  globalUserName VARCHAR(255), vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255),
   submitHost VARCHAR(255), infrastructureType VARCHAR(50), serviceLevelType VARCHAR(50), serviceLevel DECIMAL(10,3),
-  nodeCount INT, processors INT, earliestEndTime DATETIME, latestEndTime DATETIME, wallDuration BIGINT, cpuDuration BIGINT, 
+  nodeCount INT, processors INT, earliestEndTime DATETIME, latestEndTime DATETIME, wallDuration BIGINT, cpuDuration BIGINT,
    numberOfJobs INT, publisherDN VARCHAR(255))
 BEGIN
-    REPLACE INTO Summaries(SiteID, Month, Year, GlobalUserNameID, VOID, 
+    REPLACE INTO Summaries(SiteID, Month, Year, GlobalUserNameID, VOID,
         VOGroupID, VORoleID, SubmitHostId, InfrastructureType, ServiceLevelType, ServiceLevel,
         NodeCount, Processors, EarliestEndTime, LatestEndTime, WallDuration,
         CpuDuration, NumberOfJobs, PublisherDNID)
       VALUES (
-        SiteLookup(site), month, year, DNLookup(globalUserName), VOLookup(vo), 
+        SiteLookup(site), month, year, DNLookup(globalUserName), VOLookup(vo),
         VOGroupLookup(voGroup), VORoleLookup(voRole), SubmitHostLookup(submitHost),
-        infrastructureType, serviceLevelType, serviceLevel, nodeCount, processors, earliestEndTime, 
+        infrastructureType, serviceLevelType, serviceLevel, nodeCount, processors, earliestEndTime,
         latestEndTime, wallDuration, cpuDuration, numberOfJobs, DNLookup(publisherDN));
 END //
 DELIMITER ;
@@ -163,7 +163,7 @@ CREATE TABLE NormalisedSummaries (
   NumberOfJobs BIGINT UNSIGNED NOT NULL,
   PublisherDNID INT NOT NULL,
 
-  PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VORoleID, VOGroupID, 
+  PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VORoleID, VOGroupID,
                SubmitHostId, NodeCount, Processors)
 );
 
@@ -171,23 +171,23 @@ CREATE TABLE NormalisedSummaries (
 DROP PROCEDURE IF EXISTS ReplaceNormalisedSummary;
 DELIMITER //
 CREATE PROCEDURE ReplaceNormalisedSummary(
-  site VARCHAR(255),  month INT,  year INT, 
-  globalUserName VARCHAR(255), vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255), 
-  submitHost VARCHAR(255), infrastructure VARCHAR(50), 
-  nodeCount INT, processors INT, earliestEndTime DATETIME, latestEndTime DATETIME, wallDuration BIGINT, cpuDuration BIGINT, 
+  site VARCHAR(255),  month INT,  year INT,
+  globalUserName VARCHAR(255), vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255),
+  submitHost VARCHAR(255), infrastructure VARCHAR(50),
+  nodeCount INT, processors INT, earliestEndTime DATETIME, latestEndTime DATETIME, wallDuration BIGINT, cpuDuration BIGINT,
   normalisedWallDuration BIGINT, normalisedCpuDuration BIGINT, numberOfJobs INT, publisherDN VARCHAR(255))
 BEGIN
-    REPLACE INTO NormalisedSummaries(SiteID, Month, Year, GlobalUserNameID, VOID, 
-        VOGroupID, VORoleID, SubmitHostId, Infrastructure, 
+    REPLACE INTO NormalisedSummaries(SiteID, Month, Year, GlobalUserNameID, VOID,
+        VOGroupID, VORoleID, SubmitHostId, Infrastructure,
         NodeCount, Processors, EarliestEndTime, LatestEndTime, WallDuration,
         CpuDuration, NormalisedWallDuration, NormalisedCpuDuration,
-	NumberOfJobs, PublisherDNID)
+        NumberOfJobs, PublisherDNID)
       VALUES (
-        SiteLookup(site), month, year, DNLookup(globalUserName), VOLookup(vo), 
+        SiteLookup(site), month, year, DNLookup(globalUserName), VOLookup(vo),
         VOGroupLookup(voGroup), VORoleLookup(voRole), SubmitHostLookup(submitHost),
-        infrastructure, nodeCount, processors, earliestEndTime, 
+        infrastructure, nodeCount, processors, earliestEndTime,
         latestEndTime, wallDuration, cpuDuration, normalisedWallDuration, normalisedCpuDuration,
-       	numberOfJobs, DNLookup(publisherDN));
+        numberOfJobs, DNLookup(publisherDN));
 END //
 DELIMITER ;
 
@@ -217,7 +217,7 @@ CREATE TABLE SuperSummaries (
   CpuDuration BIGINT UNSIGNED NOT NULL,
   NumberOfJobs BIGINT UNSIGNED NOT NULL,
 
-  PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VORoleID, VOGroupID, 
+  PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VORoleID, VOGroupID,
                SubmitHostId, InfrastructureType, ServiceLevelType, ServiceLevel,
                NodeCount, Processors)
 );
@@ -368,7 +368,7 @@ DELIMITER ;
 -- SyncRecords
 DROP TABLE IF EXISTS SyncRecords;
 CREATE TABLE SyncRecords (
-  UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
+  UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   SiteID INT NOT NULL,                  -- Foreign key
   SubmitHostID INT NOT NULL,            -- Foreign key
   NumberOfJobs INT NOT NULL,
@@ -408,12 +408,12 @@ CREATE TABLE LastUpdated (
 
 DROP PROCEDURE IF EXISTS UpdateTimestamp;
 DELIMITER //
-CREATE PROCEDURE UpdateTimestamp(type VARCHAR(255)) 
+CREATE PROCEDURE UpdateTimestamp(type VARCHAR(255))
   BEGIN
    REPLACE INTO LastUpdated (Type) VALUES (type);
   END //
 
-DELIMITER ; 
+DELIMITER ;
 
 
 -- -----------------------------------------------------------------------------
@@ -474,7 +474,7 @@ DROP TABLE IF EXISTS SubmitHosts;
 CREATE TABLE SubmitHosts (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-    
+
   INDEX(name)
 ) ;
 
@@ -523,7 +523,7 @@ DROP TABLE IF EXISTS Queues;
 CREATE TABLE Queues (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  
+
   INDEX(name)
 ) ;
 
@@ -548,7 +548,7 @@ DROP TABLE IF EXISTS VOs;
 CREATE TABLE VOs (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-    
+
   INDEX(name)
 ) ;
 
@@ -574,7 +574,7 @@ DROP TABLE IF EXISTS VORoles;
 CREATE TABLE VORoles (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-    
+
   INDEX(name)
 ) ;
 
@@ -600,7 +600,7 @@ DROP TABLE IF EXISTS VOGroups;
 CREATE TABLE VOGroups (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  
+
   INDEX(name)
 ) ;
 
@@ -624,33 +624,33 @@ DELIMITER ;
 -- View on Summaries
 DROP VIEW IF EXISTS VSummaries;
 CREATE VIEW VSummaries AS
-    SELECT 
-        UpdateTime, 
-        site.name Site, 
-        Month, 
-        Year, 
-        userdn.name GlobalUserName, 
-        vos.name VO, 
-        vogroup.name VOGroup, 
-        vorole.name VORole, 
+    SELECT
+        UpdateTime,
+        site.name Site,
+        Month,
+        Year,
+        userdn.name GlobalUserName,
+        vos.name VO,
+        vogroup.name VOGroup,
+        vorole.name VORole,
         submithost.name SubmitHost,
         InfrastructureType,
-        ServiceLevelType, 
-        ServiceLevel,  
+        ServiceLevelType,
+        ServiceLevel,
         NodeCount,
         Processors,
-        EarliestEndTime, 
-        LatestEndTime, 
-        WallDuration, 
-        CpuDuration, 
+        EarliestEndTime,
+        LatestEndTime,
+        WallDuration,
+        CpuDuration,
         NumberOfJobs
-    FROM Summaries, 
-         Sites site, 
-         DNs userdn, 
-         VORoles vorole, 
-         VOs vos, 
+    FROM Summaries,
+         Sites site,
+         DNs userdn,
+         VORoles vorole,
+         VOs vos,
          VOGroups vogroup,
-         SubmitHosts submithost 
+         SubmitHosts submithost
     WHERE
         SiteID = site.id
         AND GlobalUserNameID = userdn.id
@@ -664,33 +664,33 @@ CREATE VIEW VSummaries AS
 -- View on NormalisedSummaries
 DROP VIEW IF EXISTS VNormalisedSummaries;
 CREATE VIEW VNormalisedSummaries AS
-    SELECT 
-        UpdateTime, 
-        site.name Site, 
-        Month, 
-        Year, 
-        userdn.name GlobalUserName, 
-        vos.name VO, 
-        vogroup.name VOGroup, 
-        vorole.name VORole, 
+    SELECT
+        UpdateTime,
+        site.name Site,
+        Month,
+        Year,
+        userdn.name GlobalUserName,
+        vos.name VO,
+        vogroup.name VOGroup,
+        vorole.name VORole,
         submithost.name SubmitHost,
         Infrastructure,
         NodeCount,
         Processors,
-        EarliestEndTime, 
-        LatestEndTime, 
-        WallDuration, 
-        CpuDuration, 
-	NormalisedWallDuration,
-	NormalisedCpuDuration,
+        EarliestEndTime,
+        LatestEndTime,
+        WallDuration,
+        CpuDuration,
+        NormalisedWallDuration,
+        NormalisedCpuDuration,
         NumberOfJobs
-    FROM NormalisedSummaries, 
-         Sites site, 
-         DNs userdn, 
-         VORoles vorole, 
-         VOs vos, 
+    FROM NormalisedSummaries,
+         Sites site,
+         DNs userdn,
+         VORoles vorole,
+         VOs vos,
          VOGroups vogroup,
-         SubmitHosts submithost 
+         SubmitHosts submithost
     WHERE
         SiteID = site.id
         AND GlobalUserNameID = userdn.id
@@ -707,33 +707,33 @@ CREATE VIEW VNormalisedSummaries AS
 DROP VIEW IF EXISTS VSuperSummaries;
 
 CREATE VIEW VSuperSummaries AS
-    SELECT 
-        UpdateTime, 
-        site.name Site, 
-        Month, 
-        Year, 
-        userdn.name GlobalUserName, 
-        vos.name VO, 
-        vogroup.name VOGroup, 
-        vorole.name VORole, 
+    SELECT
+        UpdateTime,
+        site.name Site,
+        Month,
+        Year,
+        userdn.name GlobalUserName,
+        vos.name VO,
+        vogroup.name VOGroup,
+        vorole.name VORole,
         submithost.name SubmitHost,
         Infrastructure AS InfrastructureType,
-        ServiceLevelType, 
-        ServiceLevel,  
+        ServiceLevelType,
+        ServiceLevel,
         NodeCount,
         Processors,
-        EarliestEndTime, 
-        LatestEndTime, 
-        WallDuration, 
-        CpuDuration, 
+        EarliestEndTime,
+        LatestEndTime,
+        WallDuration,
+        CpuDuration,
         NumberOfJobs
-    FROM HybridSuperSummaries, 
-         Sites site, 
-         DNs userdn, 
-         VORoles vorole, 
-         VOs vos, 
+    FROM HybridSuperSummaries,
+         Sites site,
+         DNs userdn,
+         VORoles vorole,
+         VOs vos,
          VOGroups vogroup,
-         SubmitHosts submithost 
+         SubmitHosts submithost
     WHERE
         SiteID = site.id
         AND GlobalUserNameID = userdn.id
@@ -793,7 +793,7 @@ CREATE VIEW VNormalisedSuperSummaries AS
 -- TODO Check relevance of this view and possibly move to server-extra.sql
 DROP VIEW IF EXISTS VUserSummaries;
 CREATE VIEW VUserSummaries AS
-    SELECT 
+    SELECT
         Year,
         Month,
         site.name Site,
@@ -808,7 +808,7 @@ CREATE VIEW VUserSummaries AS
         SUM(NumberOfJobs) AS TotalNumberOfJobs,
         MIN(EarliestEndTime) as EarliestEndTime,
         MAX(LatestEndTime) as LatestEndTime
-    FROM HybridSuperSummaries summary 
+    FROM HybridSuperSummaries summary
     INNER JOIN Sites site ON site.id=summary.SiteID
     INNER JOIN VOs vo ON summary.VOID = vo.id
     INNER JOIN DNs dn ON summary.GlobalUserNameID = dn.id
@@ -831,16 +831,16 @@ DROP VIEW IF EXISTS VJobRecords;
 CREATE VIEW VJobRecords AS
     SELECT UpdateTime, site.name Site, subhost.name SubmitHost, machine.name MachineName,
            queue.name Queue, LocalJobId, LocalUserId,
-           userdn.name GlobalUserName, FQAN, vos.name VO, vogroup.name VOGroup, vorole.name VORole, 
+           userdn.name GlobalUserName, FQAN, vos.name VO, vogroup.name VOGroup, vorole.name VORole,
            WallDuration, CpuDuration, Processors, NodeCount, StartTime, EndTime, InfrastructureDescription, InfrastructureType,
            MemoryReal, MemoryVirtual, ServiceLevelType, ServiceLevel
-    FROM JobRecords, Sites site, SubmitHosts subhost, MachineNames machine, 
-    	 Queues queue, DNs userdn, VORoles vorole, VOs vos, VOGroups vogroup  
-   	WHERE
+    FROM JobRecords, Sites site, SubmitHosts subhost, MachineNames machine,
+         Queues queue, DNs userdn, VORoles vorole, VOs vos, VOGroups vogroup
+    WHERE
         SiteID = site.id
         AND SubmitHostID = subhost.id
-	    AND MachineNameID = machine.id
-	    AND QueueID = queue.id
+        AND MachineNameID = machine.id
+        AND QueueID = queue.id
         AND GlobalUserNameID = userdn.id
         AND VORoleID = vorole.id
         AND VOID = vos.id
@@ -854,4 +854,4 @@ CREATE VIEW VSyncRecords AS
     SELECT UpdateTime, site.name Site, subhost.name SubmitHost, NumberOfJobs, Month, Year
     FROM SyncRecords, Sites site, SubmitHosts subhost WHERE
         SiteID = site.id
-	AND SubmitHostID = subhost.id;
+      AND SubmitHostID = subhost.id;
