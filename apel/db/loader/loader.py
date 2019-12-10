@@ -189,11 +189,34 @@ class Loader(object):
         Load one message (i.e. one file; many records)
         from its text content into the database.
         '''
+        record_type_dict = {
+                    apel.db.records.summary.SummaryRecord: 'Summary',
+                    apel.db.records.job.JobRecord: 'Job',
+                    apel.db.records.normalised_summary.NormalisedSummaryRecord:
+                    'Normalised Summary',
+                    apel.db.records.sync.SyncRecord: 'Sync',
+                    apel.db.records.cloud.CloudRecord: 'Cloud',
+                    apel.db.records.cloud_summary.CloudSummaryRecord:
+                    'Cloud Summary'}
+
         log.info('Loading message from %s', signer)
 
         # Create the record objects, using the RecordFactory
         records = self._rf.create_records(msg_text)
-        log.info('Message contains %i records', len(records))
+        
+        try:
+            if len(records) == 1:
+                # Get record type to display in logs
+                record_type = record_type_dict[type(records[0])]
+                log.info('Message contains 1 %s record', record_type)
+            elif len(records) > 1:
+                record_type = record_type_dict[type(records[0])]
+                log.info('Message contains %i %s records', len(records), record_type)
+            else:
+                log.info('Message contains 0 records')
+        except: # if record type is not in record_type_dict
+            log.info('Message contains %i records', len(records))
+
         # Use the DB to load the records
         log.debug('Loading records...')
         self._apeldb.load_records(records, source=signer)
