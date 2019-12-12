@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 import logging
-from mock import patch, call
+from mock import call
 
 import apel.db.loader
 
@@ -151,9 +151,21 @@ class LoaderTest(unittest.TestCase):
         in_q = dirq.queue.Queue(os.path.join(self.dir_path, 'incoming'),
                                 schema=schema)
         body = """<?xml version="1.0" ?>
-                <sr:StorageUsageRecords xmlns:sr="http://eu-emi.eu/namespaces/2011/02/storagerecord">
-                <sr:StorageUsageRecord><sr:RecordIdentity sr:createTime="2019-08-06T06:46:11" sr:recordId=" rad_tape_20190219T054505Z"/><sr:StorageSystem>srm.grid.somewhere</sr:StorageSystem><sr:Site>MATRIX</sr:Site><sr:StorageMedia>tape</sr:StorageMedia><sr:SubjectIdentity><sr:Group>projects</sr:Group><sr:GroupAttribute sr:attributeType="subgroup">rad</sr:GroupAttribute></sr:SubjectIdentity><sr:StartTime>2019-02-18T05:45:03Z</sr:StartTime><sr:EndTime>2019-02-19T05:45:05Z</sr:EndTime><sr:ResourceCapacityUsed>9127543637338</sr:ResourceCapacityUsed></sr:StorageUsageRecord>
-                </sr:StorageUsageRecords> """
+        <sr:StorageUsageRecords
+            xmlns:sr="http://eu-emi.eu/namespaces/2011/02/storagerecord">
+            <sr:StorageUsageRecord>
+            <sr:RecordIdentity sr:createTime="2019-08-06T06:46:11"
+                        sr:recordId=" rad_tape_20190219T054505Z"/>
+            <sr:StorageSystem>srm.grid.somewhere</sr:StorageSystem>
+            <sr:Site>MATRIX</sr:Site><sr:StorageMedia>tape</sr:StorageMedia>
+            <sr:SubjectIdentity><sr:Group>projects</sr:Group>
+            <sr:GroupAttribute sr:attributeType="subgroup">rad</sr:GroupAttribute>
+            </sr:SubjectIdentity>
+            <sr:StartTime>2019-02-18T05:45:03Z</sr:StartTime>
+            <sr:EndTime>2019-02-19T05:45:05Z</sr:EndTime>
+            <sr:ResourceCapacityUsed>9127543637338</sr:ResourceCapacityUsed>
+            </sr:StorageUsageRecord>
+        </sr:StorageUsageRecords> """
 
         in_q.add({"body": body,
                   "signer": "test signer", "empaid": "", "error": ""})
