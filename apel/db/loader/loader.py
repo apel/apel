@@ -214,7 +214,7 @@ class Loader(object):
                 log.info('Message contains %i %s records', len(records), record_type)
             else:
                 log.info('Message contains 0 records')
-        except KeyError: # if record type is not in record_type_dict
+        except KeyError: # if record type is not in record_types
             log.info('Message contains %i records', len(records))
 
         # Use the DB to load the records
