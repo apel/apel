@@ -211,7 +211,7 @@ class Loader(object):
                 log.info('Message contains 1 %s record', record_type)
             elif len(records) > 1:
                 record_type = record_types[type(records[0])]
-                log.info('Message contains %i %s records', 
+                log.info('Message contains %i %s records',
                          len(records), record_type)
             else:
                 log.info('Message contains 0 records')
