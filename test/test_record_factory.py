@@ -5,6 +5,7 @@ Created on 4 Jul 2011
 
 Tests for the RecordFactory.
 '''
+from datetime import datetime
 import unittest
 
 from apel.db.loader.record_factory import RecordFactory, RecordFactoryException
@@ -93,6 +94,109 @@ class TestRecordFactory(unittest.TestCase):
         """Check that creating a cloud summary returns a CloudSummaryRecord."""
         records = self._rf.create_records(self._csr_text)
         self.assertTrue(isinstance(records[0], CloudSummaryRecord))
+
+    def test_create_records_json_malformed(self):
+        """Test the expected error is raised on handling malformed JSON."""
+        malformed_json = '{"Key": "Value}'
+
+        with self.assertRaisesRegexp(RecordFactoryException,
+                                     "^Malformed JSON:"):
+            self._rf.create_records(malformed_json)
+
+    def test_create_records_json_unknown_type(self):
+        """Test the expected error is raised on messages without a type."""
+        unknown_type_json = '{"Key": "Value"}'
+
+        with self.assertRaisesRegexp(RecordFactoryException, 
+                                     "^Type of JSON message not provided."):
+            self._rf.create_records(unknown_type_json)
+
+    def test_create_records_json_unsupported_type(self):
+        """Test the expected error is raised on unsupported message types."""
+        unsupported_json = self._generate_json_message(
+            "Spammy Type", "ignored version", "[{'Key': 'Value'}]"
+        )
+
+        with self.assertRaisesRegexp(RecordFactoryException,
+                                     "^Unsupported JSON message type:"):
+            self._rf.create_records(unsupported_json)
+
+    def test_create_records_json_invalid_ip(self):
+        """Test the expected error is raised for JSON schema violations."""
+        invalid_json = self._generate_json_message(
+            "APEL Public IP message", "v0.2", "[{'Key': 'Value'}]"
+        )
+
+        with self.assertRaisesRegexp(RecordFactoryException,
+                                     "^IP message invalid against schema:"):
+            self._rf.create_records(invalid_json)
+
+    def test_create_records_ip(self):
+        """Test creation of IPRecords from a JSON message."""
+        # Create some records for a test message.
+        record0 = {
+            "MeasurementTime": 1536070129,
+            "SiteName": "TEST-SITE",
+            "CloudComputeService": "TEST-CLOUD",
+            "CloudType": "caso/1.1.1 (OpenStack)",
+            "LocalUser": "User1",
+            "LocalGroup": "Group1",
+            "GlobalUserName": "GlobalUser1",
+            "FQAN": "FQAN1",
+            "IPVersion": 6,
+            "IPCount": 12
+        }
+
+        record1 = {
+            "MeasurementTime": 1536070137,
+            "SiteName": "TEST-SITE",
+            "CloudComputeService": "TEST-CLOUD",
+            "CloudType": "caso/1.1.1 (OpenStack)",
+            "LocalUser": "User1",
+            "LocalGroup": "Group1",
+            "GlobalUserName": "GlobalUser1",
+            "FQAN": "FQAN1",
+            "IPVersion": 4,
+            "IPCount": 2
+        }
+
+        # Create a list of records and build an IP accounting message.
+        usage_records = [record0, record1]
+        ip_accounting_message_v02 = self._generate_json_message(
+            "APEL Public IP message", "v0.2", usage_records
+        )
+
+        # Create the record objects, using the RecordFactory.
+        record_object_list = self._rf.create_records(ip_accounting_message_v02)
+
+        # Compare the generated record objects with the dictionary provided
+        # as input.
+        self._compare_record_to_dictionary(record_object_list[0], record0)
+        self._compare_record_to_dictionary(record_object_list[1], record1)
+
+    def _generate_json_message(self, type, version, usage_records):
+        """Helper function to generate JSON messages."""
+        message = JSON_MSG_BOILERPLATE % (type, version, usage_records)
+        # The above will put single quotes into the created message, but
+        # JSON is strictly double quotes. So replace single quotes.
+        message = message.replace("'", '"')
+        return message
+
+    def _compare_record_to_dictionary(self, record_object, dictionary):
+        """Helper function to compare a record object and a dictionary."""
+        # Loop through the record content of the record object.
+        for key, value in record_object._record_content.items():
+            # Compare the value in the record object to the corresponding key
+            # in the dictionary. Handle datetime fields differently because in
+            # the message they are expressed as seconds-since-epoch, but in the
+            # object they are datetime objects.
+            if key in record_object._datetime_fields:
+                self.assertEqual(
+                    value,
+                    datetime.fromtimestamp(dictionary[key])
+                )
+            else:
+                self.assertEqual(value, dictionary[key])
 
     def _get_msg_text(self):
     # Below, I've just got some test data hard-coded.
@@ -200,6 +304,13 @@ Year: 2011
 NumberOfVMs: 1
 %%
 '''
+
+
+JSON_MSG_BOILERPLATE = """{
+    "Type": "%s",
+    "Version": "%s",
+    "UsageRecords": %s
+}"""
 
 
 if __name__ == '__main__':
