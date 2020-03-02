@@ -18,21 +18,26 @@
 Module containing the RecordFactory class.
 '''
 
+from apel.common.message_schemas import IP_MSG_SCHEMA
 from apel.db.records.job import JobRecord
 from apel.db.records.summary import SummaryRecord
 from apel.db.records.normalised_summary import NormalisedSummaryRecord
 from apel.db.records.sync import SyncRecord
 from apel.db.records.cloud import CloudRecord
 from apel.db.records.cloud_summary import CloudSummaryRecord
+from apel.db.records.ip_record import IPRecord
 from apel.db import (JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
                      NORMALISED_SUMMARY_MSG_HEADER, SYNC_MSG_HEADER,
-                     CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER)
+                     CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER,
+                     IP_MSG_TYPE)
 
 from apel.db.loader.car_parser import CarParser
 from apel.db.loader.aur_parser import AurParser
 from apel.db.loader.star_parser import StarParser
 from apel.db.loader.xml_parser import get_primary_ns
 
+import json
+import jsonschema
 import logging
 
 # Set up logging
@@ -79,6 +84,32 @@ class RecordFactory(object):
                     created_records = self._create_stars(msg_text)
                 else:
                     raise RecordFactoryException('XML format not recognised.')
+            # JSON format
+            elif msg_text.startswith('{'):
+                # Convert the message to a dictionary so it can be
+                # interrogated.
+                try:
+                    json_msg = json.loads(msg_text)
+                except ValueError as error:
+                    raise RecordFactoryException('Malformed JSON: %s' % error)
+
+                # Create record objects from the JSON.
+                try:
+                    if json_msg['Type'] == IP_MSG_TYPE:
+                        created_records = self._create_ip_records(json_msg)
+
+                    else:
+                        raise RecordFactoryException(
+                            'Unsupported JSON message type: %s' %
+                            json_msg['Type']
+                        )
+
+                # Catch the case where the JSON message type is not defined.
+                except KeyError as key_error:
+                    raise RecordFactoryException(
+                        'Type of JSON message not provided.'
+                    )
+
             # APEL format
             else:
                 lines = msg_text.splitlines()
@@ -114,6 +145,27 @@ class RecordFactory(object):
     ######################################################################
     # Private methods below
     ######################################################################
+
+    def _create_ip_records(self, json_msg):
+        '''Given a dictionary, attempt to return a list of IPRecord objects.'''
+        # Before attempting to create the records, verify the supplied json
+        # against the message schema.
+        try:
+            jsonschema.validate(json_msg, IP_MSG_SCHEMA)
+        # Catch the case where json_msg does not conform to the
+        # expected JSON schema for the JSON message type.
+        except jsonschema.ValidationError as validation_error:
+            raise RecordFactoryException(
+                'IP message invalid against schema: %s' % validation_error
+            )
+
+        created_records = []
+        for record_dict in json_msg['UsageRecords']:
+            ip_record = IPRecord()
+            ip_record.set_all(record_dict)
+            created_records.append(ip_record)
+
+        return created_records
 
     def _create_jrs(self, msg_text):
         '''
@@ -260,5 +312,3 @@ class RecordFactory(object):
         parser = StarParser(msg_text)
         records = parser.get_records()
         return records
-
-
