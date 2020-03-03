@@ -33,6 +33,7 @@ import os
 import sys
 import time
 import urllib
+import re
 import xml.dom.minidom
 import xml.parsers.expat
 
@@ -61,6 +62,13 @@ def get_config(config_file):
         c.gocdb_url = cp.get('auth', 'gocdb_url')
     except ConfigParser.NoOptionError:
         c.gocdb_url = None
+
+    try:
+        c.service_types = cp.get('auth', 'service_types')
+    except ConfigParser.NoOptionError:
+        c.service_types = None
+    if c.service_types and not verify_service_types(c.service_types):
+        raise ValueError("Invalid characters in service type.")
 
     try:
         extra_dns = cp.get('auth', 'extra-dns')
@@ -214,6 +222,20 @@ def verify_dn(dn):
 
     return True
 
+def verify_service_types(service_types):
+    service_types = service_types.split(',')
+    for service_type in service_types:
+        pattern = re.compile("^(\w|[\._-])*$")
+        if not pattern.match(service_type):
+            return False
+
+    return True
+
+def generate_gocdb_urls(base_gocdb_url, service_types):
+    # Create a generator expression producing full GOCDB URLs with service types.
+    service_types = service_types.split(',')
+    return (base_gocdb_url + '&service_type=' + service_type
+                                        for service_type in service_types)
 
 def runprocess(config_file, log_config_file):
     '''Get DNs both from the URL and the additional file.'''
@@ -229,41 +251,41 @@ def runprocess(config_file, log_config_file):
     xml_string = None
     fetch_failed = False
 
-    next_url = cfg.gocdb_url
-    try:
-        # If next_url is none, it implies we have reached the end of paging
-        # (or that paging was not turned on).
-        # The addition of 'not fetch_failed' catches the case where no XML is
-        # returned from next_url (i.e. gocdb_url).
-        while next_url is not None and not fetch_failed:
-            xml_string = get_xml(next_url, cfg.proxy)
-            log.info("Fetched XML from %s", next_url)
+    for next_url in generate_gocdb_urls(cfg.gocdb_url,cfg.service_types):
+        try:
+            # If next_url is none, it implies we have reached the end of paging
+            # (or that paging was not turned on).
+            # The addition of 'not fetch_failed' catches the case where no XML is
+            # returned from next_url (i.e. gocdb_url).
+            while next_url is not None and not fetch_failed:
+                xml_string = get_xml(next_url, cfg.proxy)
+                log.info("Fetched XML from %s", next_url)
 
-            try:
-                # Parse the XML into a Document Object Model
-                dom = xml.dom.minidom.parseString(xml_string)
-                # Get the next url, if any
-                next_url = next_link_from_dom(dom)
-                # Add the listed DNs to the list
-                dns.extend(dns_from_dom(dom))
-            except xml.parsers.expat.ExpatError, e:
-                log.warning('Failed to parse the retrieved XML.')
-                log.warning('Is the URL correct?')
-                fetch_failed = True
-    except AttributeError:
-        # gocdb_url == None
-        log.info("No GOCDB URL specified - won't fetch URLs.")
-    except IOError, e:
-        log.info("Failed to retrieve XML - is the URL correct?")
-        log.info(e)
-        fetch_failed = True
+                try:
+                    # Parse the XML into a Document Object Model
+                    dom = xml.dom.minidom.parseString(xml_string)
+                    # Get the next url, if any
+                    next_url = next_link_from_dom(dom)
+                    # Add the listed DNs to the list
+                    dns.extend(dns_from_dom(dom))
+                except xml.parsers.expat.ExpatError, e:
+                    log.warning('Failed to parse the retrieved XML.')
+                    log.warning('Is the URL correct?')
+                    fetch_failed = True
+        except AttributeError:
+            # gocdb_url == None
+            log.info("No GOCDB URL specified - won't fetch URLs.")
+        except IOError, e:
+            log.info("Failed to retrieve XML - is the URL correct?")
+            log.info(e)
+            fetch_failed = True
 
-    if fetch_failed and (time.time() - os.path.getmtime(cfg.dn_file) <
-                         (cfg.expire_hours * 3600)):
-        log.warning('Failed to update DNs from GOCDB. Will not modify DNs file.')
-        log.info("auth will exit.")
-        log.info(LOG_BREAK)
-        sys.exit(1)
+        if fetch_failed and (time.time() - os.path.getmtime(cfg.dn_file) <
+                             (cfg.expire_hours * 3600)):
+            log.warning('Failed to update DNs from GOCDB. Will not modify DNs file.')
+            log.info("auth will exit.")
+            log.info(LOG_BREAK)
+            sys.exit(1)
 
     # get the DNs from the additional file
     try:
