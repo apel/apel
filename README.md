@@ -39,3 +39,13 @@ and apel-server.
 
 This is a messaging system, which has its own GitHub repository at
 [apel/ssm](https://github.com/apel/ssm)
+
+## Acknowledgements
+
+<span>
+  <img alt="STFC logo" src="https://github.com/GOCDB/gocdb/raw/dev/htdocs/web_portal/img/UKRI_STF_Council-Logo_Horiz-RGB_crop.png" height="57" />
+  <img alt="EU flag" src="https://github.com/GOCDB/gocdb/raw/dev/htdocs/web_portal/img/eu_flag_yellow_low_150.png" height="51" />
+  <img alt="EOSC-hub logo" src="https://github.com/GOCDB/gocdb/raw/dev/htdocs/web_portal/img/eosc-hub-v-web_150.png" height="57" />
+</span>
+
+APEL is provided by [STFC](https://stfc.ukri.org/), a part of [UK Research and Innovation](www.ukri.org), and is co-funded by the [EOSC-hub](https://www.eosc-hub.eu/) project (Horizon 2020) under Grant number 777536. Licensed under the [Apache 2 License](http://www.apache.org/licenses/LICENSE-2.0).
