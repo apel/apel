@@ -113,6 +113,40 @@ def runprocess(db_config_file, config_file, log_config_file):
         sys.exit(1)
 
     log.info('Created Pidfile')
+
+    # Configure options for stale summary clean up.
+    try:
+        stale_summary_clean_up = cp.getboolean('stale_summaries',
+                                               'enable_clean_up')
+
+    except ConfigParser.NoSectionError as error:
+        # If section no defined, assume the user has made no effort to
+        # configure stale summary clean up, in which case - just log the
+        # exception as info.
+        log.info("Will not clean up stale summarises.")
+        stale_summary_clean_up = False
+
+    except ConfigParser.NoOptionError as error:
+        # If the section is defined and the option is not, assume the user has
+        # made effort to configure stale summary clean up, in which case - log
+        # the exception it as a warning.
+        log.warn("Will not clean up stale summarises.")
+        stale_summary_clean_up = False
+
+    if stale_summary_clean_up:
+        if db_type != "cloud":
+            log.error("Can only enable summary clean up for Cloud accounting.")
+            sys.exit(1)
+
+        try:
+            stale_summary_newer_than = cp.getint('stale_summaries',
+                                                 'newer_than')
+
+        except (ConfigParser.Error, ValueError) as error:
+            log.warn("Could not configure stale summary clean up.")
+            log.warn("Will not clean up stale summaries.")
+            stale_summary_clean_up = False
+
     # Log into the database
     try:
 
@@ -136,6 +170,11 @@ def runprocess(db_config_file, config_file, log_config_file):
         # Calculate end time to output time to logs
         elapsed_time = round(time.time() - start_time, 3)
         log.info('Summarising completed in: %s seconds', elapsed_time)
+
+        if stale_summary_clean_up:
+            log.info("Cleaning up stale summaries")
+            db.clean_stale_summaries(db_type, summariser_start_time,
+                                     stale_summary_newer_than)
 
         log.info(LOG_BREAK)
 
