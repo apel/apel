@@ -25,6 +25,7 @@ standard_library.install_aliases()
 from future.builtins import str
 
 from optparse import OptionParser
+import datetime
 import logging.config
 import os
 import sys
@@ -89,6 +90,9 @@ def runprocess(db_config_file, config_file, log_config_file):
         sys.exit(1)
 
     log.info('Starting apel summariser version %s.%s.%s', *__version__)
+    # Keep track of when this summariser run started to possibly identify
+    # stale summaries later.
+    summariser_start_time = datetime.datetime.now()
 
     # If the pidfile exists, don't start up.
     try:
