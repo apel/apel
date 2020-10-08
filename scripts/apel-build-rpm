@@ -34,3 +34,7 @@ rpmbuild -ba $RPMDIR/SPECS/apel.spec
 
 # Clean up
 rm -rf apel-$VERSION*
+
+# Check for errors in SPEC and built packages
+echo "Possible Issues to Fix:"
+rpmlint $RPMDIR
