@@ -405,6 +405,59 @@ class ApelMysqlDb(object):
                 self.db.rollback()
             raise
 
+    def clean_stale_summaries(self, db_type, summariser_start_time, threshold):
+        """For the DB type, remove stale summaries newer than the threshold."""
+        if db_type == "cloud":
+            self._clean_stale_cloud_summaries(summariser_start_time, threshold)
+        else:
+            raise ValueError("Attempting to clean up summaries in a %s db, "
+                             "this is not supported." % db_type)
+
+    def _clean_stale_cloud_summaries(self, summariser_start_time, threshold):
+        """Remove stale cloud summaries newer than the threshold."""
+        threshold_timedelta = datetime.timedelta(days=threshold)
+        threshold_time = summariser_start_time - threshold_timedelta
+        threshold_month = threshold_time.month
+        threshold_year = threshold_time.year
+
+        try:
+            # prevent MySQLdb from raising
+            # 'MySQL server has gone' exception
+            self._mysql_reconnect()
+
+            cursor = self.db.cursor()
+            # Delete any summaries that:
+            # - Are older than the start time of this summariser run (i.e. are
+            #   stale)
+            # AND
+            # - Are reporting recent usage as defined by the threhsold value
+            delete_statement = (
+                "DELETE FROM CloudSummaries WHERE "
+                "Month>=%s AND "
+                "Year>=%s AND "
+                "UpdateTime<'%s';"
+                % (
+                    threshold_month, threshold_year,
+                    summariser_start_time.strftime("%Y-%m-%d %H:%M:%S")
+                )
+            )
+
+            log.info(
+                "Running \"%s\" to delete stale summaries" % delete_statement
+            )
+            number_deleted = cursor.execute(delete_statement)
+
+            self.db.commit()
+
+            log.info("Removed %s stale summaries." % number_deleted)
+
+        except MySQLdb.Error, error:
+            log.error("A mysql error occurred: %s", error)
+            log.error("Any transaction will be rolled back.")
+
+            if self.db is not None:
+                self.db.rollback()
+
     def join_records(self):
         '''
         This method executes JoinJobRecords procedure in database which joins data
