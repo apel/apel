@@ -3,7 +3,7 @@
 # Execute the following as root to install build tools and create a build user
 # (to allow copying as non-root add the option "-K UMASK=0022" to useradd):
 
-# yum install fedora-packager
+# yum install rpmdevtools rpmlint mock
 # useradd -m rpmb
 # usermod -a -G mock rpmb
 
