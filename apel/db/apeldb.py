@@ -44,12 +44,6 @@ class ApelDb(object):
         except ImportError:
             logger.info('Cannot import mysql backend')
 
-        try:
-            from apel.db.backends.oracle import ApelOracleDb
-            BACKENDS['oracle'] = ApelOracleDb
-        except ImportError:
-            logger.debug('Cannot import oracle backend')
-
         if backend not in BACKENDS.keys():
             raise ApelDbException('Unknown backend: %s' % (backend))
 
