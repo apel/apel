@@ -113,6 +113,7 @@ def runprocess(db_config_file, config_file, log_config_file):
             # Make sure that records are not coming from the same site by two different routes
             # N.B. Disabled as check doesn't scale well and isn't that useful.
             # db.check_duplicate_sites()
+            db.summarise_storage()
             db.summarise_jobs()
             db.normalise_summaries()
             db.copy_summaries()

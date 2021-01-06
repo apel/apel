@@ -374,3 +374,51 @@ WHERE StarRecords.StorageSystemID = StorageSystems.id
   AND StarRecords.GroupID = Groups.id
   AND StarRecords.SubGroupID = SubGroups.id
   AND StarRecords.RoleID = Roles.id;
+
+-- -----------------------------------------------------------------------------
+-- Summaries
+DROP TABLE IF EXISTS DaySummaries;
+CREATE TABLE DaySummaries (
+  Site                        VARCHAR(255),
+  StorageSystem               VARCHAR(255),
+  StorageShare                VARCHAR(255),
+  StorageMedia                VARCHAR(255),
+  DirectoryPath               VARCHAR(255),
+  `Group`                     VARCHAR(255),
+  EndTime                     DATETIME NOT NULL,
+  Month                       INTEGER NOT NULL,
+  Year                        INTEGER NOT NULL,
+  FileCount                   INTEGER,
+  ResourceCapacityUsed        BIGINT NOT NULL,
+  LogicalCapacityUsed         BIGINT,
+  ResourceCapacityAllocated   BIGINT,
+  PRIMARY KEY (Site, StorageSystem, StorageShare, StorageMedia, DirectoryPath,
+               `Group`, EndTime, Month, Year)
+);
+
+
+
+
+DROP PROCEDURE IF EXISTS DailySummary;
+DELIMITER //
+CREATE PROCEDURE DailySummary()
+BEGIN
+   REPLACE INTO DaySummaries(Site, StorageSystem, StorageShare, StorageMedia,
+   DirectoryPath, `Group`, EndTime, Month, Year, FileCount, ResourceCapacityUsed,
+   LogicalCapacityUsed, ResourceCapacityAllocated)
+   SELECT Site,
+          StorageSystem,
+          StorageShare,
+          StorageMedia,
+          DirectoryPath,
+          `Group`,
+          EndTime,
+          MONTH(EndTime),
+          YEAR(EndTime),
+          SUM(FileCount),
+          SUM(ResourceCapacityUsed),
+          SUM(LogicalCapacityUsed),
+          SUM(ResourceCapacityAllocated)
+   FROM VStarRecords
+   Group BY 1,2,3,4,5,6,7;
+END //
