@@ -26,11 +26,16 @@
 '''
 
 from optparse import OptionParser
-import ConfigParser
 import sys
 import os
 import logging.config
 import ldap
+
+try:
+    import ConfigParser
+except ImportError:
+    # Renamed in Python 3
+    import configparser as ConfigParser
 
 from apel import __version__
 from apel.db import ApelDb, ApelDbException
