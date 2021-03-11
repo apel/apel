@@ -38,9 +38,7 @@ from apel.db.unloader import DbUnloader
 from apel.ldap import fetch_specint
 from apel.common import set_up_logging
 from apel.common.exceptions import install_exc_handler, default_handler
-
-from ssm.brokers import StompBrokerGetter, STOMP_SERVICE, STOMP_SSL_SERVICE
-from ssm.ssm2 import Ssm2, Ssm2Exception
+import ssm.agents
 
 
 DB_BACKEND = 'mysql'
@@ -56,76 +54,13 @@ class ClientConfigException(Exception):
 
 
 def run_ssm(scp):
-    '''
-    Run the SSM according to the values in the ConfigParser object.
-    '''
+    """Run the SSM according to the values in the ConfigParser object."""
     log = logging.getLogger(LOGGER_ID)
-    try:
-        bg = StompBrokerGetter(scp.get('broker', 'bdii'))
-        use_ssl = scp.getboolean('broker', 'use_ssl')
-        if use_ssl:
-            service = STOMP_SSL_SERVICE
-        else:
-            service = STOMP_SERVICE
-        brokers = bg.get_broker_hosts_and_ports(service, scp.get('broker',
-                                                                 'network'))
-        log.info('Found %s brokers.', len(brokers))
-    except ConfigParser.NoOptionError, e:
-        try:
-            host = scp.get('broker', 'host')
-            port = scp.get('broker', 'port')
-            brokers = [(host, int(port))]
-        except ConfigParser.NoOptionError:
-            log.error('Options incorrectly supplied for either single broker '
-                      'or broker network. Please check configuration.')
-            log.error('System will exit.')
-            log.info()
-            print 'SSM failed to start.  See log file for details.'
-            sys.exit(1)
-    except ldap.LDAPError, e:
-        log.error('Failed to retrieve brokers from LDAP: %s', e)
-        log.error('Messages were not sent.')
-        return
 
-    try:
-        try:
-            server_cert = scp.get('certificates', 'server_cert')
-            if not os.path.isfile(server_cert):
-                raise Ssm2Exception('Server certificate location incorrect.')
-        except ConfigParser.NoOptionError:
-            log.info('No server certificate supplied. Will not encrypt messages.')
-            server_cert = None
-
-        try:
-            destination = scp.get('messaging', 'destination')
-            if destination == '':
-                raise Ssm2Exception('No destination queue is configured.')
-        except ConfigParser.NoOptionError, e:
-            raise Ssm2Exception(e)
-
-        ssm = Ssm2(brokers,
-                   scp.get('messaging', 'path'),
-                   dest=scp.get('messaging', 'destination'),
-                   cert=scp.get('certificates', 'certificate'),
-                   capath=scp.get('certificates', 'capath'),
-                   key=scp.get('certificates', 'key'),
-                   use_ssl=scp.getboolean('broker', 'use_ssl'),
-                   enc_cert=server_cert)
-    except Ssm2Exception, e:
-        log.error('Failed to initialise SSM: %s', e)
-        log.error('Messages have not been sent.')
-        return
-
-    try:
-        ssm.handle_connect()
-        ssm.send_all()
-        ssm.close_connection()
-    except Ssm2Exception, e:
-        log.error('SSM failed to complete successfully: %s', e)
-        return
-
-    log.info('SSM run has finished.')
-    log.info('Sending SSM has shut down.')
+    protocol = ssm.agents.get_protocol(scp, log)
+    log.info('Setting up SSM with protocol: %s', protocol)
+    brokers, project, token = ssm.agents.get_ssm_args(protocol, scp, log)
+    ssm.agents.run_sender(protocol, brokers, project, token, scp, log)
 
 
 def run_client(ccp):
@@ -378,8 +313,16 @@ def main():
         # Send unloaded messages
         log.info(LOG_BREAK)
         log.info('Starting SSM.')
-        run_ssm(scp)
-        log.info('SSM stopped.')
+        try:
+            run_ssm(scp)
+        except SystemExit as e:
+            if e.code == 1:
+                log.error('SSM failed to run.')
+            else:
+                log.critical('Unexpected SystemExit. See traceback below.')
+                raise e
+        else:
+            log.info('SSM stopped.')
         log.info(LOG_BREAK)
 
     log.info('Client finished')
