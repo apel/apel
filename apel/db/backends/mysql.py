@@ -171,7 +171,7 @@ class ApelMysqlDb(object):
             self.db.rollback()
             raise ApelDbException(err)
 
-    def get_records(self, record_type, table_name=None, query=None, rec_number=1000):
+    def get_records(self, record_type, table_name=None, query=None, records_per_message=1000):
         '''
         Yields lists of records fetched from database of the given type.  This is used
         if the records are coming directly from a table or view.
@@ -186,10 +186,10 @@ class ApelMysqlDb(object):
 
         log.debug(select_query)
 
-        for batch in self._get_records(record_type, select_query, rec_number):
+        for batch in self._get_records(record_type, select_query, records_per_message):
             yield batch
 
-    def get_sync_records(self, query=None, rec_number=1000):
+    def get_sync_records(self, query=None, records_per_message=1000):
         """
         Get sync records from the SuperSummaries table. Filter by the
         provided query.
@@ -206,10 +206,10 @@ class ApelMysqlDb(object):
 
         log.debug(select_query)
 
-        for batch in self._get_records(SyncRecord, select_query, rec_number):
+        for batch in self._get_records(SyncRecord, select_query, records_per_message):
             yield batch
 
-    def _get_records(self, record_type, query_string, rec_number=1000):
+    def _get_records(self, record_type, query_string, records_per_message=1000):
 
         record_list = []
         try:
@@ -220,7 +220,7 @@ class ApelMysqlDb(object):
             c = self.db.cursor(cursorclass=MySQLdb.cursors.SSDictCursor)
             c.execute(query_string)
             while True:
-                for row in c.fetchmany(size=rec_number):
+                for row in c.fetchmany(size=records_per_message):
                     record = record_type()
                     # row is a dictionary {Field: Value}
                     record.set_all(row)

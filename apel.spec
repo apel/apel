@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.8.2
+Version:        1.9.0
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -25,7 +25,7 @@ The project is written in Python.
 %package lib
 Summary:        Libraries required for Apel Client, Server and Parsers
 Group:          Development/Languages
-Requires:       MySQL-python python-ldap python-iso8601
+Requires:       MySQL-python, python-ldap, python-iso8601, python-dirq
 Requires(pre):  shadow-utils
 
 %description lib
@@ -44,7 +44,7 @@ supported by the APEL system: Torque, SGE and LSF.
 %package client
 Summary:        APEL client package
 Group:          Development/Languages
-Requires:       apel-lib >= %{version}, apel-ssm
+Requires:       apel-lib >= %{version}, apel-ssm >= 3.2.0
 Requires(pre):  shadow-utils
 
 %description client
@@ -55,7 +55,7 @@ SSM.
 %package server
 Summary:        APEL server package
 Group:          Development/Languages
-Requires:       apel-lib >= %{version}, apel-ssm
+Requires:       apel-lib >= %{version}
 Requires(pre):  shadow-utils
 
 %description server
@@ -199,6 +199,14 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Fri Mar 19 2021 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.0-1
+ - [client] Added AMS support. Requires at least SSM version 3.2.0.
+ - [server] Added ability to alter the number of records unloaded per message.
+ - [server] Added logging of the record type being loaded.
+ - Added python-dirq to RPM package dependencies.
+ - Fixed mistake in storage accounting schema.
+ - Added linting to RPM build process.
+
  * Mon Aug 19 2019 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.8.2-1
  - [server] Tweaked how cloud records are loaded so that the last received
    record for a VM in a month is kept (rather than the one with the latest

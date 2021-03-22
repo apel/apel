@@ -1,5 +1,13 @@
 Changelog for apel
 ==================
+ * Fri Mar 19 2021 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.0-1
+ - [client] Added AMS support. Requires at least SSM version 3.2.0.
+ - [server] Added ability to alter the number of records unloaded per message.
+ - [server] Added logging of the record type being loaded.
+ - Added python-dirq to RPM package dependencies.
+ - Fixed mistake in storage accounting schema.
+ - Added linting to RPM build process.
+
  * Mon Aug 19 2019 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.8.2-1
  - [server] Tweaked how cloud records are loaded so that the last received
    record for a VM in a month is kept (rather than the one with the latest
