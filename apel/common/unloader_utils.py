@@ -38,6 +38,35 @@ def check_records_per_message(cp):
 
     try:
         records_per_message = int(cp.get('unloader', 'records_per_message'))
+    #except ConfigParser.NoSectionError, ConfigParser.NoOptionError:
+    #   #TODO use this block?
+    #   #TODO which message to convey that a possibly missing section should be added?
+    #   log.info('records_per_message not specified in an [unloader] section, defaulting to %d.',)
+    #   log.info('records_per_message not specified for [unloader] section, defaulting to %d.',)
+    #   log.info('records_per_message not specified, defaulting to %d.',)
+    #   #...
+    #   return RECORDS_PER_MESSAGE_DEFAULT
+    except ConfigParser.NoSectionError:
+        log.info(
+            '[unloader] section not present, defaulting to %d.',
+            RECORDS_PER_MESSAGE_DEFAULT,
+        )
+    except ConfigParser.NoOptionError:
+        log.info(
+            'records_per_message not specified, defaulting to %d.',
+            RECORDS_PER_MESSAGE_DEFAULT,
+        )
+    except ValueError:
+        log.error(
+            'Invalid records_per_message value, must be a postive integer. Defaulting to %d.',
+            RECORDS_PER_MESSAGE_DEFAULT,
+        )
+    except Exception as e:
+        log.error(
+            'Unknown error.'
+        )
+        raise e
+    else:
         if records_per_message < RECORDS_PER_MESSAGE_MIN:
             log.warning(
                 'records_per_message too small, increasing from %d to %d',
@@ -54,28 +83,5 @@ def check_records_per_message(cp):
             return RECORDS_PER_MESSAGE_MAX
         else:
             return records_per_message
-    except ConfigParser.NoOptionError:
-        #log.warning( # TODO warning or info...
-        log.info(
-            'records_per_message not specified, defaulting to %d.',
-            RECORDS_PER_MESSAGE_DEFAULT,
-        )
-        return RECORDS_PER_MESSAGE_DEFAULT
-    except ConfigParser.NoSectionError:
-        log.info( 
-            'unloader section not specified, defaulting to %d.',
-            RECORDS_PER_MESSAGE_DEFAULT,
-        )
-        return RECORDS_PER_MESSAGE_DEFAULT
-    except ValueError:
-        log.error(
-            'Invalid records_per_message value, must be a postive integer. Defaulting to %d.',
-            RECORDS_PER_MESSAGE_DEFAULT,
-        )
-        return RECORDS_PER_MESSAGE_DEFAULT
 
-    log.error( # TODO return a default value, or error out on unknown fail case?
-        'Unkown. Defaulting to %d.',
-        RECORDS_PER_MESSAGE_DEFAULT,
-    )
     return RECORDS_PER_MESSAGE_DEFAULT
