@@ -51,7 +51,7 @@ def check_records_per_message(cp):
         )
     except ValueError:
         log.error(
-            'Invalid records_per_message value, must be a postive integer. '\
+            'Invalid records_per_message value, must be a postive integer. '
             'Defaulting to %d.',
             RECORDS_PER_MESSAGE_DEFAULT,
         )
@@ -60,7 +60,7 @@ def check_records_per_message(cp):
             'Unknown error.'
         )
         raise e
-    else: # When no errors are thrown
+    else:  # When no errors are thrown
         if records_per_message < RECORDS_PER_MESSAGE_MIN:
             log.warning(
                 'records_per_message too small, increasing from %d to %d',

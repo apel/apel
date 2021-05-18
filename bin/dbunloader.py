@@ -114,9 +114,10 @@ if __name__ == '__main__':
 
     interval = cp.get('unloader', 'interval')
 
-    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns)
+    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos,
+                          local_jobs, withhold_dns)
 
-    unloader.records_per_message = unloader_utils.check_records_per_message(ccp)
+    unloader.records_per_message = check_records_per_message(ccp)
 
     try:
         if interval == 'latest':
