@@ -24,7 +24,7 @@ except ImportError:
 
 log = logging.getLogger(__name__)
 
-RECORDS_PER_MESSAGE_MIN = 1 
+RECORDS_PER_MESSAGE_MIN = 1
 RECORDS_PER_MESSAGE_DEFAULT = 1000
 RECORDS_PER_MESSAGE_MAX = 5000
 
@@ -32,20 +32,13 @@ RECORDS_PER_MESSAGE_MAX = 5000
 def check_records_per_message(cp):
     '''
     Check the range of the records_per_message entry in ConfigParser object.
-    If it is out of range then set to closest bound within range. Else if 
+    If it is out of range then set to closest bound within range. Else if
     it doesn't exist, set value to default.
     '''
 
     try:
         records_per_message = int(cp.get('unloader', 'records_per_message'))
-    #except ConfigParser.NoSectionError, ConfigParser.NoOptionError:
-    #   #TODO use this block?
-    #   #TODO which message to convey that a possibly missing section should be added?
-    #   log.info('records_per_message not specified in an [unloader] section, defaulting to %d.',)
-    #   log.info('records_per_message not specified for [unloader] section, defaulting to %d.',)
-    #   log.info('records_per_message not specified, defaulting to %d.',)
-    #   #...
-    #   return RECORDS_PER_MESSAGE_DEFAULT
+
     except ConfigParser.NoSectionError:
         log.info(
             '[unloader] section not present, defaulting to %d.',
@@ -58,7 +51,8 @@ def check_records_per_message(cp):
         )
     except ValueError:
         log.error(
-            'Invalid records_per_message value, must be a postive integer. Defaulting to %d.',
+            'Invalid records_per_message value, must be a postive integer. '\
+            'Defaulting to %d.',
             RECORDS_PER_MESSAGE_DEFAULT,
         )
     except Exception as e:
@@ -66,7 +60,7 @@ def check_records_per_message(cp):
             'Unknown error.'
         )
         raise e
-    else:
+    else: # When no errors are thrown
         if records_per_message < RECORDS_PER_MESSAGE_MIN:
             log.warning(
                 'records_per_message too small, increasing from %d to %d',
@@ -84,4 +78,5 @@ def check_records_per_message(cp):
         else:
             return records_per_message
 
+    # Return default when specific errors thrown
     return RECORDS_PER_MESSAGE_DEFAULT
