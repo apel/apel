@@ -44,7 +44,7 @@ class UnloaderUtilsTest(unittest.TestCase):
     def mkconfig(self, value, header='unloader', key='records_per_message'):
         try:  # Python 3
             cfgstr = bytes('[%s]\n%s = %s' % (header, key, value), 'utf-8')
-        except:  # Python 2.7
+        except TypeError:  # Python 2.7
             cfgstr = bytes('[%s]\n%s = %s' % (header, key, value))
         tmp = tempfile.NamedTemporaryFile()
         tmp.write(cfgstr)
