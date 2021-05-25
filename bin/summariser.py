@@ -121,11 +121,9 @@ def runprocess(db_config_file, config_file, log_config_file):
         else:
             raise ApelDbException('Unknown database type: %s' % db_type)
 
-        log.info('Summarising complete.')
-
         # Calculate end time to output time to logs
         elapsed_time = round(time.time() - start_time, 3)
-        log.info('Summariser completed in: %s seconds' % elapsed_time)
+        log.info('Summarising completed in: %s seconds', elapsed_time)
 
         log.info(LOG_BREAK)
 
