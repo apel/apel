@@ -54,11 +54,6 @@ def check_records_per_message(cp):
             'Defaulting to %d.',
             RECORDS_PER_MESSAGE_DEFAULT,
         )
-    except Exception as e:
-        log.error(
-            'Unknown error.'
-        )
-        raise e
     else:  # When no errors are thrown
         if records_per_message < RECORDS_PER_MESSAGE_MIN:
             log.warning(
