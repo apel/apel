@@ -18,6 +18,11 @@ class MysqlTest(unittest.TestCase):
                  'CREATE DATABASE apel_unittest;')
         subprocess.call(['mysql', '-u', 'root', '-e', query])
 
+        # Use MariaDB 10.1.x defaults
+        modes = ("SET GLOBAL sql_mode = "
+                 "'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'")
+        subprocess.call(['mysql', '-u', 'root', '-e', modes])
+
         schema_path = os.path.abspath(os.path.join('..', 'schemas',
                                                    'server.sql'))
         schema_handle = open(schema_path)
