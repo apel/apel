@@ -146,7 +146,7 @@ CREATE TABLE BlahdRecords (
   ValidUntil                  DATETIME     DEFAULT NULL,
   Processed                   INT          DEFAULT NULL,
 
-  PRIMARY KEY(TimeStamp, SiteId, LrmsId, CEID),
+  PRIMARY KEY(TimeStamp, SiteID, LrmsId, CEID),
   INDEX BlahdJoinIdx (ValidFrom, ValidUntil, SiteID, LrmsId)
 );
 
