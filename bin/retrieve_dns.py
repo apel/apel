@@ -217,6 +217,12 @@ def verify_dn(dn):
     return True
 
 def verify_service_types(service_types):
+    '''
+    Returns true if all the provided service types are valid GOCDB service types.
+    
+    Else, returns false. 
+    Validation is done using the regex GOCDB 5.7.4 uses for validation 
+    '''
     service_types = service_types.split(',')
     for service_type in service_types:
         pattern = re.compile("^(\w|[\._-])*$")
