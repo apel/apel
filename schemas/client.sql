@@ -140,7 +140,7 @@ CREATE TABLE BlahdRecords (
   VORoleID                    INT          NOT NULL, -- foreign key
   CEID                        INT          NOT NULL, -- foreign key
   GlobalJobId                 VARCHAR(255) DEFAULT NULL,
-  LrmsId                      VARCHAR(255) DEFAULT NULL,
+  LrmsId                      VARCHAR(255) DEFAULT '',
   SiteID                      INT          NOT NULL, -- foreign key
   ValidFrom                   DATETIME     DEFAULT NULL,
   ValidUntil                  DATETIME     DEFAULT NULL,
