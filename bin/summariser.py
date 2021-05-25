@@ -24,6 +24,7 @@ import ConfigParser
 import logging.config
 import os
 import sys
+import time
 
 from apel.db import ApelDb, ApelDbException
 from apel.common import set_up_logging, LOG_BREAK
@@ -33,6 +34,9 @@ from apel import __version__
 def runprocess(db_config_file, config_file, log_config_file):
     '''Parse the configuration file, connect to the database and run the
        summarising process.'''
+
+    # Store start time to log how long the summarising process takes
+    start_time = time.time()
 
     try:
         # Read configuration from file
@@ -117,7 +121,10 @@ def runprocess(db_config_file, config_file, log_config_file):
         else:
             raise ApelDbException('Unknown database type: %s' % db_type)
 
-        log.info('Summarising complete.')
+        # Calculate end time to output time to logs
+        elapsed_time = round(time.time() - start_time, 3)
+        log.info('Summarising completed in: %s seconds', elapsed_time)
+
         log.info(LOG_BREAK)
 
     except ApelDbException, err:
