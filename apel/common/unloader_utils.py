@@ -30,12 +30,11 @@ RECORDS_PER_MESSAGE_MAX = 5000
 
 
 def check_records_per_message(cp):
-    '''
-    Check the range of the records_per_message entry in ConfigParser object.
+    """Check the range of the records_per_message entry in ConfigParser object.
+
     If it is out of range then set to closest bound within range. Else if
     it doesn't exist, set value to default.
-    '''
-
+    """
     try:
         records_per_message = int(cp.get('unloader', 'records_per_message'))
 
