@@ -25,6 +25,7 @@ from apel.db.records import (BlahdRecord,
                              CloudSummaryRecord,
                              EventRecord,
                              GroupAttributeRecord,
+                             GPURecord,
                              JobRecord,
                              NormalisedSummaryRecord,
                              ProcessedRecord,
@@ -72,7 +73,8 @@ class ApelMysqlDb(object):
               CloudRecord : "CALL ReplaceCloudRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               CloudSummaryRecord : "CALL ReplaceCloudSummaryRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               StorageRecord: "CALL ReplaceStarRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-              GroupAttributeRecord: "CALL ReplaceGroupAttribute(%s, %s, %s)"
+              GroupAttributeRecord: "CALL ReplaceGroupAttribute(%s, %s, %s)",
+              GPURecord: "CALL ReplaceGPURecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" 
               }
 
     def __init__(self, host, port, username, pwd, db):
