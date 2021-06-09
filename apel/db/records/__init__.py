@@ -30,9 +30,9 @@ from event import EventRecord
 from group_attribute import GroupAttributeRecord
 from job import JobRecord
 from processed import ProcessedRecord
+from gpu import GPURecord
 
 from storage import StorageRecord
 from summary import SummaryRecord
 from normalised_summary import NormalisedSummaryRecord
 from sync import SyncRecord
-
