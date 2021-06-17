@@ -1,0 +1,53 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Python application for the hackathon
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 2.7 #, 3.7
+    - name: Setup mariadb
+      run: |
+        apt-get update && apt-get upgrade
+        sudo apt-get install software-properties-common
+        apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+        add-apt-repository 'deb [arch=amd64,arm64,ppc64el] http://mirror.lstn.net/mariadb/repo/10.4/ubuntu bionic main'
+        apt-get update
+        apt-get install mariadb-server
+        systemctl start mariadb
+# Secure setup of mariadb required
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+#    - name: Test with pytest
+#      run: |
+#        pytest
+    - name: Setup environment variables
+      run: |
+        export PYTHONPATH=$PYTHONPATH:`pwd -P`
+        cd test
+    - name: Coverage test
+      run: |
+        coverage run --branch --source=apel,bin -m unittest2 discover --buffer
+    - name: Post test summaries
+      run: |
+        codecov
