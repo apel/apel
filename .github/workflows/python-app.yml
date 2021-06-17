@@ -18,13 +18,13 @@ jobs:
         python-version: 2.7 #, 3.7
     - name: Setup mariadb
       run: |
-        apt-get update && apt-get upgrade
+        sudo apt-get update && apt-get upgrade
         sudo apt-get install software-properties-common
-        apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-        add-apt-repository 'deb [arch=amd64,arm64,ppc64el] http://mirror.lstn.net/mariadb/repo/10.4/ubuntu bionic main'
-        apt-get update
-        apt-get install mariadb-server
-        systemctl start mariadb
+        sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+        sudo add-apt-repository 'deb [arch=amd64,arm64,ppc64el] http://mirror.lstn.net/mariadb/repo/10.4/ubuntu bionic main'
+        sudo apt-get update
+        sudo apt-get install mariadb-server
+        sudo systemctl start mariadb
 # Secure setup of mariadb required
     - name: Install dependencies
       run: |
