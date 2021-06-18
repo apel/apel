@@ -33,6 +33,9 @@ jobs:
       with:
         spec_file: "apel.spec"
 
+    - name: Lint RPMs
+      run: rpmlint ${{ steps.rpm.outputs.rpm_dir_path }}
+
     - name: Upload artifact
       uses: actions/upload-artifact@v2.2.4
       with:
