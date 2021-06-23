@@ -179,7 +179,7 @@ CREATE TABLE CloudSummaries (
   PublisherDNID VARCHAR(255),
 
   PRIMARY KEY (SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID,
-    VOID, VOGroupID, VORoleID, Status, CloudType, ImageId, CpuCount,
+    VOID, VOGroupID, VORoleID, Status, ImageId, CpuCount,
     BenchmarkType, Benchmark)
 
 );
