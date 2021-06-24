@@ -1,0 +1,9 @@
+version: 2
+updates:
+
+  - package-ecosystem: "github-actions"
+      # For GitHub Actions, "/" checks for workflow files in .github/workflows.
+    directory: "/"
+    schedule:
+      # By default, this is on Monday.
+      interval: "weekly"
