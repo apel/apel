@@ -3,6 +3,9 @@ on:
   push:
     tags: '[0-9]+.[0-9]+.[0-9]+-*'
   schedule:
+    # If this workflow changes in the future to uploading RPMs directly to a
+    # release on tag push, then a conditional check should be added for the
+    # cron to continue uploading as an artifact on the workflow build.
     - cron: '57 21 * * SUN'
 
 jobs:
