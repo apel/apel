@@ -43,8 +43,8 @@ GPU_MSG_SCHEMA = {
                     "FQAN",
                     "SiteName",
                     "Count",
-                    "Cores",
-                    "ActiveDuration"
+                    "AvailableDuration",
+                    "Type",
                 ],
                 "properties": {
                     "MeasurementMonth": {

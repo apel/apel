@@ -96,6 +96,7 @@ class ApelMysqlDb(object):
         self._local_jobs_proc = "LocalJobs"
         self._spec_lookup_proc = "SpecLookup (%s, %s, %s, %s)"
         self._spec_update_proc = "CALL SpecUpdate (%s, %s, %s, %s, %s)"
+        # [ ] TODO self._summarise_gpu_proc = "SummariseGPU"
 
         self._processed_clean = "CALL CleanProcessedFiles(%s)"
 

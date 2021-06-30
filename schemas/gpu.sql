@@ -19,13 +19,13 @@ CREATE TABLE GPURecords (
   Cores INT,
   ActiveDuration INT,
   AvailableDuration INT,
-  BenchmarkType VARCHAR(50),       
+  BenchmarkType VARCHAR(255),       
   Benchmark DECIMAL(10,3),                
   Type VARCHAR(255) NOT NULL,       
   Model VARCHAR(255),               
-  PublisherDNID INT NOT NULL 
+  PublisherDNID INT NOT NULL,
 
-  -- PRIMARY KEY (AssociatedRecord, MeasurementMonth, MeasurementYear),   
+  PRIMARY KEY (AssociatedRecord, MeasurementMonth, MeasurementYear)   
 
   -- INDEX (UpdateTime),
   -- INDEX (GlobalUserName),
@@ -43,7 +43,7 @@ CREATE PROCEDURE ReplaceGPURecord(
   globalUserName VARCHAR(255),
   fqan VARCHAR(255),
   siteName VARCHAR(255),
-  count decimal(10,3),
+  count DECIMAL(10,3),
   cores INT,
   activeDuration INT,
   availableDuration INT,
@@ -55,7 +55,6 @@ CREATE PROCEDURE ReplaceGPURecord(
 )
 BEGIN
 REPLACE INTO GPURecords(
-
   MeasurementMonth,
   MeasurementYear,
   AssociatedRecordType,
@@ -78,7 +77,7 @@ VALUES(
   measurementYear,
   associatedRecordType,
   associatedRecord,
-  globalUserName,  -- [?] DNLookup(globalUserName) -> GlobalUsernameID
+  globalUserName,
   fqan,
   siteName,
   count,
@@ -111,52 +110,65 @@ DELIMITER ;
 -- -- sitename, globalusername, associatedrecordtype, month, year, 
 -- -- count, cores, type, model, benchmark, benchmarktype
 -- 
--- DROP TABLE IF EXISTS GPUSummaries;
--- CREATE TABLE GPURecords (
---     SiteName varchar(255) not null, 
---     Month int not null, 
---     Year int not null,
---     AssociatedRecordType varchar(50) not null,
---     GlobalUserName varchar(255) not null, 
---     AvailableDuration int not null,
---     ActiveDuration int,
---     Count decimal(10,3) not null,
---     Cores int not null,
---     BenchmarkType varchar(50) not null,
---     Benchmark decimal(10,3) not null,
---     NumberOfRecords INT,
---     PublisherDN varchar(255)
---     primary key (SiteName, Month, Year, GlobalUserName, Count, Cores, 
---                   BenchmarkType, Benchmark)
--- );
--- 
--- DROP PROCEDURE IF EXISTS SummariseGPUs;
--- DELIMITER //
--- CREATE PROCEDURE SummariseGPUs()
--- 
--- BEGIN
---     REPLACE INTO GPUSummaries(SiteName, Month, Year, GlobalUserName, 
---         AssociatedRecordType,
---         AvailableDuration, ActiveDuration, Cores, Count
---         BenchmarkType, Benchmark, NumberOfRecords, PublisherDN)
---     SELECT 
---       SiteName,
---       MeasurementMonth, MeasurementYear,
---       GlobalUserName,
---       AssociatedRecordType,
---       SUM(AvailableDuration),
---       SUM(ActiveDuration),
---       Count,
---       Cores,
---       BenchmarkType,
---       Benchmark,
---       COUNT(*),
---       'summariser'
---       FROM GPURecords
---       GROUP BY SiteName, MeasurementMonth, MeasurementYear, GlobalUserNameID, 
---           AssociatedRecordType, 
---           Count, Cores, 
---           Type, Model, BenchmarkType, Benchmark
---       ORDER BY NULL;
--- END //
--- DELIMITER ;
+--DROP TABLE IF EXISTS GPUSummaries;
+--CREATE TABLE GPUSummaries (
+--    Month INT NOT NULL, 
+--    Year INT NOT NULL,
+--    AssociatedRecordType VARCHAR(255) NOT NULL,
+--    GlobalUserName VARCHAR(255), 
+--    SiteName VARCHAR(255) NOT NULL, 
+--    -- [?] FQAN VARCHAR(255) NOT NULL,
+--    Count DECIMAL(10,3) NOT NULL,
+--    Cores INT,
+--    AvailableDuration INT NOT NULL,
+--    ActiveDuration INT,
+--    BenchmarkType VARCHAR(255),
+--    Benchmark DECIMAL(10,3),
+--    Type VARCHAR(255) NOT NULL,
+--    Model VARCHAR(255),
+--    NumberOfRecords INT NOT NULL,
+--    PublisherDN VARCHAR(255) NOT NULL
+--    PRIMARY KEY (Month, Year, GlobalUserName, 
+--                AssociatedRecordType, SiteName, 
+--                Count, Cores)
+--                -- BenchmarkType, Benchmark)
+--);
+--
+--
+--DROP PROCEDURE IF EXISTS SummariseGPUs;
+--DELIMITER //
+--CREATE PROCEDURE SummariseGPUs()
+--
+--BEGIN
+--    REPLACE INTO GPUSummaries(Month, Year, AssociatedRecordType,
+--        GlobalUserName, SiteName, 
+--        -- [?] FQAN,
+--        Cores, Count, Type, Model, AvailableDuration, ActiveDuration, 
+--        BenchmarkType, Benchmark, NumberOfRecords, PublisherDN)
+--    SELECT 
+--      MeasurementMonth, MeasurementYear,
+--      AssociatedRecordType,
+--      GlobalUserName,
+--      SiteName,
+--      Count,
+--      Cores,
+--      SUM(AvailableDuration),
+--      SUM(ActiveDuration),
+--      BenchmarkType,
+--      -- Benchmark,    -- [?] Potentially mismatching Benchmark values
+--      AVG(Benchmark),
+--      Type,
+--      Model,
+--      COUNT(*),
+--      'summariser'
+--      FROM GPURecords
+--      GROUP BY 
+--          MeasurementMonth, MeasurementYear, 
+--          AssociatedRecordType,
+--          GlobalUserNameID, SiteName, 
+--          Count, Cores, Type, Model,
+--          BenchmarkType, Benchmark
+--      ORDER BY NULL; -- [?]
+--END //
+--DELIMITER ;
+--
