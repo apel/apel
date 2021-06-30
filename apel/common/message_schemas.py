@@ -68,7 +68,7 @@ GPU_MSG_SCHEMA = {
                         "type": "string",
                         "title": "The AssociatedRecordType schema",
                         "enum": [
-                            "cloud"
+                            "cloud",
                         ]
                     },
                     "AssociatedRecord": {
@@ -77,22 +77,6 @@ GPU_MSG_SCHEMA = {
                         "title": "The AssociatedRecord schema",
                         "examples": [
                             "a-fake-vmuuid"
-                        ]
-                    },
-                    "LocalUser": {  # TODO This is struck through in the EGI Cloud proposal document
-                        "$id": "#/properties/UsageRecords/items/properties/LocalUser",
-                        "type": "string",
-                        "title": "The LocalUser schema",
-                        "examples": [
-                            "UserA"
-                        ]
-                    },
-                    "LocalGroup": {  # TODO This is struck through in the EGI Cloud proposal document
-                        "$id": "#/properties/UsageRecords/items/properties/LocalGroup",
-                        "type": "string",
-                        "title": "The LocalGroup schema",
-                        "examples": [
-                            "GroupA"
                         ]
                     },
                     "GlobalUserName": {

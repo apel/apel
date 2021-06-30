@@ -6,42 +6,36 @@ use clientdb
 DROP TABLE IF EXISTS GPURecords;
 CREATE TABLE GPURecords (
   UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  MeasurementTime DATETIME NOT NULL,
   MeasurementMonth INT NOT NULL,
   MeasurementYear INT NOT NULL,
 
   AssociatedRecordType VARCHAR(255) NOT NULL,
-  AssociatedRecord VARCHAR(255) NOT NULL, -- [?] Becomes VMUUID for "Cloud" record type
+  AssociatedRecord VARCHAR(255) NOT NULL,
 
-  -- LocalUserId VARCHAR(255) NOT NULL,   -- [ ] Struck out in document
-  -- LocalGroupId VARCHAR(255) NOT NULL,
-
-                                    -- [?] Uncertainty on exactly how to apply.
-  GlobalUserName VARCHAR(255),      -- [?] GlobalUserNameID, Foreign key? **
-  FQAN VARCHAR(255) NOT NULL,       -- [?] ** See definition of associated record type
-  SiteName VARCHAR(255) NOT NULL,   -- [?] ** See definition of associated record type
-  Count DECIMAL NOT NULL,
+  GlobalUserName VARCHAR(255),      
+  FQAN VARCHAR(255) NOT NULL,       
+  SiteName VARCHAR(255) NOT NULL,   
+  Count DECIMAL(10,3) NOT NULL,
   Cores INT,
   ActiveDuration INT,
   AvailableDuration INT,
-  BenchmarkType VARCHAR(255),       -- [?] VARCHAR(50)
-  Benchmark DECIMAL,                -- [?] DECIMAL(10,3)
-  Type VARCHAR(255) NOT NULL,       -- [?] Accelerator Type, GPU, FPGA, MIC
-  Model VARCHAR(255),               -- [?] Accelerator Model
-  PublisherDNID INT NOT NULL,       -- [?] Foreign key
+  BenchmarkType VARCHAR(50),       
+  Benchmark DECIMAL(10,3),                
+  Type VARCHAR(255) NOT NULL,       
+  Model VARCHAR(255),               
+  PublisherDNID INT NOT NULL 
 
-  -- PRIMARY KEY (),                -- [?] VMUUID, MeasurementMonth, MeasurementYear
+  -- PRIMARY KEY (AssociatedRecord, MeasurementMonth, MeasurementYear),   
 
-  INDEX (UpdateTime),
-  INDEX (GlobalUserName),
-  INDEX (SiteName)
+  -- INDEX (UpdateTime),
+  -- INDEX (GlobalUserName),
+  -- INDEX (SiteName)
 
 );
 
 DROP PROCEDURE IF EXISTS ReplaceGPURecord;
 DELIMITER //
 CREATE PROCEDURE ReplaceGPURecord(
-  measurementTime DATETIME,
   measurementMonth INT,
   measurementYear INT,
   associatedRecordType VARCHAR(255),
@@ -49,7 +43,7 @@ CREATE PROCEDURE ReplaceGPURecord(
   globalUserName VARCHAR(255),
   fqan VARCHAR(255),
   siteName VARCHAR(255),
-  count INT,
+  count decimal(10,3),
   cores INT,
   activeDuration INT,
   availableDuration INT,
@@ -61,7 +55,7 @@ CREATE PROCEDURE ReplaceGPURecord(
 )
 BEGIN
 REPLACE INTO GPURecords(
-  MeasurementTime,
+
   MeasurementMonth,
   MeasurementYear,
   AssociatedRecordType,
@@ -80,12 +74,11 @@ REPLACE INTO GPURecords(
   PublisherDNID
 )
 VALUES(
-  measurementTime,
   measurementMonth,
   measurementYear,
   associatedRecordType,
   associatedRecord,
-  globalUserName,               -- [?] DNLookup(globalUserName) -> GlobalUsernameID
+  globalUserName,  -- [?] DNLookup(globalUserName) -> GlobalUsernameID
   fqan,
   siteName,
   count,
@@ -100,3 +93,70 @@ VALUES(
 );
 END //
 DELIMITER ;
+
+-- -- Sum GPU time by month
+-- --
+-- -- [?] Care about latest record, or assume that all records 
+-- --     in the month are unique?
+-- -- 
+-- -- select
+-- -- siteName, globalUserName, associatedRecordType, 
+-- -- [?] associatedRecord?, measurementMonth, measurementYear,
+-- -- count, cores, benchmarkType, benchmark, type, model
+-- -- sum(activeduration)
+-- -- sum(availableduration)
+-- -- count(*)
+-- 
+-- -- Group by
+-- -- sitename, globalusername, associatedrecordtype, month, year, 
+-- -- count, cores, type, model, benchmark, benchmarktype
+-- 
+-- DROP TABLE IF EXISTS GPUSummaries;
+-- CREATE TABLE GPURecords (
+--     SiteName varchar(255) not null, 
+--     Month int not null, 
+--     Year int not null,
+--     AssociatedRecordType varchar(50) not null,
+--     GlobalUserName varchar(255) not null, 
+--     AvailableDuration int not null,
+--     ActiveDuration int,
+--     Count decimal(10,3) not null,
+--     Cores int not null,
+--     BenchmarkType varchar(50) not null,
+--     Benchmark decimal(10,3) not null,
+--     NumberOfRecords INT,
+--     PublisherDN varchar(255)
+--     primary key (SiteName, Month, Year, GlobalUserName, Count, Cores, 
+--                   BenchmarkType, Benchmark)
+-- );
+-- 
+-- DROP PROCEDURE IF EXISTS SummariseGPUs;
+-- DELIMITER //
+-- CREATE PROCEDURE SummariseGPUs()
+-- 
+-- BEGIN
+--     REPLACE INTO GPUSummaries(SiteName, Month, Year, GlobalUserName, 
+--         AssociatedRecordType,
+--         AvailableDuration, ActiveDuration, Cores, Count
+--         BenchmarkType, Benchmark, NumberOfRecords, PublisherDN)
+--     SELECT 
+--       SiteName,
+--       MeasurementMonth, MeasurementYear,
+--       GlobalUserName,
+--       AssociatedRecordType,
+--       SUM(AvailableDuration),
+--       SUM(ActiveDuration),
+--       Count,
+--       Cores,
+--       BenchmarkType,
+--       Benchmark,
+--       COUNT(*),
+--       'summariser'
+--       FROM GPURecords
+--       GROUP BY SiteName, MeasurementMonth, MeasurementYear, GlobalUserNameID, 
+--           AssociatedRecordType, 
+--           Count, Cores, 
+--           Type, Model, BenchmarkType, Benchmark
+--       ORDER BY NULL;
+-- END //
+-- DELIMITER ;
