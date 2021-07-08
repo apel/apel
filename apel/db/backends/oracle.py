@@ -99,4 +99,3 @@ class ApelOracleDb(object):
             con.close()
 
             raise ApelDbException(err)
-

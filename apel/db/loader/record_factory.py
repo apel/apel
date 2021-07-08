@@ -260,5 +260,3 @@ class RecordFactory(object):
         parser = StarParser(msg_text)
         records = parser.get_records()
         return records
-
-
