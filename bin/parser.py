@@ -132,7 +132,7 @@ def parse_file(parser, apel_db, fp, replace):
     if index == 0:
         log.info('Ignored empty file.')
     elif parsed == 0:
-        log.warn('Failed to parse file.  Is %s correct?', parser.__class__.__name__)
+        log.warning('Failed to parse file.  Is %s correct?', parser.__class__.__name__)
     else:
         log.info('Parsed %d lines', parsed)
         log.info('Ignored %d lines (incomplete jobs)', ignored)
@@ -262,7 +262,7 @@ def handle_parsing(log_type, apel_db, cp):
     try:
         reparse = cp.getboolean(section, 'reparse')
         if reparse:
-            log.warn('Parser will reparse all logfiles found.')
+            log.warning('Parser will reparse all logfiles found.')
     except ConfigParser.NoOptionError:
         reparse = False
 
@@ -312,7 +312,7 @@ def handle_parsing(log_type, apel_db, cp):
         for directory in to_scan:
             updated_files.extend(scan_dir(parser, directory, reparse, expr, apel_db, processed_files))
     else:
-        log.warn('Directory for %s logs was not set correctly, omitting', log_type)
+        log.warning('Directory for %s logs was not set correctly, omitting', log_type)
 
     apel_db.load_records(updated_files)
     log.info('Finished parsing %s log files.', log_type)

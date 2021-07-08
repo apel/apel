@@ -123,14 +123,14 @@ if __name__ == '__main__':
         records_per_message = int(cp.get('unloader', 'records_per_message'))
         if records_per_message < RECORDS_PER_MESSAGE_MIN:
             unloader.records_per_message = RECORDS_PER_MESSAGE_MIN
-            log.warn(
+            log.warning(
                 'records_per_message too small, increasing from %d to %d',
                 records_per_message,
                 RECORDS_PER_MESSAGE_MIN,
             )
         elif records_per_message > RECORDS_PER_MESSAGE_MAX:
             unloader.records_per_message = RECORDS_PER_MESSAGE_MAX
-            log.warn(
+            log.warning(
                 'records_per_message too large, decreasing from %d to %d',
                 records_per_message,
                 RECORDS_PER_MESSAGE_MAX,
@@ -161,8 +161,8 @@ if __name__ == '__main__':
         elif interval == 'all':
             msgs, recs = unloader.unload_all(table_name, send_ur)
         else:
-            log.warn('Unrecognised interval: %s', interval)
-            log.warn('Will not start unloader.')
+            log.warning('Unrecognised interval: %s', interval)
+            log.warning('Will not start unloader.')
         log.info('%d records in %d messages unloaded from %s', recs, msgs, table_name)
     except KeyError:
         log.error('Invalid table name: %s, omitting', table_name)

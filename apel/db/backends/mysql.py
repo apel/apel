@@ -239,7 +239,7 @@ class ApelMysqlDb(object):
             self.db.rollback()
             raise ApelDbException(err)
         except MySQLdb.Warning, warning:
-            log.warn('Warning from MySQL: %s', warning)
+            log.warning('Warning from MySQL: %s', warning)
 
     def get_last_updated(self):
         '''

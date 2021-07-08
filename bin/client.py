@@ -168,7 +168,7 @@ def run_client(ccp):
         for spec in specs:
             parts = spec.split(',')
             if len(parts) != 3:
-                log.warn('Check manual_spec definitions.')
+                log.warning('Check manual_spec definitions.')
             try:
                 sl = float(parts[2])
             except ValueError:
@@ -189,11 +189,11 @@ def run_client(ccp):
                 db.update_spec(site_name, value[0], 'si2k', value[1])
             log.info('Spec updater finished.')
         except ldap.SERVER_DOWN, e:
-            log.warn('Failed to fetch spec info: %s', e)
-            log.warn('Spec updater failed.')
+            log.warning('Failed to fetch spec info: %s', e)
+            log.warning('Spec updater failed.')
         except ldap.NO_SUCH_OBJECT, e:
-            log.warn('Found no spec values in BDII: %s', e)
-            log.warn('Is the site name %s correct?', site_name)
+            log.warning('Found no spec values in BDII: %s', e)
+            log.warning('Is the site name %s correct?', site_name)
 
         log.info(LOG_BREAK)
 
@@ -243,8 +243,8 @@ def run_client(ccp):
             elif interval == 'all':
                 msgs, recs = unloader.unload_all(table_name, send_ur)
             else:
-                log.warn('Unrecognised interval: %s', interval)
-                log.warn('Will not start unloader.')
+                log.warning('Unrecognised interval: %s', interval)
+                log.warning('Will not start unloader.')
 
             if recs > 0:
                 log.info('Unloaded %d records in %d messages.', recs, msgs)
@@ -253,9 +253,9 @@ def run_client(ccp):
                             ' please check your config.')
 
         except KeyError:
-            log.warn('Invalid table name: %s, omitting', table_name)
+            log.warning('Invalid table name: %s, omitting', table_name)
         except ApelDbException, e:
-            log.warn('Failed to unload records successfully: %s', e)
+            log.warning('Failed to unload records successfully: %s', e)
 
         # Always send sync messages
         msgs, recs = unloader.unload_sync()
