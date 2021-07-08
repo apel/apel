@@ -138,7 +138,7 @@ def dns_from_dom(dom):
     """
     dn_nodes = dom.getElementsByTagName('HOSTDN')
 
-    log.info('Found ' + str(len(dn_nodes)) + ' HOSTDN tags.' )
+    log.info('Found %s HOSTDN tags.', len(dn_nodes))
 
     dns = []
     for dn in dn_nodes:
@@ -300,7 +300,7 @@ def runprocess(config_file, log_config_file):
             log.debug("Comment ignored: %s", dn)
         else:
             # We haven't accepted the DN, so write it to the log file.
-            log.warning("DN not valid and won't be added: " + dn)
+            log.warning("DN not valid and won't be added: %s", dn)
 
     new_dn_file.close()
 

@@ -128,7 +128,7 @@ def runprocess(db_config_file, config_file, log_config_file):
         log.info(LOG_BREAK)
 
     except ApelDbException, err:
-        log.error('Error summarising: ' + str(err))
+        log.error('Error summarising: %s', err)
         log.error('Summarising has been cancelled.')
         sys.exit(1)
     finally:

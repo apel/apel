@@ -122,7 +122,7 @@ def run_client(ccp):
                     exclude_vos = None
 
     except (ClientConfigException, ConfigParser.Error), err:
-        log.error('Error in configuration file: ' + str(err))
+        log.error('Error in configuration file: %s', err)
         sys.exit(1)
 
     log.info('Starting apel client version %s.%s.%s', *__version__)
@@ -142,7 +142,7 @@ def run_client(ccp):
         log.info('Connected.')
 
     except (ConfigParser.Error, ApelDbException), err:
-        log.error('Error during connecting to database: ' + str(err))
+        log.error('Error during connecting to database: %s', err)
         log.info(LOG_BREAK)
         sys.exit(1)
 

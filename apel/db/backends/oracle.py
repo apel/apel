@@ -56,8 +56,8 @@ class ApelOracleDb(object):
         try:
             con = cx_Oracle.connect(self._db_connect_string)
 
-            log.info('Connected to: ' + self._db_log_string)
-            log.info('Oracle Version: ' + con.version)
+            log.info('Connected to: %s', self._db_log_string)
+            log.info('Oracle Version: %s', con.version)
 
             con.close()
 
