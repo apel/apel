@@ -7,3 +7,4 @@ unittest2
 coveralls<=1.2.0
 mock
 codecov
+pre-commit
