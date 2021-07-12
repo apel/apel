@@ -96,7 +96,7 @@ class ApelMysqlDb(object):
         self._local_jobs_proc = "LocalJobs"
         self._spec_lookup_proc = "SpecLookup (%s, %s, %s, %s)"
         self._spec_update_proc = "CALL SpecUpdate (%s, %s, %s, %s, %s)"
-        # [ ] TODO self._summarise_gpu_proc = "SummariseGPU"
+        self._summarise_gpus_proc = "SummariseGPUs"
 
         self._processed_clean = "CALL CleanProcessedFiles(%s)"
 
@@ -398,6 +398,35 @@ class ApelMysqlDb(object):
 
             log.info("Summarising cloud records...")
             c.callproc(self._summarise_vms_proc, ())
+            log.info("Done.")
+
+            self.db.commit()
+        except MySQLdb.Error, e:
+            log.error("A mysql error occurred: %s", e)
+            log.error("Any transaction will be rolled back.")
+
+            if self.db is not None:
+                self.db.rollback()
+            raise
+
+    def summarise_gpus(self):
+        '''
+        Aggregate the GPURecords table and put the results in the
+        GPUSummaries table.  This method does this by calling the
+        SummariseGPUs() stored procedure.
+
+        Any failure will result in the entire transaction being rolled
+        back.
+        '''
+        try:
+            # prevent MySQLdb from raising
+            # 'MySQL server has gone' exception
+            self._mysql_reconnect()
+
+            c = self.db.cursor()
+
+            log.info("Summarising GPU records...")
+            c.callproc(self._summarise_gpus_proc, ())
             log.info("Done.")
 
             self.db.commit()
