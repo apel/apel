@@ -25,11 +25,11 @@ CREATE TABLE GPURecords (
   Model VARCHAR(255),               
   PublisherDNID INT NOT NULL,
 
-  PRIMARY KEY (AssociatedRecord, MeasurementMonth, MeasurementYear)   
+  PRIMARY KEY (MeasurementMonth, MeasurementYear, 
+               AssociatedRecordType, AssociatedRecord, 
+               SiteName)
 
-  -- INDEX (UpdateTime),
-  -- INDEX (GlobalUserName),
-  -- INDEX (SiteName)
+  -- [?] INDEX
 
 );
 
@@ -90,5 +90,63 @@ VALUES(
   model,
   DNLookup(publisherDN)
 );
+END //
+DELIMITER ;
+
+
+DROP TABLE IF EXISTS GPUSummaries;
+CREATE TABLE GPUSummaries (
+    Month INT NOT NULL, 
+    Year INT NOT NULL,
+    AssociatedRecordType VARCHAR(255) NOT NULL,
+    GlobalUserName VARCHAR(255), 
+    SiteName VARCHAR(255) NOT NULL, 
+    Count DECIMAL(10,3) NOT NULL,
+    Cores INT,
+    AvailableDuration INT NOT NULL,
+    ActiveDuration INT,
+    BenchmarkType VARCHAR(255),
+    Benchmark DECIMAL(10,3),
+    Type VARCHAR(255) NOT NULL,
+    Model VARCHAR(255),
+    NumberOfRecords INT NOT NULL,
+    PublisherDN VARCHAR(255) NOT NULL,
+
+    PRIMARY KEY (Month, Year, AssociatedRecordType, SiteName, Type)
+);
+
+
+DROP PROCEDURE IF EXISTS SummariseGPUs;
+DELIMITER //
+CREATE PROCEDURE SummariseGPUs()
+
+BEGIN
+    REPLACE INTO GPUSummaries(Month, Year, AssociatedRecordType,
+        GlobalUserName, SiteName, 
+        Cores, Count, AvailableDuration, ActiveDuration, 
+        BenchmarkType, Benchmark, Type, Model, NumberOfRecords, PublisherDN)
+    SELECT 
+      MeasurementMonth, MeasurementYear,
+      AssociatedRecordType,
+      GlobalUserName,
+      SiteName,
+      Count,
+      Cores,
+      SUM(AvailableDuration),
+      SUM(ActiveDuration),
+      BenchmarkType,
+      Benchmark,
+      Type,
+      Model,
+      COUNT(*),
+      'summariser'
+      FROM GPURecords
+      GROUP BY
+          MeasurementMonth, MeasurementYear, 
+          AssociatedRecordType,
+          GlobalUserName, SiteName,
+          Cores, Type, 
+          Benchmark, BenchmarkType
+      ORDER BY NULL;
 END //
 DELIMITER ;

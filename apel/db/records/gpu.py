@@ -22,9 +22,8 @@ class GPURecord(Record):
             "Type",
         ]
 
-        # This list allows us to specify the order of lines when we construct
-        # records.
-        self._msg_fields = [
+        # This specifies the order of entries to match the database schema
+        self._db_fields = [
             "MeasurementMonth", 
             "MeasurementYear", 
             "AssociatedRecordType",
@@ -55,8 +54,8 @@ class GPURecord(Record):
             "Benchmark"
         ]
 
-        # This list specifies the information that goes in the database.
-        self._db_fields = ( self._msg_fields )
+        # This list specifies the output ordering for printed records
+        self._msg_fields = self._db_fields
 
         # All allowed fields.
         self._all_fields = self._db_fields
