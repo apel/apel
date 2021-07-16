@@ -1,10 +1,15 @@
 """A file to store message schemas for JSON based messages"""
 
+import datetime
+
+current_year = datetime.datetime.now().year
+
 GPU_MSG_SCHEMA = {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "http://example.com/example.json",
+    "$schema": "http://json-schema.org/draft-07/schema", 
+    "$id": "http://localhost/schema.json", # [?] Will this schema be made accessible via HTTP? May be difficult using a python object, so unecessary in this state.
     "type": "object",
-    "title": "The root schema",
+    "title": "GPU message schema root",
+    "description": "This schema defines the basic conditions a GPU message must meet",
     "required": [
         "Type",
         "Version",
@@ -13,28 +18,28 @@ GPU_MSG_SCHEMA = {
     "properties": {
         "Type": {
             "$id": "#/properties/Type",
+            "title": "JSON message type",
             "type": "string",
-            "title": "The Type schema",
             "const": "APEL GPU message"
         },
         "Version": {
             "$id": "#/properties/Version",
+            "title": "JSON message version",
             "type": "string",
-            "title": "The Version schema",
             "enum": [
                 "0.1"
             ]
         },
         "UsageRecords": {
             "$id": "#/properties/UsageRecords",
+            "title": "GPU usage records",
+            "description": "The list of records matching GPU record requirements",
             "type": "array",
             "minItems": 1,
             "maxItems": 1000,
-            "title": "The UsageRecords schema",
             "items": {
                 "$id": "#/properties/UsageRecords/items",
                 "type": "object",
-                "title": "The UsageRecord Schema",
                 "required": [
                     "MeasurementMonth",
                     "MeasurementYear",
@@ -50,7 +55,6 @@ GPU_MSG_SCHEMA = {
                     "MeasurementMonth": {
                         "$id": "#/properties/UsageRecords/items/properties/MeasurementMonth",
                         "type": "integer",
-                        "title": "The MeasurementMonth schema",
                         "enum": [
                             1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
                         ]
@@ -58,23 +62,24 @@ GPU_MSG_SCHEMA = {
                     "MeasurementYear": {
                         "$id": "#/properties/UsageRecords/items/properties/MeasurementYear",
                         "type": "integer",
-                        "title": "The MeasurementYear schema",
                         "examples": [
                             2021
-                        ]
+                        ],
+                        # [?] Values greater than 2000 and not in the future
+                        "minimum": 2000,
+                        "maximum": current_year
                     },
                     "AssociatedRecordType": {
                         "$id": "#/properties/UsageRecords/items/properties/AssociatedRecordType",
                         "type": "string",
-                        "title": "The AssociatedRecordType schema",
                         "enum": [
                             "cloud",
+                            "job"
                         ]
                     },
                     "AssociatedRecord": {
                         "$id": "#/properties/UsageRecords/items/properties/AssociatedRecord",
                         "type": "string",
-                        "title": "The AssociatedRecord schema",
                         "examples": [
                             "a-fake-vmuuid"
                         ]
@@ -82,7 +87,6 @@ GPU_MSG_SCHEMA = {
                     "GlobalUserName": {
                         "$id": "#/properties/UsageRecords/items/properties/GlobalUserName",
                         "type": "string",
-                        "title": "The GlobalUserName schema",
                         "examples": [
                             "GlobalUserA"
                         ]
@@ -90,7 +94,6 @@ GPU_MSG_SCHEMA = {
                     "FQAN": {
                         "$id": "#/properties/UsageRecords/items/properties/FQAN",
                         "type": "string",
-                        "title": "The FQAN Schema",
                         "examples": [
                             "None",
                             "project1",
@@ -100,63 +103,62 @@ GPU_MSG_SCHEMA = {
                     "SiteName": {
                         "$id": "#/properties/UsageRecords/items/properties/SiteName",
                         "type": "string",
-                        "title": "The SiteName Schema",
                         "examples": [
                             "TEST-SITE"
                         ]
                     },
                     "Count": {
                         "$id": "#/properties/UsageRecords/items/properties/Count",
+                        "description": "The number of GPUs used",
                         "type": "number",
-                        "title": "The Count schema",
                         "examples": [
                             1.4
                         ]
                     },
                     "Cores": {
                         "$id": "#/properties/UsageRecords/items/properties/Cores",
+                        "description": "The number of cores for this GPU type",
                         "type": "integer",
-                        "title": "The Cores schema",
                         "examples": [
                             128
                         ]
                     },
                     "ActiveDuration": {
                         "$id": "#/properties/UsageRecords/items/properties/ActiveDuration",
+                        "description": "The recorded time in seconds that accelerators were explicitly active for (NOT IMPLEMENTED)",
                         "type": "integer",
-                        "title": "The ActiveDuration schema",
                         "examples": [
                             40
                         ]
                     },
                     "AvailableDuration": {
                         "$id": "#/properties/UsageRecords/items/properties/AvailableDuration",
+                        "description": "The wall time in seconds that accelerators were held for"
                         "type": "integer",
-                        "title": "The AvailableDuration schema",
                         "examples": [
                             4000
                         ]
                     },
                     "BenchmarkType": {
                         "$id": "#/properties/UsageRecords/items/properties/BenchmarkType",
+                        "description": "The identifier for the accelerator benchmark",
                         "type": "string",
-                        "title": "The BenchmarkType schema",
                         "examples": [
-                            "Some Benchmark"
+                            "HEPSPEC"
                         ]
                     },
                     "Benchmark": {
                         "$id": "#/properties/UsageRecords/items/properties/Benchmark",
+                        "description": "The benchmark score",
                         "type": "number",
-                        "title": "The Benchmark schema",
                         "examples": [
                             9000.01
                         ]
                     },
                     "Type": {
                         "$id": "#/properties/UsageRecords/items/properties/Type",
+                        "description": "The general descriptor for accelerator",
                         "type": "string",
-                        "title": "The Type schema",
                         "enum": [
                             "GPU",
                             "FPGA",
@@ -165,15 +167,56 @@ GPU_MSG_SCHEMA = {
                     },
                     "Model": {
                         "$id": "#/properties/UsageRecords/items/properties/Model",
+                        "description": "",
                         "type": "string",
-                        "title": "The Model schema",
                         "examples": [
                             "VendorA-ModelA",
                             "VendorA-ModelB"
                         ]
+                        # [ ] TODO conditional on type
                     }
-                }
+                },
+                "allOf": [ # Check that models match accelerator type
+                    "if": {
+                        "properties": {
+                            "Model": "GPU"
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "Model": {
+                                "enum": [ "gpu-model1", "gpu-model2", "gpu-model3" ] 
+                            }
+                        }
+                    },
+
+                    "if": {
+                        "properties": {
+                            "Model": "FPGA"
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "Model": {
+                                "enum": [ "fpga-model1", "fpga-model2", "fpga-model3" ]
+                            }
+                        }
+                    },
+
+                    "if": {
+                        "properties": {
+                            "Model": "Other"
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "Model": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ]
             }
-        }    
-    }        
+        }
+    }
 }
