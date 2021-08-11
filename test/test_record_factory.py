@@ -127,7 +127,6 @@ class TestRecordFactory(unittest.TestCase):
         """Test creation of GPURecords from a JSON message."""
         # Create some records for a test message.
         record0 = {
-            "MeasurementTime": 1536070129,
             "MeasurementMonth": 9,
             "MeasurementYear": 2018,
             "AssociatedRecordType": "cloud",
@@ -146,7 +145,6 @@ class TestRecordFactory(unittest.TestCase):
         }
 
         record1 = {
-            "MeasurementTime": 1536070129,
             "MeasurementMonth": 9,
             "MeasurementYear": 2018,
             "AssociatedRecordType": "cloud",
@@ -167,7 +165,7 @@ class TestRecordFactory(unittest.TestCase):
         # Create a list of records and build a GPU accounting message.
         usage_records = [record0, record1]
         gpu_accounting_message_v00 = self._generate_json_message(
-            "APEL GPU message", "0.1", usage_records
+            "APEL-GPU-message", "0.1", usage_records
         )
 
         # Create the record objects, using the RecordFactory.

@@ -150,3 +150,62 @@ BEGIN
       ORDER BY NULL;
 END //
 DELIMITER ;
+
+
+
+DROP PROCEDURE IF EXISTS ReplaceGPUSummaryRecord;
+DELIMITER //
+CREATE PROCEDURE ReplaceGPUSummaryRecord(
+  Month INT,
+  Year INT,
+  associatedRecordType VARCHAR(255),
+  globalUserName VARCHAR(255),
+  siteName VARCHAR(255),
+  count DECIMAL(10,3),
+  cores INT,
+  activeDuration INT,
+  availableDuration INT,
+  benchmarkType VARCHAR(255),
+  benchmark DECIMAL,
+  type VARCHAR(255),
+  model VARCHAR(255),
+  number INT,
+  publisherDN VARCHAR(255)
+)
+BEGIN
+REPLACE INTO GPUSummaries(
+  Month,
+  Year,
+  AssociatedRecordType,
+  GlobalUserName,
+  SiteName,
+  Count,
+  Cores,
+  ActiveDuration,
+  AvailableDuration,
+  BenchmarkType,
+  Benchmark,
+  Type,
+  Model,
+  NumberOfRecords,
+  PublisherDN
+)
+VALUES(
+  Month,
+  Year,
+  associatedRecordType,
+  globalUserName,
+  siteName,
+  count,
+  cores,
+  activeDuration,
+  availableDuration,
+  benchmarkType,
+  benchmark,
+  type,
+  model,
+  number,
+  publisherDN
+);
+END //
+DELIMITER ;

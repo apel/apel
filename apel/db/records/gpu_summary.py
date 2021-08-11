@@ -1,22 +1,20 @@
-"""This file contains the GPURecord class."""
+"""This file contains the GPUSummary class."""
 from apel.common import parse_fqan
 from apel.db.records import Record, InvalidRecordException
 
 
-class GPURecord(Record):
-    """Class to represent one GPU record."""
+class GPUSummary(Record):
+    """Class to represent one GPU summary record."""
     def __init__(self):
         """Provide the necessary lists containing message information."""
         Record.__init__(self)
 
         # This specifies the order of entries to match the database schema
         self._db_fields = [
-            "MeasurementMonth", 
-            "MeasurementYear", 
+            "Month", 
+            "Year", 
             "AssociatedRecordType",
-            "AssociatedRecord", 
             "GlobalUserName",
-            "FQAN",
             "SiteName", 
             "Count",
             "Cores",
@@ -26,15 +24,14 @@ class GPURecord(Record):
             "Benchmark", 
             "Type",
             "Model",
+            "NumberOfRecords"
         ]
 
         # Fields which are required by the message format.
         self._mandatory_fields = [
-            "MeasurementMonth",
-            "MeasurementYear",
+            "Month",
+            "Year",
             "AssociatedRecordType",
-            "AssociatedRecord",
-            "FQAN",
             "SiteName",
             "Count",
             "AvailableDuration",
@@ -42,11 +39,12 @@ class GPURecord(Record):
         ]
 
         self._int_fields = [
-            "MeasurementMonth",
-            "MeasurementYear",
+            "Month",
+            "Year",
             "Cores",
             "ActiveDuration",
-            "AvailableDuration"
+            "AvailableDuration",
+            "NumberOfRecords"
         ]
 
         self._float_fields = [
@@ -69,15 +67,4 @@ class GPURecord(Record):
         # First, call the parent's version.
         Record._check_fields(self)
 
-        # [?] TODO Do we care about assigning VOx to GPU?
-
-        ### Extract the relevant information from the user fqan.
-        ### Keep the fqan itself as other methods in the class use it.
-        #role, group, vo = parse_fqan(self._record_content['FQAN'])
-        #self._record_content['VORole'] = role
-        #self._record_content['VOGroup'] = group
-        #self._record_content['VO'] = vo
-
-        # [?] TODO Check logic GlobalUserName, SiteName, FQAN
-        # [?] TODO Check Type, Model, Cores
-        # [?] TODO Check Benchmark, AssociatedRecord
+        # [ ] TODO See gpu.py final 

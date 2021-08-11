@@ -19,6 +19,7 @@ Module containing the RecordFactory class.
 '''
 
 from apel.common.message_schemas import GPU_MSG_SCHEMA
+from apel.common.message_schemas import GPU_SUMMARY_MSG_SCHEMA
 from apel.db.records.job import JobRecord
 from apel.db.records.summary import SummaryRecord
 from apel.db.records.normalised_summary import NormalisedSummaryRecord
@@ -26,12 +27,14 @@ from apel.db.records.sync import SyncRecord
 from apel.db.records.cloud import CloudRecord
 from apel.db.records.cloud_summary import CloudSummaryRecord
 from apel.db.records.gpu import GPURecord
+from apel.db.records.gpu_summary import GPUSummary
 from apel.db import (JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
                      NORMALISED_SUMMARY_MSG_HEADER, SYNC_MSG_HEADER,
                      CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER,
-                     GPU_MSG_TYPE)
+                     GPU_MSG_TYPE, GPU_SUMMARY_MSG_TYPE)
 
-from apel.db.loader.car_parser import CarParser
+                     
+from apel.db.loader.aur_parser import CarParser
 from apel.db.loader.aur_parser import AurParser
 from apel.db.loader.star_parser import StarParser
 from apel.db.loader.xml_parser import get_primary_ns
@@ -97,7 +100,8 @@ class RecordFactory(object):
                 try:
                     if json_msg['Type'] == GPU_MSG_TYPE:
                         created_records = self._create_gpu_records(json_msg)
-
+                    elif json_msg['Type'] == GPU_SUMMARY_MSG_TYPE:
+                        created_records = self._create_gpu_summary_records(json_msg)
                     else:
                         raise RecordFactoryException(
                             'Unsupported JSON message type: %s' %
@@ -134,6 +138,7 @@ class RecordFactory(object):
                     created_records = self._create_clouds(msg_text)
                 elif (header[0:index].strip() == RecordFactory.CLOUD_SUMMARY_HEADER):
                     created_records = self._create_cloud_summaries(msg_text)
+                # TODO GPU/summaries APEL messages
                 else:
                     raise RecordFactoryException('Message type %s not recognised.' % header)
 
@@ -146,8 +151,29 @@ class RecordFactory(object):
     # Private methods below
     ######################################################################
 
+    def _create_gpu_summary_records(self, json_msg):
+        '''Given a dictionary, attempt to return a list of GPURecord objects.'''
+        # Before attempting to create the records, verify the supplied json
+        # against the message schema.
+        try:
+            jsonschema.validate(json_msg, GPU_SUMMARY_MSG_SCHEMA)
+        # Catch the case where json_msg does not conform to the
+        # expected JSON schema for the JSON message type.
+        except jsonschema.ValidationError as validation_error:
+            raise RecordFactoryException(
+                'GPU summary message invalid against schema: %s' % validation_error
+            )
+
+        created_records = []
+        for record_dict in json_msg['UsageRecords']:
+            gpu_summary_record = GPUSummary()
+            gpu_summary_record.set_all(record_dict)
+            created_records.append(gpu_summary_record)
+
+        return created_records
+
     def _create_gpu_records(self, json_msg):
-        '''Given a dictionary, attempt to return a list of IPRecord objects.'''
+        '''Given a dictionary, attempt to return a list of GPURecord objects.'''
         # Before attempting to create the records, verify the supplied json
         # against the message schema.
         try:

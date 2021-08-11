@@ -17,10 +17,11 @@
 '''
 from apel.db import (Query, ApelDbException, JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
                      NORMALISED_SUMMARY_MSG_HEADER, SYNC_MSG_HEADER,
-                     CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER, GPU_MSG_TYPE)
+                     CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER, 
+                     GPU_MSG_TYPE, GPU_SUMMARY_MSG_SCHEMA)
 from apel.db.records import (JobRecord, SummaryRecord, NormalisedSummaryRecord,
                              SyncRecord, CloudRecord, CloudSummaryRecord, StorageRecord,
-                             GPURecord)
+                             GPURecord, GPUSummary)
 from dirq.QueueSimple import QueueSimple
 try:
     import cStringIO as StringIO
@@ -41,7 +42,8 @@ class DbUnloader(object):
                     SyncRecord: SYNC_MSG_HEADER,
                     CloudRecord: CLOUD_MSG_HEADER,
                     CloudSummaryRecord: CLOUD_SUMMARY_MSG_HEADER,
-                    GPURecord: GPU_MSG_TYPE}
+                    GPURecord: GPU_MSG_TYPE,
+                    GPUSummary: GPU_SUMMARY_MSG_TYPE}
 
     RECORD_TYPES = {'VJobRecords': JobRecord,
                     'VSummaries': SummaryRecord,
@@ -52,7 +54,8 @@ class DbUnloader(object):
                     'VCloudRecords': CloudRecord,
                     'VCloudSummaries': CloudSummaryRecord,
                     'VStarRecords': StorageRecord,
-                    'GPURecords': GPURecord}
+                    'GPURecords': GPURecord,
+                    'GPUSummaries':GPUSummary}
 
     # all record types for which withholding DNs is a valid option
     MAY_WITHHOLD_DNS = [JobRecord, SyncRecord, CloudRecord]
