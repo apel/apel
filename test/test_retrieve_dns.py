@@ -60,8 +60,8 @@ class ConfigTestCase(unittest.TestCase):
                                             'conf', 'auth.cfg'))
         conf = bin.retrieve_dns.get_config(path).__dict__
 
-        settings = {'gocdb_url': ('https://goc.egi.eu/gocdbpi/public/?method=ge'
-                                  't_service_endpoint'),
+        settings = {'gocdb_hosts': ['goc.egi.eu', 'gocdb.hartree.stfc.ac.uk'],
+                    'gocdb_pi_cmd': '/gocdbpi/public/?method=get_service_endpoint&service_type=',
                     'service_types': 'gLite-APEL,uk.ac.gridpp.vac,uk.ac.gridpp.'
                                      'vcycle,ARC-CE',
                     'extra_dns': os.path.normpath('/etc/apel/extra-dns'),
@@ -83,7 +83,7 @@ class ConfigTestCase(unittest.TestCase):
 
         conf = bin.retrieve_dns.get_config(path).__dict__
 
-        settings = {'gocdb_url': None, 'service_types': None, 'extra_dns': None, 'banned_dns': None,
+        settings = {'gocdb_hosts': None, 'gocdb_pi_cmd': None, 'service_types': None, 'extra_dns': None, 'banned_dns': None,
                     'dn_file': None, 'proxy': None, 'expire_hours': 0}
 
         for key in settings:
@@ -126,7 +126,8 @@ class RunprocessTestCase(unittest.TestCase):
         c.extra_dns = self.files['extra']['path']
         c.banned_dns = self.files['ban']['path']
         c.expire_hours = 1
-        c.gocdb_url = "not.a.host"
+        c.gocdb_hosts = ["not.a.host"]
+        c.gocdb_pi_cmd = "not.a.pi_command"
         c.service_types = "type1"
         mock_config.return_value = c
 
@@ -180,9 +181,9 @@ class RunprocessTestCase(unittest.TestCase):
 
     def test_generate_gocdb_urls(self):
         """Test the generation of full GOCDB URLs."""
-        result = bin.retrieve_dns.generate_gocdb_urls('not.a.host','type1,type2')
-        self.assertEqual(next(result), "not.a.host&service_type=type1")
-        self.assertEqual(next(result), "not.a.host&service_type=type2")
+        result = bin.retrieve_dns.generate_gocdb_urls('not.a.host','_not.a.pi_command','type1,type2')
+        self.assertEqual(next(result), "https://not.a.host_not.a.pi_commandtype1")
+        self.assertEqual(next(result), "https://not.a.host_not.a.pi_commandtype2")
 
     def tearDown(self):
         # Delete temp files
