@@ -57,7 +57,8 @@ log = logging.getLogger('auth')
 class Configuration(object):
     """Dummy class for attaching configuration to."""
     def __init__(self):
-        self.gocdb_url = None
+        self.gocdb_hosts = None
+        self.gocdb_pi_cmd = None
         self.extra_dns = None
         self.banned_dns = None
         self.dn_file = None
@@ -73,9 +74,14 @@ def get_config(config_file):
     c = Configuration()
 
     try:
-        c.gocdb_url = cp.get('auth', 'gocdb_url')
+        c.gocdb_hosts = cp.get('auth', 'gocdb_hosts').split(',')
     except ConfigParser.NoOptionError:
-        c.gocdb_url = None
+        c.gocdb_hosts = None
+
+    try:
+        c.gocdb_pi_cmd = cp.get('auth', 'gocdb_pi_cmd')
+    except ConfigParser.NoOptionError:
+        c.gocdb_pi_cmd = None
 
     try:
         c.service_types = cp.get('auth', 'service_types')
@@ -262,9 +268,9 @@ def verify_dn(dn):
 def verify_service_types(service_types):
     '''
     Returns true if all the provided service types are valid GOCDB service types.
-    
-    Else, returns false. 
-    Validation is done using the regex GOCDB 5.7.4 uses for validation 
+
+    Else, returns false.
+    Validation is done using the regex GOCDB 5.7.4 uses for validation
     '''
     service_types = service_types.split(',')
     for service_type in service_types:
@@ -274,10 +280,10 @@ def verify_service_types(service_types):
 
     return True
 
-def generate_gocdb_urls(base_gocdb_url, service_types):
+def generate_gocdb_urls(hostname, gocdb_pi_cmd, service_types):
     # Create a generator expression producing full GOCDB URLs with service types.
     service_types = service_types.split(',')
-    return (base_gocdb_url + '&service_type=' + service_type
+    return ('https://' + hostname + gocdb_pi_cmd + service_type
                                         for service_type in service_types)
 
 def runprocess(config_file):
@@ -291,44 +297,50 @@ def runprocess(config_file):
 
     # We'll fill this list with DNs.
     dns = []
-    xml_string = None
-    fetch_failed = False
+    hosts = cfg.gocdb_hosts
 
-    for next_url in generate_gocdb_urls(cfg.gocdb_url,cfg.service_types):
-        try:
-            # If next_url is none, it implies we have reached the end of paging
-            # (or that paging was not turned on).
-            # The addition of 'not fetch_failed' catches the case where no XML is
-            # returned from next_url (i.e. gocdb_url).
-            while next_url is not None and not fetch_failed:
-                xml_string = get_xml(next_url, cfg.proxy)
-                log.info("Fetched XML from %s", next_url)
+    if not hosts:
+        # gocdb_url == None
+        log.info("No GOCDB URL specified. No DNs fetched.")
 
-                try:
-                    # Parse the XML into a Document Object Model
-                    dom = xml.dom.minidom.parseString(xml_string)
-                    # Get the next url, if any
-                    next_url = next_link_from_dom(dom)
-                    # Add the listed DNs to the list
-                    dns.extend(dns_from_dom(dom))
-                except xml.parsers.expat.ExpatError:
-                    log.warning('Failed to parse the retrieved XML.')
-                    log.warning('Is the URL correct?')
-                    fetch_failed = True
-        except AttributeError:
-            # gocdb_url is None
-            log.info("No GOCDB URL specified - won't fetch URLs.")
-        except IOError as e:
-            log.info("Failed to retrieve XML - is the URL correct?")
-            log.info(e)
-            fetch_failed = True
+    while hosts:
 
-        if fetch_failed and (time.time() - os.path.getmtime(cfg.dn_file) <
-                             (cfg.expire_hours * 3600)):
-            log.warning('Failed to update DNs from GOCDB. Will not modify DNs file.')
-            log.info("auth will exit.")
-            log.info(LOG_BREAK)
-            sys.exit(1)
+        host = hosts.pop(0)
+
+        for next_url in generate_gocdb_urls(host, cfg.gocdb_pi_cmd, cfg.service_types):
+            try:
+                # If next_url is none, it implies we have reached the end of paging
+                # (or that paging was not turned on).
+                while next_url is not None:
+                    xml_string = get_xml(next_url, cfg.proxy)
+                    log.info("Fetched XML from %s", next_url)
+                    # We assume we have connected so prevent attempts to
+                    # any alternative hosts.
+                    hosts = []
+
+                    try:
+                        # Parse the XML into a Document Object Model
+                        dom = xml.dom.minidom.parseString(xml_string)
+                        # Get the next url, if any
+                        next_url = next_link_from_dom(dom)
+                        # Add the listed DNs to the list
+                        dns.extend(dns_from_dom(dom))
+
+                    except xml.parsers.expat.ExpatError:
+                        log.warning('Failed to parse the fetched XML.')
+                        log.warning('Is the URL correct?')
+                        break
+
+            except IOError as e:
+                log.info("Failed to fetch XML from %s - is the URL correct?", next_url)
+                log.info(e)
+
+    if not dns and (time.time() - os.path.getmtime(cfg.dn_file) <
+                            (cfg.expire_hours * 3600)):
+        log.warning('Failed to update DNs from GOCDB. Will not modify DNs file.')
+        log.info("auth will exit.")
+        log.info(LOG_BREAK)
+        sys.exit(1)
 
     # get the DNs from the additional file
     try:
@@ -371,7 +383,7 @@ def runprocess(config_file):
             log.debug("Comment ignored: %s", dn)
         else:
             # We haven't accepted the DN, so write it to the log file.
-            log.warning("DN not valid and won't be added: %s", dn)
+            log.warning("Invalid DN not added: %s", dn)
 
     new_dn_file.close()
 
