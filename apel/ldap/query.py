@@ -82,14 +82,14 @@ def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):
             ce_name = entry[1][GLUE_CE_UNIQUE_ID][0]
             ce_capabilities=entry[1][GLUE_CE_CAPABILITY]
         except (KeyError, IndexError), e:
-            log.error('Error during fetching Spec values: '+str(e))
+            log.error('Error during fetching Spec values: %s', e)
             continue
 
         for capability in ce_capabilities:
             si2k = parse_ce_capability(capability)
             if si2k is not None:
-                log.debug('Found value in first query: '+
-                         str(capability.split('=')[1]))
+                log.debug('Found value in first query: %s',
+                          capability.split('=')[1])
                 values.append((ce_name,
                            Decimal(capability.split('=')[1])))
 
@@ -105,7 +105,7 @@ def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):
             cluster_name = item[1][GLUE_CHUNK_KEY][0].split('=')[1]
             value = Decimal(item[1][GLUE_HOST_BENCHMARK][0])
         except (KeyError, IndexError), e:
-            log.error('Error during fetching Spec values: '+str(e))
+            log.error('Error during fetching Spec values: %s', e)
             continue
 
         subdata = ldap_conn.search_s(top_level,
@@ -116,7 +116,7 @@ def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):
             try:
                 fks = cluster[1][GLUE_FOREIGN_KEY]
             except (KeyError, IndexError), e:
-                log.error('Error during fetching Spec values: '+str(e))
+                log.error('Error during fetching Spec values: %s', e)
                 continue
 
             for fk in fks:

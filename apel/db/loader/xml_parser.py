@@ -81,5 +81,3 @@ def get_primary_ns(msg_text):
     '''
     d = xml.dom.minidom.parseString(msg_text)
     return d.firstChild.namespaceURI
-
-
