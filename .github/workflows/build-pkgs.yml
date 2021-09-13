@@ -36,7 +36,7 @@ jobs:
         tar czvf $APELDIR.tar.gz $APELDIR
         sudo mkdir -p $RPMDIR/SOURCES
         sudo cp $APELDIR.tar.gz $RPMDIR/SOURCES
-        
+
     - name: Build RPM packages
       id: rpm
       uses: naveenrajm7/rpmbuild@v1.0.0
