@@ -117,7 +117,7 @@ if __name__ == '__main__':
     unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos,
                           local_jobs, withhold_dns)
 
-    unloader.records_per_message = check_records_per_message(ccp)
+    unloader.records_per_message = check_records_per_message(cp)
 
     try:
         if interval == 'latest':
