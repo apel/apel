@@ -284,7 +284,7 @@ BEGIN
       'summariser'
       FROM TVMUsagePerMonth
       GROUP BY SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID,
-          VOGroupID, VORoleID, Status, CloudType, ImageId, CpuCount,
+          VOGroupID, VORoleID, Status, ImageId, CpuCount,
           BenchmarkType, Benchmark
       ORDER BY NULL;
 END //
