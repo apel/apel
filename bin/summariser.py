@@ -130,7 +130,7 @@ def runprocess(db_config_file, config_file, log_config_file):
         # If the section is defined and the option is not, assume the user has
         # made effort to configure stale summary clean up, in which case - log
         # the exception it as a warning.
-        log.warn("Will not clean up stale summarises.")
+        log.warning("Will not clean up stale summarises.")
         stale_summary_clean_up = False
 
     if stale_summary_clean_up:
@@ -143,8 +143,8 @@ def runprocess(db_config_file, config_file, log_config_file):
                                                  'newer_than')
 
         except (ConfigParser.Error, ValueError) as error:
-            log.warn("Could not configure stale summary clean up.")
-            log.warn("Will not clean up stale summaries.")
+            log.warning("Could not configure stale summary clean up.")
+            log.warning("Will not clean up stale summaries.")
             stale_summary_clean_up = False
 
     # Log into the database
