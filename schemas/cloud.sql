@@ -47,6 +47,7 @@ CREATE TABLE CloudRecords (
   StorageRecordId VARCHAR(255),
   ImageId VARCHAR(255),
   CloudType VARCHAR(255),
+  Collector VARCHAR(255),
 
   PublisherDNID INT NOT NULL, -- Foreign key
 
@@ -229,7 +230,7 @@ BEGIN
       ThisRecord.VOGroupID as VOGroupID,
       ThisRecord.VORoleID as VORoleID,
       ThisRecord.Status as Status,
-      NULL,
+      ThisRecord.CloudType as CloudType,
       ThisRecord.ImageId as ImageId,
       ThisRecord.StartTime as StartTime,
       COALESCE(ThisRecord.WallDuration - IFNULL(PrevRecord.WallDuration, 0)) AS ComputedWallDuration,

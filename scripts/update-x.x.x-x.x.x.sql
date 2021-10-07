@@ -18,7 +18,7 @@ ALTER TABLE CloudSummaries
   DROP PRIMARY KEY,
   ADD PRIMARY KEY (
     SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID,
-    VOID, VOGroupID, VORoleID, Status, ImageId, CpuCount,
+    VOID, VOGroupID, VORoleID, Status, ImageId, CloudType, CpuCount,
     BenchmarkType, Benchmark
   );
 
@@ -43,7 +43,7 @@ BEGIN
       ThisRecord.VOGroupID as VOGroupID,
       ThisRecord.VORoleID as VORoleID,
       ThisRecord.Status as Status,
-      NULL,
+      ThisRecord.CloudType as CloudType,
       ThisRecord.ImageId as ImageId,
       ThisRecord.StartTime as StartTime,
       COALESCE(ThisRecord.WallDuration - IFNULL(PrevRecord.WallDuration, 0)) AS ComputedWallDuration,
@@ -98,7 +98,7 @@ BEGIN
       'summariser'
       FROM TVMUsagePerMonth
       GROUP BY SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID,
-          VOGroupID, VORoleID, Status, ImageId, CpuCount,
+          VOGroupID, VORoleID, Status, ImageId, CloudType, CpuCount,
           BenchmarkType, Benchmark
       ORDER BY NULL;
 END //
