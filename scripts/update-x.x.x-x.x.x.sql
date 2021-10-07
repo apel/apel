@@ -43,7 +43,7 @@ BEGIN
       ThisRecord.VOGroupID as VOGroupID,
       ThisRecord.VORoleID as VORoleID,
       ThisRecord.Status as Status,
-      ThisRecord.CloudType as CloudType,
+      NULL,
       ThisRecord.ImageId as ImageId,
       ThisRecord.StartTime as StartTime,
       COALESCE(ThisRecord.WallDuration - IFNULL(PrevRecord.WallDuration, 0)) AS ComputedWallDuration,
