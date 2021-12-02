@@ -119,8 +119,8 @@ class DbUnloader(object):
         '''
         record_type = self.RECORD_TYPES[table_name]
 
-        if record_type != JobRecord:
-            raise ApelDbException("Can only gap publish for JobRecords.")
+        if record_type != JobRecord and record_type != SummaryRecord:
+            raise ApelDbException("Can only gap publish for JobRecords or SummaryRecords.")
 
         start_tuple = [ int(x) for x in start.split('-') ]
         end_tuple = [ int(x) for x in end.split('-') ]
@@ -136,8 +136,14 @@ class DbUnloader(object):
         log.info(start_datetime)
         log.info(end_datetime)
         query = self._get_base_query(record_type)
-        query.EndTime_gt = start_datetime
-        query.EndTime_le = end_datetime
+
+        if record_type == JobRecord:
+            query.EndTime_gt = start_datetime
+            query.EndTime_le = end_datetime
+        else:
+            # Must be a SummaryRecord
+            query.EarliestEndTime_gt = start_datetime
+            query.LatestEndTime_le = end_datetime
 
         msgs, records = self._write_messages(record_type, table_name, query, ur)
         return msgs, records
