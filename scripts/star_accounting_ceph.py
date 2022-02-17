@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #   Copyright (C) 2022 STFC
 #
@@ -28,14 +28,14 @@ from xml.etree import ElementTree as xml
 
 def main():
     # Command line options for script
-    op = OptionParser()
+    op = OptionParser(usage='python3 star_accounting_ceph.py [options]')
+    op.add_option('-s', '--site', help='site where the storage record is being generated (required)')
+    op.add_option('-v', '--valid_duration', help='how long the storage record will be valid for (in seconds)'
+                  ' [default: %default]', default='3600')
     op.add_option('-p', '--prefix', help='prefix of storage record filename'
                   ' [default: %default]', default='ceph-storage-record')
     op.add_option('-q', '--queue', help='location of message queue where storage record will be stored'
                   ' [default: %default]', default='/var/spool/apel/outgoing')
-    op.add_option('-v', '--valid_duration', help='how long the storage record will be valid for (in seconds)'
-                  ' [default: %default]', default='3600')
-    op.add_option('-s', '--site', help='site where the storage record is being generated (required)')
 
     # Require --site argument, if not supplied throw exception
     (options, unused_args) = op.parse_args()
@@ -55,14 +55,14 @@ def main():
         # Retrieve hostname
         hostname = socket.gethostname()
     except Exception as e:
-        print("error getting hostname: %s" % e)
+        print("error getting hostname: {}".format(e))
         sys.exit(1)
 
     try:
         # Retrieve bucket stats
         all_bucket_stats = get_all_bucket_stats()
     except Exception as e:
-        print("error getting bucket stats: %s" % e)
+        print("error getting bucket stats: {}".format(e))
         sys.exit(1)
 
     root = xml.Element('sr:StorageUsageRecords')
@@ -123,9 +123,9 @@ def main():
             sr_resource_capacity_allocated.text = str(resource_capacity_allocated)
 
         except Exception as e:
-            print("bucket %s accounting record generation failed, bucket will not be included in accounting record"
-                  % bucket["bucket"])
-            print("reason: %s" % e)
+            print("bucket {} accounting record generation failed, bucket will not be included in accounting record"
+                  .format(bucket["bucket"]))
+            print("reason: {}".format(e))
 
     # Store the formatted storage accounting record as XML at 'message_queue_location'
     xml_accounting_record = xml.ElementTree(root)
