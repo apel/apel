@@ -71,15 +71,15 @@ def main():
     for bucket in all_bucket_stats:
         try:
             # Calculate current timestamp for record at this point
-            current_time = datetime.now(timezone.utc).isoformat()
+            current_time = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
             record_id = hostname + "/sr/" + bucket["id"]
             storage_share = bucket["bucket"]
             file_count = bucket["usage"]["rgw.main"]["num_objects"]
             local_user = bucket["owner"]
-            start_time = bucket["mtime"]
+            start_time = parser.parse(bucket["mtime"]).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
             # Calculate end_time based on bucket 'mtime' (start_time) + valid_duration constant
             end_time = str((parser.parse(start_time) + timedelta(0, int(valid_duration)))
-                           .strftime('%Y-%m-%d %H:%M:%S.%fZ'))
+                           .strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
             resource_capacity_used = bucket["usage"]["rgw.main"]["size_utilized"]
             logical_capacity_used = bucket["usage"]["rgw.main"]["size_actual"]
             resource_capacity_allocated = bucket["bucket_quota"]["max_size"]
