@@ -313,4 +313,3 @@ class JobRecord(Record):
         # We don't want the XML declaration, because the whole XML
         # document will be assembled by another part of the program.
         return doc.documentElement.toxml()
-

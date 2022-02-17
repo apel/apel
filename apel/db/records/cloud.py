@@ -129,5 +129,3 @@ class CloudRecord(Record):
 
         except ValueError:
             raise InvalidRecordException("Cannot parse an integer from StartTime or EndTime.")
-
-
