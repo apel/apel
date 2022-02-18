@@ -37,7 +37,7 @@ def main():
     op.add_option('-q', '--queue', help='location of message queue where storage record will be stored'
                   ' [default: %default]', default='/var/spool/apel/outgoing')
 
-    # Require --site argument, if not supplied throw exception
+    # TODO: Remove site required (as its not) and just add an if statment to not include it in the record if its blank
     (options, unused_args) = op.parse_args()
     if not options.site:
         op.error('Site not specified')
@@ -93,7 +93,7 @@ def main():
 
             sr_storage_system = xml.SubElement(sr_storage_usage_record, 'sr:StorageSystem')
             sr_storage_system.text = hostname
-
+            # TODO: if statment here if site is blank
             sr_site = xml.SubElement(sr_storage_usage_record, 'sr:Site')
             sr_site.text = site
 
