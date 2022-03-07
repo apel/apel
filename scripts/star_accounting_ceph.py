@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #   Copyright (C) 2012 STFC
 #
@@ -16,7 +16,6 @@
 #
 #   @author Jounaid Ruhomaun (github.com/jounaidr)
 
-import socket
 import sys
 import json
 import subprocess
@@ -28,7 +27,7 @@ from xml.etree import ElementTree as xml
 
 def main():
     # Command line options for script
-    op = OptionParser()
+    op = OptionParser(usage='python3 star_accounting_ceph.py [options]')
     op.add_option('-p', '--prefix', help='prefix of storage record filename'
                   ' [default: %default]', default='ceph-storage-record')
     op.add_option('-q', '--queue', help='location of message queue where storage record will be stored'
@@ -60,7 +59,7 @@ def main():
         # Retrieve bucket stats
         all_bucket_stats = get_all_bucket_stats()
     except Exception as e:
-        print("error getting bucket stats: %s" % e)
+        print("error getting bucket stats: {}".format(e))
         sys.exit(1)
 
     root = xml.Element('sr:StorageUsageRecords')
@@ -83,9 +82,9 @@ def main():
             resource_capacity_allocated = bucket["bucket_quota"]["max_size"]
 
         except KeyError as e:
-            print("failed to get stats from bucket %s , bucket will not be included in accounting record"
-                  % bucket["bucket"])
-            print("reason: %s" % e)
+            print("failed to get stats from bucket {} , bucket will not be included in accounting record"
+                  .format(bucket["bucket"]))
+            print("reason: {}".format(e))
 
         try:
             # Format bucket stats into StAR record
@@ -127,9 +126,9 @@ def main():
             sr_resource_capacity_allocated.text = str(resource_capacity_allocated)
 
         except xml.ParseError as e:
-            print("bucket %s parsing failed, bucket will not be included in accounting record"
-                  % bucket["bucket"])
-            print("reason: %s" % e)
+            print("bucket {} parsing failed, bucket will not be included in accounting record"
+                  .format(bucket["bucket"]))
+            print("reason: {}".format(e))
 
     # Store the formatted storage accounting record as XML at 'message_queue_location'
     xml_accounting_record = xml.ElementTree(root)
