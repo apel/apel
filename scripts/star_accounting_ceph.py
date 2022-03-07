@@ -36,11 +36,14 @@ def main():
     op.add_option('-v', '--valid_duration', help='how long the storage record will be valid for (in seconds)'
                   ' [default: %default]', default='3600')
     op.add_option('-s', '--site', help='site where the storage record is being generated (required)')
+    op.add_option('-o', '--storage_system', help='storage system where the storage record is being generated (required)')
 
-    # Require --site argument, if not supplied throw exception
+    # Require --site and --storage_system arguments, if not supplied throw exception
     (options, unused_args) = op.parse_args()
     if not options.site:
         op.error('Site not specified')
+    if not options.storage_system:
+        op.error('Storage system not specified')
 
     # Filename for the storage record in the following format: prefix-YYYYMMDD-HHMMSS
     message_filename = options.prefix + datetime.now().strftime("-%Y%m%d-%H%M%S")
@@ -50,13 +53,8 @@ def main():
     valid_duration = options.valid_duration
     # Site where storage record is being generated
     site = options.site
-
-    try:
-        # Retrieve hostname
-        hostname = socket.gethostname()
-    except Exception as e:
-        print("error getting hostname: %s" % e)
-        sys.exit(1)
+    # Site where storage record is being generated
+    storage_system = options.storage_system
 
     try:
         # Retrieve bucket stats
@@ -72,7 +70,7 @@ def main():
         try:
             # Calculate current timestamp for record at this point
             current_time = datetime.now(timezone.utc).isoformat()
-            record_id = hostname + "/sr/" + bucket["id"]
+            record_id = storage_system + "/sr/" + bucket["id"]
             storage_share = bucket["bucket"]
             file_count = bucket["usage"]["rgw.main"]["num_objects"]
             local_user = bucket["owner"]
@@ -84,6 +82,12 @@ def main():
             logical_capacity_used = bucket["usage"]["rgw.main"]["size_actual"]
             resource_capacity_allocated = bucket["bucket_quota"]["max_size"]
 
+        except KeyError as e:
+            print("failed to get stats from bucket %s , bucket will not be included in accounting record"
+                  % bucket["bucket"])
+            print("reason: %s" % e)
+
+        try:
             # Format bucket stats into StAR record
             sr_storage_usage_record = xml.SubElement(root, 'sr:StorageUsageRecord')
 
@@ -92,7 +96,7 @@ def main():
             sr_record_identity.set('sr:recordId', record_id)
 
             sr_storage_system = xml.SubElement(sr_storage_usage_record, 'sr:StorageSystem')
-            sr_storage_system.text = hostname
+            sr_storage_system.text = storage_system
 
             sr_site = xml.SubElement(sr_storage_usage_record, 'sr:Site')
             sr_site.text = site
@@ -122,8 +126,8 @@ def main():
             sr_resource_capacity_allocated = xml.SubElement(sr_storage_usage_record, 'sr:ResourceCapacityAllocated')
             sr_resource_capacity_allocated.text = str(resource_capacity_allocated)
 
-        except Exception as e:
-            print("bucket %s accounting record generation failed, bucket will not be included in accounting record"
+        except xml.ParseError as e:
+            print("bucket %s parsing failed, bucket will not be included in accounting record"
                   % bucket["bucket"])
             print("reason: %s" % e)
 
