@@ -85,6 +85,7 @@ def main():
             print("failed to get stats from bucket {} , bucket will not be included in accounting record"
                   .format(bucket["bucket"]))
             print("reason: {}".format(e))
+            continue
 
         try:
             # Format bucket stats into StAR record
@@ -129,6 +130,7 @@ def main():
             print("bucket {} parsing failed, bucket will not be included in accounting record"
                   .format(bucket["bucket"]))
             print("reason: {}".format(e))
+            continue
 
     # Store the formatted storage accounting record as XML at 'message_queue_location'
     xml_accounting_record = xml.ElementTree(root)
