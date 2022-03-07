@@ -142,5 +142,3 @@ if __name__ == '__main__':
         sys.exit()
 
     check_dir(sys.argv[1])
-
-
