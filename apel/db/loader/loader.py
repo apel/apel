@@ -197,7 +197,9 @@ class Loader(object):
                     apel.db.records.sync.SyncRecord: 'Sync',
                     apel.db.records.cloud.CloudRecord: 'Cloud',
                     apel.db.records.cloud_summary.CloudSummaryRecord:
-                    'Cloud Summary'}
+                    'Cloud Summary',
+                    apel.db.records.accelerator.AcceleratorRecord: 'Accelerator',
+                    }
 
         log.info('Loading message from %s', signer)
 

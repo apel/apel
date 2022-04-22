@@ -25,6 +25,7 @@ from apel.db.records import (BlahdRecord,
                              CloudSummaryRecord,
                              EventRecord,
                              GroupAttributeRecord,
+                             AcceleratorRecord,
                              JobRecord,
                              NormalisedSummaryRecord,
                              ProcessedRecord,
@@ -72,7 +73,8 @@ class ApelMysqlDb(object):
               CloudRecord : "CALL ReplaceCloudRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               CloudSummaryRecord : "CALL ReplaceCloudSummaryRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               StorageRecord: "CALL ReplaceStarRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-              GroupAttributeRecord: "CALL ReplaceGroupAttribute(%s, %s, %s)"
+              GroupAttributeRecord: "CALL ReplaceGroupAttribute(%s, %s, %s)",
+              AcceleratorRecord: "CALL ReplaceAcceleratorRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               }
 
     def __init__(self, host, port, username, pwd, db):
@@ -158,6 +160,7 @@ class ApelMysqlDb(object):
 
             for record in record_list:
                 values = record.get_db_tuple(source)
+                # log.debug('Keys: %s', record._db_fields)
                 log.debug('Values: %s', values)
                 if type(record) in (StorageRecord, GroupAttributeRecord):
                     # These types can be found in the same record list, so need
