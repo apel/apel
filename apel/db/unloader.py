@@ -18,10 +18,10 @@
 from apel.db import (Query, ApelDbException, JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
                      NORMALISED_SUMMARY_MSG_HEADER, SYNC_MSG_HEADER,
                      CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER,
-                     ACCELERATOR_MSG_TYPE)
+                     ACCELERATOR_MSG_TYPE, ACCELERATOR_SUMMARY_MSG_TYPE)
 from apel.db.records import (JobRecord, SummaryRecord, NormalisedSummaryRecord,
                              SyncRecord, CloudRecord, CloudSummaryRecord, StorageRecord,
-                             AcceleratorRecord)
+                             AcceleratorRecord, AcceleratorSummary)
 from dirq.QueueSimple import QueueSimple
 try:
     import cStringIO as StringIO
@@ -43,6 +43,7 @@ class DbUnloader(object):
                     CloudRecord: CLOUD_MSG_HEADER,
                     CloudSummaryRecord: CLOUD_SUMMARY_MSG_HEADER,
                     AcceleratorRecord: ACCELERATOR_MSG_TYPE,
+                    AcceleratorSummary: ACCELERATOR_SUMMARY_MSG_TYPE,
                     }
 
     RECORD_TYPES = {'VJobRecords': JobRecord,
@@ -55,6 +56,7 @@ class DbUnloader(object):
                     'VCloudSummaries': CloudSummaryRecord,
                     'VStarRecords': StorageRecord,
                     'AcceleratorRecords': AcceleratorRecord,
+                    'AcceleratorSummaries': AcceleratorSummary,
                     }
 
     # all record types for which withholding DNs is a valid option
