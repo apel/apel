@@ -18,15 +18,18 @@
 Module containing the RecordFactory class.
 '''
 
+from apel.common.message_schemas import ACCELERATOR_MSG_SCHEMA
 from apel.db.records.job import JobRecord
 from apel.db.records.summary import SummaryRecord
 from apel.db.records.normalised_summary import NormalisedSummaryRecord
 from apel.db.records.sync import SyncRecord
 from apel.db.records.cloud import CloudRecord
 from apel.db.records.cloud_summary import CloudSummaryRecord
+from apel.db.records.accelerator import AcceleratorRecord
 from apel.db import (JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
                      NORMALISED_SUMMARY_MSG_HEADER, SYNC_MSG_HEADER,
-                     CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER)
+                     CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER,
+                     ACCELERATOR_MSG_TYPE)
 
 from apel.db.loader.car_parser import CarParser
 from apel.db.loader.aur_parser import AurParser
@@ -92,8 +95,8 @@ class RecordFactory(object):
 
                 # Create record objects from the JSON.
                 try:
-                    if json_msg['Type'] == 'message_type':
-                        raise NotImplementedError
+                    if json_msg['Type'] == ACCELERATOR_MSG_TYPE:
+                        created_records = self._create_accelerator_records(json_msg)
                     else:
                         raise RecordFactoryException(
                             'Unsupported JSON message type: %s' %
@@ -150,8 +153,9 @@ class RecordFactory(object):
         # Catch the case where json_msg does not conform to the
         # expected JSON schema for the JSON message type.
         except jsonschema.ValidationError as validation_error:
+            msg_type = schema['properties']['Type']['const']
             raise RecordFactoryException(
-                'JSON message invalid against schema: %s' % validation_error
+                'JSON message invalid against %s schema: %s' % (msg_type, validation_error)
             )
 
     def _unpack_json_records(self, js, RecordType):
@@ -164,6 +168,12 @@ class RecordFactory(object):
             created_records.append(record)
 
         return created_records
+
+    def _create_accelerator_records(self, json_msg):
+        '''Attempt to convert an accelerator record dict into a list of AcceleratorRecord objects.'''
+
+        self._validate_json(json_msg, ACCELERATOR_MSG_SCHEMA)
+        return self._unpack_json_records(json_msg, AcceleratorRecord)
 
 
     def _create_jrs(self, msg_text):
