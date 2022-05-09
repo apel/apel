@@ -195,9 +195,6 @@ def verify_dn(dn):
     '''
     Simplistically check that the DN is of the /-separated format.
     '''
-    # there shouldn't be a comma in there
-    if dn.find(', ') != -1:
-        return False
     # it should begin with a slash
     if dn.find('/') != 0:
         return False
