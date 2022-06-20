@@ -198,10 +198,19 @@ def verify_dn(dn):
     # it should begin with a slash
     if dn.find('/') != 0:
         return False
+
+    dn_components = dn.split('/')
+
     # Check that there are at least two parts to the DN. There should be 3 after
     # the .split as an empty string is considered to be before the leading '/'.
-    if len(dn.split('/')) <= 2:
+    if len(dn_components) <= 2:
         return False
+
+    # Reject a DN if a component of it ends in a trailing comma.
+    # i.e. don't accept `/C=Egg, /O=Bacon , /OU=Spam, /L=Lobster Thermidor`
+    for component in dn_components:
+        if component.endswith(", "):
+            return False
 
     return True
 
