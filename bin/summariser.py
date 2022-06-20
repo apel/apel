@@ -119,28 +119,12 @@ def runprocess(db_config_file, config_file, log_config_file):
         stale_summary_clean_up = cp.getboolean('summariser',
                                                'delete_stale_summaries')
 
-    except ConfigParser.NoSectionError as error:
-        # If section no defined, assume the user has made no effort to
-        # configure stale summary clean up, in which case - just log the
-        # exception as info.
-        log.info("Will not clean up stale summarises.")
-        stale_summary_clean_up = False
+        stale_summary_window_days = cp.getint('summariser',
+                                              'stale_summary_window_days')
 
     except ConfigParser.NoOptionError as error:
-        # If the section is defined and the option is not, assume the user has
-        # made effort to configure stale summary clean up, in which case - log
-        # the exception it as a warning.
-        log.warning("Will not clean up stale summarises.")
+        log.debug("No settings defined to clean up stale summaries.")
         stale_summary_clean_up = False
-
-        try:
-            stale_summary_window_days = cp.getint('summariser',
-                                                  'stale_summary_window_days')
-
-        except (ConfigParser.Error, ValueError) as error:
-            log.warning("Could not configure stale summary clean up.")
-            log.warning("Will not clean up stale summaries.")
-            stale_summary_clean_up = False
 
     # Log into the database
     try:
