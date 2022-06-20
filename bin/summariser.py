@@ -164,6 +164,11 @@ def runprocess(db_config_file, config_file, log_config_file):
             db.copy_summaries()
         elif db_type == 'cloud':
             db.summarise_cloud()
+            # Optionally clean up any newly stale cloud summariy records.
+            if stale_summary_clean_up:
+                db.clean_stale_cloud_summaries(summariser_start_time,
+                                               stale_summary_newer_than)
+
         else:
             raise ApelDbException('Unknown database type: %s' % db_type)
 
@@ -171,10 +176,7 @@ def runprocess(db_config_file, config_file, log_config_file):
         elapsed_time = round(time.time() - start_time, 3)
         log.info('Summarising completed in: %s seconds', elapsed_time)
 
-        if stale_summary_clean_up:
-            log.info("Cleaning up stale summaries")
-            db.clean_stale_summaries(db_type, summariser_start_time,
-                                     stale_summary_newer_than)
+
 
         log.info(LOG_BREAK)
 

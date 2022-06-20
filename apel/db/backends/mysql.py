@@ -405,15 +405,7 @@ class ApelMysqlDb(object):
                 self.db.rollback()
             raise
 
-    def clean_stale_summaries(self, db_type, summariser_start_time, threshold):
-        """For the DB type, remove stale summaries newer than the threshold."""
-        if db_type == "cloud":
-            self._clean_stale_cloud_summaries(summariser_start_time, threshold)
-        else:
-            raise ValueError("Attempting to clean up summaries in a %s db, "
-                             "this is not supported." % db_type)
-
-    def _clean_stale_cloud_summaries(self, summariser_start_time, threshold):
+    def clean_stale_cloud_summaries(self, summariser_start_time, threshold):
         """Remove stale cloud summaries newer than the threshold."""
         threshold_timedelta = datetime.timedelta(days=threshold)
         threshold_time = summariser_start_time - threshold_timedelta
