@@ -134,8 +134,8 @@ def runprocess(db_config_file, config_file, log_config_file):
         stale_summary_clean_up = False
 
         try:
-            stale_summary_newer_than = cp.getint('summariser',
-                                                 'stale_summary_window_days')
+            stale_summary_window_days = cp.getint('summariser',
+                                                  'stale_summary_window_days')
 
         except (ConfigParser.Error, ValueError) as error:
             log.warning("Could not configure stale summary clean up.")
@@ -162,7 +162,7 @@ def runprocess(db_config_file, config_file, log_config_file):
             # Optionally clean up any newly stale cloud summariy records.
             if stale_summary_clean_up:
                 db.clean_stale_cloud_summaries(summariser_start_time,
-                                               stale_summary_newer_than)
+                                               stale_summary_window_days)
 
         else:
             raise ApelDbException('Unknown database type: %s' % db_type)
