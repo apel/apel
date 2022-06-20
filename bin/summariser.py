@@ -133,11 +133,6 @@ def runprocess(db_config_file, config_file, log_config_file):
         log.warning("Will not clean up stale summarises.")
         stale_summary_clean_up = False
 
-    if stale_summary_clean_up:
-        if db_type != "cloud":
-            log.error("Can only enable summary clean up for Cloud accounting.")
-            sys.exit(1)
-
         try:
             stale_summary_newer_than = cp.getint('summariser',
                                                  'stale_summary_window_days')
