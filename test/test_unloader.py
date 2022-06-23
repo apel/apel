@@ -4,6 +4,7 @@ import tempfile
 import unittest
 
 from mock import mock
+
 from apel.db.backends.mysql import ApelMysqlDb
 from apel.db.apeldb import ApelDbException
 from apel.db.records import StorageRecord
