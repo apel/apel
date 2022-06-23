@@ -5,8 +5,8 @@ import unittest
 
 from mock import mock
 
-from apel.db.backends.mysql import ApelMysqlDb
 from apel.db.apeldb import ApelDbException
+from apel.db.backends.mysql import ApelMysqlDb
 from apel.db.records import StorageRecord
 from apel.db.unloader import DbUnloader, get_start_of_previous_month
 
