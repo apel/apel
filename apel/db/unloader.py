@@ -119,7 +119,7 @@ class DbUnloader(object):
         '''
         record_type = self.RECORD_TYPES[table_name]
 
-        if record_type != JobRecord and record_type != SummaryRecord:
+        if record_type not in (JobRecord, SummaryRecord):
             raise ApelDbException("Can only gap publish for JobRecords or SummaryRecords.")
 
         start_tuple = [ int(x) for x in start.split('-') ]
