@@ -14,6 +14,7 @@ class SimpleTestCase(unittest.TestCase):
         valid_dns = ("/C=UK/O=eScience/OU=CLRC/L=RAL/CN=apel-test.esc.rl.ac.uk",
                      "/C=UK/O=eScience/OU=CLRC/L=RAL/CN=sctapel.esc.rl.ac.uk",
                      "/C=UK/O=eScience/OU=CLRC/L=RAL/CN=uas.esc.rl.ac.uk",
+                     "/C=UK/O=eScience/OU=Something, Somewhere/L=Physics",
                      "/smallest/acceptable")
 
         for dn in valid_dns:
@@ -23,6 +24,7 @@ class SimpleTestCase(unittest.TestCase):
     def test_verify_invalid_dns(self):
         invalid_dns = ("# Some comment",
                        "/C=UK, /O=eScience, /OU=Lanchester, /L=Physics",
+                       "/C=UK/O=eScience/OU=Uni, /L=Physics",
                        "/too-few-elements")
 
         for dn in invalid_dns:
