@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.9.0
+Version:        1.9.1
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -25,7 +25,7 @@ The project is written in Python.
 %package lib
 Summary:        Libraries required for Apel Client, Server and Parsers
 Group:          Development/Languages
-Requires:       MySQL-python, python-ldap, python-iso8601, python-dirq
+Requires:       MySQL-python, python-ldap < 3.4.0 , python-iso8601, python-dirq
 Requires(pre):  shadow-utils
 
 %description lib
@@ -199,6 +199,13 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Wed July 06 2022 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.1-1
+ - [server] Changed DN validation to allow commas in the middle of field values.
+ - [client] Minor fixes to client database schema.
+ - Capped python-ldap version to maintain backward compatibility.
+ - Added summarising duration to log.
+ - Improvements to build workflow.
+
  * Fri Mar 19 2021 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.0-1
  - [client] Added AMS support. Requires at least SSM version 3.2.0.
  - [server] Added ability to alter the number of records unloaded per message.

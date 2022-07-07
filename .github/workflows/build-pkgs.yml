@@ -1,0 +1,56 @@
+name: Build Packages
+on:
+  push:
+    tags: '[0-9]+.[0-9]+.[0-9]+-*'
+  schedule:
+    # If this workflow changes in the future to uploading RPMs directly to a
+    # release on tag push, then a conditional check should be added for the
+    # cron to continue uploading as an artifact on the workflow build.
+    - cron: '57 21 * * SUN'
+
+jobs:
+  build-rpm:
+    runs-on: ubuntu-latest
+    env:
+      # _github_home is the dir used as a volume by the container
+      RPMDIR: /home/runner/work/_temp/_github_home/rpmbuild
+    steps:
+    - name: Install rpmlint
+      run: |
+        sudo apt-get update
+        sudo apt-get install rpmlint
+    - uses: actions/checkout@v3
+      with:
+        # Get all branches and tags so the latest tag can be found for VERSION
+        fetch-depth: 0
+    - name: Set VERSION
+      run: echo "VERSION=`echo $(git describe --tags $(git rev-list --tags --max-count=1))`" >> $GITHUB_ENV
+    - name: Set APELDIR
+      run: echo "APELDIR=apel-$VERSION" >> $GITHUB_ENV
+
+    # Based on the apel-build-rpm.sh script
+    - name: Download and rename archive
+      run: |
+        wget --no-check-certificate https://github.com/apel/apel/archive/$VERSION.tar.gz -O $VERSION
+        tar xzvf $VERSION
+        tar czvf $APELDIR.tar.gz $APELDIR
+        sudo mkdir -p $RPMDIR/SOURCES
+        sudo cp $APELDIR.tar.gz $RPMDIR/SOURCES
+
+    - name: Build RPM packages
+      id: rpm
+      uses: naveenrajm7/rpmbuild@v1.0.0
+      with:
+        spec_file: "apel.spec"
+
+    - name: Lint RPMs
+      continue-on-error: true
+      run: rpmlint ${{ steps.rpm.outputs.rpm_dir_path }}
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: Binary and Source RPMs
+        path: |
+          ${{ steps.rpm.outputs.rpm_dir_path }}
+          ${{ steps.rpm.outputs.source_rpm_dir_path }}

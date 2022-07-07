@@ -115,8 +115,8 @@ class ApelMysqlDb(object):
                                   user=self._db_username, passwd=self._db_pwd,
                                   db=self._db_name)
 
-            log.info('Connected to ' + self._db_host + ':' + str(self._db_port))
-            log.info('Database: ' + self._db_name + '; username: ' + self._db_username)
+            log.info('Connected to %s:%s', self._db_host, self._db_port)
+            log.info('Database: %s; username: %s', self._db_name, self._db_username)
             db.close()
         except MySQLdb.OperationalError, e:
             raise ApelDbException("Failed to connect to database: " + str(e))
@@ -239,7 +239,7 @@ class ApelMysqlDb(object):
             self.db.rollback()
             raise ApelDbException(err)
         except MySQLdb.Warning, warning:
-            log.warn('Warning from MySQL: %s', warning)
+            log.warning('Warning from MySQL: %s', warning)
 
     def get_last_updated(self):
         '''

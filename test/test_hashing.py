@@ -21,4 +21,3 @@ class HashingTest(TestCase):
         self.assertEqual(data_hash, calculate_hash(tmpname))
 
         os.unlink(tmpname)
-

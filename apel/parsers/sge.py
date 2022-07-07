@@ -50,7 +50,7 @@ class SGEParser(Parser):
     def __init__(self, site, machine_name, mpi):
         Parser.__init__(self, site, machine_name, mpi)
         if self._mpi:
-            log.warn('SGE MPI accounting may be incomplete.')
+            log.warning('SGE MPI accounting may be incomplete.')
         self.multipliers = self._load_multipliers()
 
         # This should be set to True in parser.py for versions of Grid Engine
@@ -81,8 +81,8 @@ class SGEParser(Parser):
             if p.returncode != 0:
                 raise MultiplierError(err)
         except (OSError, MultiplierError):
-            log.warn("Unable to retrieve multipliers from qhost. Will default "
-                     "to '1.0'.")
+            log.warning("Unable to retrieve multipliers from qhost. Will default "
+                        "to '1.0'.")
             return {}
 
         xml_str = xml.dom.minidom.parseString(out)

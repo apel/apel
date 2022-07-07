@@ -138,7 +138,7 @@ def dns_from_dom(dom):
     """
     dn_nodes = dom.getElementsByTagName('HOSTDN')
 
-    log.info('Found ' + str(len(dn_nodes)) + ' HOSTDN tags.' )
+    log.info('Found %s HOSTDN tags.', len(dn_nodes))
 
     dns = []
     for dn in dn_nodes:
@@ -195,16 +195,22 @@ def verify_dn(dn):
     '''
     Simplistically check that the DN is of the /-separated format.
     '''
-    # there shouldn't be a comma in there
-    if dn.find(', ') != -1:
-        return False
     # it should begin with a slash
     if dn.find('/') != 0:
         return False
+
+    dn_components = dn.split('/')
+
     # Check that there are at least two parts to the DN. There should be 3 after
     # the .split as an empty string is considered to be before the leading '/'.
-    if len(dn.split('/')) <= 2:
+    if len(dn_components) <= 2:
         return False
+
+    # Reject a DN if a component of it ends in a trailing comma.
+    # i.e. don't accept `/C=Egg, /O=Bacon , /OU=Spam, /L=Lobster Thermidor`
+    for component in dn_components:
+        if component.endswith(", "):
+            return False
 
     return True
 
@@ -241,8 +247,8 @@ def runprocess(config_file, log_config_file):
                 # Add the listed DNs to the list
                 dns.extend(dns_from_dom(dom))
             except xml.parsers.expat.ExpatError, e:
-                log.warn('Failed to parse the retrieved XML.')
-                log.warn('Is the URL correct?')
+                log.warning('Failed to parse the retrieved XML.')
+                log.warning('Is the URL correct?')
                 fetch_failed = True
     except AttributeError:
         # gocdb_url == None
@@ -254,7 +260,7 @@ def runprocess(config_file, log_config_file):
 
     if fetch_failed and (time.time() - os.path.getmtime(cfg.dn_file) <
                          (cfg.expire_hours * 3600)):
-        log.warn('Failed to update DNs from GOCDB. Will not modify DNs file.')
+        log.warning('Failed to update DNs from GOCDB. Will not modify DNs file.')
         log.info("auth will exit.")
         log.info(LOG_BREAK)
         sys.exit(1)
@@ -265,16 +271,16 @@ def runprocess(config_file, log_config_file):
         log.info("Fetched %s extra DNs from file %s.", len(extra_dns), cfg.extra_dns)
         dns.extend(extra_dns)
     except IOError:
-        log.warn("Failed to retrieve extra DNs from file %s.", cfg.extra_dns)
-        log.warn("Check the configuration.")
+        log.warning("Failed to retrieve extra DNs from file %s.", cfg.extra_dns)
+        log.warning("Check the configuration.")
 
     dns_to_remove = []
     try:
         dns_to_remove = dns_from_file(cfg.banned_dns)
         log.info("Fetched %s banned DNs from file %s.", len(dns_to_remove), cfg.banned_dns)
     except IOError:
-        log.warn("Failed to retrieve banned DNs from file %s.", cfg.banned_dns)
-        log.warn("Check the configuration.")
+        log.warning("Failed to retrieve banned DNs from file %s.", cfg.banned_dns)
+        log.warning("Check the configuration.")
 
     # remove all items from the list dns which are in the list dns_to_remove
     dns = [ dn for dn in dns if dn not in dns_to_remove ]
@@ -283,9 +289,9 @@ def runprocess(config_file, log_config_file):
     try:
         new_dn_file = open(cfg.dn_file, 'w')
     except IOError, e:
-        log.warn("Failed to open file %s for writing.", cfg.dn_file)
-        log.warn("Check the configuration.")
-        log.warn("auth will exit.")
+        log.warning("Failed to open file %s for writing.", cfg.dn_file)
+        log.warning("Check the configuration.")
+        log.warning("auth will exit.")
         log.info(LOG_BREAK)
         sys.exit(1)
 
@@ -300,7 +306,7 @@ def runprocess(config_file, log_config_file):
             log.debug("Comment ignored: %s", dn)
         else:
             # We haven't accepted the DN, so write it to the log file.
-            log.warning("DN not valid and won't be added: " + dn)
+            log.warning("DN not valid and won't be added: %s", dn)
 
     new_dn_file.close()
 

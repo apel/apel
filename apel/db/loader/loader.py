@@ -85,8 +85,8 @@ class Loader(object):
         """
         # If the pidfile exists, don't start up.
         if os.path.exists(self._pidfile):
-            log.warn("A pidfile %s already exists.", self._pidfile)
-            log.warn("Check that the dbloader is not running, then remove the file.")
+            log.warning("A pidfile %s already exists.", self._pidfile)
+            log.warning("Check that the dbloader is not running, then remove the file.")
             raise LoaderException("The dbloader cannot start while pidfile exists.")
         try:
             f = open(self._pidfile, "w")
@@ -94,7 +94,7 @@ class Loader(object):
             f.write("\n")
             f.close()
         except IOError, e:
-            log.warn("Failed to create pidfile %s: %s", self._pidfile, e)
+            log.warning("Failed to create pidfile %s: %s", self._pidfile, e)
 
     def shutdown(self):
         """
@@ -113,10 +113,10 @@ class Loader(object):
             if os.path.exists(pidfile):
                 os.remove(pidfile)
             else:
-                log.warn("pidfile %s not found.", pidfile)
+                log.warning("pidfile %s not found.", pidfile)
         except IOError, e:
-            log.warn("Failed to remove pidfile %s: %s", pidfile, e)
-            log.warn("The loader may not start again until it is removed.")
+            log.warning("Failed to remove pidfile %s: %s", pidfile, e)
+            log.warning("The loader may not start again until it is removed.")
 
         log.info("The loader has shut down.")
 
@@ -135,7 +135,7 @@ class Loader(object):
         # loop until there are no messages left
         while self.current_msg:
             if not self._inq.lock(self.current_msg):
-                log.warn("Skipping locked message %s", self.current_msg)
+                log.warning("Skipping locked message %s", self.current_msg)
                 self.current_msg = self._inq.next()
                 continue
             log.debug("Reading message %s", self.current_msg)
@@ -158,7 +158,7 @@ class Loader(object):
                     InvalidRecordException, apel.db.ApelDbException,
                     XMLParserException, ExpatError), err:
                 errmsg = "Parsing unsuccessful: %s" % str(err)
-                log.warn('Message rejected. %s', errmsg)
+                log.warning('Message rejected. %s', errmsg)
                 name = self._rejectq.add({"body": msg_text,
                                           "signer": signer,
                                           "empaid": msg_id,
@@ -179,7 +179,7 @@ class Loader(object):
                 if self._save_msgs:
                     self._acceptq.purge()
             except OSError, e:
-                log.warn('OSError raised while purging message queues: %s', e)
+                log.warning('OSError raised while purging message queues: %s', e)
 
         log.debug("Loader run finished.")
         log.debug("======================")

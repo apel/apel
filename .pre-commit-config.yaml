@@ -1,0 +1,29 @@
+# See https://pre-commit.com for more information
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.5.0
+  hooks:
+  # Python related checks
+  - id: check-ast
+  - id: check-builtin-literals
+  - id: check-docstring-first
+  - id: name-tests-test
+    name: Check unit tests start with 'test_'
+    args: ['--django']
+    files: 'test/.*'
+  # Other checks
+  - id: check-added-large-files
+  - id: check-merge-conflict
+  - id: check-yaml
+  - id: end-of-file-fixer
+  - id: mixed-line-ending
+    name: Force line endings to LF
+    args: ['--fix=lf']
+  - id: trailing-whitespace
+
+- repo: https://github.com/pre-commit/pygrep-hooks
+  rev: v1.9.0
+  hooks:
+  - id: python-check-mock-methods
+  - id: python-no-eval
+  - id: python-no-log-warn
