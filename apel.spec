@@ -199,7 +199,7 @@ exit 0
 # ==============================================================================
 
 %changelog
- * Wed July 06 2022 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.1-1
+ * Wed Jul 06 2022 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.1-1
  - [server] Changed DN validation to allow commas in the middle of field values.
  - [client] Minor fixes to client database schema.
  - Capped python-ldap version to maintain backward compatibility.
