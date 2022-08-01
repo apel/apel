@@ -122,6 +122,7 @@ def runprocess(db_config_file, config_file, log_config_file):
     except ConfigParser.NoOptionError as _error:
         log.debug("No settings defined to clean up stale summaries.")
         stale_summary_clean_up = False
+        stale_summary_window_days = None
 
     # Log into the database
     try:
