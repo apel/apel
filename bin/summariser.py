@@ -122,7 +122,7 @@ def runprocess(db_config_file, config_file, log_config_file):
         stale_summary_window_days = cp.getint('summariser',
                                               'stale_summary_window_days')
 
-    except ConfigParser.NoOptionError as error:
+    except ConfigParser.NoOptionError as _error:
         log.debug("No settings defined to clean up stale summaries.")
         stale_summary_clean_up = False
 
