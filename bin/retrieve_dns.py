@@ -44,7 +44,7 @@ class Configuration(object):
     """Dummy class for attaching configuration to."""
     def __init__(self):
         self.gocdb_hosts = None
-        self.gocdb_pi_cmd = None
+        self.gocdb_pi_path = None
         self.extra_dns = None
         self.banned_dns = None
         self.dn_file = None
@@ -65,9 +65,9 @@ def get_config(config_file):
         c.gocdb_hosts = None
 
     try:
-        c.gocdb_pi_cmd = cp.get('auth', 'gocdb_pi_cmd')
+        c.gocdb_pi_path = cp.get('auth', 'gocdb_pi_path')
     except ConfigParser.NoOptionError:
-        c.gocdb_pi_cmd = None
+        c.gocdb_pi_path = None
 
     try:
         c.service_types = cp.get('auth', 'service_types')
@@ -243,10 +243,10 @@ def verify_service_types(service_types):
 
     return True
 
-def generate_gocdb_urls(hostname, gocdb_pi_cmd, service_types):
+def generate_gocdb_urls(hostname, gocdb_pi_path, service_types):
     # Create a generator expression producing full GOCDB URLs with service types.
     service_types = service_types.split(',')
-    return ('https://' + hostname + gocdb_pi_cmd + service_type
+    return ('https://' + hostname + gocdb_pi_path + service_type
                                         for service_type in service_types)
 
 def runprocess(config_file, log_config_file):
@@ -270,7 +270,7 @@ def runprocess(config_file, log_config_file):
 
         host = hosts.pop(0)
 
-        for next_url in generate_gocdb_urls(host, cfg.gocdb_pi_cmd, cfg.service_types):
+        for next_url in generate_gocdb_urls(host, cfg.gocdb_pi_path, cfg.service_types):
             try:
                 # If next_url is none, it implies we have reached the end of paging
                 # (or that paging was not turned on).
