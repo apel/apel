@@ -278,25 +278,42 @@ def main():
     install_exc_handler(default_handler)
     ver = 'APEL client %s.%s.%s' % __version__
     opt_parser = OptionParser(version=ver, description=__doc__)
+    default_conf_location = '/etc/apel/client.cfg'
+    default_ssmconf_location = '/etc/apel/sender.cfg'
+    default_log_location = '/etc/apel/logging.cfg'
 
     opt_parser.add_option('-c', '--config',
-                          help='main configuration file for APEL',
-                          default='/etc/apel/client.cfg')
+                          help=('main configuration file for APEL, '
+                                'default path: ' + default_conf_location),
+                          default=default_conf_location)
 
     opt_parser.add_option('-s', '--ssm_config',
-                          help='location of SSM config file',
-                          default='/etc/apel/sender.cfg')
+                          help=('location of SSM config file, '
+                                'default path: ' + default_ssmconf_location),
+                          default=default_ssmconf_location)
 
     opt_parser.add_option('-l', '--log_config',
-                          help='location of logging config file (optional)',
-                          default='/etc/apel/logging.cfg')
+                          help=('location of logging config file (optional), '
+                                'default path: ' + default_log_location),
+                          default=default_log_location)
 
     options, unused_args = opt_parser.parse_args()
-    ccp = ConfigParser.ConfigParser()
-    ccp.read(options.config)
 
-    scp = ConfigParser.ConfigParser()
-    scp.read(options.ssm_config)
+    # check if config file exists using os.path.isfile fuction
+    if os.path.isfile(options.config):
+        ccp = ConfigParser.ConfigParser()
+        ccp.read(options.config)
+    else:
+        print("Config file not found at", options.config)
+        exit(1)
+
+    # check if ssm config file exists using os.path.isfile function
+    if os.path.isfile(options.ssm_config):
+        scp = ConfigParser.ConfigParser()
+        scp.read(options.ssm_config)
+    else:
+        print("SSM config file not found at", options.ssm_config)
+        exit(1)
 
     # set up logging
     try:
