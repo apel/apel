@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from apel.db.records import CloudRecord, InvalidRecordException
 
@@ -249,6 +249,30 @@ CloudComputeService: Test Service'''
                 # Use 'repr' to show quote marks if value is a string.
                 self.assertTrue(valid_value, 'Datetime %s with value: %s\n%s' %
                                 (key, repr(value), msg))
+
+    def test_endtime_validity(self):
+        # Test a record which finished before it began raises an
+        # InvalidRecordException.
+        self._mandatory_record.set_field('StartTime', '200000')
+        self._mandatory_record.set_field('Status', 'completed')
+        self._mandatory_record.set_field('EndTime', '100000')
+        self.assertRaises(
+            InvalidRecordException,
+            self._mandatory_record._check_fields
+        )
+
+        # Test a record with a EndTime in the future raises an
+        # InvalidRecordException.
+        self._mandatory_record.set_field('StartTime', '100000')
+        self._mandatory_record.set_field('Status', 'completed')
+        self._mandatory_record.set_field(
+            'EndTime',
+            datetime.now() + timedelta(seconds=100000)
+        )
+        self.assertRaises(
+            InvalidRecordException,
+            self._mandatory_record._check_fields
+        )
 
     def test_endtime_status_combination(self):
         '''Test the Status and EndTime combinations.'''

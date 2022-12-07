@@ -127,3 +127,19 @@ class CloudRecord(Record):
                 "Invalid combination - Endtime: %s, Status: %s" %
                 (endtime, status)
             )
+
+        # If the record has an EndTime / is in the "completed" state
+        if ((endtime is not None) and (status == 'completed')):
+            # Check the EndTime is after the StartTime
+            starttime = self._record_content['StartTime']
+            if endtime < starttime:
+                raise InvalidRecordException(
+                    "StartTime: %s is greater than EndTime: %s" %
+                    (starttime, endtime)
+                )
+
+            # Check the EndTime is not in the future.
+            if endtime > datetime.now():
+                raise InvalidRecordException(
+                    "EndTime: %s is in the future" % (endtime)
+                )
