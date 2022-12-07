@@ -10,6 +10,12 @@ class CloudRecordTest(unittest.TestCase):
     """
 
     def setUp(self):
+        # A basic record with all the mandatory fields.
+        self._mandatory_record = CloudRecord()
+        self._mandatory_record.set_field('VMUUID', 'MyVM')
+        self._mandatory_record.set_field('SiteName', 'MySite')
+        self._mandatory_record.set_field('MachineName', 'MyMachine')
+
         self._msg1 = '''
 VMUUID: 2012-12-04 09:15:01+00:00 CESNET vm-0
 SiteName: CESNET
@@ -234,13 +240,8 @@ CloudComputeService: Test Service'''
                                 (key, repr(value), msg))
 
     def test_mandatory_fields(self):
-        record = CloudRecord()
-        record.set_field('VMUUID', 'host.example.org/cr/87912469269276')
-        record.set_field('SiteName', 'MySite')
-        record.set_field('MachineName', 'MyMachine')
-
         try:
-            record._check_fields()
+            self._mandatory_record._check_fields()
         except Exception as error:
             self.fail(
                 '_check_fields method failed: %s [%s]' %
