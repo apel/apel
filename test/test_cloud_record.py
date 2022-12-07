@@ -15,6 +15,7 @@ class CloudRecordTest(unittest.TestCase):
         self._mandatory_record.set_field('VMUUID', 'MyVM')
         self._mandatory_record.set_field('SiteName', 'MySite')
         self._mandatory_record.set_field('MachineName', 'MyMachine')
+        self._mandatory_record.set_field('StartTime', "1000000")
 
         self._msg1 = '''
 VMUUID: 2012-12-04 09:15:01+00:00 CESNET vm-0
@@ -49,6 +50,8 @@ CloudType: OpenNebula
                         'MachineName': '\'one-0\'',
                         'LocalUserId': '5',
                         'Status': 'completed',
+                        # StartTime as datetime corresponding to 1318840264 seconds since epoch.
+                        'StartTime': datetime(2011, 10, 17, 8, 31, 4),
                         'CpuCount': 1,
                         'PublicIPCount': 5,
                         'Memory': 512,
@@ -97,6 +100,8 @@ CloudType: Openstack
                         'VOGroup': '/ops',
                         'VORole': 'Role=NULL',
                         'Status': 'started',
+                        # StartTime as datetime corresponding to 1343362725 seconds since epoch.
+                        'StartTime': datetime(2012, 7, 27, 4, 18, 45),
                         'CpuCount': 1,
                         'PublicIPCount': 1,
                         'Memory': 512,
@@ -138,6 +143,8 @@ CloudType: OpenNebula
                          'MachineName': '\'one-1\'',
                          'LocalUserId': '5',
                          'Status': 'completed',
+                         # StartTime as datetime corresponding to 1318842264 seconds since epoch.
+                         'StartTime': datetime(2011, 10, 17, 9, 4, 24),
                          'CpuCount': 1,
                          'PublicIPCount': None,
                          'Memory': 512,
@@ -148,6 +155,7 @@ CloudType: OpenNebula
 
         self._msg4 = '''
 BenchmarkType: HEPSPEC06
+StartTime: 1234567891
 Status: completed
 SiteName: Test Site
 MachineName: Test Machine
@@ -169,7 +177,8 @@ CloudComputeService: Test Service'''
                          'GlobalUserName': 'Test User',
                          'FQAN': 'None',
                          'Status': 'completed',
-                         'StartTime': None,
+                         # StartTime as datetime corresponding to 1234567891 seconds since epoch.
+                         'StartTime': datetime(2009, 2, 13, 23, 31, 31),
                          'EndTime': None,
                          'SuspendDuration': None,
                          'WallDuration': None,

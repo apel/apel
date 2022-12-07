@@ -307,6 +307,8 @@ CloudType: Cloud Technology 2
 CLOUD4_MISSING_FIELDS = '''
 BenchmarkType: HEPSPEC06
 Status: completed
+StartTime: 1000000
+EndTime: 2000000
 SiteName: Test Site
 MachineName: Test Machine
 ImageId: Test Image ID

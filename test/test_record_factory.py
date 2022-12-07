@@ -190,6 +190,7 @@ NumberOfJobs: 100
         self._cr_text = '''APEL-cloud-message: v0.4
 VMUUID: 2013-11-14 19:15:21+00:00 CESNET vm-1
 SiteName: CESNET
+StartTime: 1000000
 %%
 '''
 

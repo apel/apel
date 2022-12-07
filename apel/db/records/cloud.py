@@ -35,7 +35,7 @@ class CloudRecord(Record):
         Record.__init__(self)
 
         # Fields which are required by the message format.
-        self._mandatory_fields = ["VMUUID", "SiteName"]
+        self._mandatory_fields = ["VMUUID", "SiteName", "StartTime"]
 
         # This list allows us to specify the order of lines when we construct records.
         self._msg_fields  = ["RecordCreateTime", "VMUUID", "SiteName", "CloudComputeService", "MachineName",
