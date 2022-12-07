@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 
-from apel.db.records import CloudRecord
+from apel.db.records import CloudRecord, InvalidRecordException
 
 
 class CloudRecordTest(unittest.TestCase):
@@ -249,6 +249,36 @@ CloudComputeService: Test Service'''
                 # Use 'repr' to show quote marks if value is a string.
                 self.assertTrue(valid_value, 'Datetime %s with value: %s\n%s' %
                                 (key, repr(value), msg))
+
+    def test_endtime_status_combination(self):
+        '''Test the Status and EndTime combinations.'''
+        # A completed record without an EndTime should raise an
+        # InvalidRecordException.
+        self._mandatory_record.set_field('Status', 'completed')
+        self._mandatory_record.set_field('EndTime', None)
+        self.assertRaises(
+             InvalidRecordException,
+             self._mandatory_record._check_fields
+        )
+
+        # A record with an EndTime but not in the completed state should raise
+        # an InvalidRecordException.
+        self._mandatory_record.set_field('EndTime', "2000000")
+        self._mandatory_record.set_field('Status', "started")
+        self.assertRaises(
+             InvalidRecordException,
+             self._mandatory_record._check_fields
+        )
+
+        # A uncompleted record without an endtime is allowed.
+        self._mandatory_record.set_field('Status', "started")
+        self._mandatory_record.set_field('EndTime', None)
+        self._mandatory_record._check_fields()
+
+        # A completed record with an endtime is allowed.
+        self._mandatory_record.set_field('Status', "completed")
+        self._mandatory_record.set_field('EndTime', "2000000")
+        self._mandatory_record._check_fields()
 
     def test_mandatory_fields(self):
         try:
