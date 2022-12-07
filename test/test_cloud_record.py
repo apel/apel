@@ -156,6 +156,7 @@ CloudType: OpenNebula
         self._msg4 = '''
 BenchmarkType: HEPSPEC06
 StartTime: 1234567891
+EndTime: 1234567892
 Status: completed
 SiteName: Test Site
 MachineName: Test Machine
@@ -179,7 +180,8 @@ CloudComputeService: Test Service'''
                          'Status': 'completed',
                          # StartTime as datetime corresponding to 1234567891 seconds since epoch.
                          'StartTime': datetime(2009, 2, 13, 23, 31, 31),
-                         'EndTime': None,
+                         # EndTime as datetime corresponding to 1234567892 seconds since epoch.
+                         'EndTime': datetime(2009, 2, 13, 23, 31, 32),
                          'SuspendDuration': None,
                          'WallDuration': None,
                          'CpuDuration': None,

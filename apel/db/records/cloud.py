@@ -114,4 +114,16 @@ class CloudRecord(Record):
           - the EndTime is equal or grater than StartTime
           - the EndTime is not in the future
         """
-        pass
+        # A record has an EndTime if and only if it is in the "completed"
+        # state.
+        endtime = self._record_content['EndTime']
+        status = self._record_content['Status']
+        # XOR two expressions:
+        # - an endtime exists in the record
+        # - the record status is "completed".
+        # If only one of these things is true, the record is invalid.
+        if ((endtime is not None) ^ (status == 'completed')):
+            raise InvalidRecordException(
+                "Invalid combination - Endtime: %s, Status: %s" %
+                (endtime, status)
+            )
