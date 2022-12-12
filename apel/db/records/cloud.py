@@ -100,32 +100,18 @@ class CloudRecord(Record):
         if self._record_content['CpuCount'] is None:
             self._record_content['CpuCount'] = 0
 
-        # Check the values of StartTime and EndTime
-        # self._check_start_end_times()
+        # Sanity check the values of StartTime and EndTime
+        self._check_start_end_times()
 
 
     def _check_start_end_times(self):
-        """Checks the values of StartTime and EndTime in _record_content.
-        StartTime should be less than or equal to EndTime.
-        Neither StartTime or EndTime should be zero.
-        EndTime should not be in the future.
-
-        This is merely factored out for simplicity.
         """
-        try:
-            start = int(self._record_content['StartTime'])
-            end = int(self._record_content['EndTime'])
-            if end < start:
-                raise InvalidRecordException("EndTime is before StartTime.")
+        Sanity checks the values of StartTime and EndTime in _record_content.
 
-            if start == 0 or end == 0:
-                raise InvalidRecordException("Epoch times StartTime and EndTime mustn't be 0.")
-
-            now = datetime.now()
-            # add two days to prevent timezone problems
-            tomorrow = now + timedelta(2)
-            if datetime.fromtimestamp(end) > tomorrow:
-                raise InvalidRecordException("Epoch time " + str(end) + " is in the future.")
-
-        except ValueError:
-            raise InvalidRecordException("Cannot parse an integer from StartTime or EndTime.")
+        - A record has an EndTime if and only if it is in the "completed"
+          state.
+        - If the record has an EndTime / is in the "completed" state, then
+          - the EndTime is equal or grater than StartTime
+          - the EndTime is not in the future
+        """
+        pass
