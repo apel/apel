@@ -100,19 +100,18 @@ class CloudRecord(Record):
         if self._record_content['CpuCount'] is None:
             self._record_content['CpuCount'] = 0
 
-        # Sanity check the values of StartTime and EndTime
+        # Sanity check the values of StartTime and EndTime.
         self._check_start_end_times()
+        # Sanity check the values of Status and EndTime.
+        self._check_endtime_status_combination()
 
 
-    def _check_start_end_times(self):
+    def _check_endtime_status_combination(self):
         """
-        Sanity checks the values of StartTime and EndTime in _record_content.
+        Sanity checks the values of Status and EndTime in _record_content.
 
         - A record has an EndTime if and only if it is in the "completed"
           state.
-        - If the record has an EndTime / is in the "completed" state, then
-          - the EndTime is equal or grater than StartTime
-          - the EndTime is not in the future
         """
         # A record has an EndTime if and only if it is in the "completed"
         # state.
@@ -128,18 +127,33 @@ class CloudRecord(Record):
                 (endtime, status)
             )
 
-        # If the record has an EndTime / is in the "completed" state
-        if ((endtime is not None) and (status == 'completed')):
-            # Check the EndTime is after the StartTime
-            starttime = self._record_content['StartTime']
-            if endtime < starttime:
-                raise InvalidRecordException(
-                    "StartTime: %s is greater than EndTime: %s" %
-                    (starttime, endtime)
-                )
+    def _check_start_end_times(self):
+        """
+        Sanity checks the values of StartTime and EndTime in _record_content.
 
-            # Check the EndTime is not in the future.
-            if endtime > datetime.now():
-                raise InvalidRecordException(
-                    "EndTime: %s is in the future" % (endtime)
-                )
+        - If the record has an EndTime / is in the "completed" state, then
+          - the EndTime is equal or grater than StartTime
+          - the EndTime is not in the future
+        """
+        endtime = self._record_content['EndTime']
+        status = self._record_content['Status']
+        # If the record does not have an EndTime / is not in the
+        # "completed" state, it doesn't mean anything to compare
+        # StartTime and EndTime.
+        if ((endtime is None) or (status != 'completed')):
+            # Prevent further checks on EndTime running.
+            return
+
+        # Check the EndTime is after the StartTime
+        starttime = self._record_content['StartTime']
+        if endtime < starttime:
+            raise InvalidRecordException(
+                "StartTime: %s is greater than EndTime: %s" %
+                (starttime, endtime)
+            )
+
+        # Check the EndTime is not in the future.
+        if endtime > datetime.now():
+            raise InvalidRecordException(
+                "EndTime: %s is in the future" % (endtime)
+            )
