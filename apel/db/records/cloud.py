@@ -1,4 +1,4 @@
-'''
+"""
    Copyright (C) 2011 STFC
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
    limitations under the License.
 
 @author Will Rogers
-'''
+"""
 
 from apel.db.records import Record, InvalidRecordException
 from apel.common import parse_fqan
@@ -22,15 +22,15 @@ from datetime import datetime, timedelta
 
 
 class CloudRecord(Record):
-    '''
+    """
     Class to represent one cloud record.
 
     It knows about the structure of the MySQL table and the message format.
     It stores its information in a dictionary self._record_content.  The keys
     are in the same format as in the messages, and are case-sensitive.
-    '''
+    """
     def __init__(self):
-        '''Provide the necessary lists containing message information.'''
+        """Provide the necessary lists containing message information."""
 
         Record.__init__(self)
 
@@ -61,9 +61,9 @@ class CloudRecord(Record):
         self._datetime_fields = ["RecordCreateTime", "StartTime", "EndTime"]
 
     def _check_fields(self):
-        '''
+        """
         Add extra checks to those made in every record.
-        '''
+        """
         # First, call the parent's version.
         Record._check_fields(self)
 
@@ -105,13 +105,13 @@ class CloudRecord(Record):
 
 
     def _check_start_end_times(self):
-        '''Checks the values of StartTime and EndTime in _record_content.
+        """Checks the values of StartTime and EndTime in _record_content.
         StartTime should be less than or equal to EndTime.
         Neither StartTime or EndTime should be zero.
         EndTime should not be in the future.
 
         This is merely factored out for simplicity.
-        '''
+        """
         try:
             start = int(self._record_content['StartTime'])
             end = int(self._record_content['EndTime'])

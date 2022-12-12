@@ -1,10 +1,10 @@
-'''
+"""
 Created on 4 Jul 2011
 
 @author: Will Rogers
 
 Tests for the RecordFactory.
-'''
+"""
 import unittest
 
 from apel.db.loader.record_factory import RecordFactory, RecordFactoryException

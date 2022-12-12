@@ -85,13 +85,13 @@ class MysqlTest(unittest.TestCase):
         self.assertEqual([item in items_out for item in items_in].count(True), len(items_in))
 
     def test_load_and_get_cloud(self):
-        '''
+        """
         Test a CloudV0.2/0.4 message can be loaded into the database.
 
         It currently can't test for pre/post database load equality
         as the two are currently not the same for V0.2.
         i.e Benchmark 'None', which gets set to 0.0
-        '''
+        """
         schema_path = os.path.abspath(os.path.join('..', 'schemas',
                                                    'cloud.sql'))
         schema_handle = open(schema_path)
@@ -219,7 +219,7 @@ class MysqlTest(unittest.TestCase):
         self.assertTrue(self.db.set_updated())
         self.assertTrue(type(self.db.get_last_updated()) is datetime.datetime)
 
-CLOUD2 = '''VMUUID: 12345 Site1 vm-1
+CLOUD2 = """VMUUID: 12345 Site1 vm-1
 SiteName: Site1
 MachineName: '1'
 LocalUserId: 1
@@ -241,9 +241,9 @@ Disk: NULL
 StorageRecordId: NULL
 ImageId: 1
 CloudType: Cloud Technology 1
-'''
+"""
 
-CLOUD4 = '''VMUUID: 12345 Site2 Accounting Test
+CLOUD4 = """VMUUID: 12345 Site2 Accounting Test
 SiteName: Site2
 CloudComputeService: Cloud Technology 2 Instance 1
 MachineName: Accounting Test
@@ -269,10 +269,10 @@ Benchmark: 200
 StorageRecordId: NULL
 ImageId: 1
 CloudType: Cloud Technology 2
-'''
+"""
 
 # A Cloud V0.4 Record, but with NULL Benchmark / BenchmarkType fields
-CLOUD4_NULL_BENCHMARKS = '''VMUUID: 12346 Site2 Accounting Test
+CLOUD4_NULL_BENCHMARKS = """VMUUID: 12346 Site2 Accounting Test
 SiteName: Site2
 CloudComputeService: Cloud Technology 2 Instance 1
 MachineName: Accounting Test 2
@@ -298,7 +298,7 @@ Benchmark: NULL
 StorageRecordId: NULL
 ImageId: 1
 CloudType: Cloud Technology 2
-'''
+"""
 
 # A Cloud V0.4 Record, but missing a lot of fields.
 # We need to check we can load this record as we receive

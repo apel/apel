@@ -1,4 +1,4 @@
-'''
+"""
    Copyright 2011 Will Rogers
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@ Created on 1 Apr 2011
 @author: Will Rogers
 
 Interface for apel.db.records.
-'''
+"""
 import time
 import datetime
 

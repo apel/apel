@@ -5,9 +5,9 @@ from apel.db.records import CloudRecord
 
 
 class CloudRecordTest(unittest.TestCase):
-    '''
+    """
     Test case for CloudRecord
-    '''
+    """
 
     def setUp(self):
         self._msg1 = '''

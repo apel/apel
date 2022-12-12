@@ -1,4 +1,4 @@
-'''
+"""
    Copyright 2012 STFC
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
    limitations under the License.
 
    @author: Konrad Jopek
-'''
+"""
 
 from apel.common.datetime_utils import valid_from,valid_until, parse_timestamp, parse_time, iso2seconds
 from apel.common.exceptions import install_exc_handler, default_handler
