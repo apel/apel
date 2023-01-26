@@ -22,6 +22,8 @@ from future.builtins import object, str, zip
 
 from apel.db import LOGGER_ID
 
+import yaml
+
 from datetime import datetime
 import time
 import calendar
@@ -77,6 +79,8 @@ class Record(object):
         self._float_fields = []
         # Fields which should contain datetime (will be stored as a integers)
         self._datetime_fields = []
+        # Fields which should contain associative arrays
+        self._dict_fields = []
         # The dictionary into which all the information goes
         self._record_content = {}
         # These fields need special handling as they shouldn't be inserted as
@@ -176,10 +180,33 @@ class Record(object):
                 except (ValueError, OverflowError, OSError): # Failed to parse timestamp
                     # Given timestamp is probably out of range
                     raise InvalidRecordException(e)
+            elif name in self._dict_fields:
+                try:
+                    return self._clean_up_dict(value)
+                except ValueError as e:
+                    raise InvalidRecordException(e)
             else:
                 return value
         except ValueError:
             raise InvalidRecordException('Invalid content for field: %s (%s)' % (name, str(value)))
+
+    def _clean_up_dict(self, dict_like):
+        """Take a dict-like string and return a dict object with float values."""
+        # Use PyYAML to simplify converting the dict-like string to a Py obect.
+        in_dict = yaml.safe_load(dict_like)
+
+        out_dict = {}
+        for key in in_dict:
+            # If the key:value pair is written without spaces e.g. "{A:1}", then it doesn't get split
+            # and gets parsed into the dict as "{'A:1': None}" so we need so split those up.
+            if ':' in key:
+                split_key = key.split(':', 1)
+                if split_key[0] in out_dict:
+                    raise ValueError('Duplicate keys found in %s' % dict_like)
+                out_dict[split_key[0]] = float(split_key[1])
+            else:
+                out_dict[key] = float(in_dict[key])
+        return out_dict
 
     def load_from_tuple(self, tup):
         '''
