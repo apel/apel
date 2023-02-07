@@ -17,7 +17,7 @@
 '''
 
 from apel.db.records import Record, InvalidRecordException
-from apel.common import parse_fqan
+from apel.common import parse_fqan_db_safe
 from datetime import datetime, timedelta
 
 
@@ -69,14 +69,7 @@ class CloudRecord(Record):
 
         # Extract the relevant information from the user fqan.
         # Keep the fqan itself as other methods in the class use it.
-        role, group, vo = parse_fqan(self._record_content['FQAN'])
-        # We can't / don't put NULL in the database, so we use 'None'
-        if role is None:
-            role = 'None'
-        if group is None:
-            group = 'None'
-        if vo is None:
-            vo = 'None'
+        role, group, vo = parse_fqan_db_safe(self._record_content['FQAN'])
 
         if self._record_content['Benchmark'] is None:
             # If Benchmark is not present in the original record the

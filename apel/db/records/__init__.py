@@ -30,6 +30,7 @@ from event import EventRecord
 from group_attribute import GroupAttributeRecord
 from job import JobRecord
 from processed import ProcessedRecord
+from ip_record import IPRecord
 
 from storage import StorageRecord
 from summary import SummaryRecord

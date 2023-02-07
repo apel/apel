@@ -57,3 +57,23 @@ def parse_fqan(fqan):
     except Exception:
         log.warning("FQAN in non-standard format: %s", fqan)
         return (None, None, fqan)
+
+def parse_fqan_db_safe(fqan):
+    """
+    Extract three pieces of information from a FQAN: role, group and VO.
+
+    We can't / don't put NULL(/None) in the database,
+    so this method replaces those with the more DB friendly 'None'.
+    """
+    # Extract the relevant information from the user fqan.
+    # Keep the fqan itself as other methods in the class use it.
+    role, group, vo = parse_fqan(fqan)
+    # We can't / don't put NULL in the database, so we use 'None'
+    if role is None:
+        role = 'None'
+    if group is None:
+        group = 'None'
+    if vo is None:
+        vo = 'None'
+
+    return role, group, vo

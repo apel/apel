@@ -19,7 +19,7 @@
 from apel.db.records import Record, InvalidRecordException
 from datetime import datetime, timedelta
 from xml.dom.minidom import Document
-from apel.common import parse_fqan
+from apel.common import parse_fqan_db_safe
 import time
 
 WITHHELD_DN = 'withheld'
@@ -90,14 +90,7 @@ class JobRecord(Record):
         # Keep the fqan itself as other methods in the class use it.
         if self._record_content['FQAN'] not in ('None', None):
 
-            role, group, vo = parse_fqan(self._record_content['FQAN'])
-            # We can't / don't put NULL in the database, so we use 'None'
-            if role is None:
-                role = 'None'
-            if group is None:
-                group = 'None'
-            if vo is None:
-                vo = 'None'
+            role, group, vo = parse_fqan_db_safe(self._record_content['FQAN'])
 
             self._record_content['VORole'] = role
             self._record_content['VOGroup'] = group
