@@ -33,6 +33,7 @@ import os
 import sys
 import time
 import urllib
+import re
 import xml.dom.minidom
 import xml.parsers.expat
 
@@ -42,7 +43,8 @@ log = logging.getLogger('auth')
 class Configuration(object):
     """Dummy class for attaching configuration to."""
     def __init__(self):
-        self.gocdb_url = None
+        self.gocdb_hosts = None
+        self.gocdb_pi_path = None
         self.extra_dns = None
         self.banned_dns = None
         self.dn_file = None
@@ -58,9 +60,21 @@ def get_config(config_file):
     c = Configuration()
 
     try:
-        c.gocdb_url = cp.get('auth', 'gocdb_url')
+        c.gocdb_hosts = cp.get('auth', 'gocdb_hosts').split(',')
     except ConfigParser.NoOptionError:
-        c.gocdb_url = None
+        c.gocdb_hosts = None
+
+    try:
+        c.gocdb_pi_path = cp.get('auth', 'gocdb_pi_path')
+    except ConfigParser.NoOptionError:
+        c.gocdb_pi_path = None
+
+    try:
+        c.service_types = cp.get('auth', 'service_types')
+    except ConfigParser.NoOptionError:
+        c.service_types = None
+    if c.service_types and not verify_service_types(c.service_types):
+        raise ValueError("Invalid characters in service type.")
 
     try:
         extra_dns = cp.get('auth', 'extra-dns')
@@ -99,9 +113,9 @@ def get_config(config_file):
             set_up_logging(cp.get('logging', 'logfile'),
                            cp.get('logging', 'level'),
                            cp.getboolean('logging', 'console'))
-    except (ConfigParser.Error, ValueError, IOError), err:
-        print 'Error configuring logging: %s' % str(err)
-        print 'The system will exit.'
+    except (ConfigParser.Error, ValueError, IOError) as err:
+        print ('Error configuring logging: %s' % str(err))
+        print ('The system will exit.')
         sys.exit(1)
 
     return c
@@ -214,6 +228,26 @@ def verify_dn(dn):
 
     return True
 
+def verify_service_types(service_types):
+    '''
+    Returns true if all the provided service types are valid GOCDB service types.
+
+    Else, returns false.
+    Validation is done using the regex GOCDB 5.7.4 uses for validation
+    '''
+    service_types = service_types.split(',')
+    for service_type in service_types:
+        pattern = re.compile("^(\w|[\._-])*$")
+        if not pattern.match(service_type):
+            return False
+
+    return True
+
+def generate_gocdb_urls(hostname, gocdb_pi_path, service_types):
+    # Create a generator expression producing full GOCDB URLs with service types.
+    service_types = service_types.split(',')
+    return ('https://' + hostname + gocdb_pi_path + service_type
+                                        for service_type in service_types)
 
 def runprocess(config_file, log_config_file):
     '''Get DNs both from the URL and the additional file.'''
@@ -226,41 +260,47 @@ def runprocess(config_file, log_config_file):
 
     # We'll fill this list with DNs.
     dns = []
-    xml_string = None
-    fetch_failed = False
+    hosts = cfg.gocdb_hosts
 
-    next_url = cfg.gocdb_url
-    try:
-        # If next_url is none, it implies we have reached the end of paging
-        # (or that paging was not turned on).
-        # The addition of 'not fetch_failed' catches the case where no XML is
-        # returned from next_url (i.e. gocdb_url).
-        while next_url is not None and not fetch_failed:
-            xml_string = get_xml(next_url, cfg.proxy)
-            log.info("Fetched XML from %s", next_url)
-
-            try:
-                # Parse the XML into a Document Object Model
-                dom = xml.dom.minidom.parseString(xml_string)
-                # Get the next url, if any
-                next_url = next_link_from_dom(dom)
-                # Add the listed DNs to the list
-                dns.extend(dns_from_dom(dom))
-            except xml.parsers.expat.ExpatError, e:
-                log.warning('Failed to parse the retrieved XML.')
-                log.warning('Is the URL correct?')
-                fetch_failed = True
-    except AttributeError:
+    if not hosts:
         # gocdb_url == None
-        log.info("No GOCDB URL specified - won't fetch URLs.")
-    except IOError, e:
-        log.info("Failed to retrieve XML - is the URL correct?")
-        log.info(e)
-        fetch_failed = True
+        log.info("No GOCDB URL specified. No DNs fetched.")
 
-    if fetch_failed and (time.time() - os.path.getmtime(cfg.dn_file) <
-                         (cfg.expire_hours * 3600)):
-        log.warning('Failed to update DNs from GOCDB. Will not modify DNs file.')
+    while hosts:
+
+        host = hosts.pop(0)
+
+        for next_url in generate_gocdb_urls(host, cfg.gocdb_pi_path, cfg.service_types):
+            try:
+                # If next_url is none, it implies we have reached the end of paging
+                # (or that paging was not turned on).
+                while next_url is not None:
+                    xml_string = get_xml(next_url, cfg.proxy)
+                    log.info("Fetched XML from %s", next_url)
+                    # We assume we have connected so prevent attempts to
+                    # any alternative hosts.
+                    hosts = []
+
+                    try:
+                        # Parse the XML into a Document Object Model
+                        dom = xml.dom.minidom.parseString(xml_string)
+                        # Get the next url, if any
+                        next_url = next_link_from_dom(dom)
+                        # Add the listed DNs to the list
+                        dns.extend(dns_from_dom(dom))
+
+                    except xml.parsers.expat.ExpatError as e:
+                        log.warn('Failed to parse the fetched XML.')
+                        log.warn('Is the URL correct?')
+                        break
+
+            except IOError as e:
+                log.info("Failed to fetch XML from %s - is the URL correct?", next_url)
+                log.info(e)
+
+    if not dns and (time.time() - os.path.getmtime(cfg.dn_file) <
+                            (cfg.expire_hours * 3600)):
+        log.warn('Failed to update DNs from GOCDB. Will not modify DNs file.')
         log.info("auth will exit.")
         log.info(LOG_BREAK)
         sys.exit(1)
@@ -288,7 +328,7 @@ def runprocess(config_file, log_config_file):
     # print all the the dns to a file, with the discarded ones to a second file
     try:
         new_dn_file = open(cfg.dn_file, 'w')
-    except IOError, e:
+    except IOError as e:
         log.warning("Failed to open file %s for writing.", cfg.dn_file)
         log.warning("Check the configuration.")
         log.warning("auth will exit.")
@@ -306,7 +346,7 @@ def runprocess(config_file, log_config_file):
             log.debug("Comment ignored: %s", dn)
         else:
             # We haven't accepted the DN, so write it to the log file.
-            log.warning("DN not valid and won't be added: %s", dn)
+            log.warning("Invalid DN not added: %s", dn)
 
     new_dn_file.close()
 
