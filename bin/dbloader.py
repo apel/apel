@@ -19,6 +19,8 @@
 @author: Will Rogers
 '''
 
+from __future__ import print_function
+
 import sys
 import os
 import time
@@ -53,9 +55,9 @@ def runprocess(db_config_file, config_file, log_config_file):
                            cp.getboolean('logging', 'console'))
         global log
         log = logging.getLogger('dbloader')
-    except (ConfigParser.Error, ValueError, IOError), err:
-        print 'Error configuring logging: %s' % str(err)
-        print 'The system will exit.'
+    except (ConfigParser.Error, ValueError, IOError) as err:
+        print('Error configuring logging: %s' % err)
+        print('The system will exit.')
         sys.exit(1)
 
     log.info('Starting apel dbloader version %s.%s.%s', *__version__)
@@ -75,8 +77,8 @@ def runprocess(db_config_file, config_file, log_config_file):
 
         save_msgs =  cp.getboolean('loader', 'save_messages')
 
-    except Exception, err:
-        print "Error in configuration file: " + str(err)
+    except Exception as err:
+        print("Error in configuration file: %s" % err)
         sys.exit(1)
 
     # Create a Loader object
@@ -85,8 +87,8 @@ def runprocess(db_config_file, config_file, log_config_file):
             error = "Cannot start loader.  Pidfile %s already exists." % pidfile
             raise LoaderException(error)
         loader = Loader(qpath, save_msgs, db_backend, db_hostname, db_port, db_name, db_username, db_password, pidfile)
-    except Exception, err:
-        print "Error initialising loader: " + str(err)
+    except Exception as err:
+        print("Error initialising loader: %s" % err)
         sys.exit(1)
 
     # Once it's initialised correctly, set it going.
@@ -117,11 +119,11 @@ def run_as_daemon(loader, interval):
                 loader.load_all_msgs()
                 time.sleep(interval)
 
-        except SystemExit, e:
+        except SystemExit as e:
             log.info("Received the shutdown signal: %s", e)
-        except LoaderException, e:
+        except LoaderException as e:
             log.critical("An unrecoverable exception was thrown: %s", e)
-        except Exception, e:
+        except Exception as e:
             log.exception("Unexpected exception. Traceback follows...")
     finally:
         log.info("The loader will shutdown.")

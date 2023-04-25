@@ -171,7 +171,7 @@ class Record(object):
                         raise InvalidRecordException('Unknown datetime format!: %s' % value)
                 try:
                     return datetime.utcfromtimestamp(value)
-                except ValueError, e:
+                except ValueError as e:
                     # Given timestamp is probably out of range
                     raise InvalidRecordException(e)
             else:

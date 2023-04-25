@@ -108,7 +108,7 @@ class RecordFactory(object):
 
             return created_records
 
-        except ValueError, e:
+        except ValueError as e:
             raise RecordFactoryException('Message header is incorrect: %s' % e)
 
     ######################################################################
