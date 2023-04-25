@@ -93,7 +93,7 @@ class Loader(object):
             f.write(str(os.getpid()))
             f.write("\n")
             f.close()
-        except IOError, e:
+        except IOError as e:
             log.warning("Failed to create pidfile %s: %s", self._pidfile, e)
 
     def shutdown(self):
@@ -105,7 +105,7 @@ class Loader(object):
         if hasattr(self, 'current_msg') and self.current_msg:
             try:
                 self._inq.unlock(self.current_msg)
-            except OSError, e:
+            except OSError as e:
                 log.error('Unable to remove lock: %s', e)
 
         pidfile = self._pidfile
@@ -114,7 +114,7 @@ class Loader(object):
                 os.remove(pidfile)
             else:
                 log.warning("pidfile %s not found.", pidfile)
-        except IOError, e:
+        except IOError as e:
             log.warning("Failed to remove pidfile %s: %s", pidfile, e)
             log.warning("The loader may not start again until it is removed.")
 
@@ -156,7 +156,7 @@ class Loader(object):
 
             except (RecordFactoryException, LoaderException,
                     InvalidRecordException, apel.db.ApelDbException,
-                    XMLParserException, ExpatError), err:
+                    XMLParserException, ExpatError) as err:
                 errmsg = "Parsing unsuccessful: %s" % str(err)
                 log.warning('Message rejected. %s', errmsg)
                 name = self._rejectq.add({"body": msg_text,
@@ -178,7 +178,7 @@ class Loader(object):
                 # The accept queue is only created if _save_msgs is true.
                 if self._save_msgs:
                     self._acceptq.purge()
-            except OSError, e:
+            except OSError as e:
                 log.warning('OSError raised while purging message queues: %s', e)
 
         log.debug("Loader run finished.")
