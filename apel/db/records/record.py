@@ -22,8 +22,6 @@ from future.builtins import object, str, zip
 
 from apel.db import LOGGER_ID
 
-import yaml
-
 from datetime import datetime
 import time
 import calendar
@@ -192,20 +190,18 @@ class Record(object):
 
     def _clean_up_dict(self, dict_like):
         """Take a dict-like string and return a dict object with float values."""
-        # Use PyYAML to simplify converting the dict-like string to a Py obect.
-        in_dict = yaml.safe_load(dict_like)
+        # Pull out the combined key:value elements from the string.
+        elements = dict_like.strip('{}').split(',')
+        # Separate the combined key:value elements into paired items.
+        pairs = list((a.strip(), float(b.strip())) for a, b in (element.split(':') for element in elements))
 
         out_dict = {}
-        for key in in_dict:
-            # If the key:value pair is written without spaces e.g. "{A:1}", then it doesn't get split
-            # and gets parsed into the dict as "{'A:1': None}" so we need so split those up.
-            if ':' in key:
-                split_key = key.split(':', 1)
-                if split_key[0] in out_dict:
-                    raise ValueError('Duplicate keys found in %s' % dict_like)
-                out_dict[split_key[0]] = float(split_key[1])
+        for key, value in pairs:
+            # Check for duplicates before inserting into the dictionary.
+            if key in out_dict:
+                raise ValueError('Duplicate keys found in %s' % dict_like)
             else:
-                out_dict[key] = float(in_dict[key])
+                out_dict[key] = value
         return out_dict
 
     def load_from_tuple(self, tup):
