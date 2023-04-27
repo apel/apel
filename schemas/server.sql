@@ -162,9 +162,10 @@ CREATE TABLE NormalisedSummaries (
   NormalisedCpuDuration BIGINT UNSIGNED NOT NULL,
   NumberOfJobs BIGINT UNSIGNED NOT NULL,
   PublisherDNID INT NOT NULL,
+  ServiceLevelType VARCHAR(50) NOT NULL DEFAULT '',
 
   PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VORoleID, VOGroupID,
-               SubmitHostId, NodeCount, Processors)
+               SubmitHostId, NodeCount, Processors, ServiceLevelType)
 );
 
 
@@ -175,19 +176,19 @@ CREATE PROCEDURE ReplaceNormalisedSummary(
   globalUserName VARCHAR(255), vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255),
   submitHost VARCHAR(255), infrastructure VARCHAR(50),
   nodeCount INT, processors INT, earliestEndTime DATETIME, latestEndTime DATETIME, wallDuration BIGINT, cpuDuration BIGINT,
-  normalisedWallDuration BIGINT, normalisedCpuDuration BIGINT, numberOfJobs INT, publisherDN VARCHAR(255))
+  normalisedWallDuration BIGINT, normalisedCpuDuration BIGINT, numberOfJobs INT, publisherDN VARCHAR(255), serviceLevelType VARCHAR(50))
 BEGIN
     REPLACE INTO NormalisedSummaries(SiteID, Month, Year, GlobalUserNameID, VOID,
         VOGroupID, VORoleID, SubmitHostId, Infrastructure,
         NodeCount, Processors, EarliestEndTime, LatestEndTime, WallDuration,
         CpuDuration, NormalisedWallDuration, NormalisedCpuDuration,
-        NumberOfJobs, PublisherDNID)
+        NumberOfJobs, PublisherDNID, ServiceLevelType)
       VALUES (
         SiteLookup(site), month, year, DNLookup(globalUserName), VOLookup(vo),
         VOGroupLookup(voGroup), VORoleLookup(voRole), SubmitHostLookup(submitHost),
         infrastructure, nodeCount, processors, earliestEndTime,
         latestEndTime, wallDuration, cpuDuration, normalisedWallDuration, normalisedCpuDuration,
-        numberOfJobs, DNLookup(publisherDN));
+        numberOfJobs, DNLookup(publisherDN), serviceLevelType);
 END //
 DELIMITER ;
 
@@ -239,9 +240,9 @@ CREATE TABLE HybridSuperSummaries (
   VORoleID INT NOT NULL,                -- ID for lookup table
   SubmitHostId INT NOT NULL,            -- ID for lookup table
   Infrastructure VARCHAR(20) NOT NULL,
-  /* Defaults for service level fields set so that warnings are not raised when
-  normalised summaries (which lack service level fields) are copied in.*/
-  ServiceLevelType VARCHAR(50) NOT NULL DEFAULT '',
+  ServiceLevelType VARCHAR(50) NOT NULL,
+  /* Defaults for service level set so that warnings are not raised when
+  normalised summaries (which lack service level value) are copied in.*/
   ServiceLevel DECIMAL(10,3) NOT NULL DEFAULT 0,
   NodeCount INT NOT NULL,
   Processors INT NOT NULL,
@@ -338,7 +339,7 @@ DELIMITER //
 CREATE PROCEDURE CopyNormalisedSummaries()
 BEGIN
   REPLACE INTO HybridSuperSummaries(SiteID, Month, Year, GlobalUserNameID, VOID,
-    VOGroupID, VORoleID, SubmitHostID, Infrastructure, NodeCount, Processors,
+    VOGroupID, VORoleID, SubmitHostID, Infrastructure, ServiceLevelType, NodeCount, Processors,
     EarliestEndTime, LatestEndTime, WallDuration, CpuDuration,
     NormalisedWallDuration, NormalisedCpuDuration, NumberOfJobs)
   SELECT SiteID,
@@ -350,6 +351,7 @@ BEGIN
         VORoleID,
         SubmitHostID,
         Infrastructure,
+        ServiceLevelType,
         NodeCount,
         Processors,
         EarliestEndTime,
@@ -683,7 +685,8 @@ CREATE VIEW VNormalisedSummaries AS
         CpuDuration,
         NormalisedWallDuration,
         NormalisedCpuDuration,
-        NumberOfJobs
+        NumberOfJobs,
+        ServiceLevelType
     FROM NormalisedSummaries,
          Sites site,
          DNs userdn,
@@ -768,7 +771,8 @@ CREATE VIEW VNormalisedSuperSummaries AS
          SUM(CpuDuration) AS CpuDuration,
          SUM(NormalisedWallDuration) AS NormalisedWallDuration,
          SUM(NormalisedCpuDuration) AS NormalisedCpuDuration,
-         SUM(NumberOfJobs) AS NumberOfJobs
+         SUM(NumberOfJobs) AS NumberOfJobs,
+         ServiceLevelType
   FROM HybridSuperSummaries,
        Sites AS site,
        DNs AS userdn,
@@ -783,7 +787,7 @@ CREATE VIEW VNormalisedSuperSummaries AS
     AND VOGroupID = vogroup.id
     AND SubmitHostID = submithost.id
   GROUP BY SiteID, Month, Year, GlobalUserNameID, VOID, VORoleID, VOGroupID,
-           SubmitHostId, Infrastructure, NodeCount, Processors;
+           SubmitHostId, Infrastructure, NodeCount, Processors, ServiceLevelType;
 
 
 -- -----------------------------------------------------------------------------
