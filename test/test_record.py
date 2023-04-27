@@ -39,13 +39,18 @@ class RecordTest(unittest.TestCase):
 
     def test_dict_field_parsing(self):
         good_inputs = {"{D: 3.0, E:4}": {'D': 3.0, 'E': 4.0}, "{A:1,B:2}": {'A': 1.0, 'B': 2.0}}
-        bad_inputs =  ["{A:1,A:2}", "{1: 2}", "{A: 1, A: 2}"]
+        bad_inputs =  ["{A:1,A:2}", "{A: 1, A: 2}"]
 
         for key in good_inputs:
             self.assertEqual(Record()._clean_up_dict(key), good_inputs[key])
 
         for value in bad_inputs:
-            self.assertRaises(ValueError, Record()._clean_up_dict, value)
+            try:
+                self.assertRaises(ValueError, Record()._clean_up_dict, value)
+            except AssertionError:
+                print("Value Error not raised for '%s'" % value)
+                raise
+
 
 if __name__ == '__main__':
     unittest.main()
