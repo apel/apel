@@ -76,8 +76,7 @@ class JobRecord(Record):
         self._datetime_fields = ["StartTime", "EndTime"]
 
         # Acceptable values for the ServiceLevelType field, not case-sensitive
-        self._valid_slts = ["si2k", "hepspec"]
-
+        self._valid_slts = ["si2k", "hepspec", "hepscore23"]
 
     def _check_fields(self):
         '''
