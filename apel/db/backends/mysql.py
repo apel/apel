@@ -422,7 +422,7 @@ class ApelMysqlDb(object):
             # - Are older than the start time of this summariser run (i.e. are
             #   stale)
             # AND
-            # - Are reporting recent usage as defined by the threhsold value
+            # - Are reporting recent usage as defined by the threshold value
             delete_statement = (
                 "DELETE FROM CloudSummaries WHERE "
                 "Month>=%s AND "

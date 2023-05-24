@@ -141,7 +141,7 @@ def runprocess(db_config_file, config_file, log_config_file):
             db.copy_summaries()
         elif db_type == 'cloud':
             db.summarise_cloud()
-            # Optionally clean up any newly stale cloud summariy records.
+            # Optionally clean up any newly stale cloud summary records.
             if stale_summary_clean_up:
                 db.clean_stale_cloud_summaries(start_time,
                                                stale_summary_window_days)
