@@ -116,13 +116,13 @@ def runprocess(db_config_file, config_file, log_config_file):
         stale_summary_clean_up = cp.getboolean('summariser',
                                                'delete_stale_summaries')
 
-        stale_summary_window_days = cp.getint('summariser',
-                                              'stale_summary_window_days')
+        stale_summary_age_limit_days = cp.getint('summariser',
+                                                 'stale_summary_window_days')
 
     except ConfigParser.NoOptionError as _error:
         log.debug("No settings defined to clean up stale summaries.")
         stale_summary_clean_up = False
-        stale_summary_window_days = None
+        stale_summary_age_limit_days = None
 
     # Log into the database
     try:
@@ -144,7 +144,7 @@ def runprocess(db_config_file, config_file, log_config_file):
             # Optionally clean up any newly stale cloud summary records.
             if stale_summary_clean_up:
                 db.clean_stale_cloud_summaries(start_time,
-                                               stale_summary_window_days)
+                                               stale_summary_age_limit_days)
 
         else:
             raise ApelDbException('Unknown database type: %s' % db_type)
