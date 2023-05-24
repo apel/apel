@@ -425,9 +425,9 @@ class ApelMysqlDb(object):
             # - Are reporting recent usage as defined by the threshold value
             delete_statement = (
                 "DELETE FROM CloudSummaries WHERE "
-                "Month>=%s AND "
-                "Year>=%s AND "
-                "UpdateTime<'%s';"
+                "Month >= %s AND "
+                "Year >= %s AND "
+                "UpdateTime < '%s';"
                 % (
                     threshold_month, threshold_year,
                     summariser_start_time.strftime("%Y-%m-%d %H:%M:%S")
