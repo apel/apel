@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.9.1
+Version:        1.9.2
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -199,6 +199,12 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Fri May 26 2023 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.2-1
+ - [client] Enabled HEPscore23 as benchmark type for Job Records (using existing message format).
+ - [client] Changed default to EGI BDII for fetching benchmarks as CERN BDII will be decommissioned.
+ - [client] Added missing database update script for 1.9.1.
+ - [server] Changed save_messages default to clean up successfully loaded messages.
+
  * Wed Jul 06 2022 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.1-1
  - [server] Changed DN validation to allow commas in the middle of field values.
  - [client] Minor fixes to client database schema.
