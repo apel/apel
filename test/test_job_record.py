@@ -18,9 +18,8 @@ class TestJobRecord(unittest.TestCase):
 
         record = JobRecord()
         self.assertRaises(InvalidRecordException, record._check_factor, 'unknown', 1)
-        # currently only si2k and hepspec are supported
-        # add values here if you need to add
-        factors = ['si2k', 'hepspec']
+        # Add values here if you need to add more supported benchmark types.
+        factors = ['si2k', 'hepspec', 'hepscore23']
         for factor in factors:
             try:
                 record._check_factor(factor, 1)

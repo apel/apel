@@ -49,7 +49,7 @@ def parse_ce_capability(capability_string):
     return decimal_value
 
 
-def fetch_specint(site, host='lcg-bdii.cern.ch', port=2170):
+def fetch_specint(site, host='lcg-bdii.egi.eu', port=2170):
     '''
     Imports benchmark data from LDAP. Current implementation
     is able to fetch data according to way described here:
