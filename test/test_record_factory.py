@@ -1,10 +1,10 @@
-'''
+"""
 Created on 4 Jul 2011
 
 @author: Will Rogers
 
 Tests for the RecordFactory.
-'''
+"""
 import unittest
 
 from apel.db.loader.record_factory import RecordFactory, RecordFactoryException
@@ -190,6 +190,7 @@ NumberOfJobs: 100
         self._cr_text = '''APEL-cloud-message: v0.4
 VMUUID: 2013-11-14 19:15:21+00:00 CESNET vm-1
 SiteName: CESNET
+StartTime: 1000000
 %%
 '''
 

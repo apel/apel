@@ -1,4 +1,4 @@
-'''
+"""
    Copyright 2011 Will Rogers
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,20 +18,20 @@ Created on 1 Apr 2011
 @author: Will Rogers
 
 Interface for apel.db.records.
-'''
+"""
 import time
 import datetime
 
-from record import Record, InvalidRecordException
-from blahd import BlahdRecord
-from cloud import CloudRecord
-from cloud_summary import CloudSummaryRecord
-from event import EventRecord
-from group_attribute import GroupAttributeRecord
-from job import JobRecord
-from processed import ProcessedRecord
+from apel.db.records.record import Record, InvalidRecordException
+from apel.db.records.blahd import BlahdRecord
+from apel.db.records.cloud import CloudRecord
+from apel.db.records.cloud_summary import CloudSummaryRecord
+from apel.db.records.event import EventRecord
+from apel.db.records.group_attribute import GroupAttributeRecord
+from apel.db.records.job import JobRecord
+from apel.db.records.processed import ProcessedRecord
 
-from storage import StorageRecord
-from summary import SummaryRecord
-from normalised_summary import NormalisedSummaryRecord
-from sync import SyncRecord
+from apel.db.records.storage import StorageRecord
+from apel.db.records.summary import SummaryRecord
+from apel.db.records.normalised_summary import NormalisedSummaryRecord
+from apel.db.records.sync import SyncRecord

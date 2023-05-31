@@ -1,4 +1,4 @@
-'''
+"""
    Copyright (C) 2011, 2012 STFC
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
     @author: Will Rogers
 
 Module containing the Record class.
-'''
+"""
 
 from apel.db import LOGGER_ID
 
@@ -31,33 +31,33 @@ class InvalidRecordException(Exception):
     pass
 
 def get_unix_time(py_date):
-    '''Converts a python datetime object into Unix time.'''
+    """Converts a python datetime object into Unix time."""
     return time.mktime(py_date.timetuple())
 
 def check_for_null(value):
-    '''Check if a string is one of the different message values
-    which we accept as null.  This returns True if value is None.'''
+    """Check if a string is one of the different message values
+    which we accept as null.  This returns True if value is None."""
     nulls = ['none', 'null', '']
     return str(value).lower() in nulls
 
 class Record(object):
-    '''
+    """
     Represents one APEL database row or record.
 
     The class is designed so that each record type should inherit from this
     one.  There is some logic which is a little tricky used to convert
     the contents of a message into a sensible python format.
-    '''
+    """
     # used to protect user DN information
     DN_FIELD = 'GlobalUserName'
     WITHHELD_DN = 'withheld'
 
     def __init__(self):
-        '''
+        """
         Just defines the required lists which give content and order
         of a particular record.  These fields will be populated by
         subclasses.
-        '''
+        """
         # Fields which are required by the message format.
         self._mandatory_fields = []
         # All the keys which may be used in messages in the correct order.
@@ -79,10 +79,10 @@ class Record(object):
         self._record_content = {}
 
     def set_all(self, fielddict):
-        '''
+        """
         Copies all values for given dictionary to internal record's storage.
         Checks the field type and corrects it if it is necessary.
-        '''
+        """
         for key in fielddict:
             if key in self._db_fields:
                 self._record_content[key] = self.checked(key, fielddict[key])
@@ -91,9 +91,9 @@ class Record(object):
                     raise InvalidRecordException('Unknown field: %s' % key)
 
     def set_field(self, key, value):
-        '''
+        """
         Sets one field in the record's internal storage.
-        '''
+        """
         if key in self._db_fields:
             self._record_content[key] = self.checked(key, value)
         else:
@@ -102,7 +102,7 @@ class Record(object):
 
 
     def get_field(self, name):
-        '''
+        """
         Returns the content of the 'name' field.
 
         It can raise an error in case the record does not contain
@@ -110,7 +110,7 @@ class Record(object):
 
         @params: name Name of the field
         @return: Value of the field
-        '''
+        """
         try:
             value = self._record_content[name]
             return value
@@ -122,10 +122,10 @@ class Record(object):
 
 
     def checked(self, name, value):
-        '''
+        """
         Returns value converted to correct type if this is possible.
         Otherwise it raises an error.
-        '''
+        """
         try:
             # Convert any null equivalents to a None object
             if check_for_null(value):
@@ -171,27 +171,27 @@ class Record(object):
                         raise InvalidRecordException('Unknown datetime format!: %s' % value)
                 try:
                     return datetime.utcfromtimestamp(value)
-                except ValueError, e:
+                except ValueError as error:
                     # Given timestamp is probably out of range
-                    raise InvalidRecordException(e)
+                    raise InvalidRecordException(error)
             else:
                 return value
         except ValueError:
             raise InvalidRecordException('Invalid content for field: %s (%s)' % (name, str(value)))
 
     def load_from_tuple(self, tup):
-        '''
+        """
         Given a tuple from a mysql database, load fields.
-        '''
+        """
         assert len(tup) == len(self._db_fields), 'Different length of tuple and fields list'
         self.set_all(dict(zip(self._db_fields, tup)))
 
     def load_from_msg(self, text):
-        '''
+        """
         Given text extracted from a message, load fields.
         This uses the lists defined as part of any subclass to know
         how to deal with any part of a message.
-        '''
+        """
         if (text == "") or text.isspace():
             # log.info("Empty record: can't load.")
             return
@@ -216,7 +216,7 @@ class Record(object):
 
 
     def get_msg(self, withhold_dns=False):
-        '''
+        """
         Get the information about the record as a string in the format used
         for APEL's messages.  self._record_content holds the appropriate
         keys and values.
@@ -225,7 +225,7 @@ class Record(object):
         None.  In this case, no line is included in the message unless
         it is a mandatory field.  If the field is mandatory, an
         exception is raised.
-        '''
+        """
         # Check that the record is consistent.
         self._check_fields()
         # for certain records, we can replace GlobalUserName with 'withheld'
@@ -263,11 +263,11 @@ class Record(object):
 
 
     def get_db_tuple(self, source=None):
-        '''
+        """
         Returns record content as a tuple. Appends the source of the record
         (i.e. the sender's DN) if this is supplied.  Includes exactly the
         fields used in the DB by using the self._db_fields list.
-        '''
+        """
         # firstly, we must ensure, that record is completed
         # and no field is missing
         # _check_fields method may also check the internal logic inside the

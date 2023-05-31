@@ -1,44 +1,22 @@
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from apel.db.records import CloudRecord
+from apel.db.records import CloudRecord, InvalidRecordException
 
 
 class CloudRecordTest(unittest.TestCase):
-    '''
+    """
     Test case for CloudRecord
-    '''
-
-#    def test_load_from_tuple(self):
-#        # full example
-#        data = ('host.example.org/sr/87912469269276', 1289293612, 'host.example.org', 'MySite',
-#                 'pool-003', 'disk', 'replicated', 42, '/home/projectA',
-#                 'johndoe', 'projectA', '/O=Grid/OU=example.org/CN=John Doe',
-#                 'binarydataproject.example.org', '2010-10-11T09:31:40Z', '2010-10-11T09:41:40Z',
-#                 14728, 13617)
-#
-#        record = StorageRecord()
-#        record.load_from_tuple(data)
-#
-#        self.assertEquals(record.get_field('RecordId'), 'host.example.org/sr/87912469269276')
-#        self.assertEquals(str(record.get_field('CreateTime')), "2010-11-09 09:06:52")
-#        self.assertEquals(record.get_field('StorageSystem'), 'host.example.org')
-#        self.assertEquals(record.get_field('Site'), 'MySite')
-#        self.assertEquals(record.get_field('StorageShare'), 'pool-003')
-#        self.assertEquals(record.get_field('StorageMedia'), 'disk')
-#        self.assertEquals(record.get_field('StorageClass'), 'replicated')
-#        self.assertEquals(record.get_field('FileCount'), 42)
-#        self.assertEquals(record.get_field('DirectoryPath'), '/home/projectA')
-#        self.assertEquals(record.get_field('LocalUser'), 'johndoe')
-#        self.assertEquals(record.get_field('LocalGroup'), 'projectA')
-#        self.assertEquals(record.get_field('UserIdentity'), '/O=Grid/OU=example.org/CN=John Doe')
-#        self.assertEquals(record.get_field('GroupName'), 'binarydataproject.example.org')
-#        self.assertEquals(str(record.get_field('StartTime')), "2010-10-11 09:31:40")
-#        self.assertEquals(str(record.get_field('EndTime')), "2010-10-11 09:41:40")
-#        self.assertEquals(record.get_field('ResourceCapacityUsed'), 14728)
-#        self.assertEquals(record.get_field('LogicalCapacityUsed'), 13617)
+    """
 
     def setUp(self):
+        # A basic record with all the mandatory fields.
+        self._mandatory_record = CloudRecord()
+        self._mandatory_record.set_field('VMUUID', 'MyVM')
+        self._mandatory_record.set_field('SiteName', 'MySite')
+        self._mandatory_record.set_field('MachineName', 'MyMachine')
+        self._mandatory_record.set_field('StartTime', "1000000")
+
         self._msg1 = '''
 VMUUID: 2012-12-04 09:15:01+00:00 CESNET vm-0
 SiteName: CESNET
@@ -72,6 +50,8 @@ CloudType: OpenNebula
                         'MachineName': '\'one-0\'',
                         'LocalUserId': '5',
                         'Status': 'completed',
+                        # StartTime as datetime corresponding to 1318840264 seconds since epoch.
+                        'StartTime': datetime(2011, 10, 17, 8, 31, 4),
                         'CpuCount': 1,
                         'PublicIPCount': 5,
                         'Memory': 512,
@@ -120,6 +100,8 @@ CloudType: Openstack
                         'VOGroup': '/ops',
                         'VORole': 'Role=NULL',
                         'Status': 'started',
+                        # StartTime as datetime corresponding to 1343362725 seconds since epoch.
+                        'StartTime': datetime(2012, 7, 27, 4, 18, 45),
                         'CpuCount': 1,
                         'PublicIPCount': 1,
                         'Memory': 512,
@@ -161,6 +143,8 @@ CloudType: OpenNebula
                          'MachineName': '\'one-1\'',
                          'LocalUserId': '5',
                          'Status': 'completed',
+                         # StartTime as datetime corresponding to 1318842264 seconds since epoch.
+                         'StartTime': datetime(2011, 10, 17, 9, 4, 24),
                          'CpuCount': 1,
                          'PublicIPCount': None,
                          'Memory': 512,
@@ -171,6 +155,8 @@ CloudType: OpenNebula
 
         self._msg4 = '''
 BenchmarkType: HEPSPEC06
+StartTime: 1234567891
+EndTime: 1234567892
 Status: completed
 SiteName: Test Site
 MachineName: Test Machine
@@ -192,8 +178,10 @@ CloudComputeService: Test Service'''
                          'GlobalUserName': 'Test User',
                          'FQAN': 'None',
                          'Status': 'completed',
-                         'StartTime': None,
-                         'EndTime': None,
+                         # StartTime as datetime corresponding to 1234567891 seconds since epoch.
+                         'StartTime': datetime(2009, 2, 13, 23, 31, 31),
+                         # EndTime as datetime corresponding to 1234567892 seconds since epoch.
+                         'EndTime': datetime(2009, 2, 13, 23, 31, 32),
                          'SuspendDuration': None,
                          'WallDuration': None,
                          'CpuDuration': None,
@@ -262,16 +250,68 @@ CloudComputeService: Test Service'''
                 self.assertTrue(valid_value, 'Datetime %s with value: %s\n%s' %
                                 (key, repr(value), msg))
 
-    def test_mandatory_fields(self):
-        record = CloudRecord()
-        record.set_field('VMUUID', 'host.example.org/cr/87912469269276')
-        record.set_field('SiteName', 'MySite')
-        record.set_field('MachineName', 'MyMachine')
+    def test_endtime_validity(self):
+        # Test a record which finished before it began raises an
+        # InvalidRecordException.
+        self._mandatory_record.set_field('StartTime', '200000')
+        self._mandatory_record.set_field('Status', 'completed')
+        self._mandatory_record.set_field('EndTime', '100000')
+        self.assertRaises(
+            InvalidRecordException,
+            self._mandatory_record._check_fields
+        )
 
+        # Test a record with a EndTime in the future raises an
+        # InvalidRecordException.
+        self._mandatory_record.set_field('StartTime', '100000')
+        self._mandatory_record.set_field('Status', 'completed')
+        self._mandatory_record.set_field(
+            'EndTime',
+            datetime.now() + timedelta(seconds=100000)
+        )
+        self.assertRaises(
+            InvalidRecordException,
+            self._mandatory_record._check_fields
+        )
+
+    def test_endtime_status_combination(self):
+        '''Test the Status and EndTime combinations.'''
+        # A completed record without an EndTime should raise an
+        # InvalidRecordException.
+        self._mandatory_record.set_field('Status', 'completed')
+        self._mandatory_record.set_field('EndTime', None)
+        self.assertRaises(
+             InvalidRecordException,
+             self._mandatory_record._check_fields
+        )
+
+        # A record with an EndTime but not in the completed state should raise
+        # an InvalidRecordException.
+        self._mandatory_record.set_field('EndTime', "2000000")
+        self._mandatory_record.set_field('Status', "started")
+        self.assertRaises(
+             InvalidRecordException,
+             self._mandatory_record._check_fields
+        )
+
+        # A uncompleted record without an endtime is allowed.
+        self._mandatory_record.set_field('Status', "started")
+        self._mandatory_record.set_field('EndTime', None)
+        self._mandatory_record._check_fields()
+
+        # A completed record with an endtime is allowed.
+        self._mandatory_record.set_field('Status', "completed")
+        self._mandatory_record.set_field('EndTime', "2000000")
+        self._mandatory_record._check_fields()
+
+    def test_mandatory_fields(self):
         try:
-            record._check_fields()
-        except Exception, e:
-            self.fail('_check_fields method failed: %s [%s]' % (str(e), str(type(e))))
+            self._mandatory_record._check_fields()
+        except Exception as error:
+            self.fail(
+                '_check_fields method failed: %s [%s]' %
+                (str(error), str(type(error)))
+            )
 
 if __name__ == '__main__':
     unittest.main()

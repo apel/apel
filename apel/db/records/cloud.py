@@ -1,4 +1,4 @@
-'''
+"""
    Copyright (C) 2011 STFC
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
    limitations under the License.
 
 @author Will Rogers
-'''
+"""
 
 from apel.db.records import Record, InvalidRecordException
 from apel.common import parse_fqan
@@ -22,20 +22,20 @@ from datetime import datetime, timedelta
 
 
 class CloudRecord(Record):
-    '''
+    """
     Class to represent one cloud record.
 
     It knows about the structure of the MySQL table and the message format.
     It stores its information in a dictionary self._record_content.  The keys
     are in the same format as in the messages, and are case-sensitive.
-    '''
+    """
     def __init__(self):
-        '''Provide the necessary lists containing message information.'''
+        """Provide the necessary lists containing message information."""
 
         Record.__init__(self)
 
         # Fields which are required by the message format.
-        self._mandatory_fields = ["VMUUID", "SiteName"]
+        self._mandatory_fields = ["VMUUID", "SiteName", "StartTime"]
 
         # This list allows us to specify the order of lines when we construct records.
         self._msg_fields  = ["RecordCreateTime", "VMUUID", "SiteName", "CloudComputeService", "MachineName",
@@ -61,9 +61,9 @@ class CloudRecord(Record):
         self._datetime_fields = ["RecordCreateTime", "StartTime", "EndTime"]
 
     def _check_fields(self):
-        '''
+        """
         Add extra checks to those made in every record.
-        '''
+        """
         # First, call the parent's version.
         Record._check_fields(self)
 
@@ -100,32 +100,60 @@ class CloudRecord(Record):
         if self._record_content['CpuCount'] is None:
             self._record_content['CpuCount'] = 0
 
-        # Check the values of StartTime and EndTime
-        # self._check_start_end_times()
+        # Sanity check the values of StartTime and EndTime.
+        self._check_start_end_times()
+        # Sanity check the values of Status and EndTime.
+        self._check_endtime_status_combination()
 
+
+    def _check_endtime_status_combination(self):
+        """
+        Sanity checks the values of Status and EndTime in _record_content.
+
+        - A record has an EndTime if and only if it is in the "completed"
+          state.
+        """
+        # A record has an EndTime if and only if it is in the "completed"
+        # state.
+        endtime = self._record_content['EndTime']
+        status = self._record_content['Status']
+        # XOR two expressions:
+        # - an endtime exists in the record
+        # - the record status is "completed".
+        # If only one of these things is true, the record is invalid.
+        if ((endtime is not None) ^ (status == 'completed')):
+            raise InvalidRecordException(
+                "Invalid combination - Endtime: %s, Status: %s" %
+                (endtime, status)
+            )
 
     def _check_start_end_times(self):
-        '''Checks the values of StartTime and EndTime in _record_content.
-        StartTime should be less than or equal to EndTime.
-        Neither StartTime or EndTime should be zero.
-        EndTime should not be in the future.
+        """
+        Sanity checks the values of StartTime and EndTime in _record_content.
 
-        This is merely factored out for simplicity.
-        '''
-        try:
-            start = int(self._record_content['StartTime'])
-            end = int(self._record_content['EndTime'])
-            if end < start:
-                raise InvalidRecordException("EndTime is before StartTime.")
+        - If the record has an EndTime / is in the "completed" state, then
+          - the EndTime is equal or grater than StartTime
+          - the EndTime is not in the future
+        """
+        endtime = self._record_content['EndTime']
+        status = self._record_content['Status']
+        # If the record does not have an EndTime / is not in the
+        # "completed" state, it doesn't mean anything to compare
+        # StartTime and EndTime.
+        if ((endtime is None) or (status != 'completed')):
+            # Prevent further checks on EndTime running.
+            return
 
-            if start == 0 or end == 0:
-                raise InvalidRecordException("Epoch times StartTime and EndTime mustn't be 0.")
+        # Check the EndTime is after the StartTime
+        starttime = self._record_content['StartTime']
+        if endtime < starttime:
+            raise InvalidRecordException(
+                "StartTime: %s is greater than EndTime: %s" %
+                (starttime, endtime)
+            )
 
-            now = datetime.now()
-            # add two days to prevent timezone problems
-            tomorrow = now + timedelta(2)
-            if datetime.fromtimestamp(end) > tomorrow:
-                raise InvalidRecordException("Epoch time " + str(end) + " is in the future.")
-
-        except ValueError:
-            raise InvalidRecordException("Cannot parse an integer from StartTime or EndTime.")
+        # Check the EndTime is not in the future.
+        if endtime > datetime.now():
+            raise InvalidRecordException(
+                "EndTime: %s is in the future" % (endtime)
+            )
