@@ -111,6 +111,30 @@ class RunprocessTestCase(unittest.TestCase):
         c.gocdb_url = "not.a.host"
         mock_config.return_value = c
 
+    def check_dn_file_length(self, file_type, expected_result):
+        """Check the given file type for the expected number of DNs."""
+        dn_list = bin.retrieve_dns.dns_from_file(self.files[file_type]['path'])
+
+        # Determine the actual number of DNs retrieved from the file.
+        actual_result = len(dn_list)
+
+        self.assertEqual(
+            actual_result,
+            expected_result,
+            "%i DNs were extracted from the %s DN file. Expecting %i." % (
+                actual_result,
+                file_type,
+                expected_result,
+            )
+        )
+
+    def test_dns_from_file_number(self):
+        """Test dns_from_file returns the expected number of DNs."""
+        # Test dns_from_file using the test extra DNs file.
+        self.check_dn_file_length('extra', 2)
+        # Test dns_from_file using the test banned DNs file.
+        self.check_dn_file_length('ban', 1)
+
     def test_next_link_from_dom(self):
         """Test a next link is correctly retrieved from a xml string."""
         xml_test_string = """<results>
