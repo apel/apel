@@ -71,7 +71,7 @@ class RecordFactory(object):
                 primary_ns = get_primary_ns(msg_text)
                 if primary_ns == CarParser.NAMESPACE:
                     created_records = self._create_cars(msg_text)
-#                    # Not available yet.
+                    # Not available yet.
                 elif primary_ns == AurParser.NAMESPACE:
                     # created_records = self._create_aurs(msg_text)
                     raise RecordFactoryException('Aggregated usage record not yet supported.')
@@ -94,17 +94,17 @@ class RecordFactory(object):
                 msg_header_type = header[0:index].strip()
                 # msg_header_version = header[index:].strip()
 
-                if (msg_header_type == RecordFactory.JR_HEADER):
+                if msg_header_type == RecordFactory.JR_HEADER:
                     created_records = self._create_record_objects(msg_text, JobRecord)
-                elif (header.strip() == RecordFactory.SR_HEADER):
+                elif header.strip() == RecordFactory.SR_HEADER:
                     created_records = self._create_record_objects(msg_text, SummaryRecord)
-                elif (header.strip() == RecordFactory.NSR_HEADER):
+                elif header.strip() == RecordFactory.NSR_HEADER:
                     created_records = self._create_record_objects(msg_text, NormalisedSummaryRecord)
-                elif (msg_header_type == RecordFactory.SYNC_HEADER):
+                elif msg_header_type == RecordFactory.SYNC_HEADER:
                     created_records = self._create_record_objects(msg_text, SyncRecord)
-                elif (msg_header_type == RecordFactory.CLOUD_HEADER):
+                elif msg_header_type == RecordFactory.CLOUD_HEADER:
                     created_records = self._create_record_objects(msg_text, CloudRecord)
-                elif (msg_header_type == RecordFactory.CLOUD_SUMMARY_HEADER):
+                elif msg_header_type == RecordFactory.CLOUD_SUMMARY_HEADER:
                     created_records = self._create_record_objects(msg_text, CloudSummaryRecord)
                 else:
                     raise RecordFactoryException('Message type %s not recognised.' % header)
@@ -113,10 +113,6 @@ class RecordFactory(object):
 
         except ValueError as e:
             raise RecordFactoryException('Message header is incorrect: %s' % e)
-
-    ######################################################################
-    # Private methods below
-    ######################################################################
 
     def _create_record_objects(self, msg_text, record_class):
         """Given the text from a record message, return a list of record objects."""
@@ -127,7 +123,7 @@ class RecordFactory(object):
 
         for record in records:
             # unnecessary hack?
-            if (record != '') and not (record.isspace()):
+            if record != '' and not record.isspace():
                 j = record_class()
                 j.load_from_msg(record)
                 msgs.append(j)
