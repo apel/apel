@@ -71,7 +71,7 @@ class RecordFactory(object):
                 primary_ns = get_primary_ns(msg_text)
                 if primary_ns == CarParser.NAMESPACE:
                     created_records = self._create_cars(msg_text)
-#                    # Not available yet.
+                    # Not available yet.
                 elif primary_ns == AurParser.NAMESPACE:
                     # created_records = self._create_aurs(msg_text)
                     raise RecordFactoryException('Aggregated usage record not yet supported.')
@@ -91,18 +91,21 @@ class RecordFactory(object):
 
                 # crop the string to before the first ':'
                 index = header.index(':')
-                if (header[0:index].strip() == RecordFactory.JR_HEADER):
-                    created_records = self._create_jrs(msg_text)
-                elif (header.strip() == RecordFactory.SR_HEADER):
-                    created_records = self._create_srs(msg_text)
-                elif (header.strip() == RecordFactory.NSR_HEADER):
-                    created_records = self._create_nsrs(msg_text)
-                elif (header[0:index].strip() == RecordFactory.SYNC_HEADER):
-                    created_records = self._create_syncs(msg_text)
-                elif (header[0:index].strip() == RecordFactory.CLOUD_HEADER):
-                    created_records = self._create_clouds(msg_text)
-                elif (header[0:index].strip() == RecordFactory.CLOUD_SUMMARY_HEADER):
-                    created_records = self._create_cloud_summaries(msg_text)
+                msg_header_type = header[0:index].strip()
+                # msg_header_version = header[index:].strip()
+
+                if msg_header_type == RecordFactory.JR_HEADER:
+                    created_records = self._create_record_objects(msg_text, JobRecord)
+                elif header.strip() == RecordFactory.SR_HEADER:
+                    created_records = self._create_record_objects(msg_text, SummaryRecord)
+                elif header.strip() == RecordFactory.NSR_HEADER:
+                    created_records = self._create_record_objects(msg_text, NormalisedSummaryRecord)
+                elif msg_header_type == RecordFactory.SYNC_HEADER:
+                    created_records = self._create_record_objects(msg_text, SyncRecord)
+                elif msg_header_type == RecordFactory.CLOUD_HEADER:
+                    created_records = self._create_record_objects(msg_text, CloudRecord)
+                elif msg_header_type == RecordFactory.CLOUD_SUMMARY_HEADER:
+                    created_records = self._create_record_objects(msg_text, CloudSummaryRecord)
                 else:
                     raise RecordFactoryException('Message type %s not recognised.' % header)
 
@@ -111,125 +114,19 @@ class RecordFactory(object):
         except ValueError as e:
             raise RecordFactoryException('Message header is incorrect: %s' % e)
 
-    ######################################################################
-    # Private methods below
-    ######################################################################
-
-    def _create_jrs(self, msg_text):
-        '''
-        Given the text from a job record message, create a list of
-        JobRecord objects and return it.
-        '''
-
+    def _create_record_objects(self, msg_text, record_class):
+        """Given the text from a record message, return a list of record objects."""
         msg_text = msg_text.strip()
 
         records = msg_text.split('%%')
         msgs = []
 
-        for record in records:
-            # unnecessary hack?
-            if (record != '') and not (record.isspace()):
-                j = JobRecord()
-                j.load_from_msg(record)
-                msgs.append(j)
-
-        return msgs
-
-
-    def _create_srs(self, msg_text):
-        '''
-        Given the text from a summary record message, create a list of
-        JobRecord objects and return it.
-        '''
-
-        msg_text = msg_text.strip()
-
-        records = msg_text.split('%%')
-        msgs = []
-        for record in records:
-            # unnecessary hack?
-            if (record != '') and not (record.isspace()):
-                s = SummaryRecord()
-                s.load_from_msg(record)
-                msgs.append(s)
-
-        return msgs
-
-
-    def _create_nsrs(self, msg_text):
-        """
-        Given the text from a normalised summary record message, create a list
-        of JobRecord objects and return it.
-        """
-
-        msg_text = msg_text.strip()
-
-        records = msg_text.split('%%')
-        msgs = []
         for record in records:
             # unnecessary hack?
             if record != '' and not record.isspace():
-                ns = NormalisedSummaryRecord()
-                ns.load_from_msg(record)
-                msgs.append(ns)
-
-        return msgs
-
-    def _create_syncs(self, msg_text):
-        '''
-        Given the text from a sync message, create a list of
-        SyncRecord objects and return it.
-        '''
-
-        msg_text = msg_text.strip()
-
-        records = msg_text.split('%%')
-        msgs = []
-        for record in records:
-            # unnecessary hack?
-            if (record != '') and not (record.isspace()):
-                s = SyncRecord()
-                s.load_from_msg(record)
-                msgs.append(s)
-
-        return msgs
-
-
-    def _create_clouds(self, msg_text):
-        '''
-        Given the text from a cloud message, create a list of
-        SyncRecord objects and return it.
-        '''
-
-        msg_text = msg_text.strip()
-
-        records = msg_text.split('%%')
-        msgs = []
-        for record in records:
-            # unnecessary hack?
-            if (record != '') and not (record.isspace()):
-                c = CloudRecord()
-                c.load_from_msg(record)
-                msgs.append(c)
-
-        return msgs
-
-    def _create_cloud_summaries(self, msg_text):
-        '''
-        Given the text from a cloud summary message, create a list of
-        SyncRecord objects and return it.
-        '''
-
-        msg_text = msg_text.strip()
-
-        records = msg_text.split('%%')
-        msgs = []
-        for record in records:
-            # unnecessary hack?
-            if (record != '') and not (record.isspace()):
-                c = CloudSummaryRecord()
-                c.load_from_msg(record)
-                msgs.append(c)
+                j = record_class()
+                j.load_from_msg(record)
+                msgs.append(j)
 
         return msgs
 
