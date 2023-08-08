@@ -316,3 +316,58 @@ class JobRecord(Record):
         # We don't want the XML declaration, because the whole XML
         # document will be assembled by another part of the program.
         return doc.documentElement.toxml()
+
+
+class JobRecord04(JobRecord):
+    """Class to represent a job record using the 0.4 message format
+
+    It differs from JobRecord by lacking a separate ServiceLevelType field
+    in the message fields, as this is extracted from the associative array
+    in ServiceLevel before putting into the database.
+    """
+
+    def __init__(self):
+        """Provide the necessary lists containing message information."""
+
+        Record.__init__(self)
+
+        # Fields which are required by the message format.
+        self._mandatory_fields = ["Site", "LocalJobId",  "WallDuration",
+                                  "CpuDuration", "StartTime", "EndTime"]
+
+        # This list allows us to specify the order of lines when we construct records.
+        # It differs from JobRecord by lacking a separate ServiceLevelType field.
+        self._msg_fields  = [
+            "Site", "SubmitHost", "MachineName", "Queue", "LocalJobId", "LocalUserId",
+            "GlobalUserName", "FQAN", "VO", "VOGroup", "VORole", "WallDuration", "CpuDuration",
+            "Processors", "NodeCount", "StartTime", "EndTime", "InfrastructureDescription",
+            "InfrastructureType", "MemoryReal", "MemoryVirtual", "ServiceLevel"
+        ]
+
+        # This list specifies the information that goes in the database.
+        self._db_fields = [
+            "Site", "SubmitHost", "MachineName", "Queue", "LocalJobId", "LocalUserId",
+            "GlobalUserName", "FQAN", "VO", "VOGroup", "VORole", "WallDuration", "CpuDuration",
+            "Processors", "NodeCount", "StartTime", "EndTime", "InfrastructureDescription",
+            "InfrastructureType", "MemoryReal", "MemoryVirtual", "ServiceLevelType",
+            "ServiceLevel"
+        ]
+
+        # Fields which are accepted but currently ignored.
+        self._ignored_fields = ["SubmitHostType", "UpdateTime"]
+
+        self._all_fields = self._msg_fields + self._ignored_fields
+
+        # Fields which will have an integer stored in them
+        self._int_fields = ["WallDuration", "CpuDuration", "Processors", "NodeCount",
+                            "MemoryReal", "MemoryVirtual"]
+
+        self._float_fields = ["ServiceLevel"]
+
+        self._datetime_fields = ["StartTime", "EndTime"]
+
+        # Fields which should contain associative arrays in the message
+        self._dict_fields = ["ServiceLevel"]
+
+        # Acceptable values for the ServiceLevelType field, not case-sensitive
+        self._valid_slts = ["si2k", "hepspec", "hepscore23"]
