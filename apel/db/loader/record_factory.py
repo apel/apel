@@ -87,27 +87,30 @@ class RecordFactory(object):
                 # recreate message as string having removed header
                 msg_text = '\n'.join(lines)
 
-                created_records = []
-
                 # crop the string to before the first ':'
                 index = header.index(':')
                 msg_header_type = header[0:index].strip()
                 # msg_header_version = header[index:].strip()
 
-                if msg_header_type == RecordFactory.JR_HEADER:
-                    created_records = self._create_record_objects(msg_text, JobRecord)
-                elif header.strip() == RecordFactory.SR_HEADER:
-                    created_records = self._create_record_objects(msg_text, SummaryRecord)
-                elif header.strip() == RecordFactory.NSR_HEADER:
-                    created_records = self._create_record_objects(msg_text, NormalisedSummaryRecord)
-                elif msg_header_type == RecordFactory.SYNC_HEADER:
-                    created_records = self._create_record_objects(msg_text, SyncRecord)
-                elif msg_header_type == RecordFactory.CLOUD_HEADER:
-                    created_records = self._create_record_objects(msg_text, CloudRecord)
-                elif msg_header_type == RecordFactory.CLOUD_SUMMARY_HEADER:
-                    created_records = self._create_record_objects(msg_text, CloudSummaryRecord)
-                else:
-                    raise RecordFactoryException('Message type %s not recognised.' % header)
+                record_mapping = {
+                    RecordFactory.JR_HEADER: JobRecord,
+                    RecordFactory.SR_HEADER: SummaryRecord,
+                    RecordFactory.NSR_HEADER: NormalisedSummaryRecord,
+                    RecordFactory.SYNC_HEADER: SyncRecord,
+                    RecordFactory.CLOUD_HEADER: CloudRecord,
+                    RecordFactory.CLOUD_SUMMARY_HEADER: CloudSummaryRecord,
+                }
+
+                try:
+                    record_type = record_mapping[msg_header_type]
+                except KeyError:
+                    try:
+                        # Use the full header to distinguish normalised and non-norm summaries.
+                        record_type = record_mapping[header]
+                    except KeyError:
+                        raise RecordFactoryException('Message type %s not recognised.' % header)
+
+                created_records = self._create_record_objects(msg_text, record_type)
 
             return created_records
 
