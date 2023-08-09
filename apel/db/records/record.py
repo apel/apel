@@ -84,11 +84,8 @@ class Record(object):
         Checks the field type and corrects it if it is necessary.
         '''
         for key in fielddict:
-            if key in self._db_fields:
-                self._record_content[key] = self.checked(key, fielddict[key])
-            else:
-                if key not in self._ignored_fields:
-                    raise InvalidRecordException('Unknown field: %s' % key)
+            self.set_field(key, fielddict[key])
+
 
     def set_field(self, key, value):
         '''
