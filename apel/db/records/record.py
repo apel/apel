@@ -90,6 +90,24 @@ class Record(object):
         Copies all values for given dictionary to internal record's storage.
         Checks the field type and corrects it if it is necessary.
         '''
+
+        # This loop handles the v0.4 messages that have dictionaries in certain fields
+        # It won't loop or do anything if _dict_fields is empty
+        for field in self._dict_fields:
+            # Retrieve the benchmark type based on the preferntial order set in the extract method
+            benchmark_type, value = self._extract_benchmark_dict(fielddict, field)
+
+            if "ServiceLevelType" not in fielddict:
+                # Set the benchmark type if it is its first occurence.
+                fielddict["ServiceLevelType"] = benchmark_type
+            elif fielddict["ServiceLevelType"] != benchmark_type:
+                # If a different benchmark type is retrieved from another field, raise a warning
+                raise InvalidRecordException("Mixture of benchmark types detected")
+            # Else the ServiceLevelType is already set to benchmark_type so nothing to do.
+
+            # Set the field to the value retrieved as that's what needs to do into the database
+            fielddict[field] = value
+
         for key in fielddict:
             self.set_field(key, fielddict[key])
 
@@ -407,3 +425,20 @@ class Record(object):
                 elif value is not None:
                     raise InvalidRecordException("Datetime field " + key +
                                     " doesn't contain an datetime.")
+
+    def _extract_benchmark_dict(self, fielddict, field):
+        """Extract a preferrred benchmark type and value from a fielddict"""
+
+        benchmark_priority = ("hepscore23", "hepspec", "si2k")
+
+        if field in fielddict:
+            try:
+                cleaned_dict = self._clean_up_dict(fielddict[field])
+            except ValueError as e:
+                raise InvalidRecordException("Expecting dictionary-like value. %s" % e)
+
+            for benchmark_type in benchmark_priority:
+                if benchmark_type in cleaned_dict:
+                    return benchmark_type, cleaned_dict[benchmark_type]
+            else:
+                raise InvalidRecordException("No valid benchmark type found")
