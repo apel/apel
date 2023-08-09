@@ -20,9 +20,9 @@ Module containing the RecordFactory class.
 
 from future.builtins import object
 
-from apel.db.records.job import JobRecord
-from apel.db.records.summary import SummaryRecord
-from apel.db.records.normalised_summary import NormalisedSummaryRecord
+from apel.db.records.job import JobRecord, JobRecord04
+from apel.db.records.summary import SummaryRecord, SummaryRecord04
+from apel.db.records.normalised_summary import NormalisedSummaryRecord, NormalisedSummaryRecord04
 from apel.db.records.sync import SyncRecord
 from apel.db.records.cloud import CloudRecord
 from apel.db.records.cloud_summary import CloudSummaryRecord
