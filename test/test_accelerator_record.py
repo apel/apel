@@ -6,28 +6,28 @@ from apel.db.records import AcceleratorRecord
 
 
 class AcceleratorRecordTest(unittest.TestCase):
-    '''
+    """
     Test case for AcceleratorRecord
-    '''
+    """
 
     def setUp(self):
         self._msg1 = '''
-MeasurementMonth: 12
-MeasurementYear: 2021
-AssociatedRecordType: cloud
-AssociatedRecord: UUIDx
-GlobalUserName: /C=UK/O=eScience/OU=CLRC/L=RAL/CN=apel-consumer2.esc.rl.ac.uk/emailAddress=sct-certificates@stfc.ac.uk
-FQAN: fqan1
-SiteName: Site Navigation
-Count: 604800.000
-Cores: 857
-AvailableDuration: 326057
-ActiveDuration: 30739
-BenchmarkType: Site FAQs
-Benchmark: 326.000
-Type: Accelerator
-Model: HS About
-'''
+                MeasurementMonth: 12
+                MeasurementYear: 2021
+                AssociatedRecordType: cloud
+                AssociatedRecord: UUIDx
+                GlobalUserName: /C=UK/O=eScience/OU=CLRC/L=RAL/CN=apel-consumer2.esc.rl.ac.uk/emailAddress=sct-certificates@stfc.ac.uk
+                FQAN: fqan1
+                SiteName: Site Navigation
+                Count: 604800.000
+                Cores: 857
+                AvailableDuration: 326057
+                ActiveDuration: 30739
+                BenchmarkType: Site FAQs
+                Benchmark: 326.000
+                Type: Accelerator
+                Model: HS About
+                '''
 
         self._values1 = {
                 'MeasurementMonth': 12,
@@ -81,7 +81,3 @@ Model: HS About
 
 if __name__ == '__main__':
     unittest.main()
-
-
-
-

@@ -1,6 +1,17 @@
 -- This schema adds the tables necessary for Accelerator accounting as a
 -- separate record as part of the wider Cloud Accounting system.
 
+-- ------------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS SiteNameLookup;
+DELIMITER //
+CREATE FUNCTION SiteNameLookup(lookup INTEGER) RETURNS VARCHAR(255) DETERMINISTIC
+BEGIN 
+    DECLARE result VARCHAR(255);
+    SELECT name FROM Sites WHERE id = lookup INTO result;
+    RETURN result;
+END //
+DELIMITER ;
+
 DROP TABLE IF EXISTS AcceleratorRecords;
 CREATE TABLE AcceleratorRecords (
   UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -12,7 +23,7 @@ CREATE TABLE AcceleratorRecords (
 
   GlobalUserName VARCHAR(255),      
   FQAN VARCHAR(255) NOT NULL,       
-  SiteName VARCHAR(255) NOT NULL,   
+  SiteID INT NOT NULL,
   Count DECIMAL(10,3) NOT NULL,
   Cores INT,
   ActiveDuration INT,
@@ -25,10 +36,9 @@ CREATE TABLE AcceleratorRecords (
 
   PRIMARY KEY (MeasurementMonth, MeasurementYear, 
                AssociatedRecordType, AssociatedRecord, 
-               SiteName)
+               SiteID)
 
   -- [?] INDEX
-
 );
 
 DROP PROCEDURE IF EXISTS ReplaceAcceleratorRecord;
@@ -40,7 +50,7 @@ CREATE PROCEDURE ReplaceAcceleratorRecord(
   associatedRecord VARCHAR(255),
   globalUserName VARCHAR(255),
   fqan VARCHAR(255),
-  siteName VARCHAR(255),
+  SiteName VARCHAR(255),
   count DECIMAL(10,3),
   cores INT,
   activeDuration INT,
@@ -59,7 +69,7 @@ REPLACE INTO AcceleratorRecords(
   AssociatedRecord,
   GlobalUserName,
   FQAN,
-  SiteName,
+  SiteID,
   Count,
   Cores,
   ActiveDuration,
@@ -77,7 +87,7 @@ VALUES(
   associatedRecord,
   globalUserName,
   fqan,
-  siteName,
+  SiteLookup(SiteName),
   count,
   cores,
   activeDuration,
@@ -108,7 +118,7 @@ CREATE TABLE AcceleratorSummaries (
     Type VARCHAR(255) NOT NULL,
     Model VARCHAR(255),
     NumberOfRecords INT NOT NULL,
-    PublisherDN VARCHAR(255) NOT NULL,
+    PublisherDNID VARCHAR(255) NOT NULL,
 
     PRIMARY KEY (Month, Year, AssociatedRecordType, SiteName, Type)
 );
@@ -121,13 +131,13 @@ CREATE PROCEDURE SummariseAccelerators()
 BEGIN
     REPLACE INTO AcceleratorSummaries(Month, Year, AssociatedRecordType,
         GlobalUserName, SiteName, 
-        Cores, Count, AvailableDuration, ActiveDuration, 
-        BenchmarkType, Benchmark, Type, Model, NumberOfRecords, PublisherDN)
+        Count, Cores, AvailableDuration, ActiveDuration, 
+        BenchmarkType, Benchmark, Type, Model, NumberOfRecords, PublisherDNID)
     SELECT 
       MeasurementMonth, MeasurementYear,
       AssociatedRecordType,
       GlobalUserName,
-      SiteName,
+      SiteNameLookup(SiteID) as SiteName,
       Count,
       Cores,
       SUM(AvailableDuration),
@@ -150,7 +160,6 @@ END //
 DELIMITER ;
 
 
-
 DROP PROCEDURE IF EXISTS ReplaceAcceleratorSummaryRecord;
 DELIMITER //
 CREATE PROCEDURE ReplaceAcceleratorSummaryRecord(
@@ -158,7 +167,7 @@ CREATE PROCEDURE ReplaceAcceleratorSummaryRecord(
   Year INT,
   associatedRecordType VARCHAR(255),
   globalUserName VARCHAR(255),
-  siteName VARCHAR(255),
+  SiteName VARCHAR(255),
   count DECIMAL(10,3),
   cores INT,
   activeDuration INT,
@@ -168,7 +177,7 @@ CREATE PROCEDURE ReplaceAcceleratorSummaryRecord(
   type VARCHAR(255),
   model VARCHAR(255),
   number INT,
-  publisherDN VARCHAR(255)
+  publisherDNID INT
 )
 BEGIN
 REPLACE INTO AcceleratorSummaries(
@@ -186,14 +195,14 @@ REPLACE INTO AcceleratorSummaries(
   Type,
   Model,
   NumberOfRecords,
-  PublisherDN
+  PublisherDNID
 )
 VALUES(
   Month,
   Year,
   associatedRecordType,
   globalUserName,
-  siteName,
+  SiteNameLookup(SiteName),
   count,
   cores,
   activeDuration,
@@ -203,7 +212,7 @@ VALUES(
   type,
   model,
   number,
-  publisherDN
+  publisherDNID
 );
 END //
 DELIMITER ;

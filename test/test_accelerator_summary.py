@@ -6,28 +6,27 @@ from apel.db.records import AcceleratorSummary
 
 
 class AcceleratorSummaryRecordTest(unittest.TestCase):
-    '''
+    """
     Test case for AcceleratorSummary
-    '''
+    """
 
     def setUp(self):
         self._msg1 = '''
-Month: 12
-Year: 2021
-AssociatedRecordType: cloud
-GlobalUserName: /C=UK/O=eScience/OU=CLRC/L=RAL/CN=apel-consumer2.esc.rl.ac.uk/emailAddress=sct-certificates@stfc.ac.uk
-SiteName: Site Navigation
-Count: 604800.000
-Cores: 857
-AvailableDuration: 326057
-ActiveDuration: 30739
-BenchmarkType: Site FAQs
-Benchmark: 326.000
-Model: HS About
-Type: Accelerator
-NumberOfRecords: 1000
-'''
-
+                Month: 12
+                Year: 2021
+                AssociatedRecordType: cloud
+                GlobalUserName: /C=UK/O=eScience/OU=CLRC/L=RAL/CN=apel-consumer2.esc.rl.ac.uk/emailAddress=sct-certificates@stfc.ac.uk
+                SiteName: Site Navigation
+                Count: 604800.000
+                Cores: 857
+                AvailableDuration: 326057
+                ActiveDuration: 30739
+                BenchmarkType: Site FAQs
+                Benchmark: 326.000
+                Model: HS About
+                Type: Accelerator
+                NumberOfRecords: 1000
+                '''
 
         self._values1 = {
                 'Month': 12,
@@ -50,7 +49,6 @@ NumberOfRecords: 1000
         self.cases[self._msg1] = self._values1
 
     def test_load_from_msg(self):
-
         for msg in self.cases.keys():
 
             acceleratorr = AcceleratorSummary()

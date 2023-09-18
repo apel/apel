@@ -100,15 +100,14 @@ class TestRecordFactory(unittest.TestCase):
         """Test the expected error is raised on handling malformed JSON."""
         malformed_json = '{"Key": "Value}'
 
-        with self.assertRaisesRegexp(RecordFactoryException,
-                                     "^Malformed JSON:"):
+        with self.assertRaisesRegexp(RecordFactoryException, "^Malformed JSON:"):
             self._rf.create_records(malformed_json)
 
     def test_create_records_json_unknown_type(self):
         """Test the expected error is raised on messages without a type."""
         unknown_type_json = '{"Key": "Value"}'
 
-        with self.assertRaisesRegexp(RecordFactoryException, 
+        with self.assertRaisesRegexp(RecordFactoryException,
                                      "^Type of JSON message not provided."):
             self._rf.create_records(unknown_type_json)
 
