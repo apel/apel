@@ -178,7 +178,7 @@ class LoaderTest(unittest.TestCase):
             self.loader.load_all_msgs()
             self.mock_db.load_records.assert_called_once()
             mock_log.assert_has_calls(
-                        [call('Message contains %i records', 1)])
+                        [call('Message contains 1 %s record', 'Storage')])
 
     def tearDown(self):
         shutil.rmtree(self.dir_path)
