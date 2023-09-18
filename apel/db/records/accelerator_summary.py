@@ -1,6 +1,22 @@
-"""This file contains the AcceleratorSummary class."""
+"""
+   Copyright (C) 2023 STFC
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+"""
+
 from apel.common import parse_fqan
-from apel.db.records import Record, InvalidRecordException
+from apel.db.records import Record
 
 
 class AcceleratorSummary(Record):
@@ -24,7 +40,8 @@ class AcceleratorSummary(Record):
             "Benchmark",
             "Type",
             "Model",
-            "NumberOfRecords"
+            "NumberOfRecords",
+            "PublisherDNID",
         ]
 
         # Fields which are required by the message format.
@@ -44,12 +61,12 @@ class AcceleratorSummary(Record):
             "Cores",
             "ActiveDuration",
             "AvailableDuration",
-            "NumberOfRecords"
+            "NumberOfRecords",
         ]
 
         self._float_fields = [
             "Count",
-            "Benchmark"
+            "Benchmark",
         ]
 
         # This list specifies the output ordering for printed records
@@ -61,7 +78,6 @@ class AcceleratorSummary(Record):
     def _check_fields(self):
         """
         Add extra checks to those made in every record.
-
         Also populates fields that are extracted from other fields.
         """
         # First, call the parent's version.

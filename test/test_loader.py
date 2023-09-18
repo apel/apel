@@ -181,7 +181,8 @@ class LoaderTest(unittest.TestCase):
                         [call('Message contains %i records', 1)])
 
     def test_load_json_type(self):
-        """Check that load_records is called and message is logged correctly for json messages."""
+        """Check that load_records is called and message is
+            logged correctly for json messages."""
 
         from apel.common import json_utils
 

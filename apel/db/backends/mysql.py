@@ -57,7 +57,8 @@ class ApelMysqlDb(object):
                     ProcessedRecord : 'VProcessedFiles',
                     SummaryRecord : 'VSummaries',
                     StorageRecord: 'VStarRecords',
-                    AcceleratorSummary: 'AcceleratorSummaries'}
+                    AcceleratorSummary: 'AcceleratorSummaries',
+                    }
 
     # These simply need to have the same number of arguments as the stored procedures defined in the database schemas.
     INSERT_PROCEDURES = {
@@ -77,7 +78,7 @@ class ApelMysqlDb(object):
               StorageRecord: "CALL ReplaceStarRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               GroupAttributeRecord: "CALL ReplaceGroupAttribute(%s, %s, %s)",
               AcceleratorRecord: "CALL ReplaceAcceleratorRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-              AcceleratorSummary: "CALL ReplaceAcceleratorSummaryRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+              AcceleratorSummary: "CALL ReplaceAcceleratorSummaryRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               }
 
     def __init__(self, host, port, username, pwd, db):
@@ -164,7 +165,6 @@ class ApelMysqlDb(object):
 
             for record in record_list:
                 values = record.get_db_tuple(source)
-                # log.debug('Keys: %s', record._db_fields)
                 log.debug('Values: %s', values)
                 if type(record) in (StorageRecord, GroupAttributeRecord):
                     # These types can be found in the same record list, so need
@@ -412,14 +412,14 @@ class ApelMysqlDb(object):
             raise
 
     def summarise_accelerators(self):
-        '''
+        """
         Aggregate the AcceleratorRecords table and put the results in the
         AcceleratorSummaries table.  This method does this by calling the
         SummariseAccelerators procedure.
 
         Any failure will result in the entire transaction being rolled
         back.
-        '''
+        """
         try:
             # prevent MySQLdb from raising
             # 'MySQL server has gone' exception
@@ -428,11 +428,11 @@ class ApelMysqlDb(object):
             c = self.db.cursor()
 
             log.info("Summarising Accelerator records...")
-            c.callproc(self._summarise_accelerators_proc, ())
+            c.callproc(self._summarise_accelerators_proc)
             log.info("Done.")
 
             self.db.commit()
-        except MySQLdb.Error, e:
+        except MySQLdb.Error as e:
             log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
 

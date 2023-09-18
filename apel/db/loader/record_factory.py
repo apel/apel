@@ -152,22 +152,27 @@ class RecordFactory(object):
             raise RecordFactoryException('Message header is incorrect: %s' % e)
 
     def _validate_json(self, js, schema):
-        '''Run jsonschema validate on JSON given a schema otherwise raise a friendly error'''
-
+        """Run jsonschema validate on JSON given a schema
+            otherwise raise a friendly error"""
         try:
             jsonschema.validate(js, schema)
         # Catch the case where json_msg does not conform to the
         # expected JSON schema for the JSON message type.
         except jsonschema.ValidationError as validation_error:
             msg_type = schema['properties']['Type']['const']
+
             raise RecordFactoryException(
-                'JSON message invalid against %s schema: %s' % (msg_type, validation_error)
+                "JSON message invalid against %s schema: %s" % (
+                    msg_type,
+                    validation_error
+                )
             )
 
     def _unpack_json_records(self, js, RecordType):
-        '''Loop through UsageRecords in JSON and return a set of populated RecordType objects'''
-
+        """Loop through UsageRecords in JSON and
+            return a set of populated RecordType objects"""
         created_records = []
+
         for record_dict in js['UsageRecords']:
             record = RecordType()
             record.set_all(record_dict)
@@ -176,15 +181,17 @@ class RecordFactory(object):
         return created_records
 
     def _create_accelerator_records(self, json_msg):
-        '''Attempt to convert an accelerator record dict into a list of AcceleratorRecord objects.'''
-
+        """Attempt to convert an accelerator record dict into
+            a list of AcceleratorRecord objects."""
         self._validate_json(json_msg, ACCELERATOR_MSG_SCHEMA)
+
         return self._unpack_json_records(json_msg, AcceleratorRecord)
 
     def _create_accelerator_summaries(self, json_msg):
-        '''Attempt to convert an accelerator summary record dict into a list of AcceleratorSummary objects.'''
-
+        """Attempt to convert an accelerator summary record dict into
+             a list of AcceleratorSummary objects."""
         self._validate_json(json_msg, ACCELERATOR_SUMMARY_MSG_SCHEMA)
+
         return self._unpack_json_records(json_msg, AcceleratorSummary)
 
     def _create_record_objects(self, msg_text, record_class):
