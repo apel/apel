@@ -143,8 +143,9 @@ class LoaderTest(unittest.TestCase):
             mock_log.assert_has_calls(
                         [call('Message contains 1 %s record', 'Summary')])
 
-    def test_load_all_other_type(self):
-        """Check that load_records is called and message is logged correctly when type is other"""
+    def test_load_all_storage_type(self):
+        """Check that load_records is called and message is logged
+            correctly when record type is storage"""
         logger = logging.getLogger('loader')
         pidfile = os.path.join(self.dir_path, 'pidfile')
 
