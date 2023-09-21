@@ -305,7 +305,7 @@ def main():
         ccp.read(options.config)
     else:
         print("Config file not found at", options.config)
-        exit(1)
+        sys.exit(1)
 
     # check if ssm config file exists using os.path.isfile function
     if os.path.isfile(options.ssm_config):
@@ -313,7 +313,7 @@ def main():
         scp.read(options.ssm_config)
     else:
         print("SSM config file not found at", options.ssm_config)
-        exit(1)
+        sys.exit(1)
 
     # set up logging
     try:
