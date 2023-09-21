@@ -278,24 +278,24 @@ def main():
     install_exc_handler(default_handler)
     ver = 'APEL client %s.%s.%s' % __version__
     opt_parser = OptionParser(version=ver, description=__doc__)
-    default_conf_location = '/etc/apel/client.cfg'
-    default_ssmconf_location = '/etc/apel/sender.cfg'
-    default_log_location = '/etc/apel/logging.cfg'
+    DEFAULT_CONF_LOCATION = '/etc/apel/client.cfg'
+    DEFAULT_SSMCONF_LOCATION = '/etc/apel/sender.cfg'
+    DEFAULT_LOGCONF_LOCATION = '/etc/apel/logging.cfg'
 
     opt_parser.add_option('-c', '--config',
                           help=('main configuration file for APEL, '
-                                'default path: ' + default_conf_location),
-                          default=default_conf_location)
+                                'default path: ' + DEFAULT_CONF_LOCATION),
+                          default=DEFAULT_CONF_LOCATION)
 
     opt_parser.add_option('-s', '--ssm_config',
                           help=('location of SSM config file, '
-                                'default path: ' + default_ssmconf_location),
-                          default=default_ssmconf_location)
+                                'default path: ' + DEFAULT_SSMCONF_LOCATION),
+                          default=DEFAULT_SSMCONF_LOCATION)
 
     opt_parser.add_option('-l', '--log_config',
                           help=('location of logging config file (optional), '
-                                'default path: ' + default_log_location),
-                          default=default_log_location)
+                                'default path: ' + DEFAULT_LOGCONF_LOCATION),
+                          default=DEFAULT_LOGCONF_LOCATION)
 
     options, unused_args = opt_parser.parse_args()
 
