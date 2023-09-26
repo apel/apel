@@ -146,10 +146,16 @@ def dns_from_dom(dom):
         # We expect only one child node each time.
         children = dn.childNodes
         for node in children:
-            dns.append(node.data)
+            dn = node.data.strip()
 
-    # remove any whitespace
-    dns = [dn.strip() for dn in dns]
+            if verify_dn(dn):
+                dns.append(dn)
+            elif dn.startswith("#"):
+                # Ignore comment lines starting with "#"
+                log.debug("Comment ignored: %s", dn)
+            else:
+                # We haven't accepted the DN, so write it to the log file.
+                log.warning("DN not valid and won't be added: %s", dn)
 
     return dns
 
@@ -303,13 +309,9 @@ def runprocess(config_file, log_config_file):
 
     added = 0
     for dn in dns:
-        if verify_dn(dn):
-            new_dn_file.write(dn)
-            new_dn_file.write('\n')
-            added += 1
-        else:
-            # We haven't accepted the DN, so write it to the log file.
-            log.warning("DN not valid and won't be added: %s", dn)
+        new_dn_file.write(dn)
+        new_dn_file.write('\n')
+        added += 1
 
     new_dn_file.close()
 
