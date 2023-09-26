@@ -213,8 +213,10 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         pr.set_field('Parsed', parsed)
                         updated.append(pr)
                 elif unparsed:
-                    log.debug('Skipping file (failed to parse previously): %s',
-                             abs_file)
+                    log.debug(
+                        'Skipping file (failed to parse previously): %s',
+                        abs_file,
+                    )
                 else:
                     log.debug('Skipping file (already parsed): %s ', abs_file)
             elif os.path.isfile(abs_file):
