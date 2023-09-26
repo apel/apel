@@ -15,6 +15,7 @@ repos:
   - id: check-added-large-files
   - id: check-merge-conflict
   - id: check-yaml
+  - id: debug-statements
   - id: end-of-file-fixer
   - id: mixed-line-ending
     name: Force line endings to LF
@@ -22,8 +23,14 @@ repos:
   - id: trailing-whitespace
 
 - repo: https://github.com/pre-commit/pygrep-hooks
-  rev: v1.9.0
+  rev: v1.10.0
   hooks:
   - id: python-check-mock-methods
   - id: python-no-eval
   - id: python-no-log-warn
+  - id: python-use-type-annotations
+
+# Pre-commit CI config, see https://pre-commit.ci/
+ci:
+  autofix_prs: false
+  autoupdate_schedule: quarterly
