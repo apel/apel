@@ -36,3 +36,5 @@ repos:
 ci:
   autofix_prs: false
   autoupdate_schedule: quarterly
+  # Skipping as CI runs in Python 3
+  skip: [check-ast, check-builtin-literals, debug-statements]
