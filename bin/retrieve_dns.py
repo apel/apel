@@ -157,7 +157,6 @@ def dns_from_dom(dom):
                 # We haven't accepted the DN, so write it to the log file.
                 log.warning("DN not valid and won't be added: %s", dn)
 
-    print(dns)
     return dns
 
 def dns_from_file(path):
@@ -300,7 +299,6 @@ def runprocess(config_file, log_config_file):
 
     # print all the the dns to a file, with the discarded ones to a second file
     try:
-        print("Writing")
         new_dn_file = open(cfg.dn_file, 'w')
     except IOError, e:
         log.warning("Failed to open file %s for writing.", cfg.dn_file)
