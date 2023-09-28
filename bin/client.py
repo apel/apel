@@ -270,6 +270,20 @@ def run_client(ccp):
         log.info(LOG_BREAK)
 
 
+def check_config_file_exists(configFile):
+    '''
+    Function to check a passed config file exists.
+    Makes use of os.path.isfile function
+    '''
+    if os.path.isfile(configFile):
+        cp = ConfigParser.ConfigParser()
+        cp.read(configFile)
+        return cp
+    else:
+        print("Config file not found at", configFile)
+        sys.exit(1)
+
+
 def main():
     '''
     Parse command line arguments, set up logging and begin the client
@@ -299,21 +313,11 @@ def main():
 
     options, unused_args = opt_parser.parse_args()
 
-    # check if config file exists using os.path.isfile fuction
-    if os.path.isfile(options.config):
-        ccp = ConfigParser.ConfigParser()
-        ccp.read(options.config)
-    else:
-        print("Config file not found at", options.config)
-        sys.exit(1)
+    # check if config file exists
+    ccp = check_config_file_exists(options.config)
 
-    # check if ssm config file exists using os.path.isfile function
-    if os.path.isfile(options.ssm_config):
-        scp = ConfigParser.ConfigParser()
-        scp.read(options.ssm_config)
-    else:
-        print("SSM config file not found at", options.ssm_config)
-        sys.exit(1)
+    # check if ssm config file exists
+    scp = check_config_file_exists(options.ssm_config)
 
     # set up logging
     try:
