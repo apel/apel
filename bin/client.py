@@ -42,6 +42,7 @@ from apel.db import ApelDb, ApelDbException
 from apel.db.unloader import DbUnloader
 from apel.ldap import fetch_specint
 from apel.common import set_up_logging
+from apel.common.unloader_utils import check_records_per_message
 from apel.common.exceptions import install_exc_handler, default_handler
 import ssm.agents
 
@@ -233,6 +234,9 @@ def run_client(ccp):
 
         unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos,
                               local_jobs, withhold_dns)
+
+        unloader.records_per_message = check_records_per_message(ccp)
+
         try:
             if interval == 'latest':
                 msgs, recs = unloader.unload_latest(table_name, send_ur)

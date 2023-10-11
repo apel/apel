@@ -21,16 +21,12 @@ import logging.config
 import sys
 import os
 from apel.common import set_up_logging
+from apel.common.unloader_utils import check_records_per_message
 from apel.db import ApelDb, ApelDbException
 from apel.db.unloader import DbUnloader
 from apel import __version__
 from optparse import OptionParser
 import ConfigParser
-
-
-RECORDS_PER_MESSAGE_MIN = 1
-RECORDS_PER_MESSAGE_DEFAULT = 1000
-RECORDS_PER_MESSAGE_MAX = 5000
 
 
 if __name__ == '__main__':
@@ -118,38 +114,10 @@ if __name__ == '__main__':
 
     interval = cp.get('unloader', 'interval')
 
-    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns)
-    try:
-        records_per_message = int(cp.get('unloader', 'records_per_message'))
-        if records_per_message < RECORDS_PER_MESSAGE_MIN:
-            unloader.records_per_message = RECORDS_PER_MESSAGE_MIN
-            log.warning(
-                'records_per_message too small, increasing from %d to %d',
-                records_per_message,
-                RECORDS_PER_MESSAGE_MIN,
-            )
-        elif records_per_message > RECORDS_PER_MESSAGE_MAX:
-            unloader.records_per_message = RECORDS_PER_MESSAGE_MAX
-            log.warning(
-                'records_per_message too large, decreasing from %d to %d',
-                records_per_message,
-                RECORDS_PER_MESSAGE_MAX,
-            )
-        else:
-            unloader.records_per_message = records_per_message
-    except ConfigParser.NoOptionError:
-        log.info(
-            'records_per_message not specified, defaulting to %d.',
-            RECORDS_PER_MESSAGE_DEFAULT,
-        )
-        unloader.records_per_message = RECORDS_PER_MESSAGE_DEFAULT
-    except ValueError:
-        log.error(
-            'Invalid records_per_message value, must be a postive integer. Defaulting to %d.',
-            RECORDS_PER_MESSAGE_DEFAULT,
-        )
-        unloader.records_per_message = RECORDS_PER_MESSAGE_DEFAULT
+    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos,
+                          local_jobs, withhold_dns)
 
+    unloader.records_per_message = check_records_per_message(cp)
 
     try:
         if interval == 'latest':
