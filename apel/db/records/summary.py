@@ -247,7 +247,7 @@ class SummaryRecord04(SummaryRecord):
         # records.
         self._msg_fields = [
             "Site", "Month", "Year", "GlobalUserName", "VO", "VOGroup", "VORole", "SubmitHost",
-            "InfrastructureType", "ServiceLevelType", "NodeCount", "Processors",
+            "InfrastructureType", "ServiceLevelType", "ServiceLevel", "NodeCount", "Processors",
             "EarliestEndTime", "LatestEndTime", "WallDuration", "CpuDuration", "NumberOfJobs"
         ]
         # This list specifies the information that goes in the database.
@@ -265,6 +265,8 @@ class SummaryRecord04(SummaryRecord):
         # Fields which will have an integer stored in them
         self._int_fields = ["Month", "Year", "NodeCount", "Processors",
                             "WallDuration", "CpuDuration", "NumberOfJobs"]
+
+        self._float_fields = ["ServiceLevel"]
 
         self._datetime_fields = ["EarliestEndTime", "LatestEndTime"]
 
