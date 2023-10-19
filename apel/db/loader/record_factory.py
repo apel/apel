@@ -24,7 +24,8 @@ from apel.db.records.normalised_summary import NormalisedSummaryRecord, Normalis
 from apel.db.records.sync import SyncRecord
 from apel.db.records.cloud import CloudRecord
 from apel.db.records.cloud_summary import CloudSummaryRecord
-from apel.db import (JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
+from apel.db import (JOB_MSG_HEADER, SUMMARY_MSG_HEADER, SUMMARY_MSG_HEADER_04,
+                     NORMALISED_SUMMARY_MSG_HEADER_04,
                      NORMALISED_SUMMARY_MSG_HEADER, SYNC_MSG_HEADER,
                      CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER)
 
@@ -52,7 +53,9 @@ class RecordFactory(object):
     # Message headers; remove version numbers from the end.
     JR_HEADER = JOB_MSG_HEADER.split(':')[0].strip()
     SR_HEADER = SUMMARY_MSG_HEADER
+    SR_04_HEADER = SUMMARY_MSG_HEADER_04
     NSR_HEADER = NORMALISED_SUMMARY_MSG_HEADER
+    NSR_04_HEADER = NORMALISED_SUMMARY_MSG_HEADER_04
     SYNC_HEADER = SYNC_MSG_HEADER.split(':')[0].strip()
     CLOUD_HEADER = CLOUD_MSG_HEADER.split(':')[0].strip()
     CLOUD_SUMMARY_HEADER = CLOUD_SUMMARY_MSG_HEADER.split(':')[0].strip()
@@ -90,14 +93,14 @@ class RecordFactory(object):
                 # crop the string to before the first ':'
                 index = header.index(':')
                 msg_header_type = header[0:index].strip()
-                msg_header_version = header[index:].strip()
+                msg_header_version = header[index:].strip(': ')
 
                 if msg_header_version == "v0.4":
                     # This routes us via the new sublcassed v0.4 record objects.
                     record_mapping = {
                         RecordFactory.JR_HEADER: JobRecord04,
-                        RecordFactory.SR_HEADER: SummaryRecord04,
-                        RecordFactory.NSR_HEADER: NormalisedSummaryRecord04,
+                        RecordFactory.SR_04_HEADER: SummaryRecord04,
+                        RecordFactory.NSR_04_HEADER: NormalisedSummaryRecord04,
                         RecordFactory.SYNC_HEADER: SyncRecord,
                         RecordFactory.CLOUD_HEADER: CloudRecord,
                         RecordFactory.CLOUD_SUMMARY_HEADER: CloudSummaryRecord,
