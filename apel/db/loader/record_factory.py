@@ -90,16 +90,27 @@ class RecordFactory(object):
                 # crop the string to before the first ':'
                 index = header.index(':')
                 msg_header_type = header[0:index].strip()
-                # msg_header_version = header[index:].strip()
+                msg_header_version = header[index:].strip()
 
-                record_mapping = {
-                    RecordFactory.JR_HEADER: JobRecord,
-                    RecordFactory.SR_HEADER: SummaryRecord,
-                    RecordFactory.NSR_HEADER: NormalisedSummaryRecord,
-                    RecordFactory.SYNC_HEADER: SyncRecord,
-                    RecordFactory.CLOUD_HEADER: CloudRecord,
-                    RecordFactory.CLOUD_SUMMARY_HEADER: CloudSummaryRecord,
-                }
+                if msg_header_version == "v0.4":
+                    # This routes us via the new sublcassed v0.4 record objects.
+                    record_mapping = {
+                        RecordFactory.JR_HEADER: JobRecord04,
+                        RecordFactory.SR_HEADER: SummaryRecord04,
+                        RecordFactory.NSR_HEADER: NormalisedSummaryRecord04,
+                        RecordFactory.SYNC_HEADER: SyncRecord,
+                        RecordFactory.CLOUD_HEADER: CloudRecord,
+                        RecordFactory.CLOUD_SUMMARY_HEADER: CloudSummaryRecord,
+                    }
+                else:
+                    record_mapping = {
+                        RecordFactory.JR_HEADER: JobRecord,
+                        RecordFactory.SR_HEADER: SummaryRecord,
+                        RecordFactory.NSR_HEADER: NormalisedSummaryRecord,
+                        RecordFactory.SYNC_HEADER: SyncRecord,
+                        RecordFactory.CLOUD_HEADER: CloudRecord,
+                        RecordFactory.CLOUD_SUMMARY_HEADER: CloudSummaryRecord,
+                    }
 
                 try:
                     record_type = record_mapping[msg_header_type]
