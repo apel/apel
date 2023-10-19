@@ -261,7 +261,7 @@ class NormalisedSummaryRecord04(NormalisedSummaryRecord):
             "Site", "Month", "Year", "GlobalUserName", "VO", "VOGroup", "VORole", "SubmitHost",
             "Infrastructure", "NodeCount", "Processors", "EarliestEndTime", "LatestEndTime",
             "WallDuration", "CpuDuration", "NormalisedWallDuration", "NormalisedCpuDuration",
-            "NumberOfJobs"
+            "NumberOfJobs", "ServiceLevelType"
         ]
 
         self._ignored_fields = ["UpdateTime"]

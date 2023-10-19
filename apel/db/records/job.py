@@ -337,7 +337,8 @@ class JobRecord04(JobRecord):
             "Site", "SubmitHost", "MachineName", "Queue", "LocalJobId", "LocalUserId",
             "GlobalUserName", "FQAN", "VO", "VOGroup", "VORole", "WallDuration", "CpuDuration",
             "Processors", "NodeCount", "StartTime", "EndTime", "InfrastructureDescription",
-            "InfrastructureType", "MemoryReal", "MemoryVirtual", "ServiceLevel"
+            "InfrastructureType", "MemoryReal", "MemoryVirtual", "ServiceLevelType",
+            "ServiceLevel"
         ]
 
         # This list specifies the information that goes in the database.
