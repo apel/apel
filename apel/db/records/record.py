@@ -94,19 +94,20 @@ class Record(object):
         # This loop handles the v0.4 messages that have dictionaries in certain fields
         # It won't loop or do anything if _dict_fields is empty
         for field in self._dict_fields:
-            # Retrieve the benchmark type based on the preferntial order set in the extract method
-            benchmark_type, value = self._extract_benchmark_dict(fielddict, field)
+            if field in fielddict:
+                # Retrieve the benchmark type based on the preferntial order set in the extract method
+                benchmark_type, value = self._extract_benchmark_dict(fielddict, field)
 
-            if "ServiceLevelType" not in fielddict:
-                # Set the benchmark type if it is its first occurence.
-                fielddict["ServiceLevelType"] = benchmark_type
-            elif fielddict["ServiceLevelType"] != benchmark_type:
-                # If a different benchmark type is retrieved from another field, raise a warning
-                raise InvalidRecordException("Mixture of benchmark types detected")
-            # Else the ServiceLevelType is already set to benchmark_type so nothing to do.
+                if "ServiceLevelType" not in fielddict:
+                    # Set the benchmark type if it is its first occurence.
+                    fielddict["ServiceLevelType"] = benchmark_type
+                elif fielddict["ServiceLevelType"] != benchmark_type:
+                    # If a different benchmark type is retrieved from another field, raise a warning
+                    raise InvalidRecordException("Mixture of benchmark types detected")
+                # Else the ServiceLevelType is already set to benchmark_type so nothing to do.
 
-            # Set the field to the value retrieved as that's what needs to do into the database
-            fielddict[field] = value
+                # Set the field to the value retrieved as that's what needs to do into the database
+                fielddict[field] = value
 
         for key in fielddict:
             self.set_field(key, fielddict[key])
@@ -434,6 +435,8 @@ class Record(object):
         if field in fielddict:
             try:
                 cleaned_dict = self._clean_up_dict(fielddict[field])
+                # Covert keys to lower case
+                cleaned_dict = {k.lower(): v for k, v in cleaned_dict.items()}
             except ValueError as e:
                 raise InvalidRecordException("Expecting dictionary-like value. %s" % e)
 
