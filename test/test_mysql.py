@@ -85,7 +85,7 @@ class MysqlTest(unittest.TestCase):
         self.assertEqual([item in items_out for item in items_in].count(True), len(items_in))
 
     def test_load_and_get_job_04(self):
-        job = apel.db.records.job.JobRecord04()
+        job = apel.db.records.JobRecord04()
         job._record_content = {'Site': 'testSite', 'LocalJobId': 'testJob',
                                'SubmitHost': 'testHost',
                                'WallDuration': 10, 'CpuDuration': 10,
@@ -99,7 +99,42 @@ class MysqlTest(unittest.TestCase):
         # which adds placeholders to empty fields
         self.apel_db.load_records(record_list, source='testDN')
 
-        records_out = self.apel_db.get_records(apel.db.records.job.JobRecord04)
+        records_out = self.apel_db.get_records(apel.db.records.JobRecord04)
+        items_out = list(records_out)[0][0]._record_content.items()
+        # Check that items_in is a subset of items_out
+        # Can't use 'all()' rather than comparing the length as Python 2.4
+        self.assertEqual([item in items_out for item in items_in].count(True), len(items_in))
+
+    def test_load_and_get_summaries(self):
+        summary = apel.db.records.SummaryRecord
+        summary04 = apel.db.records.SummaryRecord04
+
+        for record_class in (summary, summary04):
+            record = record_class()
+            record._record_content = {
+                "Site": "SOME-SITE",
+                "SubmitHost": "host.ac.uk/cluster",
+                "Month": 7,
+                "Year": 2018,
+                "GlobalUserName": "/DC=ac/DC=uni/DC=/DC=vac",
+                "WallDuration": 47248,
+                "CpuDuration": 46871,
+                "Processors": 1,
+                "NumberOfJobs": 3,
+                "InfrastructureType": "grid",
+                "EarliestEndTime": 1531869580,
+                "LatestEndTime": 1531879580,
+                "ServiceLevel": 15.3,
+                "ServiceLevelType": "HEPscore23",
+            }
+
+        items_in = record._record_content.items()
+        record_list = [record]
+        # load_records changes the record as it calls _check_fields
+        # which adds placeholders to empty fields
+        self.apel_db.load_records(record_list, source='testDN')
+
+        records_out = self.apel_db.get_records(record_class)
         items_out = list(records_out)[0][0]._record_content.items()
         # Check that items_in is a subset of items_out
         # Can't use 'all()' rather than comparing the length as Python 2.4
