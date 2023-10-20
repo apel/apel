@@ -4,9 +4,10 @@ Created on 2 Mar 2011
 @author: will
 '''
 
-from apel.db.records import JobRecord, InvalidRecordException
+from apel.db.records import JobRecord, JobRecord04, InvalidRecordException
 import unittest
 import datetime
+
 
 class TestJobRecord(unittest.TestCase):
     '''Tests for the JobRecord class.'''
@@ -97,6 +98,33 @@ EndTime: 1504786071''')
         # We have to avoid comparing the createTime as that changes.
         self.assertEqual(xml_out[:53], xml[:53])
         self.assertEqual(xml_out[72:], xml[72:])
+
+
+class TestJobRecord04(unittest.TestCase):
+    """Tests for the JobRecord04 class."""
+
+    def test_check_fields(self):
+
+        record = JobRecord04()
+        # empty record
+        self.assertRaises(InvalidRecordException, record._check_fields)
+
+        # minimal record must be accepted
+        record.set_field('Site', 'some_site')
+        record.set_field('SubmitHost', 'submithost.pl')
+        record.set_field('LocalJobId', 'localjob')
+        record.set_field('WallDuration', 3600)
+        record.set_field('CpuDuration', 3600)
+        record.set_field('StartTime', 1234)
+        record.set_field('EndTime', 14234)
+        # Dictionary-type service level needs to go via set_all which handles the dictionary
+        record.set_all({'ServiceLevel': '{hepspec: 11.388889, HEPscore23: 10.3652782}'})
+
+        try:
+            record._check_fields()
+        except:
+            self.fail('Minimal record was not accepted!')
+
 
 if __name__ == '__main__':
     unittest.main()
