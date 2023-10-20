@@ -50,13 +50,16 @@ class ApelMysqlDb(object):
     '''
     MYSQL_TABLES = {EventRecord : 'EventRecords',
                     JobRecord   : 'VJobRecords',
+                    JobRecord04 : 'VJobRecords',
                     BlahdRecord : 'BlahdRecords',
                     SyncRecord  : 'SyncRecords',
                     CloudRecord : 'VCloudRecords',
                     CloudSummaryRecord : 'VCloudSummaries',
                     NormalisedSummaryRecord : 'VNormalisedSummaries',
+                    NormalisedSummaryRecord04: 'VNormalisedSummaries',
                     ProcessedRecord : 'VProcessedFiles',
                     SummaryRecord : 'VSummaries',
+                    SummaryRecord04: 'VSummaries',
                     StorageRecord: 'VStarRecords'}
 
     # These simply need to have the same number of arguments as the stored procedures defined in the database schemas.
