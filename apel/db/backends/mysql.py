@@ -26,10 +26,13 @@ from apel.db.records import (BlahdRecord,
                              EventRecord,
                              GroupAttributeRecord,
                              JobRecord,
+                             JobRecord04,
                              NormalisedSummaryRecord,
+                             NormalisedSummaryRecord04,
                              ProcessedRecord,
                              StorageRecord,
                              SummaryRecord,
+                             SummaryRecord04,
                              SyncRecord)
 import MySQLdb.cursors
 import datetime
@@ -65,8 +68,11 @@ class ApelMysqlDb(object):
     REPLACE_PROCEDURES = {
               EventRecord : 'CALL ReplaceEventRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
               JobRecord   : "CALL ReplaceJobRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              JobRecord04   : "CALL ReplaceJobRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               SummaryRecord: "CALL ReplaceSummary(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-              NormalisedSummaryRecord: "CALL ReplaceNormalisedSummary(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              SummaryRecord04: "CALL ReplaceSummary(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              NormalisedSummaryRecord: "CALL ReplaceNormalisedSummary(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              NormalisedSummaryRecord04: "CALL ReplaceNormalisedSummary(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               SyncRecord  : "CALL ReplaceSyncRecord(%s, %s, %s, %s, %s, %s)",
               ProcessedRecord : "CALL ReplaceProcessedFile(%s, %s, %s, %s, %s)",
               CloudRecord : "CALL ReplaceCloudRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
