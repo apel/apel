@@ -84,6 +84,27 @@ class MysqlTest(unittest.TestCase):
         # Can't use 'all()' rather than comparing the length as Python 2.4
         self.assertEqual([item in items_out for item in items_in].count(True), len(items_in))
 
+    def test_load_and_get_job_04(self):
+        job = apel.db.records.job.JobRecord04()
+        job._record_content = {'Site': 'testSite', 'LocalJobId': 'testJob',
+                               'SubmitHost': 'testHost',
+                               'WallDuration': 10, 'CpuDuration': 10,
+                               'StartTime': datetime.datetime.fromtimestamp(123456),
+                               'EndTime': datetime.datetime.fromtimestamp(654321),
+                               'ServiceLevelType': 'HEPscore23',
+                               'ServiceLevel': 11.5}
+        items_in = job._record_content.items()
+        record_list = [job]
+        # load_records changes the 'job' job record as it calls _check_fields
+        # which adds placeholders to empty fields
+        self.apel_db.load_records(record_list, source='testDN')
+
+        records_out = self.apel_db.get_records(apel.db.records.job.JobRecord04)
+        items_out = list(records_out)[0][0]._record_content.items()
+        # Check that items_in is a subset of items_out
+        # Can't use 'all()' rather than comparing the length as Python 2.4
+        self.assertEqual([item in items_out for item in items_in].count(True), len(items_in))
+
     def test_load_and_get_cloud(self):
         '''
         Test a CloudV0.2/0.4 message can be loaded into the database.
