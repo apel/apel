@@ -29,8 +29,8 @@ class MysqlTest(unittest.TestCase):
         subprocess.call(['mysql', '-u', 'root', 'apel_unittest'], stdin=schema_handle)
         schema_handle.close()
 
-        self.db = apel.db.apeldb.ApelDb('mysql', 'localhost', 3306, 'root', '',
-                                        'apel_unittest')
+        self.apel_db = apel.db.apeldb.ApelDb('mysql', 'localhost', 3306, 'root', '',
+                                             'apel_unittest')
 
     # This method seems to run really slowly on Travis CI
     #def tearDown(self):
@@ -39,7 +39,7 @@ class MysqlTest(unittest.TestCase):
 
     def test_test_connection(self):
         """Basic check that test_connection works without error."""
-        self.db.test_connection()
+        self.apel_db.test_connection()
 
     def test_bad_connection(self):
         """Check that initialising ApelDb fails if a bad password is used."""
@@ -53,15 +53,15 @@ class MysqlTest(unittest.TestCase):
 
         Simulate the lost connection by changing the host.
         """
-        self.db._db_host = 'badhost'
+        self.apel_db._db_host = 'badhost'
         self.assertRaises(apel.db.apeldb.ApelDbException,
-                          self.db.test_connection)
+                          self.apel_db.test_connection)
 
     def test_bad_loads(self):
         """Check that empty loads return None and bad types raise exception."""
-        self.assertTrue(self.db.load_records([], source='testDN') is None)
+        self.assertTrue(self.apel_db.load_records([], source='testDN') is None)
         self.assertRaises(apel.db.apeldb.ApelDbException,
-                          self.db.load_records, [1234], source='testDN')
+                          self.apel_db.load_records, [1234], source='testDN')
 
     def test_load_and_get_job(self):
         job = apel.db.records.job.JobRecord()
@@ -76,9 +76,9 @@ class MysqlTest(unittest.TestCase):
         record_list = [job]
         # load_records changes the 'job' job record as it calls _check_fields
         # which adds placeholders to empty fields
-        self.db.load_records(record_list, source='testDN')
+        self.apel_db.load_records(record_list, source='testDN')
 
-        records_out = self.db.get_records(apel.db.records.job.JobRecord)
+        records_out = self.apel_db.get_records(apel.db.records.job.JobRecord)
         items_out = list(records_out)[0][0]._record_content.items()
         # Check that items_in is a subset of items_out
         # Can't use 'all()' rather than comparing the length as Python 2.4
@@ -128,7 +128,7 @@ class MysqlTest(unittest.TestCase):
         # load_records changes the 'cloud' cloud record as it calls _check_fields
         # which adds placeholders to empty fields
         try:
-            self.db.load_records(record_list, source='testDN')
+            self.apel_db.load_records(record_list, source='testDN')
         except apel.db.apeldb.ApelDbException as err:
             self.fail(err.message)
 
@@ -138,7 +138,7 @@ class MysqlTest(unittest.TestCase):
         # a cloud 0.2 message has Benchmark 'None', which gets saved to 0.0
         # in the database
 
-        # records_out = self.db.get_records(apel.db.records.cloud.CloudRecord)
+        # records_out = self.apel_db.get_records(apel.db.records.cloud.CloudRecord)
         # # record_out_list is a list of lists, i.e. [[record0.2],[[record0.4]]
         # record_out_list = list(records_out)
         # items_out = []
@@ -168,7 +168,7 @@ class MysqlTest(unittest.TestCase):
         record_list = [job, summary]
 
         self.assertRaises(apel.db.apeldb.ApelDbException,
-                          self.db.load_records, record_list, source='testDN')
+                          self.apel_db.load_records, record_list, source='testDN')
 
     def test_mixed_storage_records(self):
         """
@@ -205,8 +205,8 @@ class MysqlTest(unittest.TestCase):
 
         # Try loading both with and without a source set. Both record types
         # should ignore that field.
-        self.db.load_records(record_list, source='testDN')
-        self.db.load_records(record_list)
+        self.apel_db.load_records(record_list, source='testDN')
+        self.apel_db.load_records(record_list)
 
     def test_last_update(self):
         """
@@ -215,9 +215,9 @@ class MysqlTest(unittest.TestCase):
         It should not be set initially, so should return None, then should
         return a time after being set.
         """
-        self.assertTrue(self.db.get_last_updated() is None)
-        self.assertTrue(self.db.set_updated())
-        self.assertTrue(type(self.db.get_last_updated()) is datetime.datetime)
+        self.assertTrue(self.apel_db.get_last_updated() is None)
+        self.assertTrue(self.apel_db.set_updated())
+        self.assertTrue(type(self.apel_db.get_last_updated()) is datetime.datetime)
 
 CLOUD2 = '''VMUUID: 12345 Site1 vm-1
 SiteName: Site1
