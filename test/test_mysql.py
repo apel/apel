@@ -32,10 +32,10 @@ class MysqlTest(unittest.TestCase):
         self.apel_db = apel.db.apeldb.ApelDb('mysql', 'localhost', 3306, 'root', '',
                                              'apel_unittest')
 
-    # This method seems to run really slowly on Travis CI
-    #def tearDown(self):
-    #    query = "DROP DATABASE apel_unittest;"
-    #    subprocess.call(['mysql', '-u', 'root', '-e', query])
+    def tearDown(self):
+        self.apel_db.db.close()
+        query = "DROP DATABASE apel_unittest;"
+        subprocess.call(['mysql', '-u', 'root', '-e', query])
 
     def test_test_connection(self):
         """Basic check that test_connection works without error."""
