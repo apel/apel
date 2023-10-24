@@ -17,18 +17,21 @@
    @author: Konrad Jopek, Will Rogers
 '''
 
-import logging.config
-import sys
-import os
-from apel.common import set_up_logging
-from apel.db import ApelDb, ApelDbException
-from apel.db.unloader import DbUnloader
-from apel import __version__
-from optparse import OptionParser
+from __future__ import print_function
+
 try:
     import ConfigParser
 except ImportError:
     import configparser as ConfigParser
+import logging.config
+from optparse import OptionParser
+import os
+import sys
+
+from apel import __version__
+from apel.common import set_up_logging
+from apel.db import ApelDb, ApelDbException
+from apel.db.unloader import DbUnloader
 
 
 RECORDS_PER_MESSAGE_MIN = 1
