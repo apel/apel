@@ -39,19 +39,19 @@ RECORDS_PER_MESSAGE_DEFAULT = 1000
 RECORDS_PER_MESSAGE_MAX = 5000
 
 
-def _bounded_records_per_message(config_object):
+def _bounded_records_per_message(config_object, logger):
     """Retrieve the records per message from config, keeping it within limits."""
     try:
         records_per_message = int(config_object.get('unloader', 'records_per_message'))
         if records_per_message < RECORDS_PER_MESSAGE_MIN:
-            log.warning(
+            logger.warning(
                 'records_per_message too small, increasing from %d to %d',
                 records_per_message,
                 RECORDS_PER_MESSAGE_MIN,
             )
             return RECORDS_PER_MESSAGE_MIN
         elif records_per_message > RECORDS_PER_MESSAGE_MAX:
-            log.warning(
+            logger.warning(
                 'records_per_message too large, decreasing from %d to %d',
                 records_per_message,
                 RECORDS_PER_MESSAGE_MAX,
@@ -60,13 +60,13 @@ def _bounded_records_per_message(config_object):
         else:
             return records_per_message
     except ConfigParser.NoOptionError:
-        log.info(
+        logger.info(
             'records_per_message not specified, defaulting to %d.',
             RECORDS_PER_MESSAGE_DEFAULT,
         )
         return RECORDS_PER_MESSAGE_DEFAULT
     except ValueError:
-        log.error(
+        logger.error(
             'Invalid records_per_message value, must be a postive integer. Defaulting to %d.',
             RECORDS_PER_MESSAGE_DEFAULT,
         )
@@ -160,7 +160,7 @@ if __name__ == '__main__':
 
     unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns)
 
-    unloader.records_per_message = _bounded_records_per_message(cp)
+    unloader.records_per_message = _bounded_records_per_message(cp, log)
 
     try:
         if interval == 'latest':
