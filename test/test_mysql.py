@@ -59,7 +59,7 @@ class MysqlTest(unittest.TestCase):
 
     def test_bad_loads(self):
         """Check that empty loads return None and bad types raise exception."""
-        self.assertTrue(self.apel_db.load_records([], source='testDN') is None)
+        self.assertIsNone(self.apel_db.load_records([], source='testDN'))
         self.assertRaises(apel.db.apeldb.ApelDbException,
                           self.apel_db.load_records, [1234], source='testDN')
 
@@ -215,9 +215,9 @@ class MysqlTest(unittest.TestCase):
         It should not be set initially, so should return None, then should
         return a time after being set.
         """
-        self.assertTrue(self.apel_db.get_last_updated() is None)
+        self.assertIsNone(self.apel_db.get_last_updated())
         self.assertTrue(self.apel_db.set_updated())
-        self.assertTrue(type(self.apel_db.get_last_updated()) is datetime.datetime)
+        self.assertIs(type(self.apel_db.get_last_updated()), datetime.datetime)
 
 CLOUD2 = '''VMUUID: 12345 Site1 vm-1
 SiteName: Site1
