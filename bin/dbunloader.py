@@ -17,20 +17,60 @@
    @author: Konrad Jopek, Will Rogers
 '''
 
+from __future__ import print_function
+
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 import logging.config
-import sys
+from optparse import OptionParser
 import os
+import sys
+
+from apel import __version__
 from apel.common import set_up_logging
 from apel.db import ApelDb, ApelDbException
 from apel.db.unloader import DbUnloader
-from apel import __version__
-from optparse import OptionParser
-import ConfigParser
 
 
 RECORDS_PER_MESSAGE_MIN = 1
 RECORDS_PER_MESSAGE_DEFAULT = 1000
 RECORDS_PER_MESSAGE_MAX = 5000
+
+
+def _bounded_records_per_message(config_object, logger):
+    """Retrieve the records per message from config, keeping it within limits."""
+    try:
+        records_per_message = int(config_object.get('unloader', 'records_per_message'))
+        if records_per_message < RECORDS_PER_MESSAGE_MIN:
+            logger.warning(
+                'records_per_message too small, increasing from %d to %d',
+                records_per_message,
+                RECORDS_PER_MESSAGE_MIN,
+            )
+            return RECORDS_PER_MESSAGE_MIN
+        elif records_per_message > RECORDS_PER_MESSAGE_MAX:
+            logger.warning(
+                'records_per_message too large, decreasing from %d to %d',
+                records_per_message,
+                RECORDS_PER_MESSAGE_MAX,
+            )
+            return RECORDS_PER_MESSAGE_MAX
+        else:
+            return records_per_message
+    except ConfigParser.NoOptionError:
+        logger.info(
+            'records_per_message not specified, defaulting to %d.',
+            RECORDS_PER_MESSAGE_DEFAULT,
+        )
+        return RECORDS_PER_MESSAGE_DEFAULT
+    except ValueError:
+        logger.error(
+            'Invalid records_per_message value, must be a postive integer. Defaulting to %d.',
+            RECORDS_PER_MESSAGE_DEFAULT,
+        )
+        return RECORDS_PER_MESSAGE_DEFAULT
 
 
 if __name__ == '__main__':
@@ -57,9 +97,9 @@ if __name__ == '__main__':
                            cp.get('logging', 'level'),
                            cp.getboolean('logging', 'console'))
         log = logging.getLogger('dbunloader')
-    except (ConfigParser.Error, ValueError, IOError), err:
-        print 'Error configuring logging: %s' % str(err)
-        print 'The system will exit.'
+    except (ConfigParser.Error, ValueError, IOError) as err:
+        print('Error configuring logging: %s' % err)
+        print('The system will exit.')
         sys.exit(1)
 
     db = None
@@ -75,10 +115,10 @@ if __name__ == '__main__':
                     dbcp.get('db', 'password'),
                     dbcp.get('db', 'name'))
 
-    except ApelDbException, e:
+    except ApelDbException as e:
         log.fatal('Error: %s', e)
         sys.exit(1)
-    except Exception, e:
+    except Exception as e:
         log.fatal('Cannot get configuration: %s', e)
         sys.exit(1)
 
@@ -119,37 +159,8 @@ if __name__ == '__main__':
     interval = cp.get('unloader', 'interval')
 
     unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns)
-    try:
-        records_per_message = int(cp.get('unloader', 'records_per_message'))
-        if records_per_message < RECORDS_PER_MESSAGE_MIN:
-            unloader.records_per_message = RECORDS_PER_MESSAGE_MIN
-            log.warning(
-                'records_per_message too small, increasing from %d to %d',
-                records_per_message,
-                RECORDS_PER_MESSAGE_MIN,
-            )
-        elif records_per_message > RECORDS_PER_MESSAGE_MAX:
-            unloader.records_per_message = RECORDS_PER_MESSAGE_MAX
-            log.warning(
-                'records_per_message too large, decreasing from %d to %d',
-                records_per_message,
-                RECORDS_PER_MESSAGE_MAX,
-            )
-        else:
-            unloader.records_per_message = records_per_message
-    except ConfigParser.NoOptionError:
-        log.info(
-            'records_per_message not specified, defaulting to %d.',
-            RECORDS_PER_MESSAGE_DEFAULT,
-        )
-        unloader.records_per_message = RECORDS_PER_MESSAGE_DEFAULT
-    except ValueError:
-        log.error(
-            'Invalid records_per_message value, must be a postive integer. Defaulting to %d.',
-            RECORDS_PER_MESSAGE_DEFAULT,
-        )
-        unloader.records_per_message = RECORDS_PER_MESSAGE_DEFAULT
 
+    unloader.records_per_message = _bounded_records_per_message(cp, log)
 
     try:
         if interval == 'latest':
@@ -166,7 +177,7 @@ if __name__ == '__main__':
         log.info('%d records in %d messages unloaded from %s', recs, msgs, table_name)
     except KeyError:
         log.error('Invalid table name: %s, omitting', table_name)
-    except ApelDbException, e:
+    except ApelDbException as e:
         log.error('Unloading failed: %s', e)
 
     log.info('Unloading complete.')
