@@ -152,6 +152,7 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
 
      Add newly parsed files to the processed files list and return it.
     '''
+    skipped_warning_flag = False
     log = logging.getLogger(LOGGER_ID)
     updated = []
     try:
@@ -213,9 +214,15 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         pr.set_field('Parsed', parsed)
                         updated.append(pr)
                 elif unparsed:
+                    if not skipped_warning_flag:
+                        log.info("Files have been skipped: details can be found in debug.")
+                        skipped_warning_flag = True
                     log.debug('Skipping file (failed to parse previously): %s',
                               abs_file)
                 else:
+                    if not skipped_warning_flag:
+                        log.info("Files have been skipped: details can be found in debug.")
+                        skipped_warning_flag = True
                     log.debug('Skipping file (already parsed): %s ', abs_file)
             elif os.path.isfile(abs_file):
                 log.debug('Filename does not match pattern: %s', item)
