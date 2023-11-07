@@ -199,12 +199,10 @@ class Record(object):
         self._record_content = {}
         for line in lines:
             try:
-                value = line.split(':', 1)
-                key = value[0].strip()
-                self.set_all({key:value[1].strip()})
-#                self._record_content[key] = value[1].strip()
+                key, value = [x.strip() for x in line.split(':', 1)]
+                self.set_field(key, value)
             except IndexError:
-                raise InvalidRecordException("Record contains a line  " +\
+                raise InvalidRecordException("Record contains a line  "
                                              "without a key-value pair: %s" % line)
         # Now, go through the logic to fill the contents[] dictionary.
         # The logic can get a bit involved here.
