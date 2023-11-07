@@ -85,25 +85,6 @@ class Record(object):
         Copies all values for given dictionary to internal record's storage.
         Checks the field type and corrects it if it is necessary.
         '''
-
-        # This loop handles the v0.4 messages that have dictionaries in certain fields
-        # It won't loop or do anything if _dict_fields is empty
-        for field in self._dict_fields:
-            if field in fielddict:
-                # Retrieve the benchmark type based on the preferntial order set in the extract method
-                benchmark_type, value = self._extract_benchmark_dict(fielddict, field)
-
-                if "ServiceLevelType" not in fielddict:
-                    # Set the benchmark type if it is its first occurence.
-                    fielddict["ServiceLevelType"] = benchmark_type
-                elif fielddict["ServiceLevelType"] != benchmark_type:
-                    # If a different benchmark type is retrieved from another field, raise a warning
-                    raise InvalidRecordException("Mixture of benchmark types detected")
-                # Else the ServiceLevelType is already set to benchmark_type so nothing to do.
-
-                # Set the field to the value retrieved as that's what needs to do into the database
-                fielddict[field] = value
-
         for key in fielddict:
             self.set_field(key, fielddict[key])
 
@@ -242,10 +223,32 @@ class Record(object):
         for line in lines:
             try:
                 key, value = [x.strip() for x in line.split(':', 1)]
+
+                # This loop handles the v0.4 messages that have dictionaries in certain fields
+                # It won't loop or do anything if _dict_fields is empty
+                for field in self._dict_fields:
+                    if field == key:
+
+                        # Retrieve the benchmark type based on the preferntial order set in the extract method
+                        benchmark_type, value = self._extract_benchmark_dict({key: value}, field)
+
+                        if "ServiceLevelType" not in self._record_content:
+                            # Set the benchmark type if it is its first occurence.
+                            self._record_content["ServiceLevelType"] = benchmark_type
+                        elif self._record_content["ServiceLevelType"] != benchmark_type:
+                            # If a different benchmark type is retrieved from another field, raise a warning
+                            raise InvalidRecordException("Mixture of benchmark types detected")
+                        # Else the ServiceLevelType is already set to benchmark_type so nothing to do.
+
+                        # Set the field to the value retrieved as that's what needs to do into the database
+                        self._record_content[field] = self.checked(field, value)
+                        break
+
                 self.set_field(key, value)
             except IndexError:
                 raise InvalidRecordException("Record contains a line  "
                                              "without a key-value pair: %s" % line)
+
         # Now, go through the logic to fill the contents[] dictionary.
         # The logic can get a bit involved here.
 
