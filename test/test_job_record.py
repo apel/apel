@@ -117,8 +117,8 @@ class TestJobRecord04(unittest.TestCase):
         record.set_field('CpuDuration', 3600)
         record.set_field('StartTime', 1234)
         record.set_field('EndTime', 14234)
-        # Dictionary-type service level needs to go via set_all which handles the dictionary
-        record.set_all({'ServiceLevel': '{hepspec: 11.388889, HEPscore23: 10.3652782}'})
+        record.set_field('ServiceLevel', 10.3652782)
+        record.set_field('ServiceLevelType', 'HEPscore23')
 
         try:
             record._check_fields()
