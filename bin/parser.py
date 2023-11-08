@@ -215,13 +215,13 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         updated.append(pr)
                 elif unparsed:
                     if not skipped_warning_flag:
-                        log.info("Files have been skipped: details can be found in debug.")
+                        log.info("Files skipped: rerun at DEBUG log level to see details.")
                         skipped_warning_flag = True
                     log.debug('Skipping file (failed to parse previously): %s',
                               abs_file)
                 else:
                     if not skipped_warning_flag:
-                        log.info("Files have been skipped: details can be found in debug.")
+                        log.info("Files skipped: rerun at DEBUG log level to see details.")
                         skipped_warning_flag = True
                     log.debug('Skipping file (already parsed): %s ', abs_file)
             elif os.path.isfile(abs_file):
