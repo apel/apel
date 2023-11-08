@@ -14,6 +14,8 @@ if os.name == 'nt':
 class MysqlTest(unittest.TestCase):
     # These test cases require a local MySQL db server with no password on root
     def setUp(self):
+        self.longMessage = True  # Include normal unittest output before custom message.
+
         query = ('DROP DATABASE IF EXISTS apel_unittest;'
                  'CREATE DATABASE apel_unittest;')
         subprocess.call(['mysql', '-u', 'root', '-e', query])
@@ -120,25 +122,30 @@ class MysqlTest(unittest.TestCase):
                 "WallDuration": 47248,
                 "CpuDuration": 46871,
                 "Processors": 1,
+                "NodeCount": 1,
                 "NumberOfJobs": 3,
                 "InfrastructureType": "grid",
-                "EarliestEndTime": 1531869580,
-                "LatestEndTime": 1531879580,
+                "EarliestEndTime": datetime.datetime.fromtimestamp(1531869580),
+                "LatestEndTime": datetime.datetime.fromtimestamp(1531879580),
                 "ServiceLevel": 15.3,
                 "ServiceLevelType": "HEPscore23",
             }
 
-        items_in = record._record_content.items()
-        record_list = [record]
-        # load_records changes the record as it calls _check_fields
-        # which adds placeholders to empty fields
-        self.apel_db.load_records(record_list, source='testDN')
+            items_in = record._record_content.items()
+            record_list = [record]
+            # load_records changes the record as it calls _check_fields
+            # which adds placeholders to empty fields
+            self.apel_db.load_records(record_list, source='testDN')
 
-        records_out = self.apel_db.get_records(record_class)
-        items_out = list(records_out)[0][0]._record_content.items()
-        # Check that items_in is a subset of items_out
-        # Can't use 'all()' rather than comparing the length as Python 2.4
-        self.assertEqual([item in items_out for item in items_in].count(True), len(items_in))
+            records_out = self.apel_db.get_records(record_class)
+            items_out = list(records_out)[0][0]._record_content.items()
+            # Check that items_in is a subset of items_out
+            # Can't use 'all()' rather than comparing the length as Python 2.4
+            self.assertEqual(
+                [item in items_out for item in items_in].count(True),
+                len(items_in),
+                "Input and output not equal for %s" % record_class
+            )
 
     def test_load_and_get_cloud(self):
         '''
