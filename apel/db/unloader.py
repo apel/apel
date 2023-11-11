@@ -31,10 +31,13 @@ except ImportError:
     except ImportError:
         import io as StringIO
 
-from apel.db import (Query, ApelDbException, JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
-                     NORMALISED_SUMMARY_MSG_HEADER, SYNC_MSG_HEADER,
+from apel.db import (Query, ApelDbException, JOB_MSG_HEADER, JOB_MSG_HEADER_04,
+                     SUMMARY_MSG_HEADER, SUMMARY_MSG_HEADER_04,
+                     NORMALISED_SUMMARY_MSG_HEADER, NORMALISED_SUMMARY_MSG_HEADER_04,
+                     SYNC_MSG_HEADER,
                      CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER)
-from apel.db.records import (JobRecord, SummaryRecord, NormalisedSummaryRecord,
+from apel.db.records import (JobRecord, JobRecord04, SummaryRecord, SummaryRecord04,
+                             NormalisedSummaryRecord, NormalisedSummaryRecord04,
                              SyncRecord, CloudRecord, CloudSummaryRecord, StorageRecord)
 from dirq.QueueSimple import QueueSimple
 
@@ -61,10 +64,22 @@ class DbUnloader(object):
                     'VCloudSummaries': CloudSummaryRecord,
                     'VStarRecords': StorageRecord}
 
+    DICT_RECORD_TYPES = {'VJobRecords': JobRecord04,
+                         'VSummaries': SummaryRecord04,
+                         'VSuperSummaries': SummaryRecord04,
+                         'VNormalisedSummaries': NormalisedSummaryRecord04,
+                         'VNormalisedSuperSummaries': NormalisedSummaryRecord04}
+
+    DICT_APEL_HEADERS = {JobRecord04: JOB_MSG_HEADER_04,
+                         SummaryRecord04: SUMMARY_MSG_HEADER_04,
+                         NormalisedSummaryRecord04: NORMALISED_SUMMARY_MSG_HEADER_04}
+
+
     # all record types for which withholding DNs is a valid option
     MAY_WITHHOLD_DNS = [JobRecord, SyncRecord, CloudRecord]
 
-    def __init__(self, db, qpath, inc_vos=None, exc_vos=None, local=False, withhold_dns=False):
+    def __init__(self, db, qpath, inc_vos=None, exc_vos=None, local=False, withhold_dns=False,
+                 dict_records=False):
         self._db = db
         outpath = os.path.join(qpath, "outgoing")
         self._msgq = QueueSimple(outpath)
@@ -73,6 +88,10 @@ class DbUnloader(object):
         self._local = local
         self._withhold_dns = withhold_dns
         self.records_per_message = 1000
+        if dict_records:
+            # If dict_records is True, then we only handle the subset of v0.4 records
+            self.RECORD_TYPES = self.DICT_RECORD_TYPES
+            self.APEL_HEADERS = self.DICT_APEL_HEADERS
 
     def _get_base_query(self, record_type):
         '''
@@ -82,6 +101,7 @@ class DbUnloader(object):
         query = Query()
 
         if record_type in (JobRecord, SummaryRecord, NormalisedSummaryRecord,
+                           JobRecord04, SummaryRecord04, NormalisedSummaryRecord04,
                            SyncRecord):
             if self._inc_vos is not None:
                 query.VO_in = self._inc_vos
