@@ -47,6 +47,7 @@ class NormalisedSummaryRecord(Record):
         # used "InfrastructureType"
         self._msg_fields = ["Site", "Month", "Year", "GlobalUserName", "VO",
                             "VOGroup", "VORole", "SubmitHost", "Infrastructure",
+                            "ServiceLevelType",
                             "NodeCount", "Processors", "EarliestEndTime",
                             "LatestEndTime", "WallDuration", "CpuDuration",
                             "NormalisedWallDuration", "NormalisedCpuDuration",
@@ -259,22 +260,17 @@ class NormalisedSummaryRecord04(NormalisedSummaryRecord):
         # used "InfrastructureType"
         self._msg_fields = [
             "Site", "Month", "Year", "GlobalUserName", "VO", "VOGroup", "VORole", "SubmitHost",
-            "Infrastructure", "NodeCount", "Processors", "EarliestEndTime", "LatestEndTime",
-            "WallDuration", "CpuDuration", "NormalisedWallDuration", "NormalisedCpuDuration",
-            "NumberOfJobs", "ServiceLevelType"
+            "Infrastructure", "ServiceLevelType", "NodeCount", "Processors", "EarliestEndTime",
+            "LatestEndTime", "WallDuration", "CpuDuration", "NormalisedWallDuration",
+            "NormalisedCpuDuration", "NumberOfJobs"
         ]
 
         self._ignored_fields = ["UpdateTime"]
 
         # This list specifies the information that goes in the database.
-        self._db_fields = [
-            "Site", "Month", "Year", "GlobalUserName", "VO", "VOGroup", "VORole", "SubmitHost",
-            "Infrastructure", "NodeCount", "Processors", "EarliestEndTime", "LatestEndTime",
-            "WallDuration", "CpuDuration", "NormalisedWallDuration", "NormalisedCpuDuration",
-            "NumberOfJobs", "ServiceLevelType"
-        ]
-        # All allowed fields. We use _db_fields as that is a superset of _msg_fields.
-        self._all_fields = self._db_fields
+        self._db_fields = self._msg_fields
+        # All allowed fields.
+        self._all_fields = self._msg_fields
 
         # Fields which will have an integer stored in them
         self._int_fields = ["Month", "Year", "NodeCount", "Processors",
