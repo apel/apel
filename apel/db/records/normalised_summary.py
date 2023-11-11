@@ -266,7 +266,7 @@ class NormalisedSummaryRecord04(NormalisedSummaryRecord):
         # used "InfrastructureType"
         self._msg_fields = [
             "Site", "Month", "Year", "GlobalUserName", "VO", "VOGroup", "VORole", "SubmitHost",
-            "Infrastructure", "ServiceLevelType", "NodeCount", "Processors", "EarliestEndTime",
+            "Infrastructure", "NodeCount", "Processors", "EarliestEndTime",
             "LatestEndTime", "WallDuration", "CpuDuration", "NormalisedWallDuration",
             "NormalisedCpuDuration", "NumberOfJobs"
         ]
@@ -274,9 +274,14 @@ class NormalisedSummaryRecord04(NormalisedSummaryRecord):
         self._ignored_fields = ["UpdateTime"]
 
         # This list specifies the information that goes in the database.
-        self._db_fields = self._msg_fields
+        self._db_fields = [
+            "Site", "Month", "Year", "GlobalUserName", "VO", "VOGroup", "VORole", "SubmitHost",
+            "Infrastructure", "ServiceLevelType", "NodeCount", "Processors", "EarliestEndTime",
+            "LatestEndTime", "WallDuration", "CpuDuration", "NormalisedWallDuration",
+            "NormalisedCpuDuration", "NumberOfJobs"
+        ]
         # All allowed fields.
-        self._all_fields = self._msg_fields
+        self._all_fields = self._db_fields
 
         # Fields which will have an integer stored in them
         self._int_fields = ["Month", "Year", "NodeCount", "Processors",
