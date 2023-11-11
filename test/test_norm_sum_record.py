@@ -85,15 +85,15 @@ class TestNormalisedSummaryRecord(unittest.TestCase):
 
             # Mock object so we don't have to use an actual DB.
             values = nsr.get_db_tuple(test_dn)
-        for item1, item2 in zip(values, rec_tuple):
-            if isinstance(item1, datetime):
-                if abs(item1 - item2) > timedelta(seconds=1):
-                    self.fail('Datetimes %s and %s do not match.' % (item1,
-                                                                     item2))
+            for item1, item2 in zip(values, rec_tuple):
+                if isinstance(item1, datetime):
+                    if abs(item1 - item2) > timedelta(seconds=1):
+                        self.fail('Datetimes %s and %s do not match.' % (item1,
+                                                                         item2))
 
-            if item1 != item2 and str(item1) != str(item2):
-                self.fail("Summary record values don't match: %s != %s" %
-                          (item1, item2))
+                if item1 != item2 and str(item1) != str(item2):
+                    self.fail("Summary record values don't match: %s != %s" %
+                              (item1, item2))
 
     def test_get_ur(self):
         """Check that get_ur outputs correct XML."""
