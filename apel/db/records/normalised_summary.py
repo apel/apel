@@ -48,7 +48,6 @@ class NormalisedSummaryRecord(Record):
         # used "InfrastructureType"
         self._msg_fields = ["Site", "Month", "Year", "GlobalUserName", "VO",
                             "VOGroup", "VORole", "SubmitHost", "Infrastructure",
-                            "ServiceLevelType",
                             "NodeCount", "Processors", "EarliestEndTime",
                             "LatestEndTime", "WallDuration", "CpuDuration",
                             "NormalisedWallDuration", "NormalisedCpuDuration",
@@ -64,8 +63,15 @@ class NormalisedSummaryRecord(Record):
 
         self._ignored_fields = ["UpdateTime"]
 
-        # This list specifies the information that goes in the database.
-        self._db_fields = self._msg_fields
+        # This list specifies the information that goes in the database. It includes
+        # the additional ServiceLevelType field.
+        self._db_fields = ["Site", "Month", "Year", "GlobalUserName", "VO",
+                            "VOGroup", "VORole", "SubmitHost", "Infrastructure",
+                            "ServiceLevelType",
+                            "NodeCount", "Processors", "EarliestEndTime",
+                            "LatestEndTime", "WallDuration", "CpuDuration",
+                            "NormalisedWallDuration", "NormalisedCpuDuration",
+                            "NumberOfJobs"]
         # All allowed fields.
         self._all_fields = self._msg_fields
 
