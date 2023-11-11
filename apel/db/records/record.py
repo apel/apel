@@ -305,8 +305,13 @@ class Record(object):
                 # to say.
                 continue
 
-            # otherwise, add the line
-            msg += key + ": " + value + "\n"
+            if key in self._dict_fields:
+                # Create dictionary fields for v0.4 message formats.
+                benchmark_type = self._record_content['ServiceLevelType']
+                msg += key+ ": {" + benchmark_type + ": " + value + "}\n"
+            else:
+                # otherwise, add the line
+                msg += key + ": " + value + "\n"
 
         return msg
 
