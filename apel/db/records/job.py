@@ -337,7 +337,7 @@ class JobRecord04(JobRecord):
             "Site", "SubmitHost", "MachineName", "Queue", "LocalJobId", "LocalUserId",
             "GlobalUserName", "FQAN", "VO", "VOGroup", "VORole", "WallDuration", "CpuDuration",
             "Processors", "NodeCount", "StartTime", "EndTime", "InfrastructureDescription",
-            "InfrastructureType", "MemoryReal", "MemoryVirtual", "ServiceLevelType",
+            "InfrastructureType", "MemoryReal", "MemoryVirtual",
             "ServiceLevel"
         ]
 
@@ -353,7 +353,7 @@ class JobRecord04(JobRecord):
         # Fields which are accepted but currently ignored.
         self._ignored_fields = ["SubmitHostType", "UpdateTime"]
 
-        self._all_fields = self._msg_fields + self._ignored_fields
+        self._all_fields = self._db_fields + self._ignored_fields
 
         # Fields which will have an integer stored in them
         self._int_fields = ["WallDuration", "CpuDuration", "Processors", "NodeCount",

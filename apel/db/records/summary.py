@@ -249,7 +249,7 @@ class SummaryRecord04(SummaryRecord):
         # records.
         self._msg_fields = [
             "Site", "Month", "Year", "GlobalUserName", "VO", "VOGroup", "VORole", "SubmitHost",
-            "InfrastructureType", "ServiceLevelType", "ServiceLevel", "NodeCount", "Processors",
+            "InfrastructureType", "ServiceLevel", "NodeCount", "Processors",
             "EarliestEndTime", "LatestEndTime", "WallDuration", "CpuDuration", "NumberOfJobs"
         ]
         # This list specifies the information that goes in the database.
