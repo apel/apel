@@ -181,24 +181,24 @@ class TestNormalisedSummaryRecord(unittest.TestCase):
         """
         Get tuples with contents in the correct order to go into the
         stored procedure with the same values as in the messages in
-        _get_record_txt().
+        _get_record_text().
         """
         tuples = []
 
         tuple1 = ('RAL-LCG2', 3, 2010, '/C=whatever/D=someDN', 'atlas',
                   '/atlas',   'Role=production', 'some.host.org', 'grid', None,
-                  None, datetime.utcfromtimestamp(1267405200),
+                  None, None, datetime.utcfromtimestamp(1267405200),
                   datetime.utcfromtimestamp(1269046800), 234256, 244435, 234256,
                   244435, 100)
 
         tuple2 = ('RAL-LCG2', 4, 2010, '/C=whatever/D=someDN', 'atlas',
                   '/atlas', 'Role=production', 'some.host.org', 'local', None,
-                  None, datetime.utcfromtimestamp(1270083600),
+                  None, None, datetime.utcfromtimestamp(1270083600),
                   datetime.utcfromtimestamp(1271725200), 234256, 244435, 234256,
                   244435, 100)
 
         tuple3 = ('RAL-LCG2', 12, 2010, '/C=whatever/D=someDN', 'atlas',
-                  '/atlas', 'Role=production', 'some.host.org', 'local', 1, 1,
+                  '/atlas', 'Role=production', 'some.host.org', 'local', None, 1, 1,
                   datetime.utcfromtimestamp(1291161600),
                   datetime.utcfromtimestamp(1291162100), 234256, 244435, 234256,
                   244435, 100)
