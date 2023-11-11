@@ -50,6 +50,8 @@ class SummaryRecord(Record):
         self._int_fields = ["Month", "Year", "NodeCount", "Processors",
                             "WallDuration", "CpuDuration", "NumberOfJobs"]
 
+        self._float_fields = ["ServiceLevel"]
+
         self._datetime_fields = ["EarliestEndTime", "LatestEndTime"]
 
         self._ignored_fields = ["UpdateTime"]
