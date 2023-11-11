@@ -102,8 +102,8 @@ if __name__ == '__main__':
     if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
         logging.warning('Separate logging config file option has been deprecated.')
 
-    # Set default for 'interval' as it is a new option so may not be in config.
-    cp = ConfigParser.ConfigParser({'interval': 'latest'})
+    # Set default for newer options as they may not exist in config file.
+    cp = ConfigParser.ConfigParser({'interval': 'latest', 'dict_benchmark_type': 'false'})
     cp.read([options.config])
 
     # set up logging
@@ -141,6 +141,7 @@ if __name__ == '__main__':
 
     unload_dir       = cp.get('unloader', 'dir_location')
     table_name       = cp.get('unloader', 'table_name')
+    dict_records     = cp.getboolean('unloader', 'dict_benchmark_type')
 
     try:
         send_ur = cp.getboolean('unloader', 'send_ur')
@@ -172,7 +173,7 @@ if __name__ == '__main__':
 
     interval = cp.get('unloader', 'interval')
 
-    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns)
+    unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos, local_jobs, withhold_dns, dict_records)
 
     unloader.records_per_message = _bounded_records_per_message(cp, log)
 
