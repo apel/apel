@@ -274,6 +274,7 @@ class NormalisedSummaryRecord04(NormalisedSummaryRecord):
         self._ignored_fields = ["UpdateTime"]
 
         # This list specifies the information that goes in the database.
+        # It includes the extra ServiceLevelType field that's extracted from the dict fields.
         self._db_fields = [
             "Site", "Month", "Year", "GlobalUserName", "VO", "VOGroup", "VORole", "SubmitHost",
             "Infrastructure", "ServiceLevelType", "NodeCount", "Processors", "EarliestEndTime",

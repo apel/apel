@@ -245,13 +245,16 @@ class SummaryRecord04(SummaryRecord):
         # Fields which are required by the message format.
         self._mandatory_fields = ["Site", "Month", "Year", "WallDuration",
                                   "CpuDuration", "NumberOfJobs"]
-        # This list allows us to specify the order of lines when we construct
-        # records.
+
+        # This list allows us to specify the order of lines when we construct records.
+        # It differs from SummaryRecord by lacking a separate ServiceLevelType field
+        # as this is included in the dict for ServiceLevel.
         self._msg_fields = [
             "Site", "Month", "Year", "GlobalUserName", "VO", "VOGroup", "VORole", "SubmitHost",
             "InfrastructureType", "ServiceLevel", "NodeCount", "Processors",
             "EarliestEndTime", "LatestEndTime", "WallDuration", "CpuDuration", "NumberOfJobs"
         ]
+
         # This list specifies the information that goes in the database.
         self._db_fields = [
             "Site", "Month", "Year", "GlobalUserName", "VO", "VOGroup", "VORole", "SubmitHost",
