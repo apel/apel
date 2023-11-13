@@ -336,13 +336,13 @@ class JobRecord04(JobRecord):
                                   "CpuDuration", "StartTime", "EndTime"]
 
         # This list allows us to specify the order of lines when we construct records.
-        # It differs from JobRecord by lacking a separate ServiceLevelType field.
+        # It differs from JobRecord by lacking a separate ServiceLevelType field
+        # as this is included in the dict for ServiceLevel.
         self._msg_fields  = [
             "Site", "SubmitHost", "MachineName", "Queue", "LocalJobId", "LocalUserId",
             "GlobalUserName", "FQAN", "VO", "VOGroup", "VORole", "WallDuration", "CpuDuration",
             "Processors", "NodeCount", "StartTime", "EndTime", "InfrastructureDescription",
-            "InfrastructureType", "MemoryReal", "MemoryVirtual",
-            "ServiceLevel"
+            "InfrastructureType", "MemoryReal", "MemoryVirtual", "ServiceLevel"
         ]
 
         # This list specifies the information that goes in the database.
