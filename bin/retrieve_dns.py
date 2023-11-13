@@ -283,8 +283,8 @@ def verify_service_types(service_types):
 def generate_gocdb_urls(hostname, gocdb_pi_path, service_types):
     # Create a generator expression producing full GOCDB URLs with service types.
     service_types = service_types.split(',')
-    return ('https://' + hostname + gocdb_pi_path + service_type
-                                        for service_type in service_types)
+    return ('https://' + hostname + gocdb_pi_path
+            + service_type for service_type in service_types)
 
 def runprocess(config_file):
     '''Get DNs both from the URL and the additional file.'''
@@ -335,8 +335,8 @@ def runprocess(config_file):
                 log.info("Failed to fetch XML from %s - is the URL correct?", next_url)
                 log.info(e)
 
-    if not dns and (time.time() - os.path.getmtime(cfg.dn_file) <
-                            (cfg.expire_hours * 3600)):
+    if not dns and (time.time() - os.path.getmtime(cfg.dn_file)
+                    < (cfg.expire_hours * 3600)):
         log.warning('Failed to update DNs from GOCDB. Will not modify DNs file.')
         log.info("auth will exit.")
         log.info(LOG_BREAK)
