@@ -47,6 +47,7 @@ CREATE TABLE CloudRecords (
   StorageRecordId VARCHAR(255),
   ImageId VARCHAR(255),
   CloudType VARCHAR(255),
+  Collector VARCHAR(255),
 
   PublisherDNID INT NOT NULL, -- Foreign key
 
@@ -77,7 +78,7 @@ CREATE PROCEDURE ReplaceCloudRecord(
   cpuCount INT, networkType VARCHAR(255),  networkInbound INT,
   networkOutbound INT, publicIPCount INT, memory INT,
   disk INT, benchmarkType VARCHAR(50), benchmark DECIMAL(10,3), storageRecordId VARCHAR(255),
-  imageId VARCHAR(255), cloudType VARCHAR(255),
+  imageId VARCHAR(255), cloudType VARCHAR(255), collector VARCHAR(255),
   publisherDN VARCHAR(255))
 
 BEGIN
@@ -124,14 +125,14 @@ BEGIN
         VORoleID, Status, StartTime, EndTime, MeasurementTime, MeasurementMonth,
         MeasurementYear, SuspendDuration, WallDuration, CpuDuration, CpuCount,
         NetworkType, NetworkInbound, NetworkOutbound, PublicIPCount, Memory, Disk,
-        BenchmarkType, Benchmark, StorageRecordId, ImageId, CloudType, PublisherDNID)
+        BenchmarkType, Benchmark, StorageRecordId, ImageId, CloudType, Collector, PublisherDNID)
       VALUES (
         recordCreateTimeNotNull, VMUUID, SiteLookup(site), CloudComputeServiceLookup(cloudComputeService), machineName,
         localUserId, localGroupId, DNLookup(globalUserName), fqan, VOLookup(vo), VOGroupLookup(voGroup),
         VORoleLookup(voRole), status, startTime, endTime, measurementTimeCalculated, Month(measurementTimeCalculated), Year(measurementTimeCalculated),
         suspendDuration, wallDuration, cpuDuration, cpuCount,
         networkType, networkInbound, networkOutbound, publicIPCount, memory, disk,
-        benchmarkType, benchmark, storageRecordId, imageId, cloudType, DNLookup(publisherDN))
+        benchmarkType, benchmark, storageRecordId, imageId, cloudType, collector, DNLookup(publisherDN))
     ;
 END //
 DELIMITER ;
@@ -156,7 +157,7 @@ CREATE TABLE CloudSummaries (
   VORoleID INT NOT NULL, -- Foreign key
 
   Status VARCHAR(255) NOT NULL,
-  CloudType VARCHAR(255) NOT NULL,
+  CloudType VARCHAR(255),
   ImageId VARCHAR(255) NOT NULL,
 
   EarliestStartTime DATETIME,
@@ -179,7 +180,7 @@ CREATE TABLE CloudSummaries (
   PublisherDNID VARCHAR(255),
 
   PRIMARY KEY (SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID,
-    VOID, VOGroupID, VORoleID, Status, CloudType, ImageId, CpuCount,
+    VOID, VOGroupID, VORoleID, Status, ImageId, CpuCount,
     BenchmarkType, Benchmark)
 
 );
@@ -284,7 +285,7 @@ BEGIN
       'summariser'
       FROM TVMUsagePerMonth
       GROUP BY SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID,
-          VOGroupID, VORoleID, Status, CloudType, ImageId, CpuCount,
+          VOGroupID, VORoleID, Status, ImageId, CpuCount,
           BenchmarkType, Benchmark
       ORDER BY NULL;
 END //
