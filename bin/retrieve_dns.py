@@ -155,15 +155,21 @@ def dns_from_dom(dom):
 
 def dns_from_file(path):
     '''
-    Get all the lines in a file and return them as a list of strings.  We
-    assume that they're DNs, but we'll check later.
+    Get all the DNs in a file and return them as a list of strings.
     '''
+    # A list to store the DNs in.
+    dns = []
 
-    dn_file = open(path)
-    dns = dn_file.readlines()
-    # get rid of any whitespace in the list of strings
-    dns = [dn.strip() for dn in dns]
-    dn_file.close()
+    with open(path) as dn_file:
+        line_list = dn_file.readlines()
+
+        for line in line_list:
+            # Get rid of any whitespace in each string.
+            whitespace_free_line = line.strip()
+            # Filter out any non DNs.
+            if verify_dn(whitespace_free_line):
+                dns.append(whitespace_free_line)
+
     return dns
 
 
@@ -301,9 +307,6 @@ def runprocess(config_file, log_config_file):
             new_dn_file.write(dn)
             new_dn_file.write('\n')
             added += 1
-        elif dn.lstrip().startswith("#"):
-            # Ignore comment lines starting with "#"
-            log.debug("Comment ignored: %s", dn)
         else:
             # We haven't accepted the DN, so write it to the log file.
             log.warning("DN not valid and won't be added: %s", dn)
