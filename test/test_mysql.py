@@ -1,3 +1,5 @@
+from apel import EXPECTED_SCHEMA_VERSION
+
 import datetime
 import os
 import subprocess
@@ -56,6 +58,38 @@ class MysqlTest(unittest.TestCase):
         self.apel_db._db_host = 'badhost'
         self.assertRaises(apel.db.apeldb.ApelDbException,
                           self.apel_db.test_connection)
+
+    def test_schema_version(self):
+        """
+        Verify that the schema version checks function correctly
+        """
+        # The database server.sql script initialises with the current versions
+        # so the initial state should be consistent
+        self.assertTrue(self.apel_db.check_versions() is None)
+
+        # Now verify the check will fail if the versions don't match
+        # Update the test data with a value that shouldn't match.
+        query = ('INSERT INTO SchemaVersionHistory (VersionNumber) Values ("0.0.0");')
+
+        subprocess.call(['mysql', '-u', 'root', 'apel_unittest', '-e', query])
+
+        self.assertRaises(apel.db.apeldb.ApelDbException, self.apel_db.check_versions)
+
+    def test_schema_version(self):
+        """
+        Verify that the schema version checks function correctly
+        """
+        # The database server.sql script initialises with the current versions
+        # so the initial state should be consistent
+        self.assertTrue(self.apel_db.check_versions() is None)
+
+        # Now verify the check will fail if the versions don't match
+        # Update the test data with a value that shouldn't match.
+        query = ('INSERT INTO SchemaVersionHistory (VersionNumber) Values ("0.0.0");')
+
+        subprocess.call(['mysql', '-u', 'root', 'apel_unittest', '-e', query])
+
+        self.assertRaises(apel.db.apeldb.ApelDbException, self.apel_db.check_versions)
 
     def test_bad_loads(self):
         """Check that empty loads return None and bad types raise exception."""

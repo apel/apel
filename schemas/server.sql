@@ -1,3 +1,16 @@
+-- Set the schema version identifier. (see also update-<from-to>.sql files)
+-- [It would be cleaner if this could be SOURCEed from a shared file.]
+SET @schema_version = '1.9.1';
+-- ------------------------------------------------------------------------------
+-- SchemaVersionHistory
+
+DROP TABLE IF EXISTS SchemaVersionHistory;
+CREATE TABLE SchemaVersionHistory (
+  VersionNumber VARCHAR(8) NOT NULL PRIMARY KEY,
+  UpdateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+-- This INSERT should appear in all update-* scripts with the target version
+INSERT INTO SchemaVersionHistory (VersionNumber) VALUES (@schema_version);
 
 -- ------------------------------------------------------------------------------
 -- JobRecords

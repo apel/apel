@@ -18,6 +18,7 @@ Created on 27 Oct 2011
     @author: Will Rogers, Konrad Jopek
 '''
 
+from ... import EXPECTED_SCHEMA_VERSION
 
 from apel.db import ApelDbException
 from apel.db.records import (BlahdRecord,
@@ -119,6 +120,35 @@ class ApelMysqlDb(object):
             log.info('Database: %s; username: %s', self._db_name, self._db_username)
             db.close()
         except MySQLdb.OperationalError as e:
+            raise ApelDbException("Failed to connect to database: " + str(e))
+
+    def check_versions(self):
+        '''
+        Verify that the database schema and codebase versions match requirements
+        given in apel/__init__.py
+        '''
+        try:
+            db =  MySQLdb.connect(host=self._db_host, port=self._db_port,
+                                    user=self._db_username, passwd=self._db_pwd,
+                                    db=self._db_name)
+
+            c = db.cursor()
+            # Fetch the most recent schema version number
+            query = ('SELECT VersionNumber FROM SchemaVersionHistory '
+                        'ORDER BY UpdateTime DESC LIMIT 1')
+
+            c.execute(query)
+
+            schema_version = c.fetchone()[0]
+            # Put the close here to avoid test hangs after the exception is raised
+            db.close()
+
+            if (schema_version != EXPECTED_SCHEMA_VERSION):
+                raise ApelDbException('Schema version read from database %s is %s. Expected %s. '
+                                        % (self._db_name, schema_version, EXPECTED_SCHEMA_VERSION) )
+
+
+        except MySQLdb.OperationalError, e:
             raise ApelDbException("Failed to connect to database: " + str(e))
 
     def load_records(self, record_list, replace=True, source=None):
