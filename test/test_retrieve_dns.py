@@ -31,6 +31,22 @@ class SimpleTestCase(unittest.TestCase):
             self.assertFalse(bin.retrieve_dns.verify_dn(dn),
                              "Invalid DN accepted: %s" % dn)
 
+    def test_verify_valid_service_types(self):
+        valid_service_types = ("gLite-APEL","uk.ac.gridpp.vcycle",
+                               "1.1234","_test")
+
+        for service_type in valid_service_types:
+            self.assertTrue(bin.retrieve_dns.verify_service_types(service_type),
+                            "Valid service type rejected: %s" % service_type)
+
+    def test_verify_invalid_service_types(self):
+        invalid_service_types = ("gLite(APEL","uk ac gridpp vcycle",
+                                 "1*1234"," _test")
+
+        for service_type in invalid_service_types:
+            self.assertFalse(bin.retrieve_dns.verify_service_types(service_type),
+                        "Invalid service type accepted: %s" % service_type)
+
 
 class ConfigTestCase(unittest.TestCase):
     def setUp(self):
@@ -44,8 +60,10 @@ class ConfigTestCase(unittest.TestCase):
                                             'conf', 'auth.cfg'))
         conf = bin.retrieve_dns.get_config(path).__dict__
 
-        settings = {'gocdb_url': ('https://goc.egi.eu/gocdbpi/public/?method=ge'
-                                  't_service_endpoint&service_type=gLite-APEL'),
+        settings = {'gocdb_hosts': ['goc.egi.eu', 'gocdb.hartree.stfc.ac.uk'],
+                    'gocdb_pi_path': '/gocdbpi/public/?method=get_service_endpoint&service_type=',
+                    'service_types': 'gLite-APEL,uk.ac.gridpp.vac,uk.ac.gridpp.'
+                                     'vcycle,ARC-CE',
                     'extra_dns': os.path.normpath('/etc/apel/extra-dns'),
                     'banned_dns': os.path.normpath('/etc/apel/banned-dns'),
                     'dn_file': os.path.normpath('/etc/apel/dns'),
@@ -65,7 +83,7 @@ class ConfigTestCase(unittest.TestCase):
 
         conf = bin.retrieve_dns.get_config(path).__dict__
 
-        settings = {'gocdb_url': None, 'extra_dns': None, 'banned_dns': None,
+        settings = {'gocdb_hosts': None, 'gocdb_pi_path': None, 'service_types': None, 'extra_dns': None, 'banned_dns': None,
                     'dn_file': None, 'proxy': None, 'expire_hours': 0}
 
         for key in settings:
@@ -108,7 +126,9 @@ class RunprocessTestCase(unittest.TestCase):
         c.extra_dns = self.files['extra']['path']
         c.banned_dns = self.files['ban']['path']
         c.expire_hours = 1
-        c.gocdb_url = "not.a.host"
+        c.gocdb_hosts = ["not.a.host"]
+        c.gocdb_pi_path = "not.a.pi_command"
+        c.service_types = "type1"
         mock_config.return_value = c
 
     def test_next_link_from_dom(self):
@@ -158,6 +178,12 @@ class RunprocessTestCase(unittest.TestCase):
             self.assertEqual(dns.read(), "/dn/1\n/dn/2\n")
         finally:
             dns.close()
+
+    def test_generate_gocdb_urls(self):
+        """Test the generation of full GOCDB URLs."""
+        result = bin.retrieve_dns.generate_gocdb_urls('not.a.host','_not.a.pi_command','type1,type2')
+        self.assertEqual(next(result), "https://not.a.host_not.a.pi_commandtype1")
+        self.assertEqual(next(result), "https://not.a.host_not.a.pi_commandtype2")
 
     def tearDown(self):
         # Delete temp files
