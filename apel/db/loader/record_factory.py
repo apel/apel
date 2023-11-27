@@ -122,7 +122,7 @@ class RecordFactory(object):
                 except KeyError:
                     try:
                         # Use the full header to distinguish normalised and non-norm summaries.
-                        record_type = record_mapping[header]
+                        record_type = record_mapping[header.strip()]
                     except KeyError:
                         raise RecordFactoryException('Message type %s not recognised.' % header)
 
