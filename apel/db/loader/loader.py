@@ -198,8 +198,12 @@ class Loader(object):
         '''
         record_types = {
                     apel.db.records.summary.SummaryRecord: 'Summary',
+                    apel.db.records.summary.SummaryRecord04: 'Summary',
                     apel.db.records.job.JobRecord: 'Job',
+                    apel.db.records.job.JobRecord04: 'Job',
                     apel.db.records.normalised_summary.NormalisedSummaryRecord:
+                    'Normalised Summary',
+                    apel.db.records.normalised_summary.NormalisedSummaryRecord04:
                     'Normalised Summary',
                     apel.db.records.sync.SyncRecord: 'Sync',
                     apel.db.records.cloud.CloudRecord: 'Cloud',
