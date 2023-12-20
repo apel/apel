@@ -45,7 +45,7 @@ class HTCondorParser(Parser):
 
         # Set scaling factor using value from log if appended to log line.
         cputmult = float(1.0)
-        if len(values) > 10:
+        if len(values) > 10 and values[10]:
             cputmult = float(values[10])
 
         mapping = {'Site'            : lambda x: self.site_name,
