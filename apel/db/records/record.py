@@ -299,6 +299,8 @@ class Record(object):
             if key in self._dict_fields:
                 # Create dictionary fields for v0.4 message formats.
                 benchmark_type = self._record_content['ServiceLevelType']
+                if benchmark_type is None:
+                    benchmark_type = "HEPSPEC"
                 msg += key+ ": {" + benchmark_type + ": " + value + "}\n"
             else:
                 # otherwise, add the line
