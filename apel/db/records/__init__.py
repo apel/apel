@@ -22,16 +22,16 @@ Interface for apel.db.records.
 import time
 import datetime
 
-from record import Record, InvalidRecordException
-from blahd import BlahdRecord
-from cloud import CloudRecord
-from cloud_summary import CloudSummaryRecord
-from event import EventRecord
-from group_attribute import GroupAttributeRecord
-from job import JobRecord
-from processed import ProcessedRecord
+from .record import Record, InvalidRecordException
+from .blahd import BlahdRecord
+from .cloud import CloudRecord
+from .cloud_summary import CloudSummaryRecord
+from .event import EventRecord
+from .group_attribute import GroupAttributeRecord
+from .job import JobRecord
+from .processed import ProcessedRecord
 
-from storage import StorageRecord
-from summary import SummaryRecord
-from normalised_summary import NormalisedSummaryRecord
-from sync import SyncRecord
+from .storage import StorageRecord
+from .summary import SummaryRecord
+from .normalised_summary import NormalisedSummaryRecord
+from .sync import SyncRecord

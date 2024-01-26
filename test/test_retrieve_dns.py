@@ -93,13 +93,13 @@ class RunprocessTestCase(unittest.TestCase):
         # Set up temp files
         self.files = {}
         for item in ('dn', 'extra', 'ban'):
-            self.files[item] = dict(zip(('handle', 'path'), tempfile.mkstemp()))
+            self.files[item] = dict(list(zip(('handle', 'path'), tempfile.mkstemp())))
 
         os.write(self.files['dn']['handle'], "/dn/1\n/dn/2\n")
         os.write(self.files['extra']['handle'], "#comment\n/extra/dn\n/banned/dn")
         os.write(self.files['ban']['handle'], "/banned/dn")
 
-        for item in self.files.values():
+        for item in list(self.files.values()):
             os.close(item['handle'])
 
         # Set up config using temp files
@@ -161,7 +161,7 @@ class RunprocessTestCase(unittest.TestCase):
 
     def tearDown(self):
         # Delete temp files
-        for item in self.files.values():
+        for item in list(self.files.values()):
             os.remove(item['path'])
         # Stop all patchers so that they're reset for the next test
         mock.patch.stopall()

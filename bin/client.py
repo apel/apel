@@ -31,11 +31,7 @@ import os
 import logging.config
 import ldap
 
-try:
-    import ConfigParser
-except ImportError:
-    # Renamed in Python 3
-    import configparser as ConfigParser
+import configparser
 
 from apel import __version__
 from apel.db import ApelDb, ApelDbException
@@ -112,16 +108,16 @@ def run_client(ccp):
             try:
                 include = ccp.get('unloader', 'include_vos')
                 include_vos = [vo.strip() for vo in include.split(',')]
-            except ConfigParser.NoOptionError:
+            except configparser.NoOptionError:
                 # Only exclude VOs if we haven't specified the ones to include.
                 include_vos = None
                 try:
                     exclude = ccp.get('unloader', 'exclude_vos')
                     exclude_vos = [vo.strip() for vo in exclude.split(',')]
-                except ConfigParser.NoOptionError:
+                except configparser.NoOptionError:
                     exclude_vos = None
 
-    except (ClientConfigException, ConfigParser.Error), err:
+    except (ClientConfigException, configparser.Error) as err:
         log.error('Error in configuration file: %s', err)
         sys.exit(1)
 
@@ -141,7 +137,7 @@ def run_client(ccp):
         db.test_connection()
         log.info('Connected.')
 
-    except (ConfigParser.Error, ApelDbException), err:
+    except (configparser.Error, ApelDbException) as err:
         log.error('Error during connecting to database: %s', err)
         log.info(LOG_BREAK)
         sys.exit(1)
@@ -153,7 +149,7 @@ def run_client(ccp):
         key = 'manual_spec' + str(index)
         try:
             spec = ccp.get('spec_updater', key)
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             break
         specs.append(spec)
         index += 1
@@ -161,7 +157,7 @@ def run_client(ccp):
     if len(specs) > 0:
         try:
             s = ccp.get('spec_updater', 'site_name')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             log.error('Site name must be configured '
                       'for manual_spec definitions.')
             sys.exit(1)
@@ -188,10 +184,10 @@ def run_client(ccp):
             for value in spec_values:
                 db.update_spec(site_name, value[0], 'si2k', value[1])
             log.info('Spec updater finished.')
-        except ldap.SERVER_DOWN, e:
+        except ldap.SERVER_DOWN as e:
             log.warning('Failed to fetch spec info: %s', e)
             log.warning('Spec updater failed.')
-        except ldap.NO_SUCH_OBJECT, e:
+        except ldap.NO_SUCH_OBJECT as e:
             log.warning('Found no spec values in BDII: %s', e)
             log.warning('Is the site name %s correct?', site_name)
 
@@ -254,7 +250,7 @@ def run_client(ccp):
 
         except KeyError:
             log.warning('Invalid table name: %s, omitting', table_name)
-        except ApelDbException, e:
+        except ApelDbException as e:
             log.warning('Failed to unload records successfully: %s', e)
 
         # Always send sync messages
@@ -292,10 +288,10 @@ def main():
                           default='/etc/apel/logging.cfg')
 
     options, unused_args = opt_parser.parse_args()
-    ccp = ConfigParser.ConfigParser()
+    ccp = configparser.ConfigParser()
     ccp.read(options.config)
 
-    scp = ConfigParser.ConfigParser()
+    scp = configparser.ConfigParser()
     scp.read(options.ssm_config)
 
     # set up logging
@@ -307,9 +303,9 @@ def main():
                            ccp.get('logging', 'level'),
                            ccp.getboolean('logging', 'console'))
         log = logging.getLogger(LOGGER_ID)
-    except (ConfigParser.Error, ValueError, IOError), err:
-        print 'Error configuring logging: %s' % str(err)
-        print 'The system will exit.'
+    except (configparser.Error, ValueError, IOError) as err:
+        print('Error configuring logging: %s' % str(err))
+        print('The system will exit.')
         sys.exit(1)
 
     run_client(ccp)

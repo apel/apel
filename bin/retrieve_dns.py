@@ -27,12 +27,13 @@ from apel.common import set_up_logging, LOG_BREAK
 from apel import __version__
 
 from optparse import OptionParser
-import ConfigParser
+import configparser
 import logging.config
 import os
 import sys
 import time
-import urllib
+import urllib.request
+import urllib.error as URLlibError
 import xml.dom.minidom
 import xml.parsers.expat
 
@@ -52,43 +53,43 @@ class Configuration(object):
 def get_config(config_file):
     """Using the config file location, get a config object."""
     # Read configuration from file
-    cp = ConfigParser.ConfigParser()
+    cp = configparser.ConfigParser()
     cp.read(config_file)
 
     c = Configuration()
 
     try:
         c.gocdb_url = cp.get('auth', 'gocdb_url')
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         c.gocdb_url = None
 
     try:
         extra_dns = cp.get('auth', 'extra-dns')
         c.extra_dns = os.path.normpath(os.path.expandvars(extra_dns))
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         c.extra_dns = None
 
     try:
         banned_dns = cp.get('auth', 'banned-dns')
         c.banned_dns = os.path.normpath(os.path.expandvars(banned_dns))
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         c.banned_dns = None
 
     try:
         dn_file = cp.get('auth', 'allowed-dns')
         c.dn_file = os.path.normpath(os.path.expandvars(dn_file))
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         c.dn_file = None
 
     try:
         proxy = cp.get('auth', 'proxy')
         c.proxy = proxy
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         c.proxy = None
 
     try:
         c.expire_hours = cp.getint('auth', 'expire_hours')
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         c.expire_hours = 0
 
     # set up logging
@@ -99,9 +100,9 @@ def get_config(config_file):
             set_up_logging(cp.get('logging', 'logfile'),
                            cp.get('logging', 'level'),
                            cp.getboolean('logging', 'console'))
-    except (ConfigParser.Error, ValueError, IOError), err:
-        print 'Error configuring logging: %s' % str(err)
-        print 'The system will exit.'
+    except (configparser.Error, ValueError, IOError) as err:
+        print('Error configuring logging: %s' % str(err))
+        print('The system will exit.')
         sys.exit(1)
 
     return c
@@ -114,14 +115,15 @@ def get_xml(url, proxy):
     '''
     try:
         # Try without a proxy
-        conn = urllib.urlopen(url)
+        conn = urllib.request.urlopen(url)
         dn_xml = conn.read()
         conn.close()
-    except IOError:
+    except URLlibError:
         # Try with a proxy
         if proxy is not None:
-            proxy = {"http": proxy}
-            conn = urllib.urlopen(url, proxies=proxy)
+    
+            proxy_handler = urllib.request.ProxyHandler({"http": proxy}) 
+            conn = urllib.request.build_opener(proxy_handler).open(url)
             dn_xml = conn.read()
             conn.close()
         else:
@@ -246,14 +248,14 @@ def runprocess(config_file, log_config_file):
                 next_url = next_link_from_dom(dom)
                 # Add the listed DNs to the list
                 dns.extend(dns_from_dom(dom))
-            except xml.parsers.expat.ExpatError, e:
+            except xml.parsers.expat.ExpatError as e:
                 log.warning('Failed to parse the retrieved XML.')
                 log.warning('Is the URL correct?')
                 fetch_failed = True
     except AttributeError:
         # gocdb_url == None
         log.info("No GOCDB URL specified - won't fetch URLs.")
-    except IOError, e:
+    except IOError as e:
         log.info("Failed to retrieve XML - is the URL correct?")
         log.info(e)
         fetch_failed = True
@@ -288,7 +290,7 @@ def runprocess(config_file, log_config_file):
     # print all the the dns to a file, with the discarded ones to a second file
     try:
         new_dn_file = open(cfg.dn_file, 'w')
-    except IOError, e:
+    except IOError as e:
         log.warning("Failed to open file %s for writing.", cfg.dn_file)
         log.warning("Check the configuration.")
         log.warning("auth will exit.")

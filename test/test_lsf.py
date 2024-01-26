@@ -93,9 +93,9 @@ class ParserLSFTest(unittest.TestCase):
 
         cases = {}
         for line, value in zip(lines, values):
-            cases[line] = dict(zip(fields, value))
+            cases[line] = dict(list(zip(fields, value)))
 
-        for line in cases.keys():
+        for line in list(cases.keys()):
 
             record = self.parser.parse(line)
             cont = record._record_content
@@ -104,10 +104,10 @@ class ParserLSFTest(unittest.TestCase):
             self.assertEqual(cont['MachineName'], 'testHost')
             self.assertEqual(cont['Infrastructure'], 'APEL-CREAM-LSF')
 
-            for field in cases[line].keys():
+            for field in list(cases[line].keys()):
                 self.assertTrue(field in cont, "Field '%s' not in record: %s" % (field, cont))
 
-            for key in cases[line].keys():
+            for key in list(cases[line].keys()):
                 self.assertEqual(cont[key], cases[line][key], "%s != %s for key %s" % (cont[key], cases[line][key], key))
 
     def test_invalid_expr(self):
@@ -155,9 +155,9 @@ class ParserLSFTest(unittest.TestCase):
         record = parser.parse(line)
         cont = record._record_content
 
-        self.assertEquals(cont['NodeCount'], 0,
+        self.assertEqual(cont['NodeCount'], 0,
                           "Node count not zero for non-mpi parser")
-        self.assertEquals(cont['Processors'], 0,
+        self.assertEqual(cont['Processors'], 0,
                           "Processors not zero for non-mpi parser")
 
 

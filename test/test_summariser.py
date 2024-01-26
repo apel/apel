@@ -89,9 +89,9 @@ class BinSummariserTest(unittest.TestCase):
 
         try:
             shutil.rmtree(self._tmp_dir)
-        except OSError, error:
-            print 'Error removing temporary directory %s' % self._tmp_dir
-            print error
+        except OSError as error:
+            print('Error removing temporary directory %s' % self._tmp_dir)
+            print(error)
 
 
 DB_CONF = """[db]

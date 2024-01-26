@@ -19,8 +19,6 @@
 @author: Will Rogers
 '''
 
-from __future__ import print_function
-
 import sys
 import os
 import time
@@ -30,7 +28,7 @@ from daemon.daemon import DaemonContext
 from apel.db.loader import Loader, LoaderException
 from apel.common import set_up_logging
 from apel import __version__
-import ConfigParser
+import configparser
 from optparse import OptionParser
 
 log = None
@@ -39,10 +37,10 @@ def runprocess(db_config_file, config_file, log_config_file):
     '''Parse the configuration file and start the loader.'''
 
     # Read configuration from file
-    cp = ConfigParser.ConfigParser()
+    cp = configparser.ConfigParser()
     cp.read(config_file)
 
-    dbcp = ConfigParser.ConfigParser()
+    dbcp = configparser.ConfigParser()
     dbcp.read(db_config_file)
 
     # set up logging
@@ -55,7 +53,7 @@ def runprocess(db_config_file, config_file, log_config_file):
                            cp.getboolean('logging', 'console'))
         global log
         log = logging.getLogger('dbloader')
-    except (ConfigParser.Error, ValueError, IOError) as err:
+    except (configparser.Error, ValueError, IOError) as err:
         print('Error configuring logging: %s' % err)
         print('The system will exit.')
         sys.exit(1)
