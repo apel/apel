@@ -20,7 +20,7 @@ ACCELERATOR_MSG_SCHEMA = {
             "$id": "#/properties/Type",
             "title": "JSON message type",
             "type": "string",
-            "const": "APEL-Accelerator-message"
+            "enum": ["APEL-accelerator-message", "APEL-Accelerator-message"]
         },
         "Version": {
             "$id": "#/properties/Version",
@@ -214,7 +214,7 @@ ACCELERATOR_SUMMARY_MSG_SCHEMA = {
             "$id": "#/properties/Type",
             "title": "JSON message type",
             "type": "string",
-            "const": "APEL-Accelerator-summary-message"
+            "enum": ["APEL-accelerator-summary-message", "APEL-Accelerator-summary-message"]
         },
         "Version": {
             "$id": "#/properties/Version",

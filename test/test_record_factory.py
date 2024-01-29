@@ -163,7 +163,7 @@ class TestRecordFactory(unittest.TestCase):
         # Create a list of records and build a Accelerator accounting message.
         usage_records = [record0, record1]
         accelerator_accounting_message_v00 = self._generate_json_message(
-            "APEL-Accelerator-message", "0.1", usage_records
+            "APEL-accelerator-message", "0.1", usage_records
         )
 
         # Create the record objects, using the RecordFactory.

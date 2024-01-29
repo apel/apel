@@ -228,7 +228,7 @@ class LoaderTest(unittest.TestCase):
             "Model": "Model2",
         }
 
-        json_msg = json_utils.to_message("APEL-Accelerator-message", "0.1", record0, record1)
+        json_msg = json_utils.to_message("APEL-accelerator-message", "0.1", record0, record1)
 
         in_q.add({"body": json_msg, "signer": "test signer", "empaid": "", "error": ""})
 
