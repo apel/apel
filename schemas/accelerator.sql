@@ -6,9 +6,9 @@ DROP FUNCTION IF EXISTS SiteNameLookup;
 DELIMITER //
 CREATE FUNCTION SiteNameLookup(lookup INTEGER) RETURNS VARCHAR(255) DETERMINISTIC
 BEGIN 
-    DECLARE result VARCHAR(255);
-    SELECT name FROM Sites WHERE id = lookup INTO result;
-    RETURN result;
+  DECLARE result VARCHAR(255);
+  SELECT name FROM Sites WHERE id = lookup INTO result;
+  RETURN result;
 END //
 DELIMITER ;
 
@@ -134,7 +134,8 @@ BEGIN
         Count, Cores, AvailableDuration, ActiveDuration, 
         BenchmarkType, Benchmark, Type, Model, NumberOfRecords, PublisherDNID)
     SELECT 
-      MeasurementMonth, MeasurementYear,
+      MeasurementMonth,
+      MeasurementYear,
       AssociatedRecordType,
       GlobalUserName,
       SiteNameLookup(SiteID) as SiteName,
@@ -146,8 +147,8 @@ BEGIN
       Benchmark,
       Type,
       Model,
-      COUNT(*),
-      'summariser'
+      COUNT(*) as NumberOfRecords,
+      'summariser' as PublisherDNID
       FROM AcceleratorRecords
       GROUP BY
           MeasurementMonth, MeasurementYear, 

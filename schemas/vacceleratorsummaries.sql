@@ -1,0 +1,143 @@
+-- This schema is used in conjunction (and should be merged with) accelerator.sql
+-- in order to create a unified view used for sorting data.  It creates supporting
+-- tables to join data accurately.
+
+---------------------------------------------------------------------------------
+
+-- AcceleratorModels is meant to support categorising accelerators by sensible
+-- group categories, and then to be merged into VAcceleratorSummaries if necessary
+-- or added as a variable from Grafana.
+-- Date exists so that the queries can simply ask for the latest version with the idea
+-- that models can be recategorised later on in their lifecycle.
+DROP TABLE IF EXISTS AcceleratorModels;
+CREATE TABLE AcceleratorModels (
+    Date TIMESTAMP NOT NULL,
+    Model VARCHAR(255) NOT NULL,
+    Type VARCHAR(255) NOT NULL,
+    Category VARCHAR(255),
+
+    PRIMARY KEY (Model, Type, Date)
+);
+
+
+-- GetNewModels shunts all the type, model combinations into AcceleratorModels
+-- This means that models already in AcceleratorModels should not be overwritten
+-- and if they're now faulty (or uploaded faultily by this procedure, should be
+-- updated!)
+DROP PROCEDURE IF EXISTS GetNewModels;
+DELIMITER //
+CREATE PROCEDURE GetNewModels()
+BEGIN
+    REPLACE INTO AcceleratorModels (Date, Model, Type)
+    SELECT TIMESTAMP('2000-01-01 00:00:00'), ar.Model, ar.Type
+    FROM AcceleratorRecords ar
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM AcceleratorModels am
+        WHERE am.Model = ar.Model
+        AND am.Type = ar.Type
+    );
+END //
+DELIMITER ;
+
+
+-- This is an insertion of a value for when a card needs to be
+-- recategorised.  
+DROP PROCEDURE IF EXISTS UpdateModel;
+DELIMITER //
+CREATE PROCEDURE UpdateModel(
+  model VARCHAR(255), 
+  type VARCHAR(255),
+  category VARCHAR(255)
+)
+BEGIN
+  INSERT INTO AcceleratorModels(Date, Model, Type, Category)
+  VALUES (CURRENT_TIMESTAMP(), model, type, category);
+END //
+DELIMITER ;
+
+
+-- WARNING: CHECK UpdateModel to see if that's what you need.
+-- This procedure is meant to ALTER an existing record.
+-- This means that it will alter historical data.  It should only
+-- be used to alter the very first record.
+DROP PROCEDURE IF EXISTS AlterModel;
+DELIMITER //
+CREATE PROCEDURE AlterModel(
+  date TIMESTAMP, 
+  model VARCHAR(255), 
+  type VARCHAR(255),
+  col VARCHAR(255), 
+  val VARCHAR(255)
+)
+BEGIN
+  SET @sql = CONCAT('UPDATE AcceleratorModels SET ', col, ' = ? WHERE Date = ? AND Model = ? AND Type = ?');
+  PREPARE stmt FROM @sql;
+  EXECUTE stmt USING val, date, model, type;
+  DEALLOCATE PREPARE stmt;
+END //
+DELIMITER ;
+
+
+-- DROP FUNCTION IF EXISTS CountModelRules;
+-- DELIMITER //
+-- CREATE FUNCTION CountModelRules(
+--   model VARCHAR(255), 
+--   type VARCHAR(255)
+-- )
+-- BEGIN
+--   DECLARE result VARCHAR(255);
+--   SELECT COUNT(*) FROM AcceleratorModels
+--   WHERE (Model=model)
+--   AND (Type=type)
+--   INTO result; 
+--   RETURN result;
+-- END //
+-- DELIMITER ;
+
+
+DROP VIEW IF EXISTS VAcceleratorSummaries;
+CREATE VIEW VAcceleratorSummaries AS
+SELECT
+  iris_accelerator.AcceleratorRecords.UpdateTime,
+  iris_accelerator.AcceleratorSummaries.SiteName,
+  iris_accelerator.AcceleratorRecords.FQAN,
+  iris_accelerator.AcceleratorSummaries.GlobalUserName,
+  iris_accelerator.AcceleratorSummaries.Type,
+  iris_accelerator.AcceleratorSummaries.Model,
+  iris_accelerator.AcceleratorRecords.MeasurementMonth,
+  iris_accelerator.AcceleratorRecords.MeasurementYear,
+  iris_accelerator.AcceleratorSummaries.Count,
+  iris_accelerator.AcceleratorSummaries.Cores,
+  iris_accelerator.AcceleratorSummaries.AvailableDuration,
+  iris_accelerator.AcceleratorSummaries.ActiveDuration,
+  iris_accelerator.AcceleratorSummaries.AssociatedRecordType,
+  iris_accelerator.AcceleratorRecords.AssociatedRecord,
+  iris_accelerator.AcceleratorSummaries.BenchmarkType,
+  iris_accelerator.AcceleratorSummaries.Benchmark,
+  iris_accelerator.AcceleratorModels.Category
+FROM
+  iris_accelerator.AcceleratorRecords,
+  iris_accelerator.AcceleratorSummaries,
+  iris_accelerator.AcceleratorModels
+WHERE
+  iris_accelerator.AcceleratorRecords.GlobalUserName = iris_accelerator.AcceleratorSummaries.GlobalUserName
+  AND SiteNameLookup(iris_accelerator.AcceleratorRecords.SiteID) = iris_accelerator.AcceleratorSummaries.SiteName
+  AND iris_accelerator.AcceleratorRecords.Type = iris_accelerator.AcceleratorSummaries.Type
+  AND iris_accelerator.AcceleratorRecords.Model = iris_accelerator.AcceleratorSummaries.Model
+  AND iris_accelerator.AcceleratorModels.Date = (
+    SELECT MAX(iris_accelerator.AcceleratorModels.Date) 
+    FROM 
+      iris_accelerator.AcceleratorModels
+    WHERE 
+      iris_accelerator.AcceleratorModels.Date <= iris_accelerator.AcceleratorRecords.UpdateTime
+      AND iris_accelerator.AcceleratorModels.Model = iris_accelerator.AcceleratorRecords.Model
+      AND iris_accelerator.AcceleratorModels.Type = iris_accelerator.AcceleratorRecords.Type
+    )
+GROUP BY
+  MeasurementMonth, MeasurementYear, 
+  AssociatedRecordType,
+  GlobalUserName, SiteName,
+  Cores, Type, 
+  Benchmark, BenchmarkType
+ORDER BY NULL;
