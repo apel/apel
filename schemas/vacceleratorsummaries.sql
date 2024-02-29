@@ -79,40 +79,22 @@ END //
 DELIMITER ;
 
 
--- DROP FUNCTION IF EXISTS CountModelRules;
--- DELIMITER //
--- CREATE FUNCTION CountModelRules(
---   model VARCHAR(255), 
---   type VARCHAR(255)
--- )
--- BEGIN
---   DECLARE result VARCHAR(255);
---   SELECT COUNT(*) FROM AcceleratorModels
---   WHERE (Model=model)
---   AND (Type=type)
---   INTO result; 
---   RETURN result;
--- END //
--- DELIMITER ;
-
-
+-- with schema alterations we can get rid of the AcceleratorRecords issues.
 DROP VIEW IF EXISTS VAcceleratorSummaries;
 CREATE VIEW VAcceleratorSummaries AS
 SELECT
-  iris_accelerator.AcceleratorRecords.UpdateTime,
   iris_accelerator.AcceleratorSummaries.SiteName,
   iris_accelerator.AcceleratorRecords.FQAN,
   iris_accelerator.AcceleratorSummaries.GlobalUserName,
   iris_accelerator.AcceleratorSummaries.Type,
   iris_accelerator.AcceleratorSummaries.Model,
-  iris_accelerator.AcceleratorRecords.MeasurementMonth,
-  iris_accelerator.AcceleratorRecords.MeasurementYear,
+  iris_accelerator.AcceleratorSummaries.Month,
+  iris_accelerator.AcceleratorSummaries.Year,
   iris_accelerator.AcceleratorSummaries.Count,
   iris_accelerator.AcceleratorSummaries.Cores,
   iris_accelerator.AcceleratorSummaries.AvailableDuration,
   iris_accelerator.AcceleratorSummaries.ActiveDuration,
   iris_accelerator.AcceleratorSummaries.AssociatedRecordType,
-  iris_accelerator.AcceleratorRecords.AssociatedRecord,
   iris_accelerator.AcceleratorSummaries.BenchmarkType,
   iris_accelerator.AcceleratorSummaries.Benchmark,
   iris_accelerator.AcceleratorModels.Category
@@ -130,9 +112,9 @@ WHERE
     FROM 
       iris_accelerator.AcceleratorModels
     WHERE 
-      iris_accelerator.AcceleratorModels.Date <= iris_accelerator.AcceleratorRecords.UpdateTime
-      AND iris_accelerator.AcceleratorModels.Model = iris_accelerator.AcceleratorRecords.Model
-      AND iris_accelerator.AcceleratorModels.Type = iris_accelerator.AcceleratorRecords.Type
+      iris_accelerator.AcceleratorModels.Date <= str_to_date(CONCAT_WS('-', iris_accelerator.AcceleratorSummaries.Year, LPAD(iris_accelerator.AcceleratorSummaries.Month, 2, 0)), '%Y-%m-01 00:00:00')
+      AND iris_accelerator.AcceleratorSummaries.Model = iris_accelerator.AcceleratorSummaries.Model
+      AND iris_accelerator.AcceleratorModels.Type = iris_accelerator.AcceleratorSummaries.Type
     )
 GROUP BY
   MeasurementMonth, MeasurementYear, 
