@@ -9,6 +9,8 @@
 -- or added as a variable from Grafana.
 -- Date exists so that the queries can simply ask for the latest version with the idea
 -- that models can be recategorised later on in their lifecycle.
+SET GLOBAL event_scheduler = ON;
+
 DROP TABLE IF EXISTS AcceleratorModels;
 CREATE TABLE AcceleratorModels (
     Date TIMESTAMP NOT NULL,
@@ -156,65 +158,19 @@ BEGIN
 END //
 DELIMITER ;
 
--- Triggers
+-- Event
 -- Insert new model/type combinations into AcceleratorModels
-DROP TRIGGER IF EXISTS after_summarise_accelerators;
--- DELIMITER //
--- CREATE TRIGGER after_summarise_accelerators
--- AFTER INSERT ON AcceleratorSummaries
--- FOR EACH ROW
--- BEGIN
---     CALL GetNewModels();
---     CALL GetModelSummaries();
--- END;
--- //
--- DELIMITER ;
+DROP EVENT IF EXISTS model_summaries_hourly;
+CREATE EVENT model_summaries_hourly
+    ON SCHEDULE
+      EVERY 1 HOUR
+    COMMENT 'Checks for new model/type combos and binds the correct category to them.'
+    DO
+      CALL GetNewModels();
+      CALL GetModelSummaries();
 
 
--- with schema alterations we can get rid of the AcceleratorRecords issues.
--- essential to change as the loadin time is frankly painful
+-- This is where you get your data from in Grafana :>
 DROP VIEW IF EXISTS VAcceleratorSummaries;
 CREATE VIEW VAcceleratorSummaries AS
 SELECT * FROM AcceleratorModelSummaries;
--- CREATE VIEW VAcceleratorSummaries AS
--- SELECT
---   iris_accelerator.AcceleratorSummaries.SiteName,
---   iris_accelerator.AcceleratorRecords.FQAN,
---   iris_accelerator.AcceleratorSummaries.GlobalUserName,
---   iris_accelerator.AcceleratorSummaries.Type,
---   iris_accelerator.AcceleratorSummaries.Model,
---   iris_accelerator.AcceleratorSummaries.Month,
---   iris_accelerator.AcceleratorSummaries.Year,
---   iris_accelerator.AcceleratorSummaries.Count,
---   iris_accelerator.AcceleratorSummaries.Cores,
---   iris_accelerator.AcceleratorSummaries.AvailableDuration,
---   iris_accelerator.AcceleratorSummaries.ActiveDuration,
---   iris_accelerator.AcceleratorSummaries.AssociatedRecordType,
---   iris_accelerator.AcceleratorSummaries.BenchmarkType,
---   iris_accelerator.AcceleratorSummaries.Benchmark,
---   iris_accelerator.AcceleratorModels.Category
--- FROM
---   iris_accelerator.AcceleratorRecords,
---   iris_accelerator.AcceleratorSummaries,
---   iris_accelerator.AcceleratorModels
--- WHERE
---   iris_accelerator.AcceleratorRecords.GlobalUserName = iris_accelerator.AcceleratorSummaries.GlobalUserName
---   AND SiteNameLookup(iris_accelerator.AcceleratorRecords.SiteID) = iris_accelerator.AcceleratorSummaries.SiteName
---   AND iris_accelerator.AcceleratorRecords.Type = iris_accelerator.AcceleratorSummaries.Type
---   AND iris_accelerator.AcceleratorRecords.Model = iris_accelerator.AcceleratorSummaries.Model
---   AND iris_accelerator.AcceleratorModels.Date = (
---     SELECT MAX(iris_accelerator.AcceleratorModels.Date) 
---     FROM 
---       iris_accelerator.AcceleratorModels
---     WHERE 
---       iris_accelerator.AcceleratorModels.Date <= str_to_date(CONCAT_WS('-', iris_accelerator.AcceleratorSummaries.Year, LPAD(iris_accelerator.AcceleratorSummaries.Month, 2, 0)), '%Y-%m-01 00:00:00')
---       AND iris_accelerator.AcceleratorSummaries.Model = iris_accelerator.AcceleratorSummaries.Model
---       AND iris_accelerator.AcceleratorModels.Type = iris_accelerator.AcceleratorSummaries.Type
---     )
--- GROUP BY
---   MeasurementMonth, MeasurementYear, 
---   AssociatedRecordType,
---   GlobalUserName, SiteName,
---   Cores, Type, 
---   Benchmark, BenchmarkType
--- ORDER BY NULL;
