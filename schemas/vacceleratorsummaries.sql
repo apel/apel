@@ -159,16 +159,16 @@ DELIMITER ;
 -- Triggers
 -- Insert new model/type combinations into AcceleratorModels
 DROP TRIGGER IF EXISTS after_summarise_accelerators;
-DELIMITER //
-CREATE TRIGGER after_summarise_accelerators
-AFTER INSERT ON AcceleratorSummaries
-FOR EACH ROW
-BEGIN
-    CALL GetNewModels();
-    CALL GetModelSummaries();
-END;
-//
-DELIMITER ;
+-- DELIMITER //
+-- CREATE TRIGGER after_summarise_accelerators
+-- AFTER INSERT ON AcceleratorSummaries
+-- FOR EACH ROW
+-- BEGIN
+--     CALL GetNewModels();
+--     CALL GetModelSummaries();
+-- END;
+-- //
+-- DELIMITER ;
 
 
 -- with schema alterations we can get rid of the AcceleratorRecords issues.
