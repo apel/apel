@@ -161,13 +161,18 @@ DELIMITER ;
 -- Event
 -- Insert new model/type combinations into AcceleratorModels
 DROP EVENT IF EXISTS model_summaries_hourly;
+DELIMITER //
 CREATE EVENT model_summaries_hourly
     ON SCHEDULE
       EVERY 1 HOUR
     COMMENT 'Checks for new model/type combos and binds the correct category to them.'
     DO
+    BEGIN
       CALL GetNewModels();
       CALL GetModelSummaries();
+    END;
+//
+DELIMITER ;
 
 
 -- This is where you get your data from in Grafana :>
