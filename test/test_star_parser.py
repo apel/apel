@@ -112,7 +112,7 @@ class StarParserTest(unittest.TestCase):
                           "StartTime", "EndTime", "ResourceCapacityUsed"):
                 self.assertTrue(field in cont, "Field '%s' not found" % field)
 
-            for key in cases[star].keys():
+            for key in list(cases[star].keys()):
                 if isinstance(cont[key], datetime):
                     if not datetimes_equal(cont[key], cases[star][key]):
                         self.fail("Datetimes don't match for key %s: %s, %s" % (key, cont[key], cases[star][key]))

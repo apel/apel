@@ -72,14 +72,14 @@ class MysqlTest(unittest.TestCase):
                                'EndTime': datetime.datetime.fromtimestamp(654321),
                                'ServiceLevelType': 'HEPSPEC',
                                'ServiceLevel': 3}
-        items_in = job._record_content.items()
+        items_in = list(job._record_content.items())
         record_list = [job]
         # load_records changes the 'job' job record as it calls _check_fields
         # which adds placeholders to empty fields
         self.apel_db.load_records(record_list, source='testDN')
 
         records_out = self.apel_db.get_records(apel.db.records.job.JobRecord)
-        items_out = list(records_out)[0][0]._record_content.items()
+        items_out = list(list(records_out)[0][0]._record_content.items())
         # Check that items_in is a subset of items_out
         # Can't use 'all()' rather than comparing the length as Python 2.4
         self.assertEqual([item in items_out for item in items_in].count(True), len(items_in))
@@ -118,10 +118,10 @@ class MysqlTest(unittest.TestCase):
         cloud4_mf = apel.db.records.cloud.CloudRecord()
         cloud4_mf.load_from_msg(CLOUD4_MISSING_FIELDS)
 
-        items_in = cloud2._record_content.items()
-        items_in += cloud4._record_content.items()
-        items_in += cloud4_nb._record_content.items()
-        items_in += cloud4_mf._record_content.items()
+        items_in = list(cloud2._record_content.items())
+        items_in += list(cloud4._record_content.items())
+        items_in += list(cloud4_nb._record_content.items())
+        items_in += list(cloud4_mf._record_content.items())
 
         record_list = [cloud2, cloud4, cloud4_nb, cloud4_mf]
 

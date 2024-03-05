@@ -1,6 +1,6 @@
 # Base requirements for apel
 
-MySQL-python
-python-ldap<3.4.0  # python-ldap-3.4.0 dropped support for Python 2
-iso8601
-dirq
+mysqlclient==2.1.1 # TODO: Add steps to define mysqlclient installation process(pre-requisites etc).
+python-ldap
+iso8601==1.1.0
+dirq # TODO: Need to test in Rocky8 and 9.

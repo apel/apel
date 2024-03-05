@@ -25,7 +25,7 @@ The project is written in Python.
 %package lib
 Summary:        Libraries required for Apel Client, Server and Parsers
 Group:          Development/Languages
-Requires:       MySQL-python, python-ldap < 3.4.0 , python-iso8601, python-dirq
+Requires:       mysqlclient, python-ldap, iso8601, dirq
 Requires(pre):  shadow-utils
 
 %description lib

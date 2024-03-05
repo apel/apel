@@ -215,19 +215,19 @@ CloudComputeService: Test Service'''
 
     def test_load_from_msg_value_check(self):
         """Check for correct values in CloudRecords generated from messages."""
-        for msg in self.cases.keys():
+        for msg in list(self.cases.keys()):
 
             cr = CloudRecord()
             cr.load_from_msg(msg)
 
             cont = cr._record_content
 
-            for key in self.cases[msg].keys():
+            for key in list(self.cases[msg].keys()):
                 self.assertEqual(cont[key], self.cases[msg][key], "%s != %s for key %s" % (cont[key], self.cases[msg][key], key))
 
     def test_load_from_msg_type_check(self):
         """Check the fields of a parsed message are of the correct type."""
-        for msg in self.cases.keys():
+        for msg in list(self.cases.keys()):
 
             cr = CloudRecord()
             cr.load_from_msg(msg)
@@ -270,7 +270,7 @@ CloudComputeService: Test Service'''
 
         try:
             record._check_fields()
-        except Exception, e:
+        except Exception as e:
             self.fail('_check_fields method failed: %s [%s]' % (str(e), str(type(e))))
 
 if __name__ == '__main__':

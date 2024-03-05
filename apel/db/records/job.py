@@ -257,26 +257,26 @@ class JobRecord(Record):
         service_level.appendChild(doc.createTextNode(str(self.get_field('ServiceLevel'))))
         ur.appendChild(service_level)
 
-        if self.get_field('MemoryReal') > 0:
+        if self.get_field('MemoryReal') is not None and self.get_field('MemoryReal') > 0:
             pmem = doc.createElement('urf:Memory')
             pmem.setAttribute('urf:type', 'Physical')
             pmem.setAttribute('urf:storageUnit', 'KB')
             pmem.appendChild(doc.createTextNode(str(self.get_field('MemoryReal'))))
             ur.appendChild(pmem)
 
-        if self.get_field('MemoryVirtual') > 0:
+        if self.get_field('MemoryVirtual') is not None and self.get_field('MemoryVirtual') > 0:
             vmem = doc.createElement('urf:Memory')
             vmem.setAttribute('urf:type', 'Shared')
             vmem.setAttribute('urf:storageUnit', 'KB')
             vmem.appendChild(doc.createTextNode(str(self.get_field('MemoryVirtual'))))
             ur.appendChild(vmem)
 
-        if self.get_field('NodeCount') > 0:
+        if self.get_field('NodeCount') is not None and self.get_field('NodeCount') > 0:
             ncount = doc.createElement('urf:NodeCount')
             ncount.appendChild(doc.createTextNode(str(self.get_field('NodeCount'))))
             ur.appendChild(ncount)
 
-        if self.get_field('Processors') > 0:
+        if self.get_field('Processors') is not None and self.get_field('Processors') > 0:
             procs = doc.createElement('urf:Processors')
             procs.appendChild(doc.createTextNode(str(self.get_field('Processors'))))
             ur.appendChild(procs)

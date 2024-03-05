@@ -211,12 +211,12 @@ class SummaryRecord(Record):
         cpu.appendChild(doc.createTextNode(str(self.get_field('NumberOfJobs'))))
         ur.appendChild(cpu)
 
-        if self.get_field('NodeCount') > 0:
+        if self.get_field('NodeCount') is not None and self.get_field('NodeCount') > 0:
             ncount = doc.createElement('aur:NodeCount')
             ncount.appendChild(doc.createTextNode(str(self.get_field('NodeCount'))))
             ur.appendChild(ncount)
 
-        if self.get_field('Processors') > 0:
+        if self.get_field('Processors') is not None and self.get_field('Processors') > 0:
             procs = doc.createElement('aur:Processors')
             procs.appendChild(doc.createTextNode(str(self.get_field('Processors'))))
             ur.appendChild(procs)
