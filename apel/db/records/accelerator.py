@@ -15,7 +15,6 @@
 
 """
 
-from apel.common import parse_fqan
 from apel.db.records import Record
 
 

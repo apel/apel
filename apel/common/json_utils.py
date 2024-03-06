@@ -22,8 +22,8 @@ JSON_MSG_BOILERPLATE = """{
     "UsageRecords": %s
 }"""
 
-def to_message(type, version, *usage_records):
+def to_message(message_type, version, *usage_records):
     """ Generate JSON message format """
     return (
-        JSON_MSG_BOILERPLATE % (type, version, list(usage_records))
+        JSON_MSG_BOILERPLATE % (message_type, version, list(usage_records))
     ).replace("'", '"')
