@@ -1,6 +1,5 @@
 """Test cases for logging function in apel.common.__init__."""
 
-from cStringIO import StringIO
 import logging
 import os
 import sys
@@ -9,6 +8,10 @@ import unittest
 
 from apel.common import set_up_logging
 
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 class LoggingTest(unittest.TestCase):
     """Test cases for set_up_logging function."""
