@@ -63,6 +63,12 @@ def main():
     log_rotate_dir = '/etc/logrotate.d'
     log_rotate_files = ['scripts/apel-client']
 
+    # Python 2.x dependencies
+    _install_requires = ['MySQL-python', 'iso8601', 'python-ldap', 'dirq', 'future']
+    # Python 3.x dependencies
+    if sys.version_info > (3,):
+        _install_requires = ['mysqlclient'] + _install_requires[1:]
+    
     # For 'python setup.py install' to
     # work (on Linux SL6), 'python-daemon'
     # must be installed or included
@@ -75,7 +81,7 @@ def main():
           url='http://apel.github.io/',
           download_url='https://github.com/apel/apel/releases',
           license='Apache License, Version 2.0',
-          install_requires=['future', 'MySQL-python', 'iso8601', 'python-ldap', 'dirq'],
+          install_requires=_install_requires,
           extras_require={
               'python-daemon': ['python-daemon'],
           },
