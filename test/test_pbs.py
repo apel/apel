@@ -182,8 +182,8 @@ class ParserPBSTest(unittest.TestCase):
         record = parser.parse(line)
         cont = record._record_content
 
-        self.assertEquals(cont['NodeCount'], 0)
-        self.assertEquals(cont['Processors'], 0)
+        self.assertEqual(cont['NodeCount'], 0)
+        self.assertEqual(cont['Processors'], 0)
 
 if __name__ == '__main__':
     unittest.main()

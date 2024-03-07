@@ -155,9 +155,9 @@ class ParserLSFTest(unittest.TestCase):
         record = parser.parse(line)
         cont = record._record_content
 
-        self.assertEquals(cont['NodeCount'], 0,
+        self.assertEqual(cont['NodeCount'], 0,
                           "Node count not zero for non-mpi parser")
-        self.assertEquals(cont['Processors'], 0,
+        self.assertEqual(cont['Processors'], 0,
                           "Processors not zero for non-mpi parser")
 
 
