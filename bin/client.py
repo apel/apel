@@ -33,10 +33,10 @@ import logging.config
 import ldap
 
 try:
-    import ConfigParser
-except ImportError:
-    # Renamed in Python 3
+    # Renamed ConfigParser to configparser in Python 3
     import configparser as ConfigParser
+except ImportError:
+    import ConfigParser
 
 from apel import __version__
 from apel.db import ApelDb, ApelDbException

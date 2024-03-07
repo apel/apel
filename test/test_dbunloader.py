@@ -1,9 +1,11 @@
 """Test cases for private funtion in dbunloader."""
 
 try:
-    import ConfigParser
-except ImportError:
+    # Renamed ConfigParser to configparser in Python 3
     import configparser as ConfigParser
+except ImportError:
+    import ConfigParser
+
 import logging
 import unittest
 

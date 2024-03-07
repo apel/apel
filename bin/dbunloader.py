@@ -20,9 +20,11 @@
 from __future__ import print_function
 
 try:
-    import ConfigParser
-except ImportError:
+    # Renamed ConfigParser to configparser in Python 3
     import configparser as ConfigParser
+except ImportError:
+    import ConfigParser
+
 import logging.config
 from optparse import OptionParser
 import os
