@@ -16,6 +16,8 @@
    @author: Konrad Jopek
 '''
 
+from builtins import str
+from builtins import object
 import logging
 from apel.db import LOGGER_ID
 

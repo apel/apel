@@ -1,5 +1,7 @@
 """Test cases for logging function in apel.common.__init__."""
 
+from future import standard_library
+standard_library.install_aliases()
 import logging
 import os
 import sys

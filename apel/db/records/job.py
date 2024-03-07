@@ -16,6 +16,7 @@
     @author Will Rogers, Konrad Jopek
 '''
 
+from builtins import str
 from apel.db.records import Record, InvalidRecordException
 from datetime import datetime, timedelta
 from xml.dom.minidom import Document

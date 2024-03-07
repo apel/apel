@@ -15,6 +15,8 @@
 """Test cases for the NormalisedSummaryRecord based on SummaryRecord tests."""
 
 
+from builtins import zip
+from builtins import str
 from datetime import datetime, timedelta
 import unittest
 

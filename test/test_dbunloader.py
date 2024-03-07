@@ -1,5 +1,8 @@
 """Test cases for private funtion in dbunloader."""
 
+from future import standard_library
+standard_library.install_aliases()
+
 try:
     # Renamed ConfigParser to configparser in Python 3
     import configparser as ConfigParser

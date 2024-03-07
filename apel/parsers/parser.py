@@ -15,6 +15,7 @@
 
    @author: Konrad Jopek
 '''
+from builtins import object
 import logging
 
 log = logging.getLogger(__name__)
