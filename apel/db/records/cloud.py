@@ -16,6 +16,7 @@
 @author Will Rogers
 '''
 
+from builtins import str
 from apel.db.records import Record, InvalidRecordException
 from apel.common import parse_fqan
 from datetime import datetime, timedelta

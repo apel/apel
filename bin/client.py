@@ -26,6 +26,9 @@
 '''
 from __future__ import print_function
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 from optparse import OptionParser
 import sys
 import os

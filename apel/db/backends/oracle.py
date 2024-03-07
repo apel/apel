@@ -19,6 +19,8 @@ Created on 26 Jul 2012
 
 '''
 
+from builtins import str
+from builtins import object
 from apel.db import ApelDbException, LOGGER_ID
 from apel.db.records.job import JobRecord
 import cx_Oracle

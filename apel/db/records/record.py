@@ -18,6 +18,9 @@
 Module containing the Record class.
 '''
 
+from builtins import zip
+from builtins import str
+from builtins import object
 from apel.db import LOGGER_ID
 
 from datetime import datetime

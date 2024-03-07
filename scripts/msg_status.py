@@ -21,6 +21,7 @@
 '''
 from __future__ import print_function
 
+from builtins import next
 import sys
 import os
 from dirq.queue import Queue

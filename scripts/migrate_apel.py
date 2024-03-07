@@ -3,6 +3,7 @@
 # Migrate from the old apel client database to the new apel client database.
 
 from __future__ import print_function
+from builtins import str
 from apel.common.parsing_utils import parse_fqan
 
 import MySQLdb
