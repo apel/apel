@@ -200,7 +200,7 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         for method in (bz2.BZ2File, gzip.open, open):
                             try:  # this is for Python < 2.5
                                 try:
-                                    fp = method(abs_file)
+                                    fp = method(abs_file, 'rb')
                                     parsed, total = parse_file(parser, apel_db,
                                                                fp, reparse)
                                     break
