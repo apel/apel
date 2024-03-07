@@ -3,6 +3,7 @@ Created on 2 Mar 2011
 
 @author: will
 '''
+from __future__ import print_function
 from apel.db.records import SummaryRecord, InvalidRecordException
 from datetime import datetime, timedelta
 import unittest
@@ -99,7 +100,7 @@ class TestSummaryRecord(unittest.TestCase):
 #                    self.fail('Datetimes %s and %s do not match.' % (item1, item2))
 
             if item1 != item2 and str(item1) != str(item2):
-                print values
+                print(values)
                 self.fail('Values changed when creating a summary record: ' +
                           str(item1) + ": " + str(item2))
 

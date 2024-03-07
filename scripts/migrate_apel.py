@@ -2,6 +2,7 @@
 
 # Migrate from the old apel client database to the new apel client database.
 
+from __future__ import print_function
 from apel.common.parsing_utils import parse_fqan
 
 import MySQLdb
@@ -227,25 +228,25 @@ def main():
     the copying and deleting processes.
     '''
     if len(sys.argv) != 4:
-        print 'Usage: '+sys.argv[0]+' <sourcedb> <destdb> <months_to_keep>'
-        print 'where:'
-        print '     <sourcedb> - hostname:database_name:username:password'
-        print '     <destdb> - as per source db'
-        print '     <months_to_keep> - number of complete months\' data to retain'
+        print('Usage: '+sys.argv[0]+' <sourcedb> <destdb> <months_to_keep>')
+        print('where:')
+        print('     <sourcedb> - hostname:database_name:username:password')
+        print('     <destdb> - as per source db')
+        print('     <months_to_keep> - number of complete months\' data to retain')
         sys.exit()
 
     try:
         host1, dbname1, user1, pw1 = sys.argv[1].split(':')
         host2, dbname2, user2, pw2 = sys.argv[2].split(':')
     except (IndexError, ValueError):
-        print 'DB connection details must be in the format:'
-        print '  hostname:database_name:username:password'
+        print('DB connection details must be in the format:')
+        print('  hostname:database_name:username:password')
         sys.exit()
 
     try:
         months_to_keep = int(sys.argv[3])
     except ValueError:
-        print '<months_to_keep> must be an integer'
+        print('<months_to_keep> must be an integer')
         sys.exit()
 
     cutoff = get_start_of_month(months_to_keep)
@@ -255,7 +256,7 @@ def main():
         db1 =  MySQLdb.connect(host=host1, db=dbname1, user=user1, passwd=pw1)
         db2 =  MySQLdb.connect(host=host2, db=dbname2, user=user2, passwd=pw2)
     except MySQLdb.Error as e:
-        print 'Error connecting to database: %s' % str(e)
+        print('Error connecting to database: %s' % str(e))
         sys.exit()
 
     # copy records
