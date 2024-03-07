@@ -118,8 +118,8 @@ class StarParser(XMLParser):
 
         # Here we copy keys from functions.
         # We only want to change 'RecordId' to 'RecordIdentity'.
-        nodes = {}.fromkeys(map(lambda f: f == 'RecordId' and
-                                'RecordIdentity' or f, [S for S in functions]))
+        nodes = {}.fromkeys([f == 'RecordId' and
+                                'RecordIdentity' or f for f in [S for S in functions]])
         # nodes = {}.fromkeys(functions.keys())
         data = {}
 

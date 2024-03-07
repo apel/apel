@@ -123,7 +123,7 @@ def fetch_specint(site, host='lcg-bdii.egi.eu', port=2170):
                 if fk.startswith(GLUE_CE_UNIQUE_ID):
                     name = fk.split('=')[1]
                     # do not overwrite values from first query
-                    if len(filter(lambda x: x[0] == name, values)) == 0:
+                    if len([x for x in values if x[0] == name]) == 0:
                         values.append((name, value))
 
     return values
