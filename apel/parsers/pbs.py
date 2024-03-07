@@ -118,7 +118,7 @@ def _parse_mpi(exec_host):
 
     core_info = exec_host.split('+')
     # Split hostname and core_no into seperate lists.
-    hostnames, core_no = zip(*[x.split('/') for x in core_info])
+    hostnames, core_no = list(zip(*[x.split('/') for x in core_info]))
 
     # Split any comma separated fields into a flat list.
     core_no = [core for cores in core_no for core in cores.split(',')]

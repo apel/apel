@@ -178,7 +178,7 @@ class CarParserTest(unittest.TestCase):
             self.assertTrue('StartTime' in cont)
             self.assertTrue('EndTime' in cont)
 
-            for key in cases[car].keys():
+            for key in list(cases[car].keys()):
                 if isinstance(cont[key], datetime.datetime):
                     if not datetimes_equal(cont[key], cases[car][key]):
                         self.fail("Datetimes don't match for key %s: %s, %s" % (key, cont[key], cases[car][key]))

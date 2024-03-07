@@ -96,7 +96,7 @@ class ParserSGETest(unittest.TestCase):
 
         cases[line4] = line4_values
 
-        for line in cases.keys():
+        for line in list(cases.keys()):
             record = self.parser.parse(line)
             cont = record._record_content
 
@@ -111,7 +111,7 @@ class ParserSGETest(unittest.TestCase):
             self.assertIn("MemoryReal", cont)
 
 
-            for key in cases[line].keys():
+            for key in list(cases[line].keys()):
                 self.assertEqual(cont[key], cases[line][key], "%s != %s for key %s" % (cont[key], cases[line][key], key))
 
     def test_univa_timestamps(self):

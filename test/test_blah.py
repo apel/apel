@@ -34,7 +34,7 @@ class ParserBlahTest(unittest.TestCase):
         cases = {}
         cases[line1] = line1_values
 
-        for line in cases.keys():
+        for line in list(cases.keys()):
 
             record = self.parser.parse(line)
             cont = record._record_content
@@ -47,7 +47,7 @@ class ParserBlahTest(unittest.TestCase):
             self.assertIn("GlobalJobId", cont)
             self.assertIn("LrmsId", cont)
 
-            for key in cases[line].keys():
+            for key in list(cases[line].keys()):
                 self.assertEqual(cont[key], cases[line][key], "%s != %s for key %s" % (cont[key], cases[line][key], key))
 
 
@@ -131,16 +131,16 @@ class ParserBlahTest(unittest.TestCase):
 
         cases = {}
         for line, value in zip(lines, values):
-            cases[line] = dict(zip(fields, value))
+            cases[line] = dict(list(zip(fields, value)))
 
-        for line in cases.keys():
+        for line in list(cases.keys()):
             record = self.parser.parse(line)
             cont = record._record_content
 
             # Check that 'Site' has been set
             self.assertEqual(cont['Site'], 'testSite')
 
-            for key in cases[line].keys():
+            for key in list(cases[line].keys()):
                 # Check all fields are present
                 self.assertTrue(key in cont, "Key '%s' not in record." % key)
                 # Check values are correct
