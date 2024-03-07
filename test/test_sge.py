@@ -193,7 +193,7 @@ class ParserSGETest(unittest.TestCase):
             parser = apel.parsers.sge.SGEParser('testSite', 'testHost', True)
             record = parser.parse(line)
             cont = record._record_content
-            for k,v in line_values.iteritems():
+            for k,v in line_values.items():
                 self.assertEqual(v, cont[k])
         finally:
             patcher.stop()
