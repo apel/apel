@@ -21,13 +21,18 @@ from apel.db import (Query, ApelDbException, JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
 from apel.db.records import (JobRecord, SummaryRecord, NormalisedSummaryRecord,
                              SyncRecord, CloudRecord, CloudSummaryRecord, StorageRecord)
 from dirq.QueueSimple import QueueSimple
-try:
-    import cStringIO as StringIO
-except ImportError:
-    import StringIO
+
 import datetime
 import os
 import logging
+
+try:
+    import cStringIO as StringIO
+except ImportError:
+    try:
+        import StringIO
+    except ImportError:
+        import io as StringIO
 
 log = logging.getLogger(__name__)
 
