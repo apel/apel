@@ -23,6 +23,7 @@
 '''
     @author: Konrad Jopek, Will Rogers
 '''
+from __future__ import print_function
 
 import logging.config
 import os
@@ -358,8 +359,8 @@ def main():
                            cp.get('logging', 'level'),
                            cp.getboolean('logging', 'console'))
     except (ConfigParser.Error, ValueError, IOError) as err:
-        print 'Error configuring logging: %s' % str(err)
-        print 'The system will exit.'
+        print('Error configuring logging: %s' % str(err))
+        print('The system will exit.')
         sys.exit(1)
 
     log = logging.getLogger(LOGGER_ID)

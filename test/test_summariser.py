@@ -1,4 +1,5 @@
 """This file contains the BinSummariserTest class."""
+from __future__ import print_function
 
 import logging
 import os
@@ -90,8 +91,8 @@ class BinSummariserTest(unittest.TestCase):
         try:
             shutil.rmtree(self._tmp_dir)
         except OSError as error:
-            print 'Error removing temporary directory %s' % self._tmp_dir
-            print error
+            print('Error removing temporary directory %s' % self._tmp_dir)
+            print(error)
 
 
 DB_CONF = """[db]
