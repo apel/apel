@@ -85,7 +85,7 @@ class ApelOracleDb(object):
                 cur.callproc(proc, values)
 
             # Now merge the temporary tables into the actual tables.
-            for k, v in self.MERGE_PROCEDURES.iteritems():
+            for v in self.MERGE_PROCEDURES.items():
                 cur.callproc(v)
 
             con.commit()
