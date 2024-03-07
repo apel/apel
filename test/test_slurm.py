@@ -68,7 +68,7 @@ class ParserSlurmTest(unittest.TestCase):
              'prod', None, None, 1, 1),
             ('278952.batch', None, None, 95053, 95053,
              datetime.utcfromtimestamp(mktime((2013, 10, 23, 21, 37, 24, 0, 1, -1))),
-             datetime.utcfromtimestamp(mktime((2013, 10, 25, 00, 01, 37, 0, 1, -1))),
+             datetime.utcfromtimestamp(mktime((2013, 10, 25, 0, 1, 37, 0, 1, -1))),
              None, int(438.50*1024), 1567524, 1, 1),
             ('297720.batch', None, None, 16, 16,
              datetime.utcfromtimestamp(mktime((2013, 10, 25, 12, 11, 20, 0, 1, -1))),

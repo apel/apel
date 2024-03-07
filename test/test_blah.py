@@ -96,7 +96,7 @@ class ParserBlahTest(unittest.TestCase):
             '80.ce1.triumf.ca" "localUser=41200" "clientID=cream_503347888"',
         )
         values = (
-            (datetime.datetime(2014, 5, 18, 00, 00, 58),
+            (datetime.datetime(2014, 5, 18, 0, 0, 58),
              '/C=CA/O=Grid/OU=triumf.ca/CN=Asoka De Silva GC1',
              '/atlas/Role=pilot/Capability=NULL',  # primary FQAN is first one
              'atlas',
@@ -105,11 +105,11 @@ class ParserBlahTest(unittest.TestCase):
              'ce1.triumf.ca:8443/cream-pbs-atlas',
              'CREAM663276716',
              '15876368.ce1.triumf.ca',
-             datetime.datetime(2014, 5, 17, 00, 00, 58),
-             datetime.datetime(2014, 6, 15, 00, 00, 58),
+             datetime.datetime(2014, 5, 17, 0, 0, 58),
+             datetime.datetime(2014, 6, 15, 0, 0, 58),
              0
              ),
-            (datetime.datetime(2014, 5, 18, 00, 03, 00),
+            (datetime.datetime(2014, 5, 18, 0, 3, 0),
              '/DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=atlpilo2/CN=531497/CN'
                 '=Robot: ATLAS Pilot2',
              '/atlas/Role=pilot/Capability=NULL',  # primary FQAN is first one
@@ -119,8 +119,8 @@ class ParserBlahTest(unittest.TestCase):
              'ce1.triumf.ca:8443/cream-pbs-atlas',
              'CREAM503347888',
              '15876480.ce1.triumf.ca',
-             datetime.datetime(2014, 5, 17, 00, 03, 00),
-             datetime.datetime(2014, 6, 15, 00, 03, 00),
+             datetime.datetime(2014, 5, 17, 0, 3, 0),
+             datetime.datetime(2014, 6, 15, 0, 3, 0),
              0
              ),
         )

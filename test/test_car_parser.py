@@ -48,8 +48,8 @@ class CarParserTest(unittest.TestCase):
                    'LocalUserId': 'urf:LocalUserId',
                    'WallDuration': 86400,
                    'CpuDuration': 86400,
-                   'StartTime': datetime.datetime(2001, 12, 31, 12, 00, 00),
-                   'EndTime': datetime.datetime(2001, 12, 31, 12, 00, 00),
+                   'StartTime': datetime.datetime(2001, 12, 31, 12, 0, 0),
+                   'EndTime': datetime.datetime(2001, 12, 31, 12, 0, 0),
                    }
 
         car2 = '''<?xml version="1.0"?>
