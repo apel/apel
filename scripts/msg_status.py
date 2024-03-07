@@ -122,7 +122,8 @@ def ask_user(question):
     Ask the user to confirm the specified yes/no question.
     '''
     while True:
-        ans = raw_input('%s (y/n) ' % question).lower()
+        _input = input if sys.version_info >= (3,) else raw_input
+        ans = _input('%s (y/n) ' % question).lower()
         if ans == 'y':
             return True
         elif ans == 'n':
