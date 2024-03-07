@@ -31,7 +31,6 @@ import sys
 import re
 import gzip
 import bz2
-import ConfigParser
 from optparse import OptionParser
 
 from apel import __version__
@@ -46,6 +45,11 @@ from apel.parsers.pbs import PBSParser
 from apel.parsers.slurm import SlurmParser
 from apel.parsers.htcondor import HTCondorParser
 
+try:
+    # Renamed ConfigParser to configparser in Python 3
+    import configparser as ConfigParser
+except ImportError:
+    import ConfigParser
 
 LOGGER_ID = 'parser'
 # How many records should be put/fetched to/from database

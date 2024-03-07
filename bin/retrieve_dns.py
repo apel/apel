@@ -28,7 +28,6 @@ from apel.common import set_up_logging, LOG_BREAK
 from apel import __version__
 
 from optparse import OptionParser
-import ConfigParser
 import logging.config
 import os
 import sys
@@ -36,6 +35,12 @@ import time
 import urllib
 import xml.dom.minidom
 import xml.parsers.expat
+
+try:
+    # Renamed ConfigParser to configparser in Python 3
+    import configparser as ConfigParser
+except ImportError:
+    import ConfigParser
 
 log = logging.getLogger('auth')
 
