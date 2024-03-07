@@ -81,7 +81,7 @@ def fetch_specint(site, host='lcg-bdii.egi.eu', port=2170):
         try:
             ce_name = entry[1][GLUE_CE_UNIQUE_ID][0]
             ce_capabilities=entry[1][GLUE_CE_CAPABILITY]
-        except (KeyError, IndexError), e:
+        except (KeyError, IndexError) as e:
             log.error('Error during fetching Spec values: %s', e)
             continue
 
@@ -104,7 +104,7 @@ def fetch_specint(site, host='lcg-bdii.egi.eu', port=2170):
         try:
             cluster_name = item[1][GLUE_CHUNK_KEY][0].split('=')[1]
             value = Decimal(item[1][GLUE_HOST_BENCHMARK][0])
-        except (KeyError, IndexError), e:
+        except (KeyError, IndexError) as e:
             log.error('Error during fetching Spec values: %s', e)
             continue
 
@@ -115,7 +115,7 @@ def fetch_specint(site, host='lcg-bdii.egi.eu', port=2170):
         for cluster in subdata:
             try:
                 fks = cluster[1][GLUE_FOREIGN_KEY]
-            except (KeyError, IndexError), e:
+            except (KeyError, IndexError) as e:
                 log.error('Error during fetching Spec values: %s', e)
                 continue
 

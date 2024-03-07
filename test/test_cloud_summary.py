@@ -79,7 +79,7 @@ NumberOfVMs: 1
 
         try:
             record._check_fields()
-        except Exception, e:
+        except Exception as e:
             self.fail('_check_fields method failed: %s [%s]' % (e, type(e)))
 
 if __name__ == '__main__':

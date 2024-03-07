@@ -161,7 +161,7 @@ def copy_records(db1, db2, cutoff):
                                'migration_script', 'grid', memory_real, memory_virtual, SPECINT, specint, 'Import'))
             inserted += 1
 
-        except Exception, err:
+        except Exception as err:
             try:
                 # mysql code for duplicate record is 1062
                 if err[0] == 1062:
@@ -254,7 +254,7 @@ def main():
     try:
         db1 =  MySQLdb.connect(host=host1, db=dbname1, user=user1, passwd=pw1)
         db2 =  MySQLdb.connect(host=host2, db=dbname2, user=user2, passwd=pw2)
-    except MySQLdb.Error, e:
+    except MySQLdb.Error as e:
         print 'Error connecting to database: %s' % str(e)
         sys.exit()
 

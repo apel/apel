@@ -129,9 +129,9 @@ class AurParser(XMLParser):
         for field in functions:
             try:
                 data[field] = functions[field](nodes)
-            except IndexError, e:
+            except IndexError as e:
                 log.debug('Failed to parse field %s: %s', field, e)
-            except KeyError, e:
+            except KeyError as e:
                 log.debug('Failed to parse field %s: %s', field, e)
 
         nsr = NormalisedSummaryRecord()
