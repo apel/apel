@@ -14,6 +14,7 @@
    limitations under the License.
 
 '''
+from __future__ import absolute_import
 
 
 import logging
@@ -21,7 +22,7 @@ import logging
 from apel.db.records.storage import StorageRecord
 from apel.db.records.group_attribute import GroupAttributeRecord
 from apel.common.datetime_utils import parse_timestamp
-from xml_parser import XMLParser, XMLParserException
+from .xml_parser import XMLParser, XMLParserException
 
 
 log = logging.getLogger(__name__)

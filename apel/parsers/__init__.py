@@ -17,13 +17,14 @@ Package with Apel parsers.
 
 @author: Will Rogers,  Konrad Jopek
 '''
+from __future__ import absolute_import
 
 LOGGER_ID = 'parser'
 
-from parser import Parser
-from blah import BlahParser
-from htcondor import HTCondorParser
-from lsf import LSFParser
-from pbs import PBSParser
-from sge import SGEParser
-from slurm import SlurmParser
+from .parser import Parser
+from .blah import BlahParser
+from .htcondor import HTCondorParser
+from .lsf import LSFParser
+from .pbs import PBSParser
+from .sge import SGEParser
+from .slurm import SlurmParser
