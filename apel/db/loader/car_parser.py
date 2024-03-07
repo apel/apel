@@ -15,9 +15,10 @@
 
    @author: Konrad Jopek, Will Rogers
 '''
+from __future__ import absolute_import
 
 from apel.common import iso2seconds, parse_timestamp
-from xml_parser import XMLParser, XMLParserException
+from .xml_parser import XMLParser, XMLParserException
 from apel.db.records.job import JobRecord
 import logging
 
