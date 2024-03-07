@@ -32,15 +32,18 @@ import logging.config
 import os
 import sys
 import time
-import urllib
 import xml.dom.minidom
 import xml.parsers.expat
 
 try:
     # Renamed ConfigParser to configparser in Python 3
+    # urllib code flow got changed in Python 3
     import configparser as ConfigParser
+    import urllib.request
+    import urllib.error
 except ImportError:
     import ConfigParser
+    import urllib
 
 log = logging.getLogger('auth')
 
@@ -118,6 +121,34 @@ def get_xml(url, proxy):
     Given a URL, fetch the contents.  We expect the URL to be https and
     the contents to be XML.
     '''
+    if sys.version_info >= (3,):
+        return execute_py3_get_xml_content(url, proxy)
+    else:
+        return execute_py2_get_xml_content(url, proxy)
+
+def execute_py3_get_xml_content(url, proxy):
+    """Helper method to execute python3 code for urllib code flow"""
+    try:
+        # Try without a proxy
+        conn = urllib.request.urlopen(url)
+        dn_xml = conn.read()
+        conn.close()
+    except urllib.error.URLError:
+        # Try with a proxy
+        if proxy is not None:
+            proxies = {"http": proxy}
+            proxyHandler = urllib.request.ProxyHandler(proxies)
+            opener = urllib.request.build_opener(proxyHandler)
+            conn = opener.open(url)
+            dn_xml = conn.read()
+            conn.close()
+        else:
+            raise
+
+    return dn_xml
+
+def execute_py2_get_xml_content(url, proxy):
+    """Helper method to execute python2 code for urllib code flow"""
     try:
         # Try without a proxy
         conn = urllib.urlopen(url)
