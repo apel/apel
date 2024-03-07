@@ -270,7 +270,7 @@ CloudComputeService: Test Service'''
 
         try:
             record._check_fields()
-        except Exception, e:
+        except Exception as e:
             self.fail('_check_fields method failed: %s [%s]' % (str(e), str(type(e))))
 
 if __name__ == '__main__':

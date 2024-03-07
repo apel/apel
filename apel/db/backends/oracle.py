@@ -61,7 +61,7 @@ class ApelOracleDb(object):
 
             con.close()
 
-        except Exception, e:
+        except Exception as e:
             raise ApelDbException('Failed to connect to database: ' + str(e))
 
 
@@ -91,7 +91,7 @@ class ApelOracleDb(object):
             con.commit()
             con.close()
 
-        except (cx_Oracle.Warning, cx_Oracle.Error), err:
+        except (cx_Oracle.Warning, cx_Oracle.Error) as err:
             log.error("Error loading records: %s", err)
             log.error("Transaction will be rolled back.")
 

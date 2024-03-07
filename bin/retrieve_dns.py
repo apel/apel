@@ -99,7 +99,7 @@ def get_config(config_file):
             set_up_logging(cp.get('logging', 'logfile'),
                            cp.get('logging', 'level'),
                            cp.getboolean('logging', 'console'))
-    except (ConfigParser.Error, ValueError, IOError), err:
+    except (ConfigParser.Error, ValueError, IOError) as err:
         print 'Error configuring logging: %s' % str(err)
         print 'The system will exit.'
         sys.exit(1)
@@ -246,14 +246,14 @@ def runprocess(config_file, log_config_file):
                 next_url = next_link_from_dom(dom)
                 # Add the listed DNs to the list
                 dns.extend(dns_from_dom(dom))
-            except xml.parsers.expat.ExpatError, e:
+            except xml.parsers.expat.ExpatError:
                 log.warning('Failed to parse the retrieved XML.')
                 log.warning('Is the URL correct?')
                 fetch_failed = True
     except AttributeError:
         # gocdb_url == None
         log.info("No GOCDB URL specified - won't fetch URLs.")
-    except IOError, e:
+    except IOError as e:
         log.info("Failed to retrieve XML - is the URL correct?")
         log.info(e)
         fetch_failed = True
@@ -288,7 +288,7 @@ def runprocess(config_file, log_config_file):
     # print all the the dns to a file, with the discarded ones to a second file
     try:
         new_dn_file = open(cfg.dn_file, 'w')
-    except IOError, e:
+    except IOError:
         log.warning("Failed to open file %s for writing.", cfg.dn_file)
         log.warning("Check the configuration.")
         log.warning("auth will exit.")

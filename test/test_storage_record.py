@@ -59,7 +59,7 @@ class StorageRecordTest(unittest.TestCase):
 
         try:
             record._check_fields()
-        except Exception, e:
+        except Exception as e:
             self.fail('_check_fields method failed: %s [%s]' % (str(e), str(type(e))))
 
     def test_get_apel_db_insert(self):

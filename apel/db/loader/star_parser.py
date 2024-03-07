@@ -137,7 +137,7 @@ class StarParser(XMLParser):
         for field in functions:
             try:
                 data[field] = functions[field](nodes)
-            except (IndexError, KeyError), e:
+            except (IndexError, KeyError) as e:
                 log.debug("Failed to get field %s: %s", field, e)
 
         sr = StorageRecord()
