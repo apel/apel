@@ -27,7 +27,7 @@ class BinSummariserTest(unittest.TestCase):
                                                            dir=self._tmp_dir)
 
         # Populate the database config (with junk)
-        os.write(self.db_cfg, DB_CONF)
+        os.write(self.db_cfg, DB_CONF.encode('utf-8'))
         os.close(self.db_cfg)
 
     def test_lock_file(self):
@@ -54,7 +54,7 @@ class BinSummariserTest(unittest.TestCase):
                     'console = false\n' % (pid_path, sum_log_path))
 
         # Write temporary config to the temporary file
-        os.write(self.sum_cfg, sum_conf)
+        os.write(self.sum_cfg, sum_conf.encode('utf-8'))
         os.close(self.sum_cfg)
 
         # Run the summariser with the temporary config files

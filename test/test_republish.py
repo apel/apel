@@ -112,7 +112,7 @@ class TestRepublish(unittest.TestCase):
 
         # Extract the actual result from the MySQL query.
         saved_measurement_time = datetime.datetime.strptime(
-            mysql_process.communicate()[0], "%Y-%m-%d %H:%M:%S\n"
+            mysql_process.communicate()[0].decode('utf-8'), "%Y-%m-%d %H:%M:%S\n"
         )
 
         self.assertEqual(saved_measurement_time, expected_measurement_time)
