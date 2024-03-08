@@ -5,7 +5,7 @@
 DROP FUNCTION IF EXISTS SiteNameLookup;
 DELIMITER //
 CREATE FUNCTION SiteNameLookup(lookup INTEGER) RETURNS VARCHAR(255) DETERMINISTIC
-BEGIN 
+BEGIN
   DECLARE result VARCHAR(255);
   SELECT name FROM Sites WHERE id = lookup INTO result;
   RETURN result;
@@ -21,21 +21,21 @@ CREATE TABLE AcceleratorRecords (
   AssociatedRecordType VARCHAR(255) NOT NULL,
   AssociatedRecord VARCHAR(255) NOT NULL,
 
-  GlobalUserName VARCHAR(255),      
-  FQAN VARCHAR(255) NOT NULL,       
+  GlobalUserName VARCHAR(255),
+  FQAN VARCHAR(255) NOT NULL,
   SiteID INT NOT NULL,
   Count DECIMAL(10,3) NOT NULL,
   Cores INT,
   ActiveDuration INT,
   AvailableDuration INT,
-  BenchmarkType VARCHAR(255),       
-  Benchmark DECIMAL(10,3),                
-  Type VARCHAR(255) NOT NULL,       
-  Model VARCHAR(255),               
+  BenchmarkType VARCHAR(255),
+  Benchmark DECIMAL(10,3),
+  Type VARCHAR(255) NOT NULL,
+  Model VARCHAR(255),
   PublisherDNID INT NOT NULL,
 
-  PRIMARY KEY (MeasurementMonth, MeasurementYear, 
-               AssociatedRecordType, AssociatedRecord, 
+  PRIMARY KEY (MeasurementMonth, MeasurementYear,
+               AssociatedRecordType, AssociatedRecord,
                SiteID)
 
   -- [?] INDEX
@@ -104,11 +104,11 @@ DELIMITER ;
 
 DROP TABLE IF EXISTS AcceleratorSummaries;
 CREATE TABLE AcceleratorSummaries (
-    Month INT NOT NULL, 
+    Month INT NOT NULL,
     Year INT NOT NULL,
     AssociatedRecordType VARCHAR(255) NOT NULL,
-    GlobalUserName VARCHAR(255), 
-    SiteName VARCHAR(255) NOT NULL, 
+    GlobalUserName VARCHAR(255),
+    SiteName VARCHAR(255) NOT NULL,
     Count DECIMAL(10,3) NOT NULL,
     Cores INT,
     AvailableDuration INT NOT NULL,
@@ -130,10 +130,10 @@ CREATE PROCEDURE SummariseAccelerators()
 
 BEGIN
     REPLACE INTO AcceleratorSummaries(Month, Year, AssociatedRecordType,
-        GlobalUserName, SiteName, 
-        Count, Cores, AvailableDuration, ActiveDuration, 
+        GlobalUserName, SiteName,
+        Count, Cores, AvailableDuration, ActiveDuration,
         BenchmarkType, Benchmark, Type, Model, NumberOfRecords, PublisherDNID)
-    SELECT 
+    SELECT
       MeasurementMonth,
       MeasurementYear,
       AssociatedRecordType,
@@ -151,10 +151,10 @@ BEGIN
       'summariser' as PublisherDNID
       FROM AcceleratorRecords
       GROUP BY
-          MeasurementMonth, MeasurementYear, 
+          MeasurementMonth, MeasurementYear,
           AssociatedRecordType,
           GlobalUserName, SiteName,
-          Cores, Type, 
+          Cores, Type,
           Benchmark, BenchmarkType
       ORDER BY NULL;
 END //
@@ -240,7 +240,7 @@ CREATE TABLE AcceleratorModels (
 
 -- This table exists to speed up queries within Grafana by storing the results of
 -- the nested time-dependent subquery formerly stored directly within
--- VAcceleratorSummaries.  
+-- VAcceleratorSummaries.
 DROP TABLE IF EXISTS AcceleratorModelSummaries;
 CREATE TABLE AcceleratorModelSummaries (
     SiteName VARCHAR(255) NOT NULL,
@@ -248,7 +248,7 @@ CREATE TABLE AcceleratorModelSummaries (
     GlobalUserName VARCHAR(255),
     Type VARCHAR(255) NOT NULL,
     Model VARCHAR(255),
-    Month INT NOT NULL, 
+    Month INT NOT NULL,
     Year INT NOT NULL,
     Count DECIMAL(10,3) NOT NULL,
     Cores INT,
@@ -290,7 +290,7 @@ DROP PROCEDURE IF EXISTS GetModelSummaries;
 DELIMITER //
 CREATE PROCEDURE GetModelSummaries()
 BEGIN
-    REPLACE INTO AcceleratorModelSummaries 
+    REPLACE INTO AcceleratorModelSummaries
     SELECT
       iris_accelerator.AcceleratorSummaries.SiteName,
       iris_accelerator.AcceleratorRecords.FQAN,
@@ -317,32 +317,32 @@ BEGIN
       AND iris_accelerator.AcceleratorRecords.Type = iris_accelerator.AcceleratorSummaries.Type
       AND iris_accelerator.AcceleratorRecords.Model = iris_accelerator.AcceleratorSummaries.Model
       AND iris_accelerator.AcceleratorModels.Date = (
-        SELECT MAX(iris_accelerator.AcceleratorModels.Date) 
-        FROM 
+        SELECT MAX(iris_accelerator.AcceleratorModels.Date)
+        FROM
           iris_accelerator.AcceleratorModels
-        WHERE 
+        WHERE
           iris_accelerator.AcceleratorModels.Date <= str_to_date(CONCAT_WS('-', iris_accelerator.AcceleratorSummaries.Year, LPAD(iris_accelerator.AcceleratorSummaries.Month, 2, 0)), '%Y-%m-01 00:00:00')
           AND iris_accelerator.AcceleratorSummaries.Model = iris_accelerator.AcceleratorSummaries.Model
           AND iris_accelerator.AcceleratorModels.Type = iris_accelerator.AcceleratorSummaries.Type
         )
     GROUP BY
-      MeasurementMonth, MeasurementYear, 
+      MeasurementMonth, MeasurementYear,
       AssociatedRecordType,
       GlobalUserName, SiteName,
-      Cores, Type, 
+      Cores, Type,
       Benchmark, BenchmarkType
     ORDER BY NULL;
-END 
+END
 //
 DELIMITER ;
 
 
 -- This is an insertion of a value for when a card needs to be
--- recategorised.  
+-- recategorised.
 DROP PROCEDURE IF EXISTS UpdateModel;
 DELIMITER //
 CREATE PROCEDURE UpdateModel(
-    model VARCHAR(255), 
+    model VARCHAR(255),
     type VARCHAR(255),
     category VARCHAR(255)
 )
@@ -360,10 +360,10 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS AlterModel;
 DELIMITER //
 CREATE PROCEDURE AlterModel(
-    date TIMESTAMP, 
-    model VARCHAR(255), 
+    date TIMESTAMP,
+    model VARCHAR(255),
     type VARCHAR(255),
-    col VARCHAR(255), 
+    col VARCHAR(255),
     val VARCHAR(255)
 )
 BEGIN
