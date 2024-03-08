@@ -81,11 +81,11 @@ def check_queue(q):
     while name:
         if not q.lock(name):
             locked += 1
-            name = q.next()
+            name = next(q, None)
             continue
         else:
             q.unlock(name)
-            name = q.next()
+            name = next(q, None)
 
     return q.count(), locked
 
@@ -115,7 +115,7 @@ def clear_locks(q):
     while name:
         if not q.lock(name):
             q.unlock(name)
-            name = q.next()
+            name = next(q, None)
 
 
 def ask_user(question):

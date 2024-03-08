@@ -140,7 +140,7 @@ class Loader(object):
         while self.current_msg:
             if not self._inq.lock(self.current_msg):
                 log.warning("Skipping locked message %s", self.current_msg)
-                self.current_msg = self._inq.next()
+                self.current_msg = next(self._inq, None)
                 continue
             log.debug("Reading message %s", self.current_msg)
             data = self._inq.get(self.current_msg)
@@ -171,7 +171,7 @@ class Loader(object):
 
             log.info("Removing message %s. ID = %s", self.current_msg, msg_id)
             self._inq.remove(self.current_msg)
-            self.current_msg = self._inq.next()
+            self.current_msg = next(self._inq, None)
 
         if num_msgs:  # Only tidy up if messages found
             log.info('Tidying message directories')
