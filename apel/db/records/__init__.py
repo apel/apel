@@ -35,3 +35,4 @@ from storage import StorageRecord
 from summary import SummaryRecord
 from normalised_summary import NormalisedSummaryRecord
 from sync import SyncRecord
+from storage_summary import StorageSummaryRecord
