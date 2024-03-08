@@ -21,10 +21,7 @@ from apel.db import (Query, ApelDbException, JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
 from apel.db.records import (JobRecord, SummaryRecord, NormalisedSummaryRecord,
                              SyncRecord, CloudRecord, CloudSummaryRecord, StorageRecord)
 from dirq.QueueSimple import QueueSimple
-try:
-    import cStringIO as StringIO
-except ImportError:
-    import StringIO
+import io
 import datetime
 import os
 import logging
@@ -222,7 +219,7 @@ class DbUnloader(object):
 
         This is currently enabled only for CAR.
         '''
-        buf = StringIO.StringIO()
+        buf = io.StringIO()
         if type(records[0]) == JobRecord:
             XML_HEADER = '<?xml version="1.0" ?>'
             UR_OPEN = ('<urf:UsageRecords xmlns:urf="http://eu-emi.eu/namespace'
@@ -262,7 +259,7 @@ class DbUnloader(object):
         '''
         record_type = type(records[0])
 
-        buf = StringIO.StringIO()
+        buf = io.StringIO()
         buf.write(self.APEL_HEADERS[record_type] + ' \n')
         buf.write('%%\n'.join( [ record.get_msg(self._withhold_dns) for record in records ] ))
         buf.write('%%\n')

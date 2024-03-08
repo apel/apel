@@ -1,5 +1,5 @@
 import bz2
-import ConfigParser
+import configparser
 import gzip
 import os
 import re
@@ -40,7 +40,7 @@ class ParserTest(unittest.TestCase):
                 os.close(handle)
                 file_obj = method(path, 'wb')
                 # Write three lines to the file
-                file_obj.write("Line one.\nLine two.\nLine three.")
+                file_obj.write(b"Line one.\nLine two.\nLine three.")
                 file_obj.close()
             records = bin.parser.scan_dir(self.mock_parser, dir_path, False,
                                           re.compile('(.*)'), self.mock_db, [])
@@ -58,7 +58,7 @@ class ParserTest(unittest.TestCase):
         path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..',
                                             'conf', 'parser.cfg'))
         # Read the config and fill in empty values.
-        self.cp = ConfigParser.ConfigParser()
+        self.cp = configparser.ConfigParser()
         self.cp.read(path)
         self.cp.set('site_info', 'site_name', 'TestSite')
         self.cp.set('site_info', 'lrms_server', 'TestServer')

@@ -21,7 +21,7 @@ import logging
 from apel.db.records.storage import StorageRecord
 from apel.db.records.group_attribute import GroupAttributeRecord
 from apel.common.datetime_utils import parse_timestamp
-from xml_parser import XMLParser, XMLParserException
+from .xml_parser import XMLParser, XMLParserException
 
 
 log = logging.getLogger(__name__)
@@ -117,8 +117,8 @@ class StarParser(XMLParser):
 
         # Here we copy keys from functions.
         # We only want to change 'RecordId' to 'RecordIdentity'.
-        nodes = {}.fromkeys(map(lambda f: f == 'RecordId' and
-                                'RecordIdentity' or f, [S for S in functions]))
+        nodes = {}.fromkeys([f == 'RecordId' and
+                                'RecordIdentity' or f for f in [S for S in functions]])
         # nodes = {}.fromkeys(functions.keys())
         data = {}
 
@@ -136,7 +136,7 @@ class StarParser(XMLParser):
         for field in functions:
             try:
                 data[field] = functions[field](nodes)
-            except (IndexError, KeyError), e:
+            except (IndexError, KeyError) as e:
                 log.debug("Failed to get field %s: %s", field, e)
 
         sr = StorageRecord()

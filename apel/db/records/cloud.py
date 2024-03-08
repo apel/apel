@@ -127,5 +127,5 @@ class CloudRecord(Record):
             if datetime.fromtimestamp(end) > tomorrow:
                 raise InvalidRecordException("Epoch time " + str(end) + " is in the future.")
 
-        except ValueError:
+        except (ValueError, OverflowError, OSError):
             raise InvalidRecordException("Cannot parse an integer from StartTime or EndTime.")

@@ -21,32 +21,32 @@ class StorageRecordTest(unittest.TestCase):
         record = StorageRecord()
         record.load_from_tuple(data)
 
-        self.assertEquals(record.get_field('RecordId'),
+        self.assertEqual(record.get_field('RecordId'),
                           'host.example.org/sr/87912469269276')
-        self.assertEquals(str(record.get_field('CreateTime')),
+        self.assertEqual(str(record.get_field('CreateTime')),
                           "2010-11-09 09:06:52")
-        self.assertEquals(record.get_field('StorageSystem'), 'host.example.org')
-        self.assertEquals(record.get_field('Site'), 'MySite')
-        self.assertEquals(record.get_field('StorageShare'), 'pool-003')
-        self.assertEquals(record.get_field('StorageMedia'), 'disk')
-        self.assertEquals(record.get_field('StorageClass'), 'replicated')
-        self.assertEquals(record.get_field('FileCount'), 42)
-        self.assertEquals(record.get_field('DirectoryPath'), '/home/projectA')
-        self.assertEquals(record.get_field('LocalUser'), 'johndoe')
-        self.assertEquals(record.get_field('LocalGroup'), 'projectA')
-        self.assertEquals(record.get_field('UserIdentity'),
+        self.assertEqual(record.get_field('StorageSystem'), 'host.example.org')
+        self.assertEqual(record.get_field('Site'), 'MySite')
+        self.assertEqual(record.get_field('StorageShare'), 'pool-003')
+        self.assertEqual(record.get_field('StorageMedia'), 'disk')
+        self.assertEqual(record.get_field('StorageClass'), 'replicated')
+        self.assertEqual(record.get_field('FileCount'), 42)
+        self.assertEqual(record.get_field('DirectoryPath'), '/home/projectA')
+        self.assertEqual(record.get_field('LocalUser'), 'johndoe')
+        self.assertEqual(record.get_field('LocalGroup'), 'projectA')
+        self.assertEqual(record.get_field('UserIdentity'),
                           '/O=Grid/OU=example.org/CN=John Doe')
-        self.assertEquals(record.get_field('Group'),
+        self.assertEqual(record.get_field('Group'),
                           'binarydataproject.example.org')
-        self.assertEquals(record.get_field('SubGroup'), 'uk')
-        self.assertEquals(record.get_field('Role'), 'poweruser')
-        self.assertEquals(str(record.get_field('StartTime')),
+        self.assertEqual(record.get_field('SubGroup'), 'uk')
+        self.assertEqual(record.get_field('Role'), 'poweruser')
+        self.assertEqual(str(record.get_field('StartTime')),
                           "2010-10-11 09:31:40")
-        self.assertEquals(str(record.get_field('EndTime')),
+        self.assertEqual(str(record.get_field('EndTime')),
                           "2010-10-11 09:41:40")
-        self.assertEquals(record.get_field('ResourceCapacityUsed'), 14728)
-        self.assertEquals(record.get_field('LogicalCapacityUsed'), 13617)
-        self.assertEquals(record.get_field('ResourceCapacityAllocated'), 0)
+        self.assertEqual(record.get_field('ResourceCapacityUsed'), 14728)
+        self.assertEqual(record.get_field('LogicalCapacityUsed'), 13617)
+        self.assertEqual(record.get_field('ResourceCapacityAllocated'), 0)
 
     def test_mandatory_fields(self):
         record = StorageRecord()
@@ -59,7 +59,7 @@ class StorageRecordTest(unittest.TestCase):
 
         try:
             record._check_fields()
-        except Exception, e:
+        except Exception as e:
             self.fail('_check_fields method failed: %s [%s]' % (str(e), str(type(e))))
 
     def test_get_apel_db_insert(self):

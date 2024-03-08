@@ -17,12 +17,8 @@
    @author: Konrad Jopek, Will Rogers
 '''
 
-from __future__ import print_function
+import configparser
 
-try:
-    import ConfigParser
-except ImportError:
-    import configparser as ConfigParser
 import logging.config
 from optparse import OptionParser
 import os
@@ -59,7 +55,7 @@ def _bounded_records_per_message(config_object, logger):
             return RECORDS_PER_MESSAGE_MAX
         else:
             return records_per_message
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         logger.info(
             'records_per_message not specified, defaulting to %d.',
             RECORDS_PER_MESSAGE_DEFAULT,
@@ -85,7 +81,7 @@ if __name__ == '__main__':
     (options, args) = opt_parser.parse_args()
 
     # Set default for 'interval' as it is a new option so may not be in config.
-    cp = ConfigParser.ConfigParser({'interval': 'latest'})
+    cp = configparser.ConfigParser({'interval': 'latest'})
     cp.read([options.config])
 
     # set up logging
@@ -97,14 +93,14 @@ if __name__ == '__main__':
                            cp.get('logging', 'level'),
                            cp.getboolean('logging', 'console'))
         log = logging.getLogger('dbunloader')
-    except (ConfigParser.Error, ValueError, IOError) as err:
+    except (configparser.Error, ValueError, IOError) as err:
         print('Error configuring logging: %s' % err)
         print('The system will exit.')
         sys.exit(1)
 
     db = None
 
-    dbcp = ConfigParser.ConfigParser()
+    dbcp = configparser.ConfigParser()
     dbcp.read([options.db])
 
     try:
@@ -130,17 +126,17 @@ if __name__ == '__main__':
 
     try:
         send_ur = cp.getboolean('unloader', 'send_ur')
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         send_ur = False
 
     try:
         local_jobs = cp.getboolean('unloader', 'local_jobs')
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         local_jobs = False
 
     try:
         withhold_dns     = cp.getboolean('unloader', 'withhold_dns')
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         withhold_dns = False
 
     include_vos      = None
@@ -148,12 +144,12 @@ if __name__ == '__main__':
     try:
         include      = cp.get('unloader', 'include_vos')
         include_vos  = [ vo.strip() for vo in include.split(',') ]
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         # Only exclude VOs if we haven't specified the ones to include.
         try:
             exclude      = cp.get('unloader', 'exclude_vos')
             exclude_vos  = [ vo.strip() for vo in exclude.split(',') ]
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             pass
 
     interval = cp.get('unloader', 'interval')

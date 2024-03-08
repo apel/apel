@@ -53,9 +53,9 @@ class HTCondorParserTest(unittest.TestCase):
 
         cases = {}
         for line, value in zip(lines, values):
-            cases[line] = dict(zip(keys, value))
+            cases[line] = dict(list(zip(keys, value)))
 
-        for line in cases.keys():
+        for line in list(cases.keys()):
             record = self.parser.parse(line)
             cont = record._record_content
 
@@ -63,10 +63,10 @@ class HTCondorParserTest(unittest.TestCase):
             self.assertEqual(cont['MachineName'], 'testHost')
             self.assertEqual(cont['Infrastructure'], 'APEL-CREAM-HTCONDOR')
 
-            for key in cases[line].keys():
+            for key in list(cases[line].keys()):
                 self.assertTrue(key in cont, "Key '%s' not in record." % key)
 
-            for key in cases[line].keys():
+            for key in list(cases[line].keys()):
                 self.assertEqual(cont[key], cases[line][key],
                                  "%s != %s for key %s." %
                                  (cont[key], cases[line][key], key))
@@ -112,9 +112,9 @@ class HTCondorParserTest(unittest.TestCase):
 
         cases = {}
         for line, value in zip(lines, values):
-            cases[line] = dict(zip(keys, value))
+            cases[line] = dict(list(zip(keys, value)))
 
-        for line in cases.keys():
+        for line in list(cases.keys()):
             record = self.parser.parse(line)
             cont = record._record_content
 
@@ -122,10 +122,10 @@ class HTCondorParserTest(unittest.TestCase):
             self.assertEqual(cont['MachineName'], 'testHost')
             self.assertEqual(cont['Infrastructure'], 'APEL-CREAM-HTCONDOR')
 
-            for key in cases[line].keys():
+            for key in list(cases[line].keys()):
                 self.assertTrue(key in cont, "Key '%s' not in record." % key)
 
-            for key in cases[line].keys():
+            for key in list(cases[line].keys()):
                 self.assertEqual(cont[key], cases[line][key],
                                  "%s != %s for key %s." %
                                  (cont[key], cases[line][key], key))

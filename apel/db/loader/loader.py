@@ -20,14 +20,14 @@ Module containing the Loader class.
 
 import logging
 import os
-from xml.parsers.expat import ExpatError
+from xml.parsers.expat import ExpatError, errors
 
 from dirq.queue import Queue
 
 import apel.db
 from apel.db.loader.xml_parser import XMLParserException
 from apel.db.records import InvalidRecordException
-from record_factory import RecordFactory, RecordFactoryException
+from .record_factory import RecordFactory, RecordFactoryException
 
 
 # set up the logger
@@ -114,7 +114,7 @@ class Loader(object):
                 os.remove(pidfile)
             else:
                 log.warning("pidfile %s not found.", pidfile)
-        except IOError as e:
+        except (IOError, OSError) as e:
             log.warning("Failed to remove pidfile %s: %s", pidfile, e)
             log.warning("The loader may not start again until it is removed.")
 
@@ -136,7 +136,7 @@ class Loader(object):
         while self.current_msg:
             if not self._inq.lock(self.current_msg):
                 log.warning("Skipping locked message %s", self.current_msg)
-                self.current_msg = self._inq.next()
+                self.current_msg = next(self._inq)
                 continue
             log.debug("Reading message %s", self.current_msg)
             data = self._inq.get(self.current_msg)
@@ -157,7 +157,11 @@ class Loader(object):
             except (RecordFactoryException, LoaderException,
                     InvalidRecordException, apel.db.ApelDbException,
                     XMLParserException, ExpatError) as err:
-                errmsg = "Parsing unsuccessful: %s" % str(err)
+                if isinstance(err, ExpatError):
+                    errmsg = "Parsing unsuccessful: %s" % str(errors.messages[err.code])
+                else:
+                    errmsg = "Parsing unsuccessful: %s" % str(err)
+                    
                 log.warning('Message rejected. %s', errmsg)
                 name = self._rejectq.add({"body": msg_text,
                                           "signer": signer,
@@ -167,7 +171,7 @@ class Loader(object):
 
             log.info("Removing message %s. ID = %s", self.current_msg, msg_id)
             self._inq.remove(self.current_msg)
-            self.current_msg = self._inq.next()
+            self.current_msg = next(self._inq)
 
         if num_msgs:  # Only tidy up if messages found
             log.info('Tidying message directories')

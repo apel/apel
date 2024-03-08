@@ -14,4 +14,4 @@
    limitations under the License.
 '''
 
-from query import fetch_specint
+from .query import fetch_specint

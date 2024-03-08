@@ -126,9 +126,10 @@ class LSFParser(Parser):
             data[key] = mapping[key](items)
 
         # Input checking
-        if data['CpuDuration'] < 0:
+        # TODO: Check needed, across codebase: When testing try to compare with schema
+        if int(data['CpuDuration']) < 0:
             raise ValueError('Negative CpuDuration value')
-        if data['WallDuration'] < 0:
+        if int(data['WallDuration']) < 0:
             raise ValueError('Negative WallDuration value')
         if data['StopTime'] < data['StartTime']:
             raise ValueError('StopTime less than StartTime')
