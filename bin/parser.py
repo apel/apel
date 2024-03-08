@@ -115,6 +115,8 @@ def parse_file(parser, apel_db, fp, replace):
         # Indexing is from zero so add 1 to find line number. Can't use start=1
         # in enumerate() to maintain Python 2.4 compatibility.
         line_number = index + 1
+        line = line.decode('utf-8')
+
         try:
             record = parser.parse(line)
         except Exception as e:

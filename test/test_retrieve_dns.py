@@ -61,7 +61,7 @@ class ConfigTestCase(unittest.TestCase):
     def test_get_empty_config(self):
         # Make a temp file for blank [auth] config
         handle, path = tempfile.mkstemp()
-        os.write(handle, "[auth]\n[logging]\nlogfile=_\nlevel=_\nconsole=False")
+        os.write(handle, "[auth]\n[logging]\nlogfile=_\nlevel=_\nconsole=False".encode('utf-8'))
         os.close(handle)
 
         conf = bin.retrieve_dns.get_config(path).__dict__
@@ -96,9 +96,9 @@ class RunprocessTestCase(unittest.TestCase):
         for item in ('dn', 'extra', 'ban'):
             self.files[item] = dict(list(zip(('handle', 'path'), tempfile.mkstemp())))
 
-        os.write(self.files['dn']['handle'], "/dn/1\n/dn/2\n")
-        os.write(self.files['extra']['handle'], "#comment\n/extra/dn\n/banned/dn")
-        os.write(self.files['ban']['handle'], "/banned/dn")
+        os.write(self.files['dn']['handle'], "/dn/1\n/dn/2\n".encode("utf-8"))
+        os.write(self.files['extra']['handle'], "#comment\n/extra/dn\n/banned/dn".encode("utf-8"))
+        os.write(self.files['ban']['handle'], "/banned/dn".encode("utf-8"))
 
         for item in list(self.files.values()):
             os.close(item['handle'])
