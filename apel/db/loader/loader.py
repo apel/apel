@@ -24,7 +24,8 @@ from builtins import str
 from builtins import object
 import logging
 import os
-from xml.parsers.expat import ExpatError
+import sys
+from xml.parsers.expat import ExpatError, errors
 
 from dirq.queue import Queue
 
@@ -161,7 +162,11 @@ class Loader(object):
             except (RecordFactoryException, LoaderException,
                     InvalidRecordException, apel.db.ApelDbException,
                     XMLParserException, ExpatError) as err:
-                errmsg = "Parsing unsuccessful: %s" % str(err)
+                if sys.version_info >= (3,):
+                    errmsg = "Parsing unsuccessful: %s" % str(errors.messages[err.code])
+                else:
+                    errmsg = "Parsing unsuccessful: %s" % str(err)
+
                 log.warning('Message rejected. %s', errmsg)
                 name = self._rejectq.add({"body": msg_text,
                                           "signer": signer,
