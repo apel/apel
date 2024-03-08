@@ -31,12 +31,12 @@ import os
 import logging
 
 try:
-    import cStringIO as StringIO
+    import io as StringIO
 except ImportError:
     try:
-        import StringIO
+        import cStringIO as StringIO
     except ImportError:
-        import io as StringIO
+        import StringIO
 
 log = logging.getLogger(__name__)
 

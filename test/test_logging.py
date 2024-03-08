@@ -11,9 +11,9 @@ import unittest
 from apel.common import set_up_logging
 
 try:
-    from cStringIO import StringIO
-except ImportError:
     from io import StringIO
+except ImportError:
+    from cStringIO import StringIO
 
 class LoggingTest(unittest.TestCase):
     """Test cases for set_up_logging function."""

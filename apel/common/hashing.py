@@ -15,9 +15,9 @@
 '''
 # hashlib only available in python2.5+
 try:
-    from hashlib import md5
-except ImportError:
     from md5 import md5
+except ImportError:
+    from hashlib import md5
 import gzip
 
 def calculate_hash(fname):
