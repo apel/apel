@@ -1,9 +1,11 @@
-from apel.common import calculate_hash
-from unittest import TestCase
 import tempfile
+import unittest
 import os
 
-class HashingTest(TestCase):
+from apel.common import calculate_hash
+
+
+class HashingTest(unittest.TestCase):
     '''
     Test case for calculate_hash method.
     '''
@@ -21,3 +23,6 @@ class HashingTest(TestCase):
         self.assertEqual(data_hash, calculate_hash(tmpname))
 
         os.unlink(tmpname)
+
+if __name__ == '__main__':
+    unittest.main()
