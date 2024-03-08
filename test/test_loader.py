@@ -7,7 +7,9 @@ import unittest
 import logging
 from mock import call
 
+from apel.common import json_utils
 import apel.db.loader
+
 
 schema = {"body": "string", "signer": "string",
           "empaid": "string?", "error": "string?"}
@@ -183,8 +185,6 @@ class LoaderTest(unittest.TestCase):
     def test_load_json_type(self):
         """Check that load_records is called and message is
             logged correctly for json messages."""
-
-        from apel.common import json_utils
 
         logger = logging.getLogger('loader')
         pidfile = os.path.join(self.dir_path, 'pidfile')
