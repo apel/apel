@@ -119,12 +119,12 @@ class SummaryRecord(Record):
         if month_start > now:
             raise InvalidRecordException("Month specified in record is in the future.")
 
-        if not 1 <= self._record_content['Month'] <= 12:
+        if not 1 <= int(self._record_content['Month']) <= 12:
             raise InvalidRecordException("Month value is out of range")
 
-        if self._record_content['WallDuration'] < 0:
+        if int(self._record_content['WallDuration']) < 0:
             raise InvalidRecordException("Negative WallDuration")
-        if self._record_content['CpuDuration'] < 0:
+        if int(self._record_content['CpuDuration']) < 0:
             raise InvalidRecordException("Negative WallDuration")
 
     def get_ur(self):
@@ -212,12 +212,12 @@ class SummaryRecord(Record):
         cpu.appendChild(doc.createTextNode(str(self.get_field('NumberOfJobs'))))
         ur.appendChild(cpu)
 
-        if self.get_field('NodeCount') is not None and self.get_field('NodeCount') > 0:
+        if self.get_field('NodeCount') is not None and int(self.get_field('NodeCount')) > 0:
             ncount = doc.createElement('aur:NodeCount')
             ncount.appendChild(doc.createTextNode(str(self.get_field('NodeCount'))))
             ur.appendChild(ncount)
 
-        if self.get_field('Processors') is not None and self.get_field('Processors') > 0:
+        if self.get_field('Processors') is not None and int(self.get_field('Processors')) > 0:
             procs = doc.createElement('aur:Processors')
             procs.appendChild(doc.createTextNode(str(self.get_field('Processors'))))
             ur.appendChild(procs)

@@ -97,9 +97,9 @@ class PBSParser(Parser):
             rc[key] = mapping[key](data)
 
         # Input checking
-        if rc['CpuDuration'] < 0:
+        if int(rc['CpuDuration']) < 0:
             raise ValueError("Negative 'cput' value")
-        if rc['WallDuration'] < 0:
+        if int(rc['WallDuration']) < 0:
             raise ValueError("Negative 'walltime' value")
         if rc['StopTime'] < rc['StartTime']:
             raise ValueError("'end' time less than 'start' time")
