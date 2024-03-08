@@ -167,11 +167,11 @@ class Record(object):
                     try:
                         dt = datetime.utcfromtimestamp(time.mktime(time.strptime(dtval, isofmt)))
                         return dt
-                    except ValueError: # Failed to parse timestamp
+                    except (ValueError, OverflowError, OSError): # Failed to parse timestamp
                         raise InvalidRecordException('Unknown datetime format!: %s' % value)
                 try:
                     return datetime.utcfromtimestamp(value)
-                except ValueError as e:
+                except (ValueError, OverflowError, OSError): # Failed to parse timestamp
                     # Given timestamp is probably out of range
                     raise InvalidRecordException(e)
             else:
