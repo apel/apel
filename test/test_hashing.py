@@ -1,7 +1,9 @@
-from apel.common import calculate_hash
-import unittest
 import tempfile
+import unittest
 import os
+
+from apel.common import calculate_hash
+
 
 class HashingTest(unittest.TestCase):
     '''
