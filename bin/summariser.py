@@ -21,10 +21,10 @@
 
 from optparse import OptionParser
 import ConfigParser
+import datetime
 import logging.config
 import os
 import sys
-import time
 
 from apel.db import ApelDb, ApelDbException
 from apel.common import set_up_logging, LOG_BREAK
@@ -34,9 +34,6 @@ from apel import __version__
 def runprocess(db_config_file, config_file, log_config_file):
     '''Parse the configuration file, connect to the database and run the
        summarising process.'''
-
-    # Store start time to log how long the summarising process takes
-    start_time = time.time()
 
     try:
         # Read configuration from file
@@ -80,6 +77,10 @@ def runprocess(db_config_file, config_file, log_config_file):
         sys.exit(1)
 
     log.info('Starting apel summariser version %s.%s.%s', *__version__)
+    # Keep track of when this summariser run started to:
+    # - log how long the summarising process takes,
+    # - possibly identify stale summaries later.
+    start_time = datetime.datetime.now()
 
     # If the pidfile exists, don't start up.
     try:
@@ -101,6 +102,20 @@ def runprocess(db_config_file, config_file, log_config_file):
         sys.exit(1)
 
     log.info('Created Pidfile')
+
+    # Configure options for stale summary clean up.
+    try:
+        stale_summary_clean_up = cp.getboolean('summariser',
+                                               'delete_stale_summaries')
+
+        stale_summary_age_limit_days = cp.getint('summariser',
+                                                 'stale_summary_window_days')
+
+    except ConfigParser.NoOptionError as _error:
+        log.debug("No settings defined to clean up stale summaries.")
+        stale_summary_clean_up = False
+        stale_summary_age_limit_days = None
+
     # Log into the database
     try:
 
@@ -118,12 +133,18 @@ def runprocess(db_config_file, config_file, log_config_file):
             db.copy_summaries()
         elif db_type == 'cloud':
             db.summarise_cloud()
+            # Optionally clean up any newly stale cloud summary records.
+            if stale_summary_clean_up:
+                db.clean_stale_cloud_summaries(start_time,
+                                               stale_summary_age_limit_days)
+
         else:
             raise ApelDbException('Unknown database type: %s' % db_type)
 
         # Calculate end time to output time to logs
-        elapsed_time = round(time.time() - start_time, 3)
-        log.info('Summarising completed in: %s seconds', elapsed_time)
+        elapsed_time = (datetime.datetime.now() - start_time).total_seconds()
+        log.info('Summarising completed in: %s seconds',
+                 round(elapsed_time, 3))
 
         log.info(LOG_BREAK)
 
