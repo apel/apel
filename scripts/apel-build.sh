@@ -157,19 +157,15 @@ $PY_VERSION -m compileall "$TEMP_DIR_FOR_LIB/$PYTHON_ROOT_DIR/$LIB_EXTENSION/ape
 # Set up dependencies for apel-lib based on Python version
 if [[ ${PY_NUM:0:1} == "3" ]]; then
     echo "Building $VERSION iteration $ITERATION for Python $PY_NUM as $PACK_TYPE."
-    if [[ ${OS_EXTENSION} == "el7" ]]; then
-        FPM_PYTHON="--depends python3 \
-            --depends python3-pip \
-            --depends python3-ldap \
-            --depends python-dirq \
-            --depends python-iso8601"
-    else
-        FPM_PYTHON="--depends python3 \
-            --depends python3-pip \
-            --depends python3-ldap \
-            --depends python3-dirq \
-            --depends python3-iso8601"
-    fi
+    FPM_PYTHON="--depends python3 \
+        --depends python3-pip \
+        --depends python3-ldap \
+        --depends openldap-devel \
+        --depends python3-dirq \
+        --depends python3-iso8601 \
+        --depends python3-daemon \
+        --depends python3-mysqlclient \
+        --depends python3-future "
 elif [[ ${PY_NUM:0:1} == "2" ]]; then
     echo "Building $VERSION iteration $ITERATION for Python $PY_NUM as $PACK_TYPE."
     # This dependencies is for python2 in el7 environment.
@@ -179,7 +175,9 @@ elif [[ ${PY_NUM:0:1} == "2" ]]; then
         --depends openldap-devel \
         --depends python-dirq \
         --depends python-iso8601 \
-        --depends MySQL-python "
+        --depends python-daemon \
+        --depends MySQL-python \
+        --python2-future "
 fi
 
 # Build the packages
@@ -247,7 +245,6 @@ FPM_SERVER_PACKAGE="-n apel-server \
     --description \"APEL server package\" "
 
 FPM_LIB_PACKAGE="-n apel-lib \
-    --after-install \"$SOURCE_DIR/$APEL_DIR/scripts/apel-lib-helper.sh\" \
     -C $TEMP_DIR_FOR_LIB \
     --description \"Libraries required for Apel Client, Server and Parsers\" "
 
