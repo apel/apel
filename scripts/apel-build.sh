@@ -210,38 +210,38 @@ FPM_CORE="fpm -s $SOURCE_TYPE \
 FPM_PARSERS_PACKAGE="-n apel-parsers \
     -C $TEMP_DIR_FOR_PARSERS \
     --depends \"apel-lib >= ${VERSION}\" \
-    --rpm-attr 755,root,root:$TEMP_DIR_FOR_PARSERS/usr/bin/apelparser \
-    --rpm-attr 600,-,-:$TEMP_DIR_FOR_PARSERS/etc/apel/parser.cfg \
-    --rpm-attr 755,root,root:$TEMP_DIR_FOR_PARSERS/usr/share/apel/slurm_acc.sh \
-    --rpm-attr 755,root,root:$TEMP_DIR_FOR_PARSERS/usr/share/apel/htcondor_acc.sh \
-    --config-files $TEMP_DIR_FOR_PARSERS/etc/apel/parser.cfg \
+    --rpm-attr 755,root,root:/usr/bin/apelparser \
+    --rpm-attr 600,-,-:/etc/apel/parser.cfg \
+    --rpm-attr 755,root,root:/usr/share/apel/slurm_acc.sh \
+    --rpm-attr 755,root,root:/usr/share/apel/htcondor_acc.sh \
+    --config-files /etc/apel/parser.cfg \
     --description \"Parsers for APEL system\" "
 
 FPM_CLIENT_PACKAGE="-n apel-client \
     -C $TEMP_DIR_FOR_CLIENT \
     --depends \"apel-lib >= ${VERSION}\" \
     --depends \"apel-ssm >= 3.2.0\" \
-    --rpm-attr 755,root,root:$TEMP_DIR_FOR_CLIENT/usr/bin/apelclient \
-    --rpm-attr 600,-,-:$TEMP_DIR_FOR_CLIENT/etc/apel/client.cfg \
-    --config-files $TEMP_DIR_FOR_CLIENT/etc/apel/client.cfg \
-    --config-files $TEMP_DIR_FOR_CLIENT/etc/logrotate.d/apel-client \
+    --rpm-attr 755,root,root:/usr/bin/apelclient \
+    --rpm-attr 600,-,-:/etc/apel/client.cfg \
+    --config-files /etc/apel/client.cfg \
+    --config-files /etc/logrotate.d/apel-client \
     --description \"APEL client package\" "
 
 FPM_SERVER_PACKAGE="-n apel-server \
     --before-install \"$SOURCE_DIR/$APEL_DIR/scripts/apel-server-helper.sh\" \
     -C $TEMP_DIR_FOR_SERVER \
     --depends \"apel-lib >= ${VERSION}\" \
-    --rpm-attr 755,root,root:$TEMP_DIR_FOR_SERVER/usr/share/apel/msg_status.py \
-    --rpm-attr 755,root,root:$TEMP_DIR_FOR_SERVER/usr/bin/apeldbunloader \
-    --rpm-attr 755,root,root:$TEMP_DIR_FOR_SERVER/usr/bin/apeldbloader \
-    --rpm-attr 755,root,root:$TEMP_DIR_FOR_SERVER/usr/bin/apelsummariser \
-    --rpm-attr 755,root,root:$TEMP_DIR_FOR_SERVER/usr/bin/apelauth \
-    --rpm-attr 600,apel,apel:$TEMP_DIR_FOR_SERVER/etc/apel/db.cfg \
-    --config-files $TEMP_DIR_FOR_SERVER/etc/apel/summariser.cfg \
-    --config-files $TEMP_DIR_FOR_SERVER/etc/apel/unloader.cfg \
-    --config-files $TEMP_DIR_FOR_SERVER/etc/apel/loader.cfg \
-    --config-files $TEMP_DIR_FOR_SERVER/etc/apel/db.cfg \
-    --config-files $TEMP_DIR_FOR_SERVER/etc/apel/auth.cfg \
+    --rpm-attr 755,root,root:/usr/share/apel/msg_status.py \
+    --rpm-attr 755,root,root:/usr/bin/apeldbunloader \
+    --rpm-attr 755,root,root:/usr/bin/apeldbloader \
+    --rpm-attr 755,root,root:/usr/bin/apelsummariser \
+    --rpm-attr 755,root,root:/usr/bin/apelauth \
+    --rpm-attr 600,apel,apel:/etc/apel/db.cfg \
+    --config-files /etc/apel/summariser.cfg \
+    --config-files /etc/apel/unloader.cfg \
+    --config-files /etc/apel/loader.cfg \
+    --config-files /etc/apel/db.cfg \
+    --config-files /etc/apel/auth.cfg \
     --description \"APEL server package\" "
 
 FPM_LIB_PACKAGE="-n apel-lib \
