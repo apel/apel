@@ -1,5 +1,6 @@
+from future import standard_library
+standard_library.install_aliases()
 import bz2
-import ConfigParser
 import gzip
 import os
 import re
@@ -11,6 +12,11 @@ import mock
 
 import bin.parser
 
+try:
+    # Renamed ConfigParser to configparser in Python 3
+    import configparser as ConfigParser
+except ImportError:
+    import ConfigParser
 
 class ParserTest(unittest.TestCase):
 
@@ -40,7 +46,7 @@ class ParserTest(unittest.TestCase):
                 os.close(handle)
                 file_obj = method(path, 'wb')
                 # Write three lines to the file
-                file_obj.write("Line one.\nLine two.\nLine three.")
+                file_obj.write("Line one.\nLine two.\nLine three.".encode('utf-8'))
                 file_obj.close()
             records = bin.parser.scan_dir(self.mock_parser, dir_path, False,
                                           re.compile('(.*)'), self.mock_db, [])

@@ -53,14 +53,14 @@ NumberOfVMs: 1
 
     def test_load_from_msg(self):
 
-        for msg in self.cases.keys():
+        for msg in list(self.cases.keys()):
 
             cr = CloudSummaryRecord()
             cr.load_from_msg(msg)
 
             cont = cr._record_content
 
-            for key in self.cases[msg].keys():
+            for key in list(self.cases[msg].keys()):
                 self.assertEqual(cont[key], self.cases[msg][key], "%s != %s for key %s" % (cont[key], self.cases[msg][key], key))
 
     def test_mandatory_fields(self):
@@ -79,7 +79,7 @@ NumberOfVMs: 1
 
         try:
             record._check_fields()
-        except Exception, e:
+        except Exception as e:
             self.fail('_check_fields method failed: %s [%s]' % (e, type(e)))
 
 if __name__ == '__main__':

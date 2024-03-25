@@ -48,8 +48,8 @@ class CarParserTest(unittest.TestCase):
                    'LocalUserId': 'urf:LocalUserId',
                    'WallDuration': 86400,
                    'CpuDuration': 86400,
-                   'StartTime': datetime.datetime(2001, 12, 31, 12, 00, 00),
-                   'EndTime': datetime.datetime(2001, 12, 31, 12, 00, 00),
+                   'StartTime': datetime.datetime(2001, 12, 31, 12, 0, 0),
+                   'EndTime': datetime.datetime(2001, 12, 31, 12, 0, 0),
                    }
 
         car2 = '''<?xml version="1.0"?>
@@ -178,7 +178,7 @@ class CarParserTest(unittest.TestCase):
             self.assertTrue('StartTime' in cont)
             self.assertTrue('EndTime' in cont)
 
-            for key in cases[car].keys():
+            for key in list(cases[car].keys()):
                 if isinstance(cont[key], datetime.datetime):
                     if not datetimes_equal(cont[key], cases[car][key]):
                         self.fail("Datetimes don't match for key %s: %s, %s" % (key, cont[key], cases[car][key]))

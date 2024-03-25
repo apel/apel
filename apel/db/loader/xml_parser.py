@@ -15,6 +15,7 @@
 
    @author: Konrad Jopek
 '''
+from builtins import object
 import xml.dom.minidom
 
 class XMLParserException(Exception):

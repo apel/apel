@@ -104,7 +104,7 @@ class SlurmParser(Parser):
             del rc['Queue']
 
         # Input checking
-        if rc['CpuDuration'] < 0:
+        if int(rc['CpuDuration']) < 0:
             raise ValueError('Negative CpuDuration value')
         # No negative WallDuration test as parse_time prevents that.
 

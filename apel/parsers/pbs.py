@@ -15,6 +15,7 @@
 
 '''
 
+from builtins import zip
 from apel.db.records.event import EventRecord
 from apel.parsers import Parser
 from apel.common import parse_time
@@ -96,9 +97,9 @@ class PBSParser(Parser):
             rc[key] = mapping[key](data)
 
         # Input checking
-        if rc['CpuDuration'] < 0:
+        if int(rc['CpuDuration']) < 0:
             raise ValueError("Negative 'cput' value")
-        if rc['WallDuration'] < 0:
+        if int(rc['WallDuration']) < 0:
             raise ValueError("Negative 'walltime' value")
         if rc['StopTime'] < rc['StartTime']:
             raise ValueError("'end' time less than 'start' time")
@@ -118,7 +119,7 @@ def _parse_mpi(exec_host):
 
     core_info = exec_host.split('+')
     # Split hostname and core_no into seperate lists.
-    hostnames, core_no = zip(*[x.split('/') for x in core_info])
+    hostnames, core_no = list(zip(*[x.split('/') for x in core_info]))
 
     # Split any comma separated fields into a flat list.
     core_no = [core for cores in core_no for core in cores.split(',')]

@@ -4,6 +4,9 @@ Created on 2 Mar 2011
 
 @author: will
 '''
+from __future__ import print_function
+from builtins import zip
+from builtins import str
 from apel.db.records import SyncRecord
 import unittest
 
@@ -51,8 +54,8 @@ class TestSummaryRecord(unittest.TestCase):
 
             for item1, item2 in zip(values, rec_tuple):
                 if not item1 == item2:
-                    print "item 1 is: " + str(item1)
-                    print "item 2 is: " + str(item2)
+                    print("item 1 is: " + str(item1))
+                    print("item 2 is: " + str(item2))
                     self.fail('Values changed when creating a sync record.')
 
 

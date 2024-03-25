@@ -18,6 +18,9 @@
 Module containing the Record class.
 '''
 
+from builtins import zip
+from builtins import str
+from builtins import object
 from apel.db import LOGGER_ID
 
 from datetime import datetime
@@ -164,11 +167,11 @@ class Record(object):
                     try:
                         dt = datetime.utcfromtimestamp(time.mktime(time.strptime(dtval, isofmt)))
                         return dt
-                    except ValueError: # Failed to parse timestamp
+                    except (ValueError, OverflowError, OSError): # Failed to parse timestamp
                         raise InvalidRecordException('Unknown datetime format!: %s' % value)
                 try:
                     return datetime.utcfromtimestamp(value)
-                except ValueError as e:
+                except (ValueError, OverflowError, OSError): # Failed to parse timestamp
                     # Given timestamp is probably out of range
                     raise InvalidRecordException(e)
             else:
@@ -181,7 +184,7 @@ class Record(object):
         Given a tuple from a mysql database, load fields.
         '''
         assert len(tup) == len(self._db_fields), 'Different length of tuple and fields list'
-        self.set_all(dict(zip(self._db_fields, tup)))
+        self.set_all(dict(list(zip(self._db_fields, tup))))
 
     def load_from_msg(self, text):
         '''
@@ -305,14 +308,14 @@ class Record(object):
 
         # Check that no extra fields are specified.
         # Is this inefficient?
-        for key in contents.keys():
+        for key in list(contents.keys()):
             if key not in self._all_fields:
                 raise InvalidRecordException("Unexpected field " + key + " in message.")
 
         # Fill the dictionary even if we don't have the relevant data.
         # The string values are getting 'None' (not None!) instead of going into the
         # DB as NULL.
-        current_keys = contents.keys()
+        current_keys = list(contents.keys())
         for key in self._msg_fields:
             if key not in current_keys: # key not already in the dictionary
                 contents[key] = "None"

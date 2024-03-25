@@ -18,6 +18,7 @@
 Module containing the RecordFactory class.
 '''
 
+from builtins import object
 from apel.db.records.job import JobRecord
 from apel.db.records.summary import SummaryRecord
 from apel.db.records.normalised_summary import NormalisedSummaryRecord

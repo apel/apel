@@ -15,11 +15,12 @@
 
    @author: Konrad Jopek
 '''
+from __future__ import absolute_import
 
-from datetime_utils import valid_from,valid_until, parse_timestamp, parse_time, iso2seconds
-from exceptions import install_exc_handler, default_handler
-from parsing_utils import parse_fqan
-from hashing import calculate_hash
+from .datetime_utils import valid_from,valid_until, parse_timestamp, parse_time, iso2seconds
+from .exceptions import install_exc_handler, default_handler
+from .parsing_utils import parse_fqan
+from .hashing import calculate_hash
 
 import logging
 import sys

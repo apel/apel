@@ -16,6 +16,8 @@
    @author: Konrad Jopek
 '''
 
+from builtins import str
+from builtins import object
 import logging
 from apel.db import LOGGER_ID
 
@@ -50,7 +52,7 @@ class ApelDb(object):
         except ImportError:
             logger.debug('Cannot import oracle backend')
 
-        if backend not in BACKENDS.keys():
+        if backend not in list(BACKENDS.keys()):
             raise ApelDbException('Unknown backend: %s' % (backend))
 
         backend = BACKENDS[backend]
