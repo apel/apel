@@ -163,9 +163,9 @@ if [[ ${PY_NUM:0:1} == "3" ]]; then
         --depends openldap-devel \
         --depends python3-dirq \
         --depends python3-iso8601 \
-        --depends python3-daemon \
         --depends python3-mysqlclient \
         --depends python3-future "
+    FPM_PYTHON_SERVER_DEPS="--depends python3-daemon"
 elif [[ ${PY_NUM:0:1} == "2" ]]; then
     echo "Building $VERSION iteration $ITERATION for Python $PY_NUM as $PACK_TYPE."
     # This dependencies is for python2 in el7 environment.
@@ -175,9 +175,9 @@ elif [[ ${PY_NUM:0:1} == "2" ]]; then
         --depends openldap-devel \
         --depends python-dirq \
         --depends python-iso8601 \
-        --depends python-daemon \
         --depends MySQL-python \
-        --python2-future "
+        --depends python2-future "
+    FPM_PYTHON_SERVER_DEPS="--depends python-daemon"
 fi
 
 # Build the packages
@@ -255,13 +255,15 @@ eval "$BUILD_PACKAGE_COMMAND_PARSERS"
 BUILD_PACKAGE_COMMAND_CLIENT="${FPM_CORE}${FPM_CLIENT_PACKAGE}${VERBOSE} ."
 eval "$BUILD_PACKAGE_COMMAND_CLIENT"
 
-BUILD_PACKAGE_COMMAND_SERVER="${FPM_CORE}${FPM_SERVER_PACKAGE}${VERBOSE} ."
+BUILD_PACKAGE_COMMAND_SERVER="${FPM_CORE}${FPM_SERVER_PACKAGE}${FPM_PYTHON_SERVER_DEPS}${VERBOSE} ."
 eval "$BUILD_PACKAGE_COMMAND_SERVER"
 
 BUILD_PACKAGE_COMMAND_LIB="${FPM_CORE}${FPM_LIB_PACKAGE}${FPM_PYTHON}${VERBOSE} ."
 eval "$BUILD_PACKAGE_COMMAND_LIB"
 
 echo "== Generating pleaserun package =="
+
+FILE_TO_EXECUTE="/usr/bin/${PY_VERSION} /usr/bin/apeldbloader"
 
 # When installed, use pleaserun to perform system specific service setup
 fpm -s pleaserun -t "$PACK_TYPE" \
@@ -275,7 +277,7 @@ fpm -s pleaserun -t "$PACK_TYPE" \
     --no-auto-depends \
     --depends "apel-lib >= $VERSION" \
     --package "$BUILD_DIR" \
-    /usr/bin/apeldbloader
+    "$FILE_TO_EXECUTE"
 
 # Cleanup
 rm -rf "$TEMP_DIR_FOR_PARSERS" "$TEMP_DIR_FOR_CLIENT" "$TEMP_DIR_FOR_SERVER" "$TEMP_DIR_FOR_LIB"
