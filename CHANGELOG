@@ -1,5 +1,3 @@
-Changelog for apel
-==================
  * Fri May 26 2023 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.2-1
  - [client] Enabled HEPscore23 as benchmark type for Job Records (using existing message format).
  - [client] Changed default to EGI BDII for fetching benchmarks as CERN BDII will be decommissioned.
