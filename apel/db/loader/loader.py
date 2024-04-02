@@ -163,7 +163,10 @@ class Loader(object):
                     InvalidRecordException, apel.db.ApelDbException,
                     XMLParserException, ExpatError) as err:
                 if sys.version_info >= (3,):
-                    errmsg = "Parsing unsuccessful: %s" % str(errors.messages[err.code])
+                    if isinstance(err, ExpatError):
+                        errmsg = "Parsing unsuccessful: %s" % str(errors.messages[err.code])
+                    else:
+                        errmsg = "Parsing unsuccessful: %s" % str(err)
                 else:
                     errmsg = "Parsing unsuccessful: %s" % str(err)
 
