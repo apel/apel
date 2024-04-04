@@ -1,0 +1,69 @@
+name: Run Unit Tests
+
+on: [push, pull_request]
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-20.04
+    services:
+      mariadb:
+        image: mariadb:10.4
+        env:
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+          MARIADB_DATABASE: apel_unittest
+        ports:
+          - 3306:3306
+        ################
+        # Options are docker container options to see the container health status
+        # Reference: https://docs.docker.com/engine/reference/run/#healthchecks
+        #
+        # --health-cmd         Command to run to check health
+        # --health-interval    Time between running the check
+        # --health-retries     Consecutive failures needed to report unhealthy
+        # --health-timeout     Maximum time to allow one check to run
+        ################
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.6', '3.9']
+    name: Python ${{ matrix.python-version }} test
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Set up dependencies for python-ldap
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential python3-dev libldap2-dev libsasl2-dev
+
+    - name: Set up dependencies for mysqlclient
+      run: sudo apt-get install default-libmysqlclient-dev pkg-config
+
+    - name: Base requirements for SSM
+      run: pip install -r requirements.txt
+
+    - name: Additional requirements for the unit and coverage tests
+      run: pip install -r requirements-test.txt
+
+    - name: Pre-test setup
+      run: |
+        export TMPDIR=$PWD/tmp
+        mkdir $TMPDIR
+        export PYTHONPATH=$PYTHONPATH:`pwd -P`
+        cd test
+
+    - name: Run unit tests
+      run: coverage run --branch --source=apel,bin -m unittest discover -s test --buffer
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
