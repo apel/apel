@@ -13,6 +13,15 @@ jobs:
           MARIADB_DATABASE: apel_unittest
         ports:
           - 3306:3306
+        ################
+        # Options are docker container options to see the container health status
+        # Reference: https://docs.docker.com/engine/reference/run/#healthchecks
+        #
+        # --health-cmd         Command to run to check health
+        # --health-interval    Time between running the check
+        # --health-retries     Consecutive failures needed to report unhealthy
+        # --health-timeout     Maximum time to allow one check to run
+        ################
         options: >-
           --health-cmd="mysqladmin ping -h localhost"
           --health-interval=10s
@@ -42,7 +51,7 @@ jobs:
 
     - name: Base requirements for SSM
       run: pip install -r requirements.txt
-    
+
     - name: Additional requirements for the unit and coverage tests
       run: pip install -r requirements-test.txt
 
@@ -58,4 +67,3 @@ jobs:
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
-  
