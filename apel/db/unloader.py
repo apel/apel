@@ -21,6 +21,8 @@ from apel.db import (Query, ApelDbException, JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
 from apel.db.records import (JobRecord, SummaryRecord, NormalisedSummaryRecord,
                              SyncRecord, CloudRecord, CloudSummaryRecord, StorageRecord)
 from dirq.QueueSimple import QueueSimple
+
+from apel.db.records.storage_summary import StorageSummaryRecord
 try:
     import cStringIO as StringIO
 except ImportError:
@@ -28,6 +30,7 @@ except ImportError:
 import datetime
 import os
 import logging
+import yaml
 
 log = logging.getLogger(__name__)
 
@@ -49,7 +52,8 @@ class DbUnloader(object):
                     'VSyncRecords': SyncRecord,
                     'VCloudRecords': CloudRecord,
                     'VCloudSummaries': CloudSummaryRecord,
-                    'VStarRecords': StorageRecord}
+                    'VStarRecords': StorageRecord,
+                    'DaySummaries': StorageSummaryRecord}
 
     # all record types for which withholding DNs is a valid option
     MAY_WITHHOLD_DNS = [JobRecord, SyncRecord, CloudRecord]
@@ -207,7 +211,10 @@ class DbUnloader(object):
         records = 0
         for batch in self._db.get_records(record_type, table_name, query=query, records_per_message=self.records_per_message):
             records += len(batch)
-            if ur:
+
+            if table_name == 'DaySummaries':
+                self._write_yaml(batch)
+            elif ur:
                 self._write_xml(batch)
             else:
                 self._write_apel(batch)
@@ -270,6 +277,33 @@ class DbUnloader(object):
         self._msgq.add(buf.getvalue())
         buf.close()
         del buf
+
+    def _write_yaml(self, records):
+        """
+        Write one message in the appropriate YAML format to the outgoing
+        message queue.
+        """
+        buf = StringIO.StringIO()
+        documents = []
+
+        if type(records[0]) == StorageSummaryRecord:
+            documents.append({'type': 'StorageRecord'})
+
+            for record in records:
+                documents.append(record.get_ur(self._withhold_dns))
+        else:
+            raise ApelDbException(
+                "Can only send records in YAML for StorageRecords"
+            )
+
+        buf.write(
+            yaml.dump_all(
+                documents, default_flow_style=False,
+                explicit_start=True, explicit_end=True
+            )
+        )
+        self._msgq.add(buf.getvalue())
+        buf.close()
 
 def get_start_of_previous_month(dt):
     '''

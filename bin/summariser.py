@@ -31,6 +31,34 @@ from apel.common import set_up_logging, LOG_BREAK
 from apel import __version__
 
 
+def perform_summarisation(db, db_type, log, start_time):
+    """Perform summarisation logic based on the `db_type`."""
+    log.info('Connected.')
+
+    # This is all the summarising logic,
+    # contained in ApelMysqlDb() and the stored procedures.
+    if db_type == 'cpu':
+        # Make sure that records are not coming from,
+        # the same site by two different routes.
+        # N.B. Disabled as check doesn't scale well and isn't that useful.
+        # db.check_duplicate_sites()
+        db.summarise_jobs()
+        db.normalise_summaries()
+        db.copy_summaries()
+    elif db_type == 'cloud':
+        db.summarise_cloud()
+    elif db_type == 'storage':
+        db.summarise_storage()
+    else:
+        raise ApelDbException('Unknown database type: %s' % db_type)
+
+    # Calculate end time to output time to logs
+    elapsed_time = round(time.time() - start_time, 3)
+    log.info('Summarising completed in: %s seconds', elapsed_time)
+
+    log.info(LOG_BREAK)
+
+
 def runprocess(db_config_file, config_file, log_config_file):
     '''Parse the configuration file, connect to the database and run the
        summarising process.'''
@@ -101,31 +129,12 @@ def runprocess(db_config_file, config_file, log_config_file):
         sys.exit(1)
 
     log.info('Created Pidfile')
-    # Log into the database
+    # Log into the database and try performing summarisation.
     try:
 
         log.info('Connecting to the database ... ')
         db = ApelDb(db_backend, db_hostname, db_port, db_username, db_password, db_name)
-
-        log.info('Connected.')
-        # This is all the summarising logic, contained in ApelMysqlDb() and the stored procedures.
-        if db_type == 'cpu':
-            # Make sure that records are not coming from the same site by two different routes
-            # N.B. Disabled as check doesn't scale well and isn't that useful.
-            # db.check_duplicate_sites()
-            db.summarise_jobs()
-            db.normalise_summaries()
-            db.copy_summaries()
-        elif db_type == 'cloud':
-            db.summarise_cloud()
-        else:
-            raise ApelDbException('Unknown database type: %s' % db_type)
-
-        # Calculate end time to output time to logs
-        elapsed_time = round(time.time() - start_time, 3)
-        log.info('Summarising completed in: %s seconds', elapsed_time)
-
-        log.info(LOG_BREAK)
+        perform_summarisation(db, db_type, log, start_time)
 
     except ApelDbException, err:
         log.error('Error summarising: %s', err)

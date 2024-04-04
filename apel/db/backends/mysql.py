@@ -86,6 +86,7 @@ class ApelMysqlDb(object):
         self._db_name = db
 
         self._summarise_jobs_proc = "SummariseJobs"
+        self._summarise_storage_proc = "SummariseStorageRecords"
         self._normalise_summaries_proc = "NormaliseSummaries"
         self._summarise_vms_proc = "SummariseVMs"
         self._copy_summaries_proc = "CopyNormalisedSummaries"
@@ -286,6 +287,29 @@ class ApelMysqlDb(object):
                 raise ApelDbException("Records exist in both job and summary tables for the same site.")
             self.db.commit()
         except MySQLdb.Error as e:
+            log.error("A mysql error occurred: %s", e)
+            log.error("Any transaction will be rolled back.")
+
+            if self.db is not None:
+                self.db.rollback()
+            raise
+
+    def summarise_storage(self):
+        """
+        Calls the SummariseStorageRecords stored procedure
+        """
+        try:
+            # prevent MySQLdb from raising
+            # 'MySQL server has gone' exception
+            self._mysql_reconnect()
+
+            c = self.db.cursor()
+
+            log.info("Summarising storage records...")
+            c.callproc(self._summarise_storage_proc)
+            log.info("Done.")
+            self.db.commit()
+        except MySQLdb.Error, e:
             log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
 
