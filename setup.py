@@ -68,7 +68,7 @@ def main():
     # Python 3.x dependencies
     if sys.version_info >= (3,):
         _install_requires = ['mysqlclient'] + _install_requires[1:]
-    
+
     # For 'python setup.py install' to
     # work (on Linux SL6), 'python-daemon'
     # must be installed or included
