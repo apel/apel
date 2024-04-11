@@ -118,6 +118,7 @@ def runprocess(db_config_file, config_file, log_config_file):
             db.copy_summaries()
         elif db_type == 'cloud':
             db.summarise_cloud()
+            db.summarise_accelerators()
         else:
             raise ApelDbException('Unknown database type: %s' % db_type)
 

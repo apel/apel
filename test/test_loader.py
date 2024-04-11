@@ -7,7 +7,9 @@ import unittest
 import logging
 from mock import call
 
+from apel.common import json_utils
 import apel.db.loader
+
 
 schema = {"body": "string", "signer": "string",
           "empaid": "string?", "error": "string?"}
@@ -179,6 +181,67 @@ class LoaderTest(unittest.TestCase):
             self.mock_db.load_records.assert_called_once()
             mock_log.assert_has_calls(
                         [call('Message contains %i records', 1)])
+
+    def test_load_json_type(self):
+        """Check that load_records is called and message is
+            logged correctly for json messages."""
+
+        logger = logging.getLogger('loader')
+        pidfile = os.path.join(self.dir_path, 'pidfile')
+
+        in_q = dirq.queue.Queue(os.path.join(self.dir_path, 'incoming'),
+                                schema=schema)
+
+        record0 = {
+            "MeasurementMonth": 9,
+            "MeasurementYear": 2018,
+            "AssociatedRecordType": "cloud",
+            "AssociatedRecord": "TEST-FakeVMUUID",
+            "GlobalUserName": "GlobalUser1",
+            "FQAN": "FQAN1",
+            "SiteName": "TEST-SITE",
+            "Count": 0.5,
+            "Cores": 64,
+            "ActiveDuration": 600,
+            "AvailableDuration": 6000,
+            "BenchmarkType": "BenchmarkType1",
+            "Benchmark": 1005,
+            "Type": "GPU",
+            "Model": "Model1",
+        }
+
+        record1 = {
+            "MeasurementMonth": 9,
+            "MeasurementYear": 2018,
+            "AssociatedRecordType": "cloud",
+            "AssociatedRecord": "TEST-FakeVMUUID2",
+            "GlobalUserName": "GlobalUser2",
+            "FQAN": "FQAN2",
+            "SiteName": "TEST-SITE",
+            "Count": 1,
+            "Cores": 8,
+            "ActiveDuration": 30,
+            "AvailableDuration": 600,
+            "BenchmarkType": "BenchmarkType2",
+            "Benchmark": 995,
+            "Type": "FPGA",
+            "Model": "Model2",
+        }
+
+        json_msg = json_utils.to_message("APEL-accelerator-message", "0.1", record0, record1)
+
+        in_q.add({"body": json_msg, "signer": "test signer", "empaid": "", "error": ""})
+
+        self.loader = apel.db.loader.Loader(self.dir_path, True, 'mysql',
+                                            'host', 1234, 'db', 'user', 'pwd',
+                                            pidfile)
+
+        with mock.patch.object(logger, 'info') as mock_log:
+            self.loader.load_all_msgs()
+            self.mock_db.load_records.assert_called_once()
+            mock_log.assert_has_calls(
+                        [call('Message contains %i %s records', 2, 'Accelerator')])
+
 
     def tearDown(self):
         shutil.rmtree(self.dir_path)
