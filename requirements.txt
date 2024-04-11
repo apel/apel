@@ -4,3 +4,4 @@ mysqlclient==2.1.1
 python-ldap
 iso8601==1.1.0
 dirq
+future
