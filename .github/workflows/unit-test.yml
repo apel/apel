@@ -49,7 +49,7 @@ jobs:
     - name: Set up dependencies for mysqlclient
       run: sudo apt-get install default-libmysqlclient-dev pkg-config
 
-    - name: Base requirements for SSM
+    - name: Base requirements for APEL
       run: pip install -r requirements.txt
 
     - name: Additional requirements for the unit and coverage tests
