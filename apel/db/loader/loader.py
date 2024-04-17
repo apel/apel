@@ -18,10 +18,10 @@
 Module containing the Loader class.
 '''
 from __future__ import absolute_import
-
 from builtins import next
 from builtins import str
 from builtins import object
+
 import logging
 import os
 import sys

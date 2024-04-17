@@ -24,10 +24,10 @@
     @author: Konrad Jopek, Will Rogers
 '''
 from __future__ import print_function
-
 from future import standard_library
 standard_library.install_aliases()
 from builtins import str
+
 import logging.config
 import os
 import sys
@@ -35,6 +35,11 @@ import re
 import gzip
 import bz2
 from optparse import OptionParser
+try:
+    # Renamed ConfigParser to configparser in Python 3
+    import configparser as ConfigParser
+except ImportError:
+    import ConfigParser
 
 from apel import __version__
 from apel.db import ApelDb, ApelDbException
@@ -48,11 +53,6 @@ from apel.parsers.pbs import PBSParser
 from apel.parsers.slurm import SlurmParser
 from apel.parsers.htcondor import HTCondorParser
 
-try:
-    # Renamed ConfigParser to configparser in Python 3
-    import configparser as ConfigParser
-except ImportError:
-    import ConfigParser
 
 LOGGER_ID = 'parser'
 # How many records should be put/fetched to/from database

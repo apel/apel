@@ -17,6 +17,7 @@
 '''
 
 from builtins import str
+
 from datetime import datetime
 import time
 from apel.db.records import Record

@@ -1,4 +1,5 @@
 from builtins import str
+
 import unittest
 
 from apel.db.loader import StarParser

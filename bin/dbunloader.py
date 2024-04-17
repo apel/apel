@@ -26,7 +26,6 @@ try:
     import configparser as ConfigParser
 except ImportError:
     import ConfigParser
-
 import logging.config
 from optparse import OptionParser
 import os

@@ -19,6 +19,7 @@ from future import standard_library
 standard_library.install_aliases()
 from builtins import str
 from builtins import object
+
 from apel.db import (Query, ApelDbException, JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
                      NORMALISED_SUMMARY_MSG_HEADER, SYNC_MSG_HEADER,
                      CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER)
@@ -29,7 +30,6 @@ from dirq.QueueSimple import QueueSimple
 import datetime
 import os
 import logging
-
 try:
     import cStringIO as StringIO
 except ImportError:
@@ -37,6 +37,7 @@ except ImportError:
         import StringIO
     except ImportError:
         import io as StringIO
+
 
 log = logging.getLogger(__name__)
 

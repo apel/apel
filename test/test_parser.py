@@ -1,6 +1,12 @@
 from future import standard_library
 standard_library.install_aliases()
+
 import bz2
+try:
+    # Renamed ConfigParser to configparser in Python 3
+    import configparser as ConfigParser
+except ImportError:
+    import ConfigParser
 import gzip
 import os
 import re
@@ -12,11 +18,7 @@ import mock
 
 import bin.parser
 
-try:
-    # Renamed ConfigParser to configparser in Python 3
-    import configparser as ConfigParser
-except ImportError:
-    import ConfigParser
+
 
 class ParserTest(unittest.TestCase):
 

@@ -21,6 +21,7 @@ Created on 27 Oct 2011
 
 from builtins import str
 from builtins import object
+
 from apel.db import ApelDbException
 from apel.db.records import (BlahdRecord,
                              CloudRecord,

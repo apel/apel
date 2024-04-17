@@ -28,6 +28,7 @@ from future import standard_library
 standard_library.install_aliases()
 from builtins import str
 from builtins import object
+
 from apel.common import set_up_logging, LOG_BREAK
 from apel import __version__
 
@@ -38,7 +39,6 @@ import sys
 import time
 import xml.dom.minidom
 import xml.parsers.expat
-
 try:
     # Renamed ConfigParser to configparser in Python 3
     # urllib code flow got changed in Python 3
@@ -48,6 +48,7 @@ try:
 except ImportError:
     import ConfigParser
     import urllib
+
 
 log = logging.getLogger('auth')
 

@@ -6,6 +6,7 @@ Created on 2 Mar 2011
 from __future__ import print_function
 from builtins import zip
 from builtins import str
+
 from apel.db.records import SummaryRecord, InvalidRecordException
 from datetime import datetime, timedelta
 import unittest

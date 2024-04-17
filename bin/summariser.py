@@ -19,25 +19,25 @@
 @author: Will Rogers
 '''
 from __future__ import print_function
-
 from future import standard_library
 standard_library.install_aliases()
 from builtins import str
+
 from optparse import OptionParser
 import logging.config
 import os
 import sys
 import time
-
-from apel.db import ApelDb, ApelDbException
-from apel.common import set_up_logging, LOG_BREAK
-from apel import __version__
-
 try:
     # Renamed ConfigParser to configparser in Python 3
     import configparser as ConfigParser
 except ImportError:
     import ConfigParser
+
+from apel.db import ApelDb, ApelDbException
+from apel.common import set_up_logging, LOG_BREAK
+from apel import __version__
+
 
 def runprocess(db_config_file, config_file, log_config_file):
     '''Parse the configuration file, connect to the database and run the

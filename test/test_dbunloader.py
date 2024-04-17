@@ -8,7 +8,6 @@ try:
     import configparser as ConfigParser
 except ImportError:
     import ConfigParser
-
 import logging
 import unittest
 
