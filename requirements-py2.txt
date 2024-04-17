@@ -1,0 +1,7 @@
+# Base requirements for apel
+
+MySQL-python
+python-ldap<3.4.0  # python-ldap-3.4.0 dropped support for Python 2
+iso8601
+dirq
+future # Required to run py3 code in py2 with minimal overhead.
