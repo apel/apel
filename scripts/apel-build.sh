@@ -5,7 +5,7 @@
 # Download ruby (if you're locked to 2.5, use RVM) and then run:
 # sudo gem install fpm -v 1.14.2
 # for RPM builds, you will also need:
-# sudo yum install rpm-build | sudo apt-get install rpm
+# sudo yum install rpm-build rpmlint | sudo apt-get install rpm
 # ./apel-build.sh rpm <version> <iteration> <python_root_dir>
 # e.g.
 # ./apel-build.sh rpm 1.9.2 1 /usr/lib/python2.7
@@ -272,12 +272,19 @@ fpm -s pleaserun -t "$PACK_TYPE" \
     --iteration "$ITERATION" \
     --"$PACK_TYPE"-dist "$OS_EXTENSION" \
     -m "Apel Administrators <$ADMIN_CONTACT_EMAIL>" \
-    --description "Accounting Processor for Event Logs (APEL) apeldbloader Daemon service." \
+    --description "Accounting Processor for Event Logs (APEL) apeldbloader Daemon service" \
     --architecture $ARCH_TYPE \
     --no-auto-depends \
     --depends "apel-lib >= $VERSION" \
     --package "$BUILD_DIR" \
     "$FILE_TO_EXECUTE"
+
+echo "== rpmlint performing checks =="
+
+# `dirname`: Output each NAME with its last non-slash component and trailing slashes removed.
+# For instance; Given $(dirname /root/rpmb/rpmbuild/source) will output "/root/rpmb/rpmbuild".
+# rpmlint: To check common problems in rpm packages.
+rpmlint "$(dirname "$SOURCE_DIR")"
 
 # Cleanup
 rm -rf "$TEMP_DIR_FOR_PARSERS" "$TEMP_DIR_FOR_CLIENT" "$TEMP_DIR_FOR_SERVER" "$TEMP_DIR_FOR_LIB"
