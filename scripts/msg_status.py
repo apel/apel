@@ -21,6 +21,7 @@
 '''
 from __future__ import print_function
 from builtins import next
+from builtins import input
 
 import sys
 import os
@@ -123,7 +124,7 @@ def ask_user(question):
     Ask the user to confirm the specified yes/no question.
     '''
     while True:
-        ans = raw_input('%s (y/n) ' % question).lower()
+        ans = input('%s (y/n) ' % question).lower()
         if ans == 'y':
             return True
         elif ans == 'n':
