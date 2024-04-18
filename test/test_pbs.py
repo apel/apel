@@ -101,7 +101,7 @@ class ParserPBSTest(unittest.TestCase):
 
         cases = {}
         for line, value in zip(lines, values):
-            cases[line] = dict(list(zip(fields, value)))
+            cases[line] = dict(zip(fields, value))
 
         for line in list(cases.keys()):
 

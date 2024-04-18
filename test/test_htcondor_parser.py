@@ -55,7 +55,7 @@ class HTCondorParserTest(unittest.TestCase):
 
         cases = {}
         for line, value in zip(lines, values):
-            cases[line] = dict(list(zip(keys, value)))
+            cases[line] = dict(zip(keys, value))
 
         for line in list(cases.keys()):
             record = self.parser.parse(line)
@@ -114,7 +114,7 @@ class HTCondorParserTest(unittest.TestCase):
 
         cases = {}
         for line, value in zip(lines, values):
-            cases[line] = dict(list(zip(keys, value)))
+            cases[line] = dict(zip(keys, value))
 
         for line in list(cases.keys()):
             record = self.parser.parse(line)

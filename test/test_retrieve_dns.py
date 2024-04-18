@@ -95,7 +95,7 @@ class RunprocessTestCase(unittest.TestCase):
         # Set up temp files
         self.files = {}
         for item in ('dn', 'extra', 'ban'):
-            self.files[item] = dict(list(zip(('handle', 'path'), tempfile.mkstemp())))
+            self.files[item] = dict(zip(('handle', 'path'), tempfile.mkstemp()))
 
         os.write(self.files['dn']['handle'], "/dn/1\n/dn/2\n".encode("utf-8"))
         os.write(self.files['extra']['handle'], "#comment\n/extra/dn\n/banned/dn".encode("utf-8"))

@@ -185,7 +185,7 @@ class Record(object):
         Given a tuple from a mysql database, load fields.
         '''
         assert len(tup) == len(self._db_fields), 'Different length of tuple and fields list'
-        self.set_all(dict(list(zip(self._db_fields, tup))))
+        self.set_all(dict(zip(self._db_fields, tup)))
 
     def load_from_msg(self, text):
         '''
