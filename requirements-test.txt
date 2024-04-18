@@ -1,8 +1,5 @@
 # Additional requirements for the unit and coverage tests
 
-pycparser
-idna
-
 unittest2
 coveralls
 mock
