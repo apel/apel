@@ -1,4 +1,5 @@
 """This file contains the BinSummariserTest class."""
+
 from __future__ import print_function
 
 import logging

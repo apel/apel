@@ -15,7 +15,7 @@
 
 '''
 
-from builtins import zip
+from future.builtins import zip
 
 from apel.db.records.event import EventRecord
 from apel.parsers import Parser

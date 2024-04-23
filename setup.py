@@ -66,7 +66,7 @@ def main():
     # Python 3.x dependencies
     _install_requires = ['mysqlclient', 'iso8601', 'python-ldap', 'dirq', 'future']
     # Python 2.x dependencies
-    if sys.version_info <= (3,):
+    if sys.version_info < (3,):
         _install_requires = ['MySQL-python'] + _install_requires[1:]
 
     # For 'python setup.py install' to

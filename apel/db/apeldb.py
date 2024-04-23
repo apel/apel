@@ -16,8 +16,9 @@
    @author: Konrad Jopek
 '''
 
-from builtins import str
-from builtins import object
+from future.builtins import str
+from future.builtins import object
+
 import logging
 from apel.db import LOGGER_ID
 

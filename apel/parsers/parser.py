@@ -15,7 +15,8 @@
 
    @author: Konrad Jopek
 '''
-from builtins import object
+
+from future.builtins import object
 
 import logging
 

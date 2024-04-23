@@ -23,10 +23,11 @@
 '''
     @author: Konrad Jopek, Will Rogers
 '''
+
 from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
-from builtins import str
+from future.builtins import str
 
 import logging.config
 import os

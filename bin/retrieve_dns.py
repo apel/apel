@@ -23,11 +23,12 @@
 '''
 @author: Will Rogers
 '''
+
 from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
-from builtins import str
-from builtins import object
+from future.builtins import str
+from future.builtins import object
 
 from apel.common import set_up_logging, LOG_BREAK
 from apel import __version__

@@ -19,9 +19,10 @@
     are locked, it gives the option to remove the lock.
     @author: Will Rogers
 '''
+
 from __future__ import print_function
-from builtins import next
-from builtins import input
+from future.builtins import next
+from future.builtins import input
 
 import sys
 import os

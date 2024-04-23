@@ -1,4 +1,4 @@
-from builtins import zip
+from future.builtins import zip
 
 from datetime import datetime
 from time import mktime

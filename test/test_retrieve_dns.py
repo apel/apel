@@ -1,4 +1,4 @@
-from builtins import zip
+from future.builtins import zip
 
 import os
 import tempfile

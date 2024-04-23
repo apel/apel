@@ -16,7 +16,7 @@
 @author Will Rogers
 '''
 
-from builtins import str
+from future.builtins import str
 
 from datetime import datetime
 import time

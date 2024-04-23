@@ -15,6 +15,7 @@
 
    @author: Konrad Jopek
 '''
+
 from __future__ import absolute_import
 
 from .datetime_utils import valid_from,valid_until, parse_timestamp, parse_time, iso2seconds
