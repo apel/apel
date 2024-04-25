@@ -232,7 +232,7 @@ class SummaryRecord(Record):
 class SummaryRecord04(SummaryRecord):
     """Class to represent a summary record using the 0.4 message format
 
-    It differs from SummaryRecord by lacking a separate ServiceLevelType field
+    This class is needed because it's lacking a separate ServiceLevelType field
     in the message fields, as this is extracted from the associative array
     in ServiceLevel before putting into the database.
     """
@@ -240,11 +240,7 @@ class SummaryRecord04(SummaryRecord):
     def __init__(self):
         """Populate fields required to load the message."""
 
-        Record.__init__(self)
-
-        # Fields which are required by the message format.
-        self._mandatory_fields = ["Site", "Month", "Year", "WallDuration",
-                                  "CpuDuration", "NumberOfJobs"]
+        SummaryRecord.__init__(self)
 
         # This list allows us to specify the order of lines when we construct records.
         # It differs from SummaryRecord by lacking a separate ServiceLevelType field
@@ -255,25 +251,6 @@ class SummaryRecord04(SummaryRecord):
             "EarliestEndTime", "LatestEndTime", "WallDuration", "CpuDuration", "NumberOfJobs"
         ]
 
-        # This list specifies the information that goes in the database.
-        self._db_fields = [
-            "Site", "Month", "Year", "GlobalUserName", "VO", "VOGroup", "VORole", "SubmitHost",
-            "InfrastructureType", "ServiceLevelType", "ServiceLevel", "NodeCount", "Processors",
-            "EarliestEndTime", "LatestEndTime", "WallDuration", "CpuDuration", "NumberOfJobs"
-        ]
-
-        self._ignored_fields = ["UpdateTime"]
-
-        # All allowed fields. We use _db_fields as that is a superset of _msg_fields.
-        self._all_fields = self._db_fields
-
-        # Fields which will have an integer stored in them
-        self._int_fields = ["Month", "Year", "NodeCount", "Processors",
-                            "WallDuration", "CpuDuration", "NumberOfJobs"]
-
-        self._float_fields = ["ServiceLevel"]
-
-        self._datetime_fields = ["EarliestEndTime", "LatestEndTime"]
 
         # Fields which should contain associative arrays in the message
         self._dict_fields = ["ServiceLevel"]
