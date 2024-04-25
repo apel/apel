@@ -19,7 +19,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install rpmlint
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         # Get all branches and tags so the latest tag can be found for VERSION
         fetch-depth: 0
@@ -48,7 +48,7 @@ jobs:
       run: rpmlint ${{ steps.rpm.outputs.rpm_dir_path }}
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v4.3
       with:
         name: Binary and Source RPMs
         path: |

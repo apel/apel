@@ -93,6 +93,10 @@ class TestRepublish(unittest.TestCase):
             # Now check the database to see which record has been saved.
             self._check_measurement_time_equals(expected_measurement_time)
 
+        # Clean up DB connection and schema.
+        database.db.close()
+        call(['mysql', '-u', 'root', '-e', "DROP DATABASE apel_unittest;"])
+
     def _check_measurement_time_equals(self, expected_measurement_time):
         """
         Check MeasurementTime in database is what we would expect.

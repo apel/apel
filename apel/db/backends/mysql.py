@@ -101,7 +101,7 @@ class ApelMysqlDb(object):
             self.db = MySQLdb.connect(host=self._db_host, port=self._db_port,
                                       user=self._db_username, passwd=self._db_pwd,
                                       db=self._db_name)
-        except MySQLdb.Error, e:
+        except MySQLdb.Error as e:
             log.error('Error connecting to database: %s', e)
             raise ApelDbException(e)
 
@@ -118,7 +118,7 @@ class ApelMysqlDb(object):
             log.info('Connected to %s:%s', self._db_host, self._db_port)
             log.info('Database: %s; username: %s', self._db_name, self._db_username)
             db.close()
-        except MySQLdb.OperationalError, e:
+        except MySQLdb.OperationalError as e:
             raise ApelDbException("Failed to connect to database: " + str(e))
 
     def load_records(self, record_list, replace=True, source=None):
@@ -165,7 +165,7 @@ class ApelMysqlDb(object):
                     proc = self.REPLACE_PROCEDURES[type(record)]
                 c.execute(proc, values)
             self.db.commit()
-        except (MySQLdb.Warning, MySQLdb.Error, KeyError), err:
+        except (MySQLdb.Warning, MySQLdb.Error, KeyError) as err:
             log.error("Error loading records: %s", err)
             log.error("Transaction will be rolled back.")
             self.db.rollback()
@@ -233,12 +233,12 @@ class ApelMysqlDb(object):
                 else:
                     break
 
-        except MySQLdb.Error, err:
+        except MySQLdb.Error as err:
             log.error('Error during getting records: %s', err)
             log.error('Transaction will be rolled back.')
             self.db.rollback()
             raise ApelDbException(err)
-        except MySQLdb.Warning, warning:
+        except MySQLdb.Warning as warning:
             log.warning('Warning from MySQL: %s', warning)
 
     def get_last_updated(self):
@@ -285,7 +285,7 @@ class ApelMysqlDb(object):
             if conflict:
                 raise ApelDbException("Records exist in both job and summary tables for the same site.")
             self.db.commit()
-        except MySQLdb.Error, e:
+        except MySQLdb.Error as e:
             log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
 
@@ -313,7 +313,7 @@ class ApelMysqlDb(object):
             c.callproc(self._summarise_jobs_proc, ())
             log.info("Done.")
             self.db.commit()
-        except MySQLdb.Error, e:
+        except MySQLdb.Error as e:
             log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
 
@@ -344,7 +344,7 @@ class ApelMysqlDb(object):
             c.callproc(self._normalise_summaries_proc, ())
             log.info("Done.")
             self.db.commit()
-        except MySQLdb.Error, e:
+        except MySQLdb.Error as e:
             log.error("A MySQL error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
 
@@ -367,7 +367,7 @@ class ApelMysqlDb(object):
             log.info("Done.")
 
             self.db.commit()
-        except MySQLdb.Error, e:
+        except MySQLdb.Error as e:
             log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
 
@@ -396,7 +396,7 @@ class ApelMysqlDb(object):
             log.info("Done.")
 
             self.db.commit()
-        except MySQLdb.Error, e:
+        except MySQLdb.Error as e:
             log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
 
@@ -422,7 +422,7 @@ class ApelMysqlDb(object):
             c.callproc(self._join_records_proc)
             log.info("Done.")
             self.db.commit()
-        except MySQLdb.Error, e:
+        except MySQLdb.Error as e:
             log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
 
@@ -442,7 +442,7 @@ class ApelMysqlDb(object):
             c.callproc(self._local_jobs_proc)
             log.info("Done.")
             self.db.commit()
-        except MySQLdb.Error, e:
+        except MySQLdb.Error as e:
             log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
 
@@ -489,7 +489,7 @@ class ApelMysqlDb(object):
 
             self.db.commit()
 
-        except MySQLdb.Error, e:
+        except MySQLdb.Error as e:
             log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
 
@@ -508,7 +508,7 @@ class ApelMysqlDb(object):
             c = self.db.cursor()
             c.execute(self._processed_clean, [hostname])
             self.db.commit()
-        except MySQLdb.Error, e:
+        except MySQLdb.Error as e:
             log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
             if self.db is not None:
@@ -526,6 +526,6 @@ class ApelMysqlDb(object):
                 self.db = MySQLdb.connect(host=self._db_host, port=self._db_port,
                                           user=self._db_username, passwd=self._db_pwd,
                                           db=self._db_name)
-            except MySQLdb.Error, e:
+            except MySQLdb.Error as e:
                 log.error('Error connecting to database: %s', e)
                 raise ApelDbException(e)

@@ -84,11 +84,8 @@ class Record(object):
         Checks the field type and corrects it if it is necessary.
         '''
         for key in fielddict:
-            if key in self._db_fields:
-                self._record_content[key] = self.checked(key, fielddict[key])
-            else:
-                if key not in self._ignored_fields:
-                    raise InvalidRecordException('Unknown field: %s' % key)
+            self.set_field(key, fielddict[key])
+
 
     def set_field(self, key, value):
         '''
@@ -171,7 +168,7 @@ class Record(object):
                         raise InvalidRecordException('Unknown datetime format!: %s' % value)
                 try:
                     return datetime.utcfromtimestamp(value)
-                except ValueError, e:
+                except ValueError as e:
                     # Given timestamp is probably out of range
                     raise InvalidRecordException(e)
             else:
@@ -202,12 +199,10 @@ class Record(object):
         self._record_content = {}
         for line in lines:
             try:
-                value = line.split(':', 1)
-                key = value[0].strip()
-                self.set_all({key:value[1].strip()})
-#                self._record_content[key] = value[1].strip()
+                key, value = [x.strip() for x in line.split(':', 1)]
+                self.set_field(key, value)
             except IndexError:
-                raise InvalidRecordException("Record contains a line  " +\
+                raise InvalidRecordException("Record contains a line  "
                                              "without a key-value pair: %s" % line)
         # Now, go through the logic to fill the contents[] dictionary.
         # The logic can get a bit involved here.
