@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.9.2
+Version:        1.9.3
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -199,6 +199,12 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Thu May 25 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.3-1
+ - [parsers] Reduced verbosity of parser to only report a single time that logs have been skipped.
+ - Fixed some unit tests so that they run properly.
+ - Refactored in support of move to Python 3.
+ - Updated CI config to update tooling.
+
  * Fri May 26 2023 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.2-1
  - [client] Enabled HEPscore23 as benchmark type for Job Records (using existing message format).
  - [client] Changed default to EGI BDII for fetching benchmarks as CERN BDII will be decommissioned.
