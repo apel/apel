@@ -121,6 +121,10 @@ class MysqlTest(unittest.TestCase):
         cloud4_mf = apel.db.records.cloud.CloudRecord()
         cloud4_mf.load_from_msg(CLOUD4_MISSING_FIELDS)
 
+        # items_in = list(cloud2._record_content.items())
+        # items_in += list(cloud4._record_content.items())
+        # items_in += list(cloud4_nb._record_content.items())
+        # items_in += list(cloud4_mf._record_content.items())
 
         record_list = [cloud2, cloud4, cloud4_nb, cloud4_mf]
 
