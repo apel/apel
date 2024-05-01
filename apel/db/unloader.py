@@ -20,13 +20,6 @@ from future import standard_library
 standard_library.install_aliases()
 from future.builtins import object, str
 
-from apel.db import (Query, ApelDbException, JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
-                     NORMALISED_SUMMARY_MSG_HEADER, SYNC_MSG_HEADER,
-                     CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER)
-from apel.db.records import (JobRecord, SummaryRecord, NormalisedSummaryRecord,
-                             SyncRecord, CloudRecord, CloudSummaryRecord, StorageRecord)
-from dirq.QueueSimple import QueueSimple
-
 import datetime
 import os
 import logging
@@ -37,6 +30,13 @@ except ImportError:
         import StringIO
     except ImportError:
         import io as StringIO
+
+from apel.db import (Query, ApelDbException, JOB_MSG_HEADER, SUMMARY_MSG_HEADER,
+                     NORMALISED_SUMMARY_MSG_HEADER, SYNC_MSG_HEADER,
+                     CLOUD_MSG_HEADER, CLOUD_SUMMARY_MSG_HEADER)
+from apel.db.records import (JobRecord, SummaryRecord, NormalisedSummaryRecord,
+                             SyncRecord, CloudRecord, CloudSummaryRecord, StorageRecord)
+from dirq.QueueSimple import QueueSimple
 
 
 log = logging.getLogger(__name__)

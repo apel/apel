@@ -19,7 +19,9 @@
 from future.builtins import object, str
 
 import logging
+
 from apel.db import LOGGER_ID
+
 
 logger = logging.getLogger(LOGGER_ID)
 
