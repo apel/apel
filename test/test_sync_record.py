@@ -6,8 +6,7 @@ Created on 2 Mar 2011
 '''
 
 from __future__ import print_function
-from future.builtins import zip
-from future.builtins import str
+from future.builtins import str, zip
 
 from apel.db.records import SyncRecord
 import unittest

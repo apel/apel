@@ -19,9 +19,7 @@ Module containing the Loader class.
 '''
 
 from __future__ import absolute_import
-from future.builtins import next
-from future.builtins import str
-from future.builtins import object
+from future.builtins import next, object, str
 
 import logging
 import os

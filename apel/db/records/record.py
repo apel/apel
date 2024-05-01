@@ -18,9 +18,7 @@
 Module containing the Record class.
 '''
 
-from future.builtins import zip
-from future.builtins import str
-from future.builtins import object
+from future.builtins import object, str, zip
 
 from apel.db import LOGGER_ID
 

@@ -21,8 +21,7 @@
 '''
 
 from __future__ import print_function
-from future.builtins import next
-from future.builtins import input
+from future.builtins import input, next
 
 import sys
 import os
