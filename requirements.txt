@@ -1,7 +1,7 @@
 # Base requirements for apel
 
-mysqlclient==2.1.1 # (Latest package) Documentation says it should work with py3.6 and py3.9. Above verison has dropped support for py3.6.
+mysqlclient==2.1.1  # (Latest package) Documentation says it should work with py3.6 and py3.9. Above verison has dropped support for py3.6.
 python-ldap
-iso8601==1.1.0 # (Latest package) Documentation says it should work with py3.6.2+ and py3.9.
+iso8601==1.1.0  # (Latest package) Documentation says it should work with py3.6.2+ and py3.9.
 dirq
-future # Required to run py3 code in py2 with minimal overhead.
+future  # Required to run py3 code in py2 with minimal overhead.
