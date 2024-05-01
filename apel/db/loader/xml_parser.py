@@ -15,6 +15,9 @@
 
    @author: Konrad Jopek
 '''
+
+from future.builtins import object
+
 import xml.dom.minidom
 
 class XMLParserException(Exception):

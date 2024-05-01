@@ -18,9 +18,11 @@
 Module containing the Loader object.
 '''
 
+from __future__ import absolute_import
+
 # public interface for apel.dbloader
 
-from loader import Loader, LoaderException
-from car_parser import CarParser
-from aur_parser import AurParser
-from star_parser import StarParser
+from .loader import Loader, LoaderException
+from .car_parser import CarParser
+from .aur_parser import AurParser
+from .star_parser import StarParser

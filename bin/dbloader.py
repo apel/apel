@@ -20,18 +20,25 @@
 '''
 
 from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
 
 import sys
 import os
 import time
 import logging.config
+try:
+    # Renamed ConfigParser to configparser in Python 3
+    import configparser as ConfigParser
+except ImportError:
+    import ConfigParser
 
 from daemon.daemon import DaemonContext
 from apel.db.loader import Loader, LoaderException
 from apel.common import set_up_logging
 from apel import __version__
-import ConfigParser
 from optparse import OptionParser
+
 
 log = None
 

@@ -96,23 +96,22 @@ class ParserSGETest(unittest.TestCase):
 
         cases[line4] = line4_values
 
-        for line in cases.keys():
+        for line in list(cases.keys()):
             record = self.parser.parse(line)
             cont = record._record_content
 
-            self.assertTrue(cont.has_key("Site"))
-            self.assertTrue(cont.has_key("JobName"))
-            self.assertTrue(cont.has_key("LocalUserID"))
-            self.assertTrue(cont.has_key("LocalUserGroup"))
-            self.assertTrue(cont.has_key("WallDuration"))
-            self.assertTrue(cont.has_key("CpuDuration"))
-            self.assertTrue(cont.has_key("StartTime"))
-            self.assertTrue(cont.has_key("StopTime"))
-            self.assertTrue(cont.has_key("MemoryReal"))
-            self.assertTrue(cont.has_key("MemoryReal"))
+            self.assertIn("Site", cont)
+            self.assertIn("JobName", cont)
+            self.assertIn("LocalUserID", cont)
+            self.assertIn("LocalUserGroup", cont)
+            self.assertIn("WallDuration", cont)
+            self.assertIn("CpuDuration", cont)
+            self.assertIn("StartTime", cont)
+            self.assertIn("StopTime", cont)
+            self.assertIn("MemoryReal", cont)
 
 
-            for key in cases[line].keys():
+            for key in list(cases[line].keys()):
                 self.assertEqual(cont[key], cases[line][key], "%s != %s for key %s" % (cont[key], cases[line][key], key))
 
     def test_univa_timestamps(self):
@@ -194,7 +193,7 @@ class ParserSGETest(unittest.TestCase):
             parser = apel.parsers.sge.SGEParser('testSite', 'testHost', True)
             record = parser.parse(line)
             cont = record._record_content
-            for k,v in line_values.iteritems():
+            for k,v in list(line_values.items()):
                 self.assertEqual(v, cont[k])
         finally:
             patcher.stop()

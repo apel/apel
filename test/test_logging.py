@@ -1,11 +1,17 @@
 """Test cases for logging function in apel.common.__init__."""
 
-from cStringIO import StringIO
+from future import standard_library
+standard_library.install_aliases()
+
 import logging
 import os
 import sys
 import tempfile
 import unittest
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 from apel.common import set_up_logging
 
