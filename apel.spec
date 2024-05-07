@@ -199,7 +199,7 @@ exit 0
 # ==============================================================================
 
 %changelog
- * Thu May 25 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.3-1
+ * Thu Apr 25 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.3-1
  - [parsers] Reduced verbosity of parser to only report a single time that logs have been skipped.
  - Fixed some unit tests so that they run properly.
  - Refactored in support of move to Python 3.
