@@ -146,13 +146,13 @@ def copy_records(db1, db2, cutoff):
 
         role, group, vo = parse_fqan(fqan)
 
-        if global_user_name == None:
+        if global_user_name is None:
             global_user_name = 'None'
-        if role == None:
+        if role is None:
             role = 'None'
-        if group == None:
+        if group is None:
             group = 'None'
-        if vo == None:
+        if vo is None:
             vo = 'None'
 
         start_time = parse_timestamp(start_time)

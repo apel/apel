@@ -293,7 +293,7 @@ def runprocess(config_file, log_config_file):
                 log.warning('Is the URL correct?')
                 fetch_failed = True
     except AttributeError:
-        # gocdb_url == None
+        # gocdb_url is None
         log.info("No GOCDB URL specified - won't fetch URLs.")
     except IOError as e:
         log.info("Failed to retrieve XML - is the URL correct?")
