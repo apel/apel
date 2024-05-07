@@ -199,6 +199,11 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Wed May 08 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.0.0-1
+ - Added codebase compatability with Python3.
+ - Removed support for Oracle as a backend database.
+ - Added FPM build script.
+
  * Thu Apr 25 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.3-1
  - [parsers] Reduced verbosity of parser to only report a single time that logs have been skipped.
  - Fixed some unit tests so that they run properly.
