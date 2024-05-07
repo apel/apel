@@ -263,7 +263,6 @@ class DbUnloader(object):
 
         self._msgq.add(buf.getvalue())
         buf.close()
-        del buf
 
     def _write_apel(self, records):
         '''
@@ -279,7 +278,7 @@ class DbUnloader(object):
 
         self._msgq.add(buf.getvalue())
         buf.close()
-        del buf
+
 
 def get_start_of_previous_month(dt):
     '''
