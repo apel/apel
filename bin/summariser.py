@@ -100,10 +100,9 @@ def runprocess(db_config_file, config_file, log_config_file):
         print("Error initialising summariser: %s" % err)
         sys.exit(1)
     try:
-        f = open(pidfile, "w")
-        f.write(str(os.getpid()))
-        f.write("\n")
-        f.close()
+        with open(pidfile, "w") as f:
+            f.write(str(os.getpid()))
+            f.write("\n")
     except IOError as e:
         log.warning("Failed to create pidfile %s: %s", pidfile, e)
         # If we fail to create a pidfile, don't start the summariser

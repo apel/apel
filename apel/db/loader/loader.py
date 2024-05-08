@@ -93,10 +93,9 @@ class Loader(object):
             log.warning("Check that the dbloader is not running, then remove the file.")
             raise LoaderException("The dbloader cannot start while pidfile exists.")
         try:
-            f = open(self._pidfile, "w")
-            f.write(str(os.getpid()))
-            f.write("\n")
-            f.close()
+            with open(self._pidfile, "w") as f:
+                f.write(str(os.getpid()))
+                f.write("\n")
         except IOError as e:
             log.warning("Failed to create pidfile %s: %s", self._pidfile, e)
 

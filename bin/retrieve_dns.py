@@ -201,11 +201,10 @@ def dns_from_file(path):
     assume that they're DNs, but we'll check later.
     '''
 
-    dn_file = open(path)
-    dns = dn_file.readlines()
+    with open(path) as dn_file:
+        dns = dn_file.readlines()
     # get rid of any whitespace in the list of strings
     dns = [dn.strip() for dn in dns]
-    dn_file.close()
     return dns
 
 
