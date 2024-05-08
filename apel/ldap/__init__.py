@@ -14,4 +14,6 @@
    limitations under the License.
 '''
 
-from query import fetch_specint
+from __future__ import absolute_import
+
+from .query import fetch_specint

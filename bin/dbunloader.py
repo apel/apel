@@ -18,11 +18,14 @@
 '''
 
 from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
 
 try:
-    import ConfigParser
-except ImportError:
+    # Renamed ConfigParser to configparser in Python 3
     import configparser as ConfigParser
+except ImportError:
+    import ConfigParser
 import logging.config
 from optparse import OptionParser
 import os

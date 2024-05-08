@@ -1,0 +1,10 @@
+# Additional requirements for the unit and coverage tests
+
+# Constraints on the requirements below
+-c constraints.txt
+
+unittest2
+coveralls<=1.2.0
+mock<4.0.0  # Pinned because version 4 dropped support for Python 2.7
+codecov
+pre-commit

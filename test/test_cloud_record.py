@@ -1,3 +1,5 @@
+from future.builtins import str
+
 import unittest
 from datetime import datetime
 
@@ -20,23 +22,23 @@ class CloudRecordTest(unittest.TestCase):
 #        record = StorageRecord()
 #        record.load_from_tuple(data)
 #
-#        self.assertEquals(record.get_field('RecordId'), 'host.example.org/sr/87912469269276')
-#        self.assertEquals(str(record.get_field('CreateTime')), "2010-11-09 09:06:52")
-#        self.assertEquals(record.get_field('StorageSystem'), 'host.example.org')
-#        self.assertEquals(record.get_field('Site'), 'MySite')
-#        self.assertEquals(record.get_field('StorageShare'), 'pool-003')
-#        self.assertEquals(record.get_field('StorageMedia'), 'disk')
-#        self.assertEquals(record.get_field('StorageClass'), 'replicated')
-#        self.assertEquals(record.get_field('FileCount'), 42)
-#        self.assertEquals(record.get_field('DirectoryPath'), '/home/projectA')
-#        self.assertEquals(record.get_field('LocalUser'), 'johndoe')
-#        self.assertEquals(record.get_field('LocalGroup'), 'projectA')
-#        self.assertEquals(record.get_field('UserIdentity'), '/O=Grid/OU=example.org/CN=John Doe')
-#        self.assertEquals(record.get_field('GroupName'), 'binarydataproject.example.org')
-#        self.assertEquals(str(record.get_field('StartTime')), "2010-10-11 09:31:40")
-#        self.assertEquals(str(record.get_field('EndTime')), "2010-10-11 09:41:40")
-#        self.assertEquals(record.get_field('ResourceCapacityUsed'), 14728)
-#        self.assertEquals(record.get_field('LogicalCapacityUsed'), 13617)
+#        self.assertEqual(record.get_field('RecordId'), 'host.example.org/sr/87912469269276')
+#        self.assertEqual(str(record.get_field('CreateTime')), "2010-11-09 09:06:52")
+#        self.assertEqual(record.get_field('StorageSystem'), 'host.example.org')
+#        self.assertEqual(record.get_field('Site'), 'MySite')
+#        self.assertEqual(record.get_field('StorageShare'), 'pool-003')
+#        self.assertEqual(record.get_field('StorageMedia'), 'disk')
+#        self.assertEqual(record.get_field('StorageClass'), 'replicated')
+#        self.assertEqual(record.get_field('FileCount'), 42)
+#        self.assertEqual(record.get_field('DirectoryPath'), '/home/projectA')
+#        self.assertEqual(record.get_field('LocalUser'), 'johndoe')
+#        self.assertEqual(record.get_field('LocalGroup'), 'projectA')
+#        self.assertEqual(record.get_field('UserIdentity'), '/O=Grid/OU=example.org/CN=John Doe')
+#        self.assertEqual(record.get_field('GroupName'), 'binarydataproject.example.org')
+#        self.assertEqual(str(record.get_field('StartTime')), "2010-10-11 09:31:40")
+#        self.assertEqual(str(record.get_field('EndTime')), "2010-10-11 09:41:40")
+#        self.assertEqual(record.get_field('ResourceCapacityUsed'), 14728)
+#        self.assertEqual(record.get_field('LogicalCapacityUsed'), 13617)
 
     def setUp(self):
         self._msg1 = '''
@@ -215,19 +217,19 @@ CloudComputeService: Test Service'''
 
     def test_load_from_msg_value_check(self):
         """Check for correct values in CloudRecords generated from messages."""
-        for msg in self.cases.keys():
+        for msg in list(self.cases.keys()):
 
             cr = CloudRecord()
             cr.load_from_msg(msg)
 
             cont = cr._record_content
 
-            for key in self.cases[msg].keys():
+            for key in list(self.cases[msg].keys()):
                 self.assertEqual(cont[key], self.cases[msg][key], "%s != %s for key %s" % (cont[key], self.cases[msg][key], key))
 
     def test_load_from_msg_type_check(self):
         """Check the fields of a parsed message are of the correct type."""
-        for msg in self.cases.keys():
+        for msg in list(self.cases.keys()):
 
             cr = CloudRecord()
             cr.load_from_msg(msg)
@@ -270,7 +272,7 @@ CloudComputeService: Test Service'''
 
         try:
             record._check_fields()
-        except Exception, e:
+        except Exception as e:
             self.fail('_check_fields method failed: %s [%s]' % (str(e), str(type(e))))
 
 if __name__ == '__main__':

@@ -15,6 +15,9 @@
 
    @author: Konrad Jopek
 '''
+
+from future.builtins import object
+
 import logging
 
 log = logging.getLogger(__name__)

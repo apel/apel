@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        1.9.3
+Version:        2.0.0
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -25,7 +25,7 @@ The project is written in Python.
 %package lib
 Summary:        Libraries required for Apel Client, Server and Parsers
 Group:          Development/Languages
-Requires:       MySQL-python, python-ldap < 3.4.0 , python-iso8601, python-dirq
+Requires:       MySQL-python, python-ldap < 3.4.0 , python-iso8601, python-dirq, python-future
 Requires(pre):  shadow-utils
 
 %description lib
@@ -199,7 +199,12 @@ exit 0
 # ==============================================================================
 
 %changelog
- * Thu May 25 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.3-1
+ * Wed May 08 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.0.0-1
+ - Added codebase compatability with Python3.
+ - Removed support for Oracle as a backend database.
+ - Added FPM build script.
+
+ * Thu Apr 25 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 1.9.3-1
  - [parsers] Reduced verbosity of parser to only report a single time that logs have been skipped.
  - Fixed some unit tests so that they run properly.
  - Refactored in support of move to Python 3.

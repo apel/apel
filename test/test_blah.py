@@ -1,3 +1,5 @@
+from future.builtins import zip
+
 import datetime
 import unittest
 
@@ -34,20 +36,20 @@ class ParserBlahTest(unittest.TestCase):
         cases = {}
         cases[line1] = line1_values
 
-        for line in cases.keys():
+        for line in list(cases.keys()):
 
             record = self.parser.parse(line)
             cont = record._record_content
 
             # Keys presence in record
-            self.assertTrue(cont.has_key("TimeStamp"))
-            self.assertTrue(cont.has_key("GlobalUserName"))
-            self.assertTrue(cont.has_key("FQAN"))
-            self.assertTrue(cont.has_key("CE"))
-            self.assertTrue(cont.has_key("GlobalJobId"))
-            self.assertTrue(cont.has_key("LrmsId"))
+            self.assertIn("TimeStamp", cont)
+            self.assertIn("GlobalUserName", cont)
+            self.assertIn("FQAN", cont)
+            self.assertIn("CE", cont)
+            self.assertIn("GlobalJobId", cont)
+            self.assertIn("LrmsId", cont)
 
-            for key in cases[line].keys():
+            for key in list(cases[line].keys()):
                 self.assertEqual(cont[key], cases[line][key], "%s != %s for key %s" % (cont[key], cases[line][key], key))
 
 
@@ -96,7 +98,7 @@ class ParserBlahTest(unittest.TestCase):
             '80.ce1.triumf.ca" "localUser=41200" "clientID=cream_503347888"',
         )
         values = (
-            (datetime.datetime(2014, 5, 18, 00, 00, 58),
+            (datetime.datetime(2014, 5, 18, 0, 0, 58),
              '/C=CA/O=Grid/OU=triumf.ca/CN=Asoka De Silva GC1',
              '/atlas/Role=pilot/Capability=NULL',  # primary FQAN is first one
              'atlas',
@@ -105,11 +107,11 @@ class ParserBlahTest(unittest.TestCase):
              'ce1.triumf.ca:8443/cream-pbs-atlas',
              'CREAM663276716',
              '15876368.ce1.triumf.ca',
-             datetime.datetime(2014, 5, 17, 00, 00, 58),
-             datetime.datetime(2014, 6, 15, 00, 00, 58),
+             datetime.datetime(2014, 5, 17, 0, 0, 58),
+             datetime.datetime(2014, 6, 15, 0, 0, 58),
              0
              ),
-            (datetime.datetime(2014, 5, 18, 00, 03, 00),
+            (datetime.datetime(2014, 5, 18, 0, 3, 0),
              '/DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=atlpilo2/CN=531497/CN'
                 '=Robot: ATLAS Pilot2',
              '/atlas/Role=pilot/Capability=NULL',  # primary FQAN is first one
@@ -119,8 +121,8 @@ class ParserBlahTest(unittest.TestCase):
              'ce1.triumf.ca:8443/cream-pbs-atlas',
              'CREAM503347888',
              '15876480.ce1.triumf.ca',
-             datetime.datetime(2014, 5, 17, 00, 03, 00),
-             datetime.datetime(2014, 6, 15, 00, 03, 00),
+             datetime.datetime(2014, 5, 17, 0, 3, 0),
+             datetime.datetime(2014, 6, 15, 0, 3, 0),
              0
              ),
         )
@@ -133,14 +135,14 @@ class ParserBlahTest(unittest.TestCase):
         for line, value in zip(lines, values):
             cases[line] = dict(zip(fields, value))
 
-        for line in cases.keys():
+        for line in list(cases.keys()):
             record = self.parser.parse(line)
             cont = record._record_content
 
             # Check that 'Site' has been set
             self.assertEqual(cont['Site'], 'testSite')
 
-            for key in cases[line].keys():
+            for key in list(cases[line].keys()):
                 # Check all fields are present
                 self.assertTrue(key in cont, "Key '%s' not in record." % key)
                 # Check values are correct

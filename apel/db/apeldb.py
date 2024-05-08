@@ -16,8 +16,12 @@
    @author: Konrad Jopek
 '''
 
+from future.builtins import object, str
+
 import logging
+
 from apel.db import LOGGER_ID
+
 
 logger = logging.getLogger(LOGGER_ID)
 
@@ -44,13 +48,7 @@ class ApelDb(object):
         except ImportError:
             logger.info('Cannot import mysql backend')
 
-        try:
-            from apel.db.backends.oracle import ApelOracleDb
-            BACKENDS['oracle'] = ApelOracleDb
-        except ImportError:
-            logger.debug('Cannot import oracle backend')
-
-        if backend not in BACKENDS.keys():
+        if backend not in list(BACKENDS.keys()):
             raise ApelDbException('Unknown backend: %s' % (backend))
 
         backend = BACKENDS[backend]

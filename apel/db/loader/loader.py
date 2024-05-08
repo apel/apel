@@ -18,16 +18,20 @@
 Module containing the Loader class.
 '''
 
+from __future__ import absolute_import
+from future.builtins import next, object, str
+
 import logging
 import os
-from xml.parsers.expat import ExpatError
+import sys
+from xml.parsers.expat import ExpatError, errors
 
 from dirq.queue import Queue
 
 import apel.db
 from apel.db.loader.xml_parser import XMLParserException
 from apel.db.records import InvalidRecordException
-from record_factory import RecordFactory, RecordFactoryException
+from .record_factory import RecordFactory, RecordFactoryException
 
 
 # set up the logger
@@ -136,7 +140,7 @@ class Loader(object):
         while self.current_msg:
             if not self._inq.lock(self.current_msg):
                 log.warning("Skipping locked message %s", self.current_msg)
-                self.current_msg = self._inq.next()
+                self.current_msg = next(self._inq, None)
                 continue
             log.debug("Reading message %s", self.current_msg)
             data = self._inq.get(self.current_msg)
@@ -157,7 +161,11 @@ class Loader(object):
             except (RecordFactoryException, LoaderException,
                     InvalidRecordException, apel.db.ApelDbException,
                     XMLParserException, ExpatError) as err:
-                errmsg = "Parsing unsuccessful: %s" % str(err)
+                if sys.version_info >= (3,) and isinstance(err, ExpatError):
+                    errmsg = "Parsing unsuccessful: %s" % str(errors.messages[err.code])
+                else:
+                    errmsg = "Parsing unsuccessful: %s" % str(err)
+
                 log.warning('Message rejected. %s', errmsg)
                 name = self._rejectq.add({"body": msg_text,
                                           "signer": signer,
@@ -167,7 +175,7 @@ class Loader(object):
 
             log.info("Removing message %s. ID = %s", self.current_msg, msg_id)
             self._inq.remove(self.current_msg)
-            self.current_msg = self._inq.next()
+            self.current_msg = next(self._inq, None)
 
         if num_msgs:  # Only tidy up if messages found
             log.info('Tidying message directories')
