@@ -97,7 +97,7 @@ class AurParserTest(unittest.TestCase):
             for field in ('Site', 'Month', 'Year',
                           'WallDuration', 'CpuDuration', 'NumberOfJobs'):
                 # Also need: 'NormalisedWallDuration', 'NormalisedCpuDuration'
-                self.assertTrue(field in cont, "Field '%s' not found" % field)
+                self.assertIn(field, cont, "Field '%s' not found" % field)
 
             for key in cases[aur]:
                 if isinstance(cont[key], datetime):

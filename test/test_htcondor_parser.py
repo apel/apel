@@ -66,7 +66,7 @@ class HTCondorParserTest(unittest.TestCase):
             self.assertEqual(cont['Infrastructure'], 'APEL-CREAM-HTCONDOR')
 
             for key in list(cases[line].keys()):
-                self.assertTrue(key in cont, "Key '%s' not in record." % key)
+                self.assertIn(key, cont, "Key '%s' not in record." % key)
 
             for key in list(cases[line].keys()):
                 self.assertEqual(cont[key], cases[line][key],
@@ -125,7 +125,7 @@ class HTCondorParserTest(unittest.TestCase):
             self.assertEqual(cont['Infrastructure'], 'APEL-CREAM-HTCONDOR')
 
             for key in list(cases[line].keys()):
-                self.assertTrue(key in cont, "Key '%s' not in record." % key)
+                self.assertIn(key, cont, "Key '%s' not in record." % key)
 
             for key in list(cases[line].keys()):
                 self.assertEqual(cont[key], cases[line][key],
