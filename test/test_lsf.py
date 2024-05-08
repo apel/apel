@@ -107,7 +107,7 @@ class ParserLSFTest(unittest.TestCase):
             self.assertEqual(cont['Infrastructure'], 'APEL-CREAM-LSF')
 
             for field in list(cases[line].keys()):
-                self.assertTrue(field in cont, "Field '%s' not in record: %s" % (field, cont))
+                self.assertIn(field, cont, "Field '%s' not in record: %s" % (field, cont))
 
             for key in list(cases[line].keys()):
                 self.assertEqual(cont[key], cases[line][key], "%s != %s for key %s" % (cont[key], cases[line][key], key))

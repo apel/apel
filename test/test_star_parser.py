@@ -110,7 +110,7 @@ class StarParserTest(unittest.TestCase):
             #  Mandatory fields
             for field in ("RecordId", "CreateTime", "StorageSystem",
                           "StartTime", "EndTime", "ResourceCapacityUsed"):
-                self.assertTrue(field in cont, "Field '%s' not found" % field)
+                self.assertIn(field, cont, "Field '%s' not found" % field)
 
             for key in list(cases[star].keys()):
                 if isinstance(cont[key], datetime):

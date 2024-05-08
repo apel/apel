@@ -115,7 +115,7 @@ class ParserSlurmTest(unittest.TestCase):
                 del cases[line]['Queue']
 
             for key in list(cases[line].keys()):
-                self.assertTrue(key in cont, "Key '%s' not in record." % key)
+                self.assertIn(key, cont, "Key '%s' not in record." % key)
 
             for key in list(cases[line].keys()):
                 self.assertEqual(cont[key], cases[line][key], "%s != %s for key %s." % (cont[key], cases[line][key], key))

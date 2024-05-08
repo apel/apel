@@ -114,7 +114,7 @@ class ParserPBSTest(unittest.TestCase):
 
             for key in list(cases[line].keys()):
                 # Check all fields are present
-                self.assertTrue(key in cont, "Key '%s' not in record." % key)
+                self.assertIn(key, cont, "Key '%s' not in record." % key)
                 # Check values are correct
                 self.assertEqual(cont[key], cases[line][key], "%s != %s for key %s" % (cont[key], cases[line][key], key))
 

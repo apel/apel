@@ -201,17 +201,14 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         # format we will get IOError, empty files can
                         # give EOFError as well.
                         for method in (bz2.BZ2File, gzip.open, open):
-                            try:  # this is for Python < 2.5
-                                try:
-                                    fp = method(abs_file, 'rb')
+                            try:
+                                with method(abs_file, 'rb') as fp:
                                     parsed, total = parse_file(parser, apel_db,
                                                                fp, reparse)
-                                    break
-                                except (IOError, EOFError):
-                                    if method == open:
-                                        raise
-                            finally:
-                                fp.close()
+                                break
+                            except (IOError, EOFError):
+                                if method == open:
+                                    raise
                     except IOError as e:
                         log.error('Cannot parse file %s: %s', item, e)
                     except ApelDbException as e:
