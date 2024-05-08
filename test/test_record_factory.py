@@ -63,14 +63,14 @@ class TestRecordFactory(unittest.TestCase):
     def test_create_jrs(self):
         """Check that creating job records returns JobRecords."""
         records = self._rf.create_records(self._jr_text)
-        self.assertTrue(len(records), 2)
+        self.assertEqual(len(records), 2)
         for record in records:
             self.assertIsInstance(record, JobRecord)
 
     def test_create_srs(self):
         """Check that creating summary records returns SummaryRecords."""
         records = self._rf.create_records(self._sr_text)
-        self.assertTrue(len(records), 2)
+        self.assertEqual(len(records), 2)
         for record in records:
             self.assertIsInstance(record, SummaryRecord)
 
