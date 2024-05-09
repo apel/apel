@@ -16,7 +16,7 @@
     @author Will Rogers
 '''
 
-from future.builtins import str
+from future.builtins import str, super
 
 from apel.db.records import Record, InvalidRecordException
 from xml.dom.minidom import Document
@@ -35,7 +35,7 @@ class SummaryRecord(Record):
     def __init__(self):
         '''Populate fields required to load the message.'''
 
-        Record.__init__(self)
+        super().__init__()
 
         # Fields which are required by the message format.
         self._mandatory_fields = ["Site", "Month", "Year", "WallDuration",
@@ -70,7 +70,7 @@ class SummaryRecord(Record):
         '''
 
         # Call the parent's checks first.
-        Record._check_fields(self)
+        super()._check_fields()
 
         # shorthand
         rc = self._record_content
@@ -242,7 +242,7 @@ class SummaryRecord04(SummaryRecord):
     def __init__(self):
         """Populate fields required to load the message."""
 
-        Record.__init__(self)
+        super().__init__()
 
         # Fields which are required by the message format.
         self._mandatory_fields = ["Site", "Month", "Year", "WallDuration",
