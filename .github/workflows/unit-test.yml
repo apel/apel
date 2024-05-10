@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   unit-test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-20.04  # 20.04 to allow for Py 3.6
     services:
       mariadb:
         image: mariadb:10.4
@@ -31,6 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Python versions on Rocky 8 and 9 respectively
         python-version: ['3.6', '3.9']
     name: Python ${{ matrix.python-version }} test
     steps:
@@ -40,6 +41,7 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+        cache: 'pip'
 
     - name: Set up dependencies for python-ldap
       run: |
