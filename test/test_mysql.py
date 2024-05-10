@@ -94,7 +94,7 @@ class MysqlTest(unittest.TestCase):
                                'EndTime': datetime.datetime.fromtimestamp(654321),
                                'ServiceLevelType': 'HEPscore23',
                                'ServiceLevel': 11.5}
-        items_in = job._record_content.items()
+        items_in = list(job._record_content.items())
         record_list = [job]
         # load_records changes the 'job' job record as it calls _check_fields
         # which adds placeholders to empty fields
@@ -130,7 +130,7 @@ class MysqlTest(unittest.TestCase):
                 "ServiceLevelType": "HEPscore23",
             }
 
-            items_in = record._record_content.items()
+            items_in = list(record._record_content.items())
             record_list = [record]
             # load_records changes the record as it calls _check_fields
             # which adds placeholders to empty fields
@@ -208,7 +208,7 @@ class MysqlTest(unittest.TestCase):
         # record_out_list = list(records_out)
         # items_out = []
         # for record in record_out_list[0]:
-        #     items_out += record._record_content.items()
+        #     items_out += list(record._record_content.items())
         # Check that items_in is a subset of items_out
         # Can't use 'all()' rather than comparing the length as Python 2.4
         # self.assertEqual([item in items_out for item in items_in].count(True),
