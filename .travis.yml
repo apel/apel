@@ -2,11 +2,6 @@ os: linux
 language: python
 python:
   - "2.7"
-  - "3.7"
-matrix:
-  allow_failures:
-    - python: "3.7"
-  fast_finish: true
 
 # MySQL doesn't start automatically in newer build environments
 services:
