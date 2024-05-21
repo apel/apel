@@ -140,11 +140,8 @@ class RunprocessTestCase(unittest.TestCase):
         <SERVICE_ENDPOINT><HOSTDN>invalid</HOSTDN></SERVICE_ENDPOINT>
         </results>"""
         bin.retrieve_dns.runprocess("fake_config_file", "fake_log_config_file")
-        dns = open(self.files['dn']['path'])
-        try:
+        with open(self.files['dn']['path']) as dns:
             self.assertEqual(dns.read(), "/basic/dn\n/extra/dn\n")
-        finally:
-            dns.close()
 
     def test_gocdb_fail(self):
         """
@@ -155,11 +152,8 @@ class RunprocessTestCase(unittest.TestCase):
         self.mock_xml.return_value = ""
         self.assertRaises(SystemExit, bin.retrieve_dns.runprocess,
                           "fake_config_file", "fake_log_config_file")
-        dns = open(self.files['dn']['path'])
-        try:
+        with open(self.files['dn']['path']) as dns:
             self.assertEqual(dns.read(), "/dn/1\n/dn/2\n")
-        finally:
-            dns.close()
 
     def tearDown(self):
         # Delete temp files
