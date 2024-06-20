@@ -274,6 +274,20 @@ def run_client(ccp):
         log.info(LOG_BREAK)
 
 
+def check_config_file_exists(configFile):
+    '''
+    Function to check a passed config file exists.
+    Makes use of os.path.isfile function
+    '''
+    if os.path.isfile(configFile):
+        cp = ConfigParser.ConfigParser()
+        cp.read(configFile)
+        return cp
+    else:
+        print("Config file not found at", configFile)
+        sys.exit(1)
+
+
 def main():
     '''
     Parse command line arguments, set up logging and begin the client
@@ -282,25 +296,32 @@ def main():
     install_exc_handler(default_handler)
     ver = 'APEL client %s.%s.%s' % __version__
     opt_parser = OptionParser(version=ver, description=__doc__)
+    DEFAULT_CONF_LOCATION = '/etc/apel/client.cfg'
+    DEFAULT_SSMCONF_LOCATION = '/etc/apel/sender.cfg'
+    DEFAULT_LOGCONF_LOCATION = '/etc/apel/logging.cfg'
 
     opt_parser.add_option('-c', '--config',
-                          help='main configuration file for APEL',
-                          default='/etc/apel/client.cfg')
+                          help=('main configuration file for APEL, '
+                                'default path: ' + DEFAULT_CONF_LOCATION),
+                          default=DEFAULT_CONF_LOCATION)
 
     opt_parser.add_option('-s', '--ssm_config',
-                          help='location of SSM config file',
-                          default='/etc/apel/sender.cfg')
+                          help=('location of SSM config file, '
+                                'default path: ' + DEFAULT_SSMCONF_LOCATION),
+                          default=DEFAULT_SSMCONF_LOCATION)
 
     opt_parser.add_option('-l', '--log_config',
-                          help='location of logging config file (optional)',
-                          default='/etc/apel/logging.cfg')
+                          help=('location of logging config file (optional), '
+                                'default path: ' + DEFAULT_LOGCONF_LOCATION),
+                          default=DEFAULT_LOGCONF_LOCATION)
 
     options, unused_args = opt_parser.parse_args()
-    ccp = ConfigParser.ConfigParser()
-    ccp.read(options.config)
 
-    scp = ConfigParser.ConfigParser()
-    scp.read(options.ssm_config)
+    # check if config file exists
+    ccp = check_config_file_exists(options.config)
+
+    # check if ssm config file exists
+    scp = check_config_file_exists(options.ssm_config)
 
     # set up logging
     try:
