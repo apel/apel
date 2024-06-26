@@ -1,4 +1,5 @@
 # Conditionally define python_sitelib
+%define __python /usr/bin/python3
 %if ! (0%{?fedora} > 12 || 0%{?rhel} > 5)
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 %endif
@@ -25,7 +26,7 @@ The project is written in Python.
 %package lib
 Summary:        Libraries required for Apel Client, Server and Parsers
 Group:          Development/Languages
-Requires:       MySQL-python, python-ldap < 3.4.0 , python-iso8601, python-dirq, python-future
+Requires:       python3-mysqlclient, python-ldap < 3.5.0 , python-iso8601, python-dirq, python-future
 Requires(pre):  shadow-utils
 
 %description lib
