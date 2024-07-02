@@ -1,5 +1,5 @@
 # Constraints that apply to pip installed requirements
 
-# coveralls dependencies that need older versions for Python 2.6
+# coveralls dependencies that need older versions for Python 2.7
 pycparser<2.22
 idna<3.0

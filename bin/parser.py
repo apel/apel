@@ -106,18 +106,18 @@ def parse_file(parser, apel_db, fp, replace):
     # how many times given error was raised
     exceptions = {}
 
-    index = 0
+    line_number = 0
     parsed = 0
     failed = 0
     ignored = 0
 
-    for index, line in enumerate(fp, start=1):
+    for line_number, line in enumerate(fp, start=1):
         line = line.decode('utf-8')
 
         try:
             record = parser.parse(line)
         except Exception as e:
-            log.debug('Error %s on line %d', e, index)
+            log.debug('Error %s on line %d', e, line_number)
             failed += 1
             if str(e) in exceptions:
                 exceptions[str(e)] += 1
@@ -136,7 +136,7 @@ def parse_file(parser, apel_db, fp, replace):
 
     apel_db.load_records(records, replace=replace)
 
-    if index == 0:
+    if line_number == 1:
         log.info('Ignored empty file.')
     elif parsed == 0:
         log.warning('Failed to parse file.  Is %s correct?', parser.__class__.__name__)
@@ -148,7 +148,7 @@ def parse_file(parser, apel_db, fp, replace):
         for error in exceptions:
             log.error('%s raised %d times', error, exceptions[error])
 
-    return parsed, index
+    return parsed, line_number
 
 
 def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
