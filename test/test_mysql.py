@@ -79,10 +79,9 @@ class MysqlTest(unittest.TestCase):
         self.apel_db.load_records(record_list, source='testDN')
 
         records_out = self.apel_db.get_records(apel.db.records.job.JobRecord)
-        items_out = list(list(records_out)[0][0]._record_content.items())
+        items_out = list(list(records_out)[0]._record_content.items())
         # Check that items_in is a subset of items_out
-        # Can't use 'all()' rather than comparing the length as Python 2.4
-        self.assertEqual([item in items_out for item in items_in].count(True), len(items_in))
+        self.assertTrue(all(item in items_out for item in items_in))
 
     def test_load_and_get_cloud(self):
         '''
