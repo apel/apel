@@ -79,7 +79,7 @@ class MysqlTest(unittest.TestCase):
         self.apel_db.load_records(record_list, source='testDN')
 
         records_out = self.apel_db.get_records(apel.db.records.job.JobRecord)
-        items_out = list(list(records_out)[0]._record_content.items())
+        items_out = list(list(records_out)[0][0]._record_content.items())
         # Check that items_in is a subset of items_out
         self.assertTrue(all(item in items_out for item in items_in))
 
