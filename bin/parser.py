@@ -106,7 +106,6 @@ def parse_file(parser, apel_db, fp, replace):
     # how many times given error was raised
     exceptions = {}
 
-    line_number = 0
     index = 0
     parsed = 0
     failed = 0
@@ -118,7 +117,7 @@ def parse_file(parser, apel_db, fp, replace):
         try:
             record = parser.parse(line)
         except Exception as e:
-            log.debug('Error %s on line %d', e, line_number)
+            log.debug('Error %s on line %d', e, index)
             failed += 1
             if str(e) in exceptions:
                 exceptions[str(e)] += 1
@@ -149,7 +148,7 @@ def parse_file(parser, apel_db, fp, replace):
         for error in exceptions:
             log.error('%s raised %d times', error, exceptions[error])
 
-    return parsed, line_number
+    return parsed, index
 
 
 def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
