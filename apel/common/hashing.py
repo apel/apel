@@ -13,11 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 '''
-# hashlib only available in python2.5+
-try:
-    from hashlib import md5
-except ImportError:
-    from md5 import md5
+
+from hashlib import md5
 import gzip
 
 def calculate_hash(fname):
