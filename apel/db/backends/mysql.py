@@ -435,13 +435,13 @@ class ApelMysqlDb(object):
             )
 
             log.info(
-                "Running \"%s\" to delete stale summaries" % delete_statement
+                "Running \"%s\" to delete stale summaries", delete_statement
             )
             number_deleted = cursor.execute(delete_statement)
 
             self.db.commit()
 
-            log.info("Removed %s stale summaries." % number_deleted)
+            log.info("Removed %s stale summaries.", number_deleted)
 
         except MySQLdb.Error as e:
             log.error("A mysql error occurred: %s", e)
