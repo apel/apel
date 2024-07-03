@@ -443,8 +443,8 @@ class ApelMysqlDb(object):
 
             log.info("Removed %s stale summaries." % number_deleted)
 
-        except MySQLdb.Error, error:
-            log.error("A mysql error occurred: %s", error)
+        except MySQLdb.Error as e:
+            log.error("A mysql error occurred: %s", e)
             log.error("Any transaction will be rolled back.")
 
             if self.db is not None:
