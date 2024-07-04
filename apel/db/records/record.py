@@ -307,7 +307,7 @@ class Record(object):
 
         # Check that no extra fields are specified.
         # Is this inefficient?
-        for key in list(contents.keys()):
+        for key in contents:
             if key not in self._all_fields:
                 raise InvalidRecordException("Unexpected field " + key + " in message.")
 
