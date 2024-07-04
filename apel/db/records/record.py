@@ -314,9 +314,8 @@ class Record(object):
         # Fill the dictionary even if we don't have the relevant data.
         # The string values are getting 'None' (not None!) instead of going into the
         # DB as NULL.
-        current_keys = list(contents.keys())
         for key in self._msg_fields:
-            if key not in current_keys: # key not already in the dictionary
+            if key not in contents:  # key not already in the dictionary
                 contents[key] = "None"
             if check_for_null(contents[key]):
                 contents[key] = "None"
