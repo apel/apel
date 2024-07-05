@@ -89,9 +89,9 @@ class SGEParser(Parser):
         hosts = xml_str.getElementsByTagName("host")
 
         for host in hosts:
-            host_name = dict(host.attributes.items())["name"]
+            host_name = host.getAttribute("name")
             for resource in host.getElementsByTagName("resourcevalue"):
-                resource_name = dict(resource.attributes.items())["name"]
+                resource_name = resource.getAttribute("name")
                 if resource_name in ["cputmult", "wallmult"]:
                     try:
                         resource_value = float(resource.childNodes[0].data)
