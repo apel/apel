@@ -171,6 +171,7 @@ class JobRecord(Record):
         return (sfu, sf)
 
     def _positive(self, field_name):
+        """Check that a field's value is positive when cast to int"""
         value = self.get_field(field_name)
         return value is not None and int(value) > 0
 
