@@ -1,3 +1,5 @@
+from future.builtins import zip
+
 import datetime
 import unittest
 
@@ -101,7 +103,7 @@ class ParserPBSTest(unittest.TestCase):
         for line, value in zip(lines, values):
             cases[line] = dict(zip(fields, value))
 
-        for line in cases.keys():
+        for line in list(cases.keys()):
 
             record = self.parser.parse(line)
             cont = record._record_content
@@ -110,9 +112,9 @@ class ParserPBSTest(unittest.TestCase):
             self.assertEqual(cont['Infrastructure'], 'APEL-CREAM-PBS')
             self.assertEqual(cont['MachineName'], 'testHost')
 
-            for key in cases[line].keys():
+            for key in list(cases[line].keys()):
                 # Check all fields are present
-                self.assertTrue(key in cont, "Key '%s' not in record." % key)
+                self.assertIn(key, cont, "Key '%s' not in record." % key)
                 # Check values are correct
                 self.assertEqual(cont[key], cases[line][key], "%s != %s for key %s" % (cont[key], cases[line][key], key))
 
@@ -182,8 +184,8 @@ class ParserPBSTest(unittest.TestCase):
         record = parser.parse(line)
         cont = record._record_content
 
-        self.assertEquals(cont['NodeCount'], 0)
-        self.assertEquals(cont['Processors'], 0)
+        self.assertEqual(cont['NodeCount'], 0)
+        self.assertEqual(cont['Processors'], 0)
 
 if __name__ == '__main__':
     unittest.main()

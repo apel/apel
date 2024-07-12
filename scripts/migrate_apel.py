@@ -2,6 +2,9 @@
 
 # Migrate from the old apel client database to the new apel client database.
 
+from __future__ import print_function
+from future.builtins import str
+
 from apel.common.parsing_utils import parse_fqan
 
 import MySQLdb
@@ -143,13 +146,13 @@ def copy_records(db1, db2, cutoff):
 
         role, group, vo = parse_fqan(fqan)
 
-        if global_user_name == None:
+        if global_user_name is None:
             global_user_name = 'None'
-        if role == None:
+        if role is None:
             role = 'None'
-        if group == None:
+        if group is None:
             group = 'None'
-        if vo == None:
+        if vo is None:
             vo = 'None'
 
         start_time = parse_timestamp(start_time)
@@ -161,7 +164,7 @@ def copy_records(db1, db2, cutoff):
                                'migration_script', 'grid', memory_real, memory_virtual, SPECINT, specint, 'Import'))
             inserted += 1
 
-        except Exception, err:
+        except Exception as err:
             try:
                 # mysql code for duplicate record is 1062
                 if err[0] == 1062:
@@ -227,25 +230,25 @@ def main():
     the copying and deleting processes.
     '''
     if len(sys.argv) != 4:
-        print 'Usage: '+sys.argv[0]+' <sourcedb> <destdb> <months_to_keep>'
-        print 'where:'
-        print '     <sourcedb> - hostname:database_name:username:password'
-        print '     <destdb> - as per source db'
-        print '     <months_to_keep> - number of complete months\' data to retain'
+        print('Usage: '+sys.argv[0]+' <sourcedb> <destdb> <months_to_keep>')
+        print('where:')
+        print('     <sourcedb> - hostname:database_name:username:password')
+        print('     <destdb> - as per source db')
+        print('     <months_to_keep> - number of complete months\' data to retain')
         sys.exit()
 
     try:
         host1, dbname1, user1, pw1 = sys.argv[1].split(':')
         host2, dbname2, user2, pw2 = sys.argv[2].split(':')
     except (IndexError, ValueError):
-        print 'DB connection details must be in the format:'
-        print '  hostname:database_name:username:password'
+        print('DB connection details must be in the format:')
+        print('  hostname:database_name:username:password')
         sys.exit()
 
     try:
         months_to_keep = int(sys.argv[3])
     except ValueError:
-        print '<months_to_keep> must be an integer'
+        print('<months_to_keep> must be an integer')
         sys.exit()
 
     cutoff = get_start_of_month(months_to_keep)
@@ -254,8 +257,8 @@ def main():
     try:
         db1 =  MySQLdb.connect(host=host1, db=dbname1, user=user1, passwd=pw1)
         db2 =  MySQLdb.connect(host=host2, db=dbname2, user=user2, passwd=pw2)
-    except MySQLdb.Error, e:
-        print 'Error connecting to database: %s' % str(e)
+    except MySQLdb.Error as e:
+        print('Error connecting to database: %s' % str(e))
         sys.exit()
 
     # copy records

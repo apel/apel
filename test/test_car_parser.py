@@ -48,8 +48,8 @@ class CarParserTest(unittest.TestCase):
                    'LocalUserId': 'urf:LocalUserId',
                    'WallDuration': 86400,
                    'CpuDuration': 86400,
-                   'StartTime': datetime.datetime(2001, 12, 31, 12, 00, 00),
-                   'EndTime': datetime.datetime(2001, 12, 31, 12, 00, 00),
+                   'StartTime': datetime.datetime(2001, 12, 31, 12, 0, 0),
+                   'EndTime': datetime.datetime(2001, 12, 31, 12, 0, 0),
                    }
 
         car2 = '''<?xml version="1.0"?>
@@ -170,15 +170,15 @@ class CarParserTest(unittest.TestCase):
             cont = record._record_content
 
             #  Mandatory fields - need checking.
-            self.assertTrue('Site' in cont)
-            self.assertTrue('Queue' in cont)
-            self.assertTrue('LocalJobId' in cont)
-            self.assertTrue('WallDuration' in cont)
-            self.assertTrue('CpuDuration' in cont)
-            self.assertTrue('StartTime' in cont)
-            self.assertTrue('EndTime' in cont)
+            self.assertIn('Site', cont)
+            self.assertIn('Queue', cont)
+            self.assertIn('LocalJobId', cont)
+            self.assertIn('WallDuration', cont)
+            self.assertIn('CpuDuration', cont)
+            self.assertIn('StartTime', cont)
+            self.assertIn('EndTime', cont)
 
-            for key in cases[car].keys():
+            for key in cases[car]:
                 if isinstance(cont[key], datetime.datetime):
                     if not datetimes_equal(cont[key], cases[car][key]):
                         self.fail("Datetimes don't match for key %s: %s, %s" % (key, cont[key], cases[car][key]))

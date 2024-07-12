@@ -16,6 +16,8 @@
 @author Will Rogers
 '''
 
+from future.builtins import str
+
 from apel.db.records import Record, InvalidRecordException
 from apel.common import parse_fqan
 from datetime import datetime, timedelta
@@ -127,5 +129,5 @@ class CloudRecord(Record):
             if datetime.fromtimestamp(end) > tomorrow:
                 raise InvalidRecordException("Epoch time " + str(end) + " is in the future.")
 
-        except ValueError:
+        except (ValueError, OverflowError, OSError):
             raise InvalidRecordException("Cannot parse an integer from StartTime or EndTime.")

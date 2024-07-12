@@ -1,11 +1,17 @@
 """Test cases for logging function in apel.common.__init__."""
 
-from cStringIO import StringIO
+from future import standard_library
+standard_library.install_aliases()
+
 import logging
 import os
 import sys
 import tempfile
 import unittest
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 from apel.common import set_up_logging
 
@@ -44,9 +50,8 @@ class LoggingTest(unittest.TestCase):
 
         # Only check bit after timestamp as that doesn't change.
         self.assertEqual(output[23:], " - test_logging - INFO - out\n")
-        f = open(self.path)
-        self.assertEqual(f.readline()[23:], " - test_logging - INFO - out\n")
-        f.close()
+        with open(self.path) as f:
+            self.assertEqual(f.readline()[23:], " - test_logging - INFO - out\n")
 
     def test_boring_logging(self):
         """Check that logging without handlers at least runs without errors."""

@@ -16,26 +16,26 @@ class MysqlTest(unittest.TestCase):
     def setUp(self):
         query = ('DROP DATABASE IF EXISTS apel_unittest;'
                  'CREATE DATABASE apel_unittest;')
-        subprocess.call(['mysql', '-u', 'root', '-e', query])
+        subprocess.call(['mysql', '-h', '127.0.0.1', '-u', 'root', '-e', query])
 
         # Use MariaDB 10.1.x defaults
         modes = ("SET GLOBAL sql_mode = "
                  "'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'")
-        subprocess.call(['mysql', '-u', 'root', '-e', modes])
+        subprocess.call(['mysql', '-h', '127.0.0.1', '-u', 'root', '-e', modes])
 
-        schema_path = os.path.abspath(os.path.join('..', 'schemas',
-                                                   'server.sql'))
+        schema_path = os.path.join(
+            os.path.dirname(__file__), '..', 'schemas', 'server.sql'
+        )
         schema_handle = open(schema_path)
-        subprocess.call(['mysql', '-u', 'root', 'apel_unittest'], stdin=schema_handle)
+        subprocess.call(['mysql', '-h', '127.0.0.1', '-u', 'root', 'apel_unittest'], stdin=schema_handle)
         schema_handle.close()
 
-        self.apel_db = apel.db.apeldb.ApelDb('mysql', 'localhost', 3306, 'root', '',
-                                             'apel_unittest')
+        self.apel_db = apel.db.apeldb.ApelDb('mysql', '127.0.0.1', 3306, 'root', '', 'apel_unittest')
 
     def tearDown(self):
         self.apel_db.db.close()
         query = "DROP DATABASE apel_unittest;"
-        subprocess.call(['mysql', '-u', 'root', '-e', query])
+        subprocess.call(['mysql', '-h', '127.0.0.1', '-u', 'root', '-e', query])
 
     def test_test_connection(self):
         """Basic check that test_connection works without error."""
@@ -44,7 +44,7 @@ class MysqlTest(unittest.TestCase):
     def test_bad_connection(self):
         """Check that initialising ApelDb fails if a bad password is used."""
         self.assertRaises(apel.db.apeldb.ApelDbException, apel.db.apeldb.ApelDb,
-                          'mysql', 'localhost', 3306, 'root', 'badpassword',
+                          'mysql', '127.0.0.1', 3306, 'root', 'badpassword',
                           'apel_badtest')
 
     def test_lost_connection(self):
@@ -72,17 +72,16 @@ class MysqlTest(unittest.TestCase):
                                'EndTime': datetime.datetime.fromtimestamp(654321),
                                'ServiceLevelType': 'HEPSPEC',
                                'ServiceLevel': 3}
-        items_in = job._record_content.items()
+        items_in = list(job._record_content.items())
         record_list = [job]
         # load_records changes the 'job' job record as it calls _check_fields
         # which adds placeholders to empty fields
         self.apel_db.load_records(record_list, source='testDN')
 
         records_out = self.apel_db.get_records(apel.db.records.job.JobRecord)
-        items_out = list(records_out)[0][0]._record_content.items()
+        items_out = list(list(records_out)[0][0]._record_content.items())
         # Check that items_in is a subset of items_out
-        # Can't use 'all()' rather than comparing the length as Python 2.4
-        self.assertEqual([item in items_out for item in items_in].count(True), len(items_in))
+        self.assertTrue(all(item in items_out for item in items_in))
 
     def test_load_and_get_cloud(self):
         '''
@@ -92,11 +91,14 @@ class MysqlTest(unittest.TestCase):
         as the two are currently not the same for V0.2.
         i.e Benchmark 'None', which gets set to 0.0
         '''
-        schema_path = os.path.abspath(os.path.join('..', 'schemas',
-                                                   'cloud.sql'))
+        schema_path = os.path.join(
+            os.path.dirname(__file__), '..', 'schemas', 'cloud.sql'
+        )
         schema_handle = open(schema_path)
-        subprocess.call(['mysql', '-u', 'root', 'apel_unittest'],
-                        stdin=schema_handle)
+        subprocess.call(
+            ['mysql', '-h', '127.0.0.1', '-u', 'root', 'apel_unittest'],
+            stdin=schema_handle
+        )
         schema_handle.close()
 
         # loading messages like this does indirectly test
@@ -118,10 +120,10 @@ class MysqlTest(unittest.TestCase):
         cloud4_mf = apel.db.records.cloud.CloudRecord()
         cloud4_mf.load_from_msg(CLOUD4_MISSING_FIELDS)
 
-        items_in = cloud2._record_content.items()
-        items_in += cloud4._record_content.items()
-        items_in += cloud4_nb._record_content.items()
-        items_in += cloud4_mf._record_content.items()
+        # items_in = list(cloud2._record_content.items())
+        # items_in += list(cloud4._record_content.items())
+        # items_in += list(cloud4_nb._record_content.items())
+        # items_in += list(cloud4_mf._record_content.items())
 
         record_list = [cloud2, cloud4, cloud4_nb, cloud4_mf]
 
@@ -177,11 +179,14 @@ class MysqlTest(unittest.TestCase):
         The loader should work when passed mixed record types if they are
         Storage and GroupAttribute records.
         """
-        schema_path = os.path.abspath(os.path.join('..', 'schemas',
-                                                   'storage.sql'))
+        schema_path = os.path.join(
+            os.path.dirname(__file__), '..', 'schemas', 'storage.sql'
+        )
         schema_handle = open(schema_path)
-        subprocess.call(['mysql', '-u', 'root', 'apel_unittest'],
-                        stdin=schema_handle)
+        subprocess.call(
+            ['mysql', '-h', '127.0.0.1', '-u', 'root', 'apel_unittest'],
+            stdin=schema_handle
+        )
         schema_handle.close()
 
         storage_rec = apel.db.records.StorageRecord()

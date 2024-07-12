@@ -23,18 +23,32 @@
 '''
 @author: Will Rogers
 '''
+
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from future.builtins import object, str
+
 from apel.common import set_up_logging, LOG_BREAK
 from apel import __version__
 
 from optparse import OptionParser
-import ConfigParser
 import logging.config
 import os
 import sys
 import time
-import urllib
 import xml.dom.minidom
 import xml.parsers.expat
+try:
+    # Renamed ConfigParser to configparser in Python 3
+    # urllib code flow got changed in Python 3
+    import configparser as ConfigParser
+    import urllib.request
+    import urllib.error
+except ImportError:
+    import ConfigParser
+    import urllib
+
 
 log = logging.getLogger('auth')
 
@@ -99,9 +113,9 @@ def get_config(config_file):
             set_up_logging(cp.get('logging', 'logfile'),
                            cp.get('logging', 'level'),
                            cp.getboolean('logging', 'console'))
-    except (ConfigParser.Error, ValueError, IOError), err:
-        print 'Error configuring logging: %s' % str(err)
-        print 'The system will exit.'
+    except (ConfigParser.Error, ValueError, IOError) as err:
+        print('Error configuring logging: %s' % str(err))
+        print('The system will exit.')
         sys.exit(1)
 
     return c
@@ -112,6 +126,34 @@ def get_xml(url, proxy):
     Given a URL, fetch the contents.  We expect the URL to be https and
     the contents to be XML.
     '''
+    if sys.version_info >= (3,):
+        return execute_py3_get_xml_content(url, proxy)
+    else:
+        return execute_py2_get_xml_content(url, proxy)
+
+def execute_py3_get_xml_content(url, proxy):
+    """Helper method to execute python3 code for urllib code flow"""
+    try:
+        # Try without a proxy
+        conn = urllib.request.urlopen(url)
+        dn_xml = conn.read()
+        conn.close()
+    except urllib.error.URLError:
+        # Try with a proxy
+        if proxy is not None:
+            proxies = {"http": proxy}
+            proxyHandler = urllib.request.ProxyHandler(proxies)
+            opener = urllib.request.build_opener(proxyHandler)
+            conn = opener.open(url)
+            dn_xml = conn.read()
+            conn.close()
+        else:
+            raise
+
+    return dn_xml
+
+def execute_py2_get_xml_content(url, proxy):
+    """Helper method to execute python2 code for urllib code flow"""
     try:
         # Try without a proxy
         conn = urllib.urlopen(url)
@@ -159,11 +201,10 @@ def dns_from_file(path):
     assume that they're DNs, but we'll check later.
     '''
 
-    dn_file = open(path)
-    dns = dn_file.readlines()
+    with open(path) as dn_file:
+        dns = dn_file.readlines()
     # get rid of any whitespace in the list of strings
     dns = [dn.strip() for dn in dns]
-    dn_file.close()
     return dns
 
 
@@ -246,14 +287,14 @@ def runprocess(config_file, log_config_file):
                 next_url = next_link_from_dom(dom)
                 # Add the listed DNs to the list
                 dns.extend(dns_from_dom(dom))
-            except xml.parsers.expat.ExpatError, e:
+            except xml.parsers.expat.ExpatError:
                 log.warning('Failed to parse the retrieved XML.')
                 log.warning('Is the URL correct?')
                 fetch_failed = True
     except AttributeError:
-        # gocdb_url == None
+        # gocdb_url is None
         log.info("No GOCDB URL specified - won't fetch URLs.")
-    except IOError, e:
+    except IOError as e:
         log.info("Failed to retrieve XML - is the URL correct?")
         log.info(e)
         fetch_failed = True
@@ -288,7 +329,7 @@ def runprocess(config_file, log_config_file):
     # print all the the dns to a file, with the discarded ones to a second file
     try:
         new_dn_file = open(cfg.dn_file, 'w')
-    except IOError, e:
+    except IOError:
         log.warning("Failed to open file %s for writing.", cfg.dn_file)
         log.warning("Check the configuration.")
         log.warning("auth will exit.")

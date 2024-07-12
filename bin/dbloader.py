@@ -20,18 +20,25 @@
 '''
 
 from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
 
 import sys
 import os
 import time
 import logging.config
+try:
+    # Renamed ConfigParser to configparser in Python 3
+    import configparser as ConfigParser
+except ImportError:
+    import ConfigParser
 
 from daemon.daemon import DaemonContext
 from apel.db.loader import Loader, LoaderException
 from apel.common import set_up_logging
 from apel import __version__
-import ConfigParser
 from optparse import OptionParser
+
 
 log = None
 
@@ -105,16 +112,11 @@ def run_as_daemon(loader, interval):
     log_files = [x.stream for x in rootlogger.handlers]
     dc = DaemonContext(files_preserve=log_files)
 
-    try:
+    with DaemonContext(files_preserve=log_files):
         try:
-            # Note: Because we need to be compatible with Python 2.4, we can't
-            # use "with dc:" here - we need to call the open() and close()
-            # methods manually.
-            dc.open()
             loader.startup()
 
-            # every <interval> seconds, process the records in the incoming
-            # directory
+            # every <interval> seconds, process the records in the incoming directory
             while True:
                 loader.load_all_msgs()
                 time.sleep(interval)
@@ -125,10 +127,9 @@ def run_as_daemon(loader, interval):
             log.critical("An unrecoverable exception was thrown: %s", e)
         except Exception as e:
             log.exception("Unexpected exception. Traceback follows...")
-    finally:
-        log.info("The loader will shutdown.")
-        loader.shutdown()
-        dc.close()
+        finally:
+            log.info("The loader will shutdown.")
+            loader.shutdown()
 
     log.info("=======================")
 

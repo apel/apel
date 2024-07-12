@@ -13,11 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 '''
-# hashlib only available in python2.5+
-try:
-    from hashlib import md5
-except ImportError:
-    from md5 import md5
+
+from hashlib import md5
 import gzip
 
 def calculate_hash(fname):
@@ -29,25 +26,26 @@ def calculate_hash(fname):
     For sample usage please go to: apel2/bin/client.py
     '''
 
-    data = 'initial'
+    data = b'initial'
 
     md = md5()
 
     # try opening as a gzip file, and if it fails
     # try as a regular file
     try:
-        fp = gzip.open(fname, 'r')
-        while data != '':
+        fp = gzip.open(fname, 'rb')
+        while data != b'':
             # 128kiB buffer
             data = fp.read(131072)
             md.update(data)
     except IOError: # not a gzipped file
-        fp = open(fname, 'r')
-        while data != '':
+        fp = open(fname, 'rb')
+        while data != b'':
             # 128kiB buffer
             data = fp.read(131072)
             md.update(data)
 
+    finally:
+        fp.close()
 
-    fp.close()
     return md.hexdigest()

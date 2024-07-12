@@ -32,8 +32,8 @@ class AurParserTest(unittest.TestCase):
                    "Infrastructure": "grid",
                    "WallDuration": 86400,
                    "CpuDuration": 86400,
-                   "EarliestEndTime": datetime(2012, 1, 1, 12, 00, 00),
-                   "LatestEndTime": datetime(2012, 1, 31, 12, 00, 00),
+                   "EarliestEndTime": datetime(2012, 1, 1, 12, 0, 0),
+                   "LatestEndTime": datetime(2012, 1, 31, 12, 0, 0),
                    #"ServiceLevel": Decimal('0.0'),
                    "NumberOfJobs": 1
                    }
@@ -75,8 +75,8 @@ class AurParserTest(unittest.TestCase):
                    "Infrastructure": "grid",
                    "WallDuration": 86400,
                    "CpuDuration": 86400,
-                   "EarliestEndTime": datetime(2012, 1, 1, 12, 00, 00),
-                   "LatestEndTime": datetime(2012, 1, 31, 12, 00, 00),
+                   "EarliestEndTime": datetime(2012, 1, 1, 12, 0, 0),
+                   "LatestEndTime": datetime(2012, 1, 31, 12, 0, 0),
                    # "ServiceLevel": Decimal(0.0),
                    "NumberOfJobs": 1,
                    "NodeCount": 1,
@@ -97,7 +97,7 @@ class AurParserTest(unittest.TestCase):
             for field in ('Site', 'Month', 'Year',
                           'WallDuration', 'CpuDuration', 'NumberOfJobs'):
                 # Also need: 'NormalisedWallDuration', 'NormalisedCpuDuration'
-                self.assertTrue(field in cont, "Field '%s' not found" % field)
+                self.assertIn(field, cont, "Field '%s' not found" % field)
 
             for key in cases[aur]:
                 if isinstance(cont[key], datetime):
