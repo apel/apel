@@ -19,6 +19,8 @@ class ParsingUtilsTest(unittest.TestCase):
         right_fqan2 = "/atlas/somethingelse/role=doer"
         right_fqan3 = "/atlas/Role=production/Capability=NULL;/atlas/Role=NULL/Capability=NULL;/atlas/alarm/Role=NULL/Capability=NULL;/atlas/au/Role=NULL/Capability=NULL;/atlas/dataprep/Role=NULL/Capability=NULL;/atlas/lcg1/Role=NULL/Capability=NULL;/atlas/team/Role=NULL/Capability=NULL;/atlas/uk/Role=NULL/Capability=NULL"
         right_fqan4 = "/ilc/Role=NULL/Capability=NULL"
+        right_fqan5 = "/wlcg"
+        right_fqan6 = "/wlcg/Role=pilot/Capability=NULL"
 
         short_fqan1 = "/no/role/or/equals"
         short_fqan2 = "/someorg/somegroup"
@@ -30,6 +32,8 @@ class ParsingUtilsTest(unittest.TestCase):
         self.assertEqual(parse_fqan(right_fqan2), ("role=doer", "/atlas/somethingelse", "atlas"))
         self.assertEqual(parse_fqan(right_fqan3), ("Role=production", "/atlas", "atlas"))
         self.assertEqual(parse_fqan(right_fqan4), ("Role=NULL", "/ilc", "ilc"))
+        self.assertEqual(parse_fqan(right_fqan5), ("None", "/wlcg", "wlcg"))
+        self.assertEqual(parse_fqan(right_fqan6), ("Role=pilot", "/wlcg", "wlcg"))
 
         self.assertEqual(parse_fqan(short_fqan1), ('None', '/no/role/or/equals', 'no'))
         self.assertEqual(parse_fqan(short_fqan2), ('None', '/someorg/somegroup', 'someorg'))

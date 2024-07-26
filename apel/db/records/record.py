@@ -79,6 +79,8 @@ class Record(object):
         self._datetime_fields = []
         # The dictionary into which all the information goes
         self._record_content = {}
+        # These fields need special handling as they should never insert Null into the database
+        self._fqan_fields = ["VO", "VOGroup", "VORole"]
 
     def set_all(self, fielddict):
         '''
@@ -127,7 +129,7 @@ class Record(object):
         '''
         try:
             # Convert any null equivalents to a None object
-            if check_for_null(value):
+            if name not in self._fqan_fields and check_for_null(value):
                 value = None
             # firstly we must ensure that we do not put None
             # in mandatory field
