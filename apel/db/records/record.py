@@ -79,7 +79,8 @@ class Record(object):
         self._datetime_fields = []
         # The dictionary into which all the information goes
         self._record_content = {}
-        # These fields need special handling as they should never insert Null into the database
+        # These fields need special handling as they shouldn't be inserted as
+        # Null into the database
         self._fqan_fields = ["VO", "VOGroup", "VORole"]
 
     def set_all(self, fielddict):
