@@ -107,15 +107,11 @@ def parse_file(parser, apel_db, fp, replace):
     exceptions = {}
 
     line_number = 0
-    index = 0
     parsed = 0
     failed = 0
     ignored = 0
 
-    for index, line in enumerate(fp):
-        # Indexing is from zero so add 1 to find line number. Can't use start=1
-        # in enumerate() to maintain Python 2.4 compatibility.
-        line_number = index + 1
+    for line_number, line in enumerate(fp, start=1):
         line = line.decode('utf-8')
 
         try:
@@ -140,7 +136,7 @@ def parse_file(parser, apel_db, fp, replace):
 
     apel_db.load_records(records, replace=replace)
 
-    if index == 0:
+    if line_number == 1:
         log.info('Ignored empty file.')
     elif parsed == 0:
         log.warning('Failed to parse file.  Is %s correct?', parser.__class__.__name__)
@@ -201,17 +197,14 @@ def scan_dir(parser, dirpath, reparse, expr, apel_db, processed):
                         # format we will get IOError, empty files can
                         # give EOFError as well.
                         for method in (bz2.BZ2File, gzip.open, open):
-                            try:  # this is for Python < 2.5
-                                try:
-                                    fp = method(abs_file, 'rb')
+                            try:
+                                with method(abs_file, 'rb') as fp:
                                     parsed, total = parse_file(parser, apel_db,
                                                                fp, reparse)
-                                    break
-                                except (IOError, EOFError):
-                                    if method == open:
-                                        raise
-                            finally:
-                                fp.close()
+                                break
+                            except (IOError, EOFError):
+                                if method == open:
+                                    raise
                     except IOError as e:
                         log.error('Cannot parse file %s: %s', item, e)
                     except ApelDbException as e:

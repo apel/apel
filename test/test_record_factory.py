@@ -32,7 +32,7 @@ class TestRecordFactory(unittest.TestCase):
             '<urf:UsageRecord xmlns:urf="http://eu-emi.eu/namespaces/2012/11/co'
             'mputerecord"></urf:UsageRecord>'
         )
-        self.assertTrue(isinstance(record_list[0], JobRecord))
+        self.assertIsInstance(record_list[0], JobRecord)
 
     def test_create_aur(self):
         """Check that trying to create an AUR record fails."""
@@ -48,7 +48,7 @@ class TestRecordFactory(unittest.TestCase):
             '02/storagerecord"><sr:RecordIdentity sr:createTime="2016-06-09T02:'
             '42:15Z" sr:recordId="c698"/></sr:StorageUsageRecord>'
         )
-        self.assertTrue(isinstance(record_list[0], StorageRecord))
+        self.assertIsInstance(record_list[0], StorageRecord)
 
     def test_create_bad_xml(self):
         """Check that trying to create a record from non-record XML fails."""
@@ -63,36 +63,36 @@ class TestRecordFactory(unittest.TestCase):
     def test_create_jrs(self):
         """Check that creating job records returns JobRecords."""
         records = self._rf.create_records(self._jr_text)
-        self.assertTrue(len(records), 2)
+        self.assertEqual(len(records), 2)
         for record in records:
-            self.assertTrue(isinstance(record, JobRecord))
+            self.assertIsInstance(record, JobRecord)
 
     def test_create_srs(self):
         """Check that creating summary records returns SummaryRecords."""
         records = self._rf.create_records(self._sr_text)
-        self.assertTrue(len(records), 2)
+        self.assertEqual(len(records), 2)
         for record in records:
-            self.assertTrue(isinstance(record, SummaryRecord))
+            self.assertIsInstance(record, SummaryRecord)
 
     def test_create_normalised_summary(self):
         """Check that creating a normalised summary returns the right record."""
         records = self._rf.create_records(self._nsr_text)
-        self.assertTrue(isinstance(records[0], NormalisedSummaryRecord))
+        self.assertIsInstance(records[0], NormalisedSummaryRecord)
 
     def test_create_sync(self):
         """Check that creating a sync record returns a SyncRecord."""
         records = self._rf.create_records(self._sync_text)
-        self.assertTrue(isinstance(records[0], SyncRecord))
+        self.assertIsInstance(records[0], SyncRecord)
 
     def test_create_cloud(self):
         """Check that creating a cloud record returns a CloudRecord."""
         records = self._rf.create_records(self._cr_text)
-        self.assertTrue(isinstance(records[0], CloudRecord))
+        self.assertIsInstance(records[0], CloudRecord)
 
     def test_create_cloud_summary(self):
         """Check that creating a cloud summary returns a CloudSummaryRecord."""
         records = self._rf.create_records(self._csr_text)
-        self.assertTrue(isinstance(records[0], CloudSummaryRecord))
+        self.assertIsInstance(records[0], CloudSummaryRecord)
 
     def _get_msg_text(self):
     # Below, I've just got some test data hard-coded.

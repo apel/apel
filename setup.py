@@ -21,16 +21,32 @@ from setuptools import setup, find_packages
 from apel import __version__
 
 
+def setup_temp_files():
+    """Create temporary files with deployment names. """
+    copyfile('bin/client.py', 'bin/apelclient')
+    copyfile('bin/parser.py', 'bin/apelparser')
+    copyfile('bin/dbloader.py', 'bin/apeldbloader')
+    copyfile('bin/dbunloader.py', 'bin/apeldbunloader')
+    copyfile('bin/summariser.py', 'bin/apelsummariser')
+    copyfile('bin/retrieve_dns.py', 'bin/apelauth')
+
+
 def main():
     """Called when run as script, e.g. 'python setup.py install'."""
-    if 'install' in sys.argv:
-        # Create temporary files with deployment names
-        copyfile('bin/client.py', 'bin/apelclient')
-        copyfile('bin/parser.py', 'bin/apelparser')
-        copyfile('bin/dbloader.py', 'bin/apeldbloader')
-        copyfile('bin/dbunloader.py', 'bin/apeldbunloader')
-        copyfile('bin/summariser.py', 'bin/apelsummariser')
-        copyfile('bin/retrieve_dns.py', 'bin/apelauth')
+    supported_commands = {
+        "install",
+        "build",
+        "bdist",
+        "develop",
+        "build_scripts",
+        "install_scripts",
+        "install_data",
+        "bdist_dumb",
+        "bdist_egg",
+    }
+
+    if supported_commands.intersection(sys.argv):
+        setup_temp_files()
 
     # conf_files will later be copied to conf_dir
     conf_dir = '/etc/apel/'
@@ -109,7 +125,7 @@ def main():
           zip_safe=False)
 
     # Remove temporary files with deployment names
-    if 'install' in sys.argv:
+    if supported_commands.intersection(sys.argv):
         remove('bin/apelclient')
         remove('bin/apelparser')
         remove('bin/apeldbloader')

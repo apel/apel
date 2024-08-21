@@ -201,11 +201,10 @@ def dns_from_file(path):
     assume that they're DNs, but we'll check later.
     '''
 
-    dn_file = open(path)
-    dns = dn_file.readlines()
+    with open(path) as dn_file:
+        dns = dn_file.readlines()
     # get rid of any whitespace in the list of strings
     dns = [dn.strip() for dn in dns]
-    dn_file.close()
     return dns
 
 
@@ -293,7 +292,7 @@ def runprocess(config_file, log_config_file):
                 log.warning('Is the URL correct?')
                 fetch_failed = True
     except AttributeError:
-        # gocdb_url == None
+        # gocdb_url is None
         log.info("No GOCDB URL specified - won't fetch URLs.")
     except IOError as e:
         log.info("Failed to retrieve XML - is the URL correct?")

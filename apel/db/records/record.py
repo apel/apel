@@ -79,6 +79,9 @@ class Record(object):
         self._datetime_fields = []
         # The dictionary into which all the information goes
         self._record_content = {}
+        # These fields need special handling as they shouldn't be inserted as
+        # Null into the database
+        self._fqan_fields = ["VO", "VOGroup", "VORole"]
 
     def set_all(self, fielddict):
         '''
@@ -126,8 +129,8 @@ class Record(object):
         Otherwise it raises an error.
         '''
         try:
-            # Convert any null equivalents to a None object
-            if check_for_null(value):
+            # Convert null equivalents (except VOMS attributes) to None object
+            if name not in self._fqan_fields and check_for_null(value):
                 value = None
             # firstly we must ensure that we do not put None
             # in mandatory field
@@ -307,16 +310,15 @@ class Record(object):
 
         # Check that no extra fields are specified.
         # Is this inefficient?
-        for key in list(contents.keys()):
+        for key in contents:
             if key not in self._all_fields:
                 raise InvalidRecordException("Unexpected field " + key + " in message.")
 
         # Fill the dictionary even if we don't have the relevant data.
         # The string values are getting 'None' (not None!) instead of going into the
         # DB as NULL.
-        current_keys = list(contents.keys())
         for key in self._msg_fields:
-            if key not in current_keys: # key not already in the dictionary
+            if key not in contents:  # key not already in the dictionary
                 contents[key] = "None"
             if check_for_null(contents[key]):
                 contents[key] = "None"

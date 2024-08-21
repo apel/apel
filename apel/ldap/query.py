@@ -79,19 +79,21 @@ def fetch_specint(site, host='lcg-bdii.egi.eu', port=2170):
     for entry in data:
 
         try:
-            ce_name = entry[1][GLUE_CE_UNIQUE_ID][0]
+            ce_name = entry[1][GLUE_CE_UNIQUE_ID][0].decode('utf-8')
             ce_capabilities=entry[1][GLUE_CE_CAPABILITY]
         except (KeyError, IndexError) as e:
             log.error('Error during fetching Spec values: %s', e)
             continue
 
         for capability in ce_capabilities:
-            si2k = parse_ce_capability(capability)
+            capability_str = capability.decode('utf-8')
+            si2k = parse_ce_capability(capability_str)
+
             if si2k is not None:
                 log.debug('Found value in first query: %s',
-                          capability.split('=')[1])
+                          capability_str.split('=')[1])
                 values.append((ce_name,
-                           Decimal(capability.split('=')[1])))
+                           Decimal(capability_str.split('=')[1])))
 
     # not found? we have also second way to do this
     attrs = [GLUE_CHUNK_KEY, GLUE_HOST_BENCHMARK]
@@ -102,8 +104,8 @@ def fetch_specint(site, host='lcg-bdii.egi.eu', port=2170):
 
     for item in data:
         try:
-            cluster_name = item[1][GLUE_CHUNK_KEY][0].split('=')[1]
-            value = Decimal(item[1][GLUE_HOST_BENCHMARK][0])
+            cluster_name = item[1][GLUE_CHUNK_KEY][0].decode('utf-8').split('=')[1]
+            value = Decimal(item[1][GLUE_HOST_BENCHMARK][0].decode('utf-8'))
         except (KeyError, IndexError) as e:
             log.error('Error during fetching Spec values: %s', e)
             continue
@@ -120,10 +122,12 @@ def fetch_specint(site, host='lcg-bdii.egi.eu', port=2170):
                 continue
 
             for fk in fks:
-                if fk.startswith(GLUE_CE_UNIQUE_ID):
-                    name = fk.split('=')[1]
+                fk_str = fk.decode('utf-8')
+
+                if fk_str.startswith(GLUE_CE_UNIQUE_ID):
+                    name = fk_str.split('=')[1]
                     # do not overwrite values from first query
-                    if len([x for x in values if x[0] == name]) == 0:
+                    if not any(x[0] == name for x in values):
                         values.append((name, value))
 
     return values

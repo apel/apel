@@ -118,9 +118,7 @@ class StarParser(XMLParser):
 
         # Here we copy keys from functions.
         # We only want to change 'RecordId' to 'RecordIdentity'.
-        nodes = {}.fromkeys([f == 'RecordId' and
-                                'RecordIdentity' or f for f in [S for S in functions]])
-        # nodes = {}.fromkeys(functions.keys())
+        nodes = dict.fromkeys('RecordIdentity' if f == 'RecordId' else f for f in functions)
         data = {}
 
         for node in nodes:

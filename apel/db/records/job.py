@@ -60,9 +60,6 @@ class JobRecord(Record):
                        "NodeCount", "StartTime", "EndTime", "InfrastructureDescription", "InfrastructureType", "MemoryReal",
                        "MemoryVirtual", "ServiceLevelType", "ServiceLevel"]
 
-        # Not used in the message format, but required by the database.
-        # self._fqan_fields = ["VO", "VOGroup", "VORole"]
-
         # Fields which are accepted but currently ignored.
         self._ignored_fields = ["SubmitHostType", "UpdateTime"]
 
@@ -170,6 +167,11 @@ class JobRecord(Record):
 
         return (sfu, sf)
 
+    def _positive(self, field_name):
+        """Check that a field's value is positive when cast to int"""
+        value = self.get_field(field_name)
+        return value is not None and int(value) > 0
+
     def get_ur(self, withhold_dns=False):
         '''
         Returns the JobRecord in CAR format. See
@@ -259,26 +261,26 @@ class JobRecord(Record):
         service_level.appendChild(doc.createTextNode(str(self.get_field('ServiceLevel'))))
         ur.appendChild(service_level)
 
-        if self.get_field('MemoryReal') is not None and int(self.get_field('MemoryReal')) > 0:
+        if self._positive('MemoryReal'):
             pmem = doc.createElement('urf:Memory')
             pmem.setAttribute('urf:type', 'Physical')
             pmem.setAttribute('urf:storageUnit', 'KB')
             pmem.appendChild(doc.createTextNode(str(self.get_field('MemoryReal'))))
             ur.appendChild(pmem)
 
-        if self.get_field('MemoryVirtual') is not None and int(self.get_field('MemoryVirtual')) > 0:
+        if self._positive('MemoryVirtual'):
             vmem = doc.createElement('urf:Memory')
             vmem.setAttribute('urf:type', 'Shared')
             vmem.setAttribute('urf:storageUnit', 'KB')
             vmem.appendChild(doc.createTextNode(str(self.get_field('MemoryVirtual'))))
             ur.appendChild(vmem)
 
-        if self.get_field('NodeCount') is not None and int(self.get_field('NodeCount')) > 0:
+        if self._positive('NodeCount'):
             ncount = doc.createElement('urf:NodeCount')
             ncount.appendChild(doc.createTextNode(str(self.get_field('NodeCount'))))
             ur.appendChild(ncount)
 
-        if self.get_field('Processors') is not None and int(self.get_field('Processors')) > 0:
+        if self._positive('Processors'):
             procs = doc.createElement('urf:Processors')
             procs.appendChild(doc.createTextNode(str(self.get_field('Processors'))))
             ur.appendChild(procs)

@@ -405,6 +405,51 @@ class ApelMysqlDb(object):
                 self.db.rollback()
             raise
 
+    def clean_stale_cloud_summaries(self, summariser_start_time, threshold):
+        """Remove stale cloud summaries newer than the threshold."""
+        threshold_timedelta = datetime.timedelta(days=threshold)
+        threshold_time = summariser_start_time - threshold_timedelta
+        threshold_month = threshold_time.month
+        threshold_year = threshold_time.year
+
+        try:
+            # prevent MySQLdb from raising
+            # 'MySQL server has gone' exception
+            self._mysql_reconnect()
+
+            cursor = self.db.cursor()
+            # Delete any summaries that:
+            # - Are older than the start time of this summariser run (i.e. are
+            #   stale)
+            # AND
+            # - Are reporting recent usage as defined by the threshold value
+            delete_statement = (
+                "DELETE FROM CloudSummaries WHERE "
+                "Month >= %s AND "
+                "Year >= %s AND "
+                "UpdateTime < '%s';"
+                % (
+                    threshold_month, threshold_year,
+                    summariser_start_time.strftime("%Y-%m-%d %H:%M:%S")
+                )
+            )
+
+            log.info(
+                "Running \"%s\" to delete stale summaries", delete_statement
+            )
+            number_deleted = cursor.execute(delete_statement)
+
+            self.db.commit()
+
+            log.info("Removed %s stale summaries.", number_deleted)
+
+        except MySQLdb.Error as e:
+            log.error("A mysql error occurred: %s", e)
+            log.error("Any transaction will be rolled back.")
+
+            if self.db is not None:
+                self.db.rollback()
+
     def join_records(self):
         '''
         This method executes JoinJobRecords procedure in database which joins data

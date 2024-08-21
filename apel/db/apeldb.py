@@ -48,7 +48,7 @@ class ApelDb(object):
         except ImportError:
             logger.info('Cannot import mysql backend')
 
-        if backend not in list(BACKENDS.keys()):
+        if backend not in BACKENDS:
             raise ApelDbException('Unknown backend: %s' % (backend))
 
         backend = BACKENDS[backend]

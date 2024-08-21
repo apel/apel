@@ -50,9 +50,8 @@ class LoggingTest(unittest.TestCase):
 
         # Only check bit after timestamp as that doesn't change.
         self.assertEqual(output[23:], " - test_logging - INFO - out\n")
-        f = open(self.path)
-        self.assertEqual(f.readline()[23:], " - test_logging - INFO - out\n")
-        f.close()
+        with open(self.path) as f:
+            self.assertEqual(f.readline()[23:], " - test_logging - INFO - out\n")
 
     def test_boring_logging(self):
         """Check that logging without handlers at least runs without errors."""

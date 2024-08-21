@@ -16,9 +16,8 @@ class HashingTest(unittest.TestCase):
         data_hash = '3d1eb00cc63828b36882f076f35c8cdd'
 
         tmpname = tempfile.mktemp('hashtest')
-        fp = open(tmpname, 'wb')
-        fp.write(data)
-        fp.close()
+        with open(tmpname, 'wb') as fp:
+            fp.write(data)
 
         self.assertEqual(data_hash, calculate_hash(tmpname))
 

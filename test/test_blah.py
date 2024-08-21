@@ -28,6 +28,26 @@ class ParserBlahTest(unittest.TestCase):
         line1_values = {"TimeStamp": datetime.datetime(2012, 5, 20, 23, 59, 47),
                         "GlobalUserName":"/O=GermanGrid/OU=UniWuppertal/CN=Torsten Harenberg",
                         "FQAN": "/atlas/Role=production/Capability=NULL",
+                        "VO": "atlas",
+                        "VOGroup": "/atlas",
+                        "VORole": "Role=production",
+                        "CE": "cream-2-fzk.gridka.de:8443/cream-pbs-atlasXL",
+                        "GlobalJobId": "CREAM410741480",
+                        "LrmsId": "9575064.lrms1",
+                        }
+
+        line2 = ('"timestamp=2012-05-20 23:59:47" '
+                +'"userDN=/O=GermanGrid/OU=UniWuppertal/CN=Torsten Harenberg" '
+                +'"userFQAN=/wlcg" '
+                +'"ceID=cream-2-fzk.gridka.de:8443/cream-pbs-atlasXL" '
+                +'"jobID=CREAM410741480" "lrmsID=9575064.lrms1" "localUser=11999"')
+
+        line2_values = {"TimeStamp": datetime.datetime(2012, 5, 20, 23, 59, 47),
+                        "GlobalUserName":"/O=GermanGrid/OU=UniWuppertal/CN=Torsten Harenberg",
+                        "FQAN": "/wlcg",
+                        "VO": "wlcg",
+                        "VOGroup": "/wlcg",
+                        "VORole": "None",
                         "CE": "cream-2-fzk.gridka.de:8443/cream-pbs-atlasXL",
                         "GlobalJobId": "CREAM410741480",
                         "LrmsId": "9575064.lrms1",
@@ -35,6 +55,7 @@ class ParserBlahTest(unittest.TestCase):
 
         cases = {}
         cases[line1] = line1_values
+        cases[line2] = line2_values
 
         for line in list(cases.keys()):
 
@@ -144,7 +165,7 @@ class ParserBlahTest(unittest.TestCase):
 
             for key in list(cases[line].keys()):
                 # Check all fields are present
-                self.assertTrue(key in cont, "Key '%s' not in record." % key)
+                self.assertIn(key, cont, "Key '%s' not in record." % key)
                 # Check values are correct
                 self.assertEqual(cont[key], cases[line][key],
                                  "'%s' != '%s' for key '%s'" %
