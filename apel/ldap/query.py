@@ -122,10 +122,10 @@ def fetch_specint(site, host='lcg-bdii.egi.eu', port=2170):
                 continue
 
             for fk in fks:
-                ft_str = fk.decode('utf-8')
+                fk_str = fk.decode('utf-8')
 
-                if ft_str.startswith(GLUE_CE_UNIQUE_ID):
-                    name = ft_str.split('=')[1]
+                if fk_str.startswith(GLUE_CE_UNIQUE_ID):
+                    name = fk_str.split('=')[1]
                     # do not overwrite values from first query
                     if not any(x[0] == name for x in values):
                         values.append((name, value))
