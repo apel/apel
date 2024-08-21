@@ -128,7 +128,7 @@ class Record(object):
         Otherwise it raises an error.
         '''
         try:
-            # Convert any null equivalents to a None object
+            # Convert null equivalents (except VOMS attributes) to None object
             if name not in self._fqan_fields and check_for_null(value):
                 value = None
             # firstly we must ensure that we do not put None
