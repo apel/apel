@@ -199,6 +199,12 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Wed Aug 21 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.1.0-1
+ - [client] Fix LDAP returning bytes and not strings with Python 3
+ - [client] Fix the parser failing on VOMS attributes without Role or Capability parts
+ - [server] Add support for deleting stale cloud summaries reporting recent usage
+ - Various CI and code maintenance changes.
+
  * Wed May 08 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.0.0-1
  - Added codebase compatability with Python3.
  - Removed support for Oracle as a backend database.
