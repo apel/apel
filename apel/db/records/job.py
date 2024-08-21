@@ -60,9 +60,6 @@ class JobRecord(Record):
                        "NodeCount", "StartTime", "EndTime", "InfrastructureDescription", "InfrastructureType", "MemoryReal",
                        "MemoryVirtual", "ServiceLevelType", "ServiceLevel"]
 
-        # Not used in the message format, but required by the database.
-        # self._fqan_fields = ["VO", "VOGroup", "VORole"]
-
         # Fields which are accepted but currently ignored.
         self._ignored_fields = ["SubmitHostType", "UpdateTime"]
 
