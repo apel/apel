@@ -107,12 +107,9 @@ def get_config(config_file):
 
     # set up logging
     try:
-        if os.path.exists(options.log_config):
-            logging.config.fileConfig(options.log_config)
-        else:
-            set_up_logging(cp.get('logging', 'logfile'),
-                           cp.get('logging', 'level'),
-                           cp.getboolean('logging', 'console'))
+        set_up_logging(cp.get('logging', 'logfile'),
+                        cp.get('logging', 'level'),
+                        cp.getboolean('logging', 'console'))
     except (ConfigParser.Error, ValueError, IOError) as err:
         print('Error configuring logging: %s' % str(err))
         print('The system will exit.')
@@ -362,8 +359,13 @@ if __name__ == '__main__':
     opt_parser = OptionParser(description=__doc__, version=ver)
     opt_parser.add_option('-c', '--config', help='location of the config file',
                           default='/etc/apel/auth.cfg')
-    opt_parser.add_option('-l', '--log_config', help='Location of logging config file (optional)',
-                          default='/etc/apel/logging.cfg')
-    (options, args) = opt_parser.parse_args()
+    opt_parser.add_option('-l', '--log_config', help='DEPRECATED - location of logging config file (optional)',
+                          default=None)
+    options, args = opt_parser.parse_args()
+
+    # Deprecating functionality.
+    old_log_config_default_path = '/etc/apel/logging.cfg'
+    if (os.path.exists(old_log_config_default_path) or options.log_config is not None):
+        logging.warning('Separate logging config file option has been deprecated.')
 
     runprocess(options.config, options.log_config)

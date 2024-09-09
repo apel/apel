@@ -292,10 +292,16 @@ def main():
                           default='/etc/apel/sender.cfg')
 
     opt_parser.add_option('-l', '--log_config',
-                          help='location of logging config file (optional)',
-                          default='/etc/apel/logging.cfg')
+                          help='DEPRECATED - location of logging config file (optional)',
+                          default=None)
 
     options, unused_args = opt_parser.parse_args()
+
+    # Deprecating functionality.
+    old_log_config_default_path = '/etc/apel/logging.cfg'
+    if (os.path.exists(old_log_config_default_path) or options.log_config is not None):
+        logging.warning('Separate logging config file option has been deprecated.')
+
     ccp = ConfigParser.ConfigParser()
     ccp.read(options.config)
 
@@ -304,12 +310,9 @@ def main():
 
     # set up logging
     try:
-        if os.path.exists(options.log_config):
-            logging.config.fileConfig(options.log_config)
-        else:
-            set_up_logging(ccp.get('logging', 'logfile'),
-                           ccp.get('logging', 'level'),
-                           ccp.getboolean('logging', 'console'))
+        set_up_logging(ccp.get('logging', 'logfile'),
+                        ccp.get('logging', 'level'),
+                        ccp.getboolean('logging', 'console'))
         log = logging.getLogger(LOGGER_ID)
     except (ConfigParser.Error, ValueError, IOError) as err:
         print('Error configuring logging: %s' % str(err))
