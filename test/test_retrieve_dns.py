@@ -65,7 +65,7 @@ class ConfigTestCase(unittest.TestCase):
         os.write(handle, "[auth]\n[logging]\nlogfile=_\nlevel=_\nconsole=False".encode('utf-8'))
         os.close(handle)
 
-        conf = bin.retrieve_dns.get_config(path).__dict__
+        conf = bin.retrieve_dns.get_config(path, "fake_log_config_file").__dict__
 
         settings = {'gocdb_url': None, 'extra_dns': None, 'banned_dns': None,
                     'dn_file': None, 'proxy': None, 'expire_hours': 0}
