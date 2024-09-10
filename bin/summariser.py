@@ -24,7 +24,7 @@ from future import standard_library
 standard_library.install_aliases()
 from future.builtins import str
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 import datetime
 import logging.config
 import os
@@ -177,17 +177,28 @@ if __name__ == '__main__':
     # Main method for running the summariser.
 
     ver = "APEL summariser %s.%s.%s" % __version__
-    opt_parser = OptionParser(description=__doc__, version=ver)
-    opt_parser.add_option('-d', '--db', help='the location of database config file',
-                          default='/etc/apel/db.cfg')
-    opt_parser.add_option('-c', '--config', help='the location of config file',
-                          default='/etc/apel/summariser.cfg')
-    opt_parser.add_option('-l', '--log_config', help='DEPRECATED - location of logging config file',
-                          default=None)
-    options,args = opt_parser.parse_args()
+    default_db_conf_file = '/etc/apel/db.cfg'
+    default_conf_file = '/etc/apel/summariser.cfg'
+    arg_parser = ArgumentParser(description=__doc__)
+
+    arg_parser.add_argument('-d', '--db',
+                            help='Location of database config file',
+                            default=default_db_conf_file)
+    arg_parser.add_argument('-c', '--config',
+                            help='Location of config file',
+                            default=default_conf_file)
+    arg_parser.add_argument('-l', '--log_config',
+                            help='DEPRECATED - Location of logging config file (optional)',
+                            default=None)
+    arg_parser.add_argument('-v', '--version',
+                            action='version',
+                            version=ver)
+
+    # Using the vars function to output a dict-like view rather than Namespace object.
+    options = vars(arg_parser.parse_args())
 
     # Deprecating functionality.
-    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
+    if os.path.exists('/etc/apel/logging.cfg') or options['log_config'] is not None:
         logging.warning('Separate logging config file option has been deprecated.')
 
-    runprocess(options.db, options.config)
+    runprocess(options['db'], options['config'])

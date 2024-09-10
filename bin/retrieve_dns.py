@@ -32,7 +32,7 @@ from future.builtins import object, str
 from apel.common import set_up_logging, LOG_BREAK
 from apel import __version__
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 import logging.config
 import os
 import sys
@@ -355,15 +355,24 @@ def runprocess(config_file):
 
 if __name__ == '__main__':
     ver = "APEL auth %s.%s.%s" % __version__
-    opt_parser = OptionParser(description=__doc__, version=ver)
-    opt_parser.add_option('-c', '--config', help='location of the config file',
-                          default='/etc/apel/auth.cfg')
-    opt_parser.add_option('-l', '--log_config', help='DEPRECATED - location of logging config file',
-                          default=None)
-    options, args = opt_parser.parse_args()
+    default_conf_location = '/etc/apel/auth.cfg'
+    arg_parser = ArgumentParser(description=__doc__)
+
+    arg_parser.add_argument('-c', '--config',
+                            help='Location of the config file',
+                            default=default_conf_location)
+    arg_parser.add_argument('-l', '---log_config',
+                            help='DEPRECATED - Location of logging config file (optional)',
+                            default=None)
+    arg_parser.add_argument('-v', '--version',
+                            action='version',
+                            version=ver)
+
+    # Using the vars function to output a dict-like view rather than Namespace object.
+    options = vars(arg_parser.parse_args())
 
     # Deprecating functionality.
-    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
+    if os.path.exists('/etc/apel/logging.cfg') or options['log_config'] is not None:
         logging.warning('Separate logging config file option has been deprecated.')
 
-    runprocess(options.config)
+    runprocess(options['config'])
