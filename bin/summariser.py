@@ -82,7 +82,7 @@ def runprocess(db_config_file, config_file, log_config_file):
         sys.exit(1)
 
     # Deprecating functionality.
-    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
+    if os.path.exists('/etc/apel/logging.cfg') or log_config_file is not None:
         log.warning('Separate logging config file option has been deprecated.')
 
     log.info('Starting apel summariser version %s.%s.%s', *__version__)
