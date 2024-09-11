@@ -40,7 +40,7 @@ from apel.common import set_up_logging, LOG_BREAK
 from apel import __version__
 
 
-def runprocess(db_config_file, config_file, log_config_file):
+def runprocess(db_config_file, config_file):
     '''Parse the configuration file, connect to the database and run the
        summarising process.'''
 
@@ -82,7 +82,7 @@ def runprocess(db_config_file, config_file, log_config_file):
         sys.exit(1)
 
     # Deprecating functionality.
-    if os.path.exists('/etc/apel/logging.cfg') or log_config_file is not None:
+    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
         log.warning('Separate logging config file option has been deprecated.')
 
     log.info('Starting apel summariser version %s.%s.%s', *__version__)
@@ -190,4 +190,4 @@ if __name__ == '__main__':
                           default=None)
     options,args = opt_parser.parse_args()
 
-    runprocess(options.db, options.config, options.log_config)
+    runprocess(options.db, options.config)

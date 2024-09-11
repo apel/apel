@@ -63,7 +63,7 @@ class Configuration(object):
         self.proxy = None
         self.expire_hours = None
 
-def get_config(config_file, log_config_file):
+def get_config(config_file):
     """Using the config file location, get a config object."""
     # Read configuration from file
     cp = ConfigParser.ConfigParser()
@@ -115,7 +115,7 @@ def get_config(config_file, log_config_file):
         sys.exit(1)
 
     # Deprecating functionality.
-    if os.path.exists('/etc/apel/logging.cfg') or log_config_file is not None:
+    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
         log.warning('Separate logging config file option has been deprecated.')
 
     return c
@@ -256,9 +256,9 @@ def verify_dn(dn):
     return True
 
 
-def runprocess(config_file, log_config_file):
+def runprocess(config_file):
     '''Get DNs both from the URL and the additional file.'''
-    cfg = get_config(config_file, log_config_file)
+    cfg = get_config(config_file)
 
     log = logging.getLogger('auth')
     log.info(LOG_BREAK)
@@ -366,4 +366,4 @@ if __name__ == '__main__':
                           default=None)
     options, args = opt_parser.parse_args()
 
-    runprocess(options.config, options.log_config)
+    runprocess(options.config)
