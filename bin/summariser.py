@@ -81,10 +81,6 @@ def runprocess(db_config_file, config_file):
         print('The system will exit.')
         sys.exit(1)
 
-    # Deprecating functionality.
-    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
-        log.warning('Separate logging config file option has been deprecated.')
-
     log.info('Starting apel summariser version %s.%s.%s', *__version__)
     # Keep track of when this summariser run started to:
     # - log how long the summarising process takes,
@@ -189,5 +185,9 @@ if __name__ == '__main__':
     opt_parser.add_option('-l', '--log_config', help='DEPRECATED - location of logging config file (optional)',
                           default=None)
     options,args = opt_parser.parse_args()
+
+    # Deprecating functionality.
+    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
+        logging.warning('Separate logging config file option has been deprecated.')
 
     runprocess(options.db, options.config)
