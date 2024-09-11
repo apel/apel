@@ -87,6 +87,10 @@ if __name__ == '__main__':
 
     options, args = opt_parser.parse_args()
 
+    # Deprecating functionality.
+    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
+        logging.warning('Separate logging config file option has been deprecated.')
+
     # Set default for 'interval' as it is a new option so may not be in config.
     cp = ConfigParser.ConfigParser({'interval': 'latest'})
     cp.read([options.config])
@@ -100,10 +104,6 @@ if __name__ == '__main__':
         print('Error configuring logging: %s' % err)
         print('The system will exit.')
         sys.exit(1)
-
-    # Deprecating functionality.
-    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
-        log.warning('Separate logging config file option has been deprecated.')
 
     db = None
 
