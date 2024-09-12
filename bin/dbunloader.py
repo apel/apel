@@ -82,10 +82,14 @@ if __name__ == '__main__':
                           default='/etc/apel/db.cfg')
     opt_parser.add_option('-c', '--config', help='Location of configuration file for dbunloader',
                           default='/etc/apel/unloader.cfg')
-    opt_parser.add_option('-l', '--log_config', help='Location of logging configuration file for dbloader',
-                          default='/etc/apel/logging.cfg')
+    opt_parser.add_option('-l', '--log_config', help='DEPRECATED - location of logging config file',
+                          default=None)
 
-    (options, args) = opt_parser.parse_args()
+    options, args = opt_parser.parse_args()
+
+    # Deprecating functionality.
+    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
+        logging.warning('Separate logging config file option has been deprecated.')
 
     # Set default for 'interval' as it is a new option so may not be in config.
     cp = ConfigParser.ConfigParser({'interval': 'latest'})
@@ -93,12 +97,8 @@ if __name__ == '__main__':
 
     # set up logging
     try:
-        if os.path.exists(options.log_config):
-            logging.config.fileConfig(options.log_config)
-        else:
-            set_up_logging(cp.get('logging', 'logfile'),
-                           cp.get('logging', 'level'),
-                           cp.getboolean('logging', 'console'))
+        set_up_logging(cp.get('logging', 'logfile'), cp.get('logging', 'level'),
+                       cp.getboolean('logging', 'console'))
         log = logging.getLogger('dbunloader')
     except (ConfigParser.Error, ValueError, IOError) as err:
         print('Error configuring logging: %s' % err)
