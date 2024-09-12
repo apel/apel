@@ -82,7 +82,7 @@ if __name__ == '__main__':
                           default='/etc/apel/db.cfg')
     opt_parser.add_option('-c', '--config', help='Location of configuration file for dbunloader',
                           default='/etc/apel/unloader.cfg')
-    opt_parser.add_option('-l', '--log_config', help='DEPRECATED - location of logging config file (optional)',
+    opt_parser.add_option('-l', '--log_config', help='DEPRECATED - location of logging config file',
                           default=None)
 
     options, args = opt_parser.parse_args()

@@ -358,7 +358,7 @@ if __name__ == '__main__':
     opt_parser = OptionParser(description=__doc__, version=ver)
     opt_parser.add_option('-c', '--config', help='location of the config file',
                           default='/etc/apel/auth.cfg')
-    opt_parser.add_option('-l', '--log_config', help='DEPRECATED - location of logging config file (optional)',
+    opt_parser.add_option('-l', '--log_config', help='DEPRECATED - location of logging config file',
                           default=None)
     options, args = opt_parser.parse_args()
 

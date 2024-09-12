@@ -182,7 +182,7 @@ if __name__ == '__main__':
                           default='/etc/apel/db.cfg')
     opt_parser.add_option('-c', '--config', help='the location of config file',
                           default='/etc/apel/summariser.cfg')
-    opt_parser.add_option('-l', '--log_config', help='DEPRECATED - location of logging config file (optional)',
+    opt_parser.add_option('-l', '--log_config', help='DEPRECATED - location of logging config file',
                           default=None)
     options,args = opt_parser.parse_args()
 

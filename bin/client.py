@@ -292,7 +292,7 @@ def main():
                           default='/etc/apel/sender.cfg')
 
     opt_parser.add_option('-l', '--log_config',
-                          help='DEPRECATED - location of logging config file (optional)',
+                          help='DEPRECATED - location of logging config file',
                           default=None)
 
     options, unused_args = opt_parser.parse_args()
