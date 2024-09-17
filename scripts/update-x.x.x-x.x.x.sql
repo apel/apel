@@ -14,7 +14,7 @@
 --   ensures new summaries overwrite old summaries after updates
 --   to CASO version name.
 
-ALTER TABLE CloudSummaries 
+ALTER TABLE CloudSummaries
   DROP PRIMARY KEY,
   ADD PRIMARY KEY (
     SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID,
@@ -105,4 +105,3 @@ END //
 DELIMITER ;
 
 */
-
