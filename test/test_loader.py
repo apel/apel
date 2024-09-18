@@ -143,8 +143,11 @@ class LoaderTest(unittest.TestCase):
             mock_log.assert_has_calls(
                         [call('Message contains 1 %s record', 'Summary')])
 
-    def test_load_all_other_type(self):
-        """Check that load_records is called and message is logged correctly when type is other"""
+    def test_load_all_storage_type(self):
+        """Check that load_records calls and logs with storage records.
+
+        This checks that load_records is called and the message is logged
+        correctly when the record type is storage."""
         logger = logging.getLogger('loader')
         pidfile = os.path.join(self.dir_path, 'pidfile')
 
@@ -178,7 +181,7 @@ class LoaderTest(unittest.TestCase):
             self.loader.load_all_msgs()
             self.mock_db.load_records.assert_called_once()
             mock_log.assert_has_calls(
-                        [call('Message contains %i records', 1)])
+                        [call('Message contains 1 %s record', 'Storage')])
 
     def tearDown(self):
         shutil.rmtree(self.dir_path)
