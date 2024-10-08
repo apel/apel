@@ -1,13 +1,8 @@
--- This script contains multiple comment blocks that can update
--- APEL version x.x.x databases of the following types to x.x.x:
+-- This script contains a SQL block that can update
+-- APEL version 1.9.1 databases of the following types to 2.2.0:
 --  - Cloud Accounting Database
 
-/*
--- UPDATE SCRIPT FOR CLOUD SUMMARY SCHEMA
-
--- If you have a Cloud Accounting Database and wish to
--- upgrade to APEL Version next, remove the block comment
--- symbols around this section and run this script
+-- UPDATE SCRIPT FOR CLOUD SCHEMA
 
 -- This section will:
 -- - Remove CloudType from the CloudSummaries primary key. This
@@ -103,5 +98,3 @@ BEGIN
       ORDER BY NULL;
 END //
 DELIMITER ;
-
-*/
