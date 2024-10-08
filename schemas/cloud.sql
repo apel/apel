@@ -156,7 +156,7 @@ CREATE TABLE CloudSummaries (
   VORoleID INT NOT NULL, -- Foreign key
 
   Status VARCHAR(255) NOT NULL,
-  CloudType VARCHAR(255) NOT NULL,
+  CloudType VARCHAR(255),
   ImageId VARCHAR(255) NOT NULL,
 
   EarliestStartTime DATETIME,
@@ -179,7 +179,7 @@ CREATE TABLE CloudSummaries (
   PublisherDNID VARCHAR(255),
 
   PRIMARY KEY (SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID,
-    VOID, VOGroupID, VORoleID, Status, CloudType, ImageId, CpuCount,
+    VOID, VOGroupID, VORoleID, Status, ImageId, CpuCount,
     BenchmarkType, Benchmark)
 
 );
@@ -284,7 +284,7 @@ BEGIN
       'summariser'
       FROM TVMUsagePerMonth
       GROUP BY SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID,
-          VOGroupID, VORoleID, Status, CloudType, ImageId, CpuCount,
+          VOGroupID, VORoleID, Status, ImageId, CpuCount,
           BenchmarkType, Benchmark
       ORDER BY NULL;
 END //

@@ -139,7 +139,7 @@ class RunprocessTestCase(unittest.TestCase):
         <SERVICE_ENDPOINT><HOSTDN>/banned/dn</HOSTDN></SERVICE_ENDPOINT>
         <SERVICE_ENDPOINT><HOSTDN>invalid</HOSTDN></SERVICE_ENDPOINT>
         </results>"""
-        bin.retrieve_dns.runprocess("fake_config_file", "fake_log_config_file")
+        bin.retrieve_dns.runprocess("fake_config_file")
         with open(self.files['dn']['path']) as dns:
             self.assertEqual(dns.read(), "/basic/dn\n/extra/dn\n")
 
@@ -151,7 +151,7 @@ class RunprocessTestCase(unittest.TestCase):
         """
         self.mock_xml.return_value = ""
         self.assertRaises(SystemExit, bin.retrieve_dns.runprocess,
-                          "fake_config_file", "fake_log_config_file")
+                          "fake_config_file")
         with open(self.files['dn']['path']) as dns:
             self.assertEqual(dns.read(), "/dn/1\n/dn/2\n")
 

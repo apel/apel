@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        2.1.0
+Version:        2.2.0
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -199,6 +199,12 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Tue Oct 08 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.2.0-1
+ - Changed deprecated command line option module optparse for argparse.
+ - Deprecated separate logging configuration file.
+ - [server] Changed the primary key of cloud summary records to reduce duplication on republish.
+ - [server] Added logging of record type when loading storage records.
+
  * Wed Aug 21 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.1.0-1
  - [client] Fix LDAP returning bytes and not strings with Python 3
  - [client] Fix the parser failing on VOMS attributes without Role or Capability parts

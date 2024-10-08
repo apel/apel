@@ -197,14 +197,14 @@ class Loader(object):
         from its text content into the database.
         '''
         record_types = {
-                    apel.db.records.summary.SummaryRecord: 'Summary',
-                    apel.db.records.job.JobRecord: 'Job',
-                    apel.db.records.normalised_summary.NormalisedSummaryRecord:
-                    'Normalised Summary',
-                    apel.db.records.sync.SyncRecord: 'Sync',
-                    apel.db.records.cloud.CloudRecord: 'Cloud',
-                    apel.db.records.cloud_summary.CloudSummaryRecord:
-                    'Cloud Summary'}
+            apel.db.records.summary.SummaryRecord: 'Summary',
+            apel.db.records.job.JobRecord: 'Job',
+            apel.db.records.normalised_summary.NormalisedSummaryRecord: 'Normalised Summary',
+            apel.db.records.sync.SyncRecord: 'Sync',
+            apel.db.records.cloud.CloudRecord: 'Cloud',
+            apel.db.records.cloud_summary.CloudSummaryRecord: 'Cloud Summary',
+            apel.db.records.storage.StorageRecord: 'Storage',
+        }
 
         log.info('Loading message from %s', signer)
 

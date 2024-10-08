@@ -37,12 +37,13 @@ from daemon.daemon import DaemonContext
 from apel.db.loader import Loader, LoaderException
 from apel.common import set_up_logging
 from apel import __version__
+from argparse import ArgumentParser
 from optparse import OptionParser
 
 
 log = None
 
-def runprocess(db_config_file, config_file, log_config_file):
+def runprocess(db_config_file, config_file):
     '''Parse the configuration file and start the loader.'''
 
     # Read configuration from file
@@ -54,12 +55,8 @@ def runprocess(db_config_file, config_file, log_config_file):
 
     # set up logging
     try:
-        if os.path.exists(options.log_config):
-            logging.config.fileConfig(options.log_config)
-        else:
-            set_up_logging(cp.get('logging', 'logfile'),
-                           cp.get('logging', 'level'),
-                           cp.getboolean('logging', 'console'))
+        set_up_logging(cp.get('logging', 'logfile'), cp.get('logging', 'level'),
+                       cp.getboolean('logging', 'console'))
         global log
         log = logging.getLogger('dbloader')
     except (ConfigParser.Error, ValueError, IOError) as err:
@@ -136,15 +133,30 @@ def run_as_daemon(loader, interval):
 
 
 if __name__ == '__main__':
+
     ver = "Starting APEL dbloader %s.%s.%s" % __version__
-    opt_parser = OptionParser(version=ver)
-    opt_parser.add_option('-d', '--db', help='location of DB config file',
-                          default='/etc/apel/db.cfg')
-    opt_parser.add_option('-c', '--config', help='Location of config file',
-                          default='/etc/apel/loader.cfg')
-    opt_parser.add_option('-l', '--log_config', help='Location of logging config file (optional)',
-                          default='/etc/apel/logging.cfg')
+    default_db_conf_location = '/etc/apel/db.cfg'
+    default_conf_location = '/etc/apl/loader.cfg'
+    arg_parser = ArgumentParser()
 
-    (options, args) = opt_parser.parse_args()
+    arg_parser.add_argument('-d', '--db',
+                            help='Location of DB',
+                            default=default_db_conf_location)
+    arg_parser.add_argument('-c', '--config',
+                            help="Location of config file",
+                            default=default_conf_location)
+    arg_parser.add_argument('-l', '--log_config',
+                            help='DEPRECATED - Location of logging config file (optional)',
+                            default=None)
+    arg_parser.add_argument('-v', '--version',
+                            action='version',
+                            version=ver)
 
-    runprocess(options.db, options.config, options.log_config)
+    # Using the vars function to output a dict-like view rather than Namespace object.
+    options = arg_parser.parse_args()
+
+    # Deprecating functionality.
+    if os.path.exists('/etc/apel/logging.cfg') or options['log_config'] is not None:
+        logging.warning('Separate logging config file option has been deprecated.')
+
+    runprocess(options['db'], options['config'])
