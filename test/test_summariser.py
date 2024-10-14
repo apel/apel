@@ -60,7 +60,7 @@ class BinSummariserTest(unittest.TestCase):
 
         # Run the summariser with the temporary config files
         try:
-            summariser.runprocess(self.db_cfg_path, self.sum_cfg_path, '')
+            summariser.runprocess(self.db_cfg_path, self.sum_cfg_path)
         except SystemExit as e:
             self.assertEqual(e.code, 1, "Exit code '%s' is not 1." % e.code)
             # A SystemExit is raised regardless of what happens
