@@ -73,7 +73,7 @@ class NormalisedSummaryRecord(Record):
                             "NormalisedWallDuration", "NormalisedCpuDuration",
                             "NumberOfJobs"]
         # All allowed fields.
-        self._all_fields = self._msg_fields
+        self._all_fields = self._db_fields
 
     def _check_fields(self):
         '''
