@@ -136,7 +136,7 @@ if __name__ == '__main__':
 
     ver = "Starting APEL dbloader %s.%s.%s" % __version__
     default_db_conf_location = '/etc/apel/db.cfg'
-    default_conf_location = '/etc/apl/loader.cfg'
+    default_conf_location = '/etc/apel/loader.cfg'
     arg_parser = ArgumentParser()
 
     arg_parser.add_argument('-d', '--db',
@@ -153,7 +153,7 @@ if __name__ == '__main__':
                             version=ver)
 
     # Using the vars function to output a dict-like view rather than Namespace object.
-    options = arg_parser.parse_args()
+    options = vars(arg_parser.parse_args())
 
     # Deprecating functionality.
     if os.path.exists('/etc/apel/logging.cfg') or options['log_config'] is not None:
