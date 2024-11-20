@@ -199,6 +199,14 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Wed Feb 11 2025 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.2.1-1
+ - Fixed issue with trailing whitespace in header for unloader and loader.
+ - Refactored argparse code for CLI and fixed a typo.
+ - [server] Fixed typo and missing function in the loader, introduced with change to argparse.
+ - [server] Improved clean-up of database connections when summarising.
+ - [server] Updated cloud schema to use BIGINT for some fields that were using INT.
+ - [server] Updated partitions in initialisation schema for next few years.
+
  * Tue Oct 08 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.2.0-1
  - Changed deprecated command line option module optparse for argparse.
  - Deprecated separate logging configuration file.
