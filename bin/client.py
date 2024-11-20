@@ -300,18 +300,18 @@ def main():
                             action='version',
                             version=ver)
 
-    # Using the vars function to output a dict-like view rather than Namespace object.
-    options = vars(arg_parser.parse_args())
+    # Parsing arguments into an argparse.Namespace object for structured access.
+    options: Namespace = arg_parser.parse_args()
 
     # Deprecating functionality.
-    if os.path.exists('/etc/apel/logging.cfg') or options['log_config'] is not None:
+    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
         logging.warning('Separate logging config file option has been deprecated.')
 
     ccp = ConfigParser.ConfigParser()
-    ccp.read(options['config'])
+    ccp.read(options.config)
 
     scp = ConfigParser.ConfigParser()
-    scp.read(options['ssm_config'])
+    scp.read(options.ssm_config)
 
     # set up logging
     try:

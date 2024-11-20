@@ -32,7 +32,7 @@ from future.builtins import object, str
 from apel.common import set_up_logging, LOG_BREAK
 from apel import __version__
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 import logging.config
 import os
 import sys
@@ -368,11 +368,11 @@ if __name__ == '__main__':
                             action='version',
                             version=ver)
 
-    # Using the vars function to output a dict-like view rather than Namespace object.
-    options = vars(arg_parser.parse_args())
+    # Parsing arguments into an argparse.Namespace object for structured access.
+    options: Namespace = arg_parser.parse_args()
 
     # Deprecating functionality.
-    if os.path.exists('/etc/apel/logging.cfg') or options['log_config'] is not None:
+    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
         logging.warning('Separate logging config file option has been deprecated.')
 
-    runprocess(options['config'])
+    runprocess(options.config)

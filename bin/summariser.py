@@ -24,7 +24,7 @@ from future import standard_library
 standard_library.install_aliases()
 from future.builtins import str
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 import datetime
 import logging.config
 import os
@@ -196,11 +196,11 @@ if __name__ == '__main__':
                             action='version',
                             version=ver)
 
-    # Using the vars function to output a dict-like view rather than Namespace object.
-    options = vars(arg_parser.parse_args())
+    # Parsing arguments into an argparse.Namespace object for structured access.
+    options: Namespace = arg_parser.parse_args()
 
     # Deprecating functionality.
-    if os.path.exists('/etc/apel/logging.cfg') or options['log_config'] is not None:
+    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
         logging.warning('Separate logging config file option has been deprecated.')
 
-    runprocess(options['db'], options['config'])
+    runprocess(options.db, options.config)
