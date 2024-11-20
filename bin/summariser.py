@@ -28,6 +28,7 @@ from argparse import ArgumentParser
 import datetime
 import logging.config
 import os
+import subprocess
 import sys
 try:
     # Renamed ConfigParser to configparser in Python 3
@@ -171,7 +172,9 @@ def runprocess(db_config_file, config_file):
             log.warning("The summariser may not start again until it is removed.")
 
         log.info(LOG_BREAK)
-
+        db.db.close()
+        query = ('DROP DATABASE ' + db_name)
+        subprocess.call(['mysql', '-u', 'root', '-e', query])
 
 if __name__ == '__main__':
     # Main method for running the summariser.
