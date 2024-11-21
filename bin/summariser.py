@@ -157,6 +157,8 @@ def runprocess(db_config_file, config_file):
         log.error('Summarising has been cancelled.')
         sys.exit(1)
     finally:
+        # Close the database connection before final cleanup
+        db.db.close()
         # Clean up pidfile regardless of any excpetions
         # This even executes if sys.exit() is called
         log.info('Removing Pidfile')
@@ -171,8 +173,7 @@ def runprocess(db_config_file, config_file):
             log.warning("The summariser may not start again until it is removed.")
 
         log.info(LOG_BREAK)
-        db.db.close()
-
+    
 
 if __name__ == '__main__':
     # Main method for running the summariser.
