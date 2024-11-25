@@ -35,7 +35,7 @@ import sys
 import re
 import gzip
 import bz2
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser
 try:
     # Renamed ConfigParser to configparser in Python 3
     import configparser as ConfigParser
@@ -353,7 +353,7 @@ def main():
                             version=ver)
 
     # Parsing arguments into an argparse.Namespace object for structured access.
-    options: Namespace = arg_parser.parse_args()
+    options = arg_parser.parse_args()
 
     # Read configuration from file
     try:

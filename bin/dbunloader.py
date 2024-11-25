@@ -21,7 +21,7 @@ from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
 
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser
 try:
     # Renamed ConfigParser to configparser in Python 3
     import configparser as ConfigParser
@@ -96,7 +96,7 @@ if __name__ == '__main__':
                             version=ver)
 
     # Parsing arguments into an argparse.Namespace object for structured access.
-    options: Namespace = arg_parser.parse_args()
+    options = arg_parser.parse_args()
 
     # Deprecating functionality.
     if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:

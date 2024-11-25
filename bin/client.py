@@ -301,7 +301,7 @@ def main():
                             version=ver)
 
     # Parsing arguments into an argparse.Namespace object for structured access.
-    options: Namespace = arg_parser.parse_args()
+    options = arg_parser.parse_args()
 
     # Deprecating functionality.
     if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:

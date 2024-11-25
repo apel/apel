@@ -32,7 +32,7 @@ from future.builtins import object, str
 from apel.common import set_up_logging, LOG_BREAK
 from apel import __version__
 
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser
 import logging.config
 import os
 import sys
@@ -369,7 +369,7 @@ if __name__ == '__main__':
                             version=ver)
 
     # Parsing arguments into an argparse.Namespace object for structured access.
-    options: Namespace = arg_parser.parse_args()
+    options = arg_parser.parse_args()
 
     # Deprecating functionality.
     if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
