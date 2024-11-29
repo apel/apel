@@ -174,6 +174,7 @@ def runprocess(db_config_file, config_file):
 
         log.info(LOG_BREAK)
 
+
 if __name__ == '__main__':
     # Main method for running the summariser.
 
