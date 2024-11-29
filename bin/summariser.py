@@ -173,7 +173,6 @@ def runprocess(db_config_file, config_file):
             log.warning("The summariser may not start again until it is removed.")
 
         log.info(LOG_BREAK)
-    
 
 if __name__ == '__main__':
     # Main method for running the summariser.
