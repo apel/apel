@@ -46,7 +46,7 @@ class CloudRecord(Record):
                              "WallDuration", "CpuDuration", "CpuCount",
                              "NetworkType", "NetworkInbound", "NetworkOutbound", "PublicIPCount",
                              "Memory", "Disk", "BenchmarkType", "Benchmark",
-                             "StorageRecordId", "ImageId", "CloudType"]
+                             "StorageRecordId", "ImageId", "CloudType", "Collector"]
 
         # This list specifies the information that goes in the database.
         self._db_fields = self._msg_fields[:9] + ['VO', 'VOGroup', 'VORole'] + self._msg_fields[9:]
