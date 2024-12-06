@@ -125,6 +125,7 @@ rm -f "$SOURCE_DIR/$TAR_FILE"
 # Get supplied Python version
 PY_VERSION="$(basename "$PYTHON_ROOT_DIR")"
 PY_NUM=${PY_VERSION#python}
+PY_NUM_FOR_BUILD_NAMING=${PY_NUM/./}
 OS_EXTENSION="$(uname -r | grep -o 'el[7-9]' || echo '_all')"
 
 # Copy files into apel-parsers
@@ -207,9 +208,9 @@ FPM_CORE="fpm -s $SOURCE_TYPE \
     --depends \"shadow-utils\" \
     --no-auto-depends "
 
-FPM_PARSERS_PACKAGE="-n apel-parsers \
+FPM_PARSERS_PACKAGE="-n apel-parsers-py${PY_NUM_FOR_BUILD_NAMING} \
     -C $TEMP_DIR_FOR_PARSERS \
-    --depends \"apel-lib >= ${VERSION}\" \
+    --depends \"apel-lib-py${PY_NUM_FOR_BUILD_NAMING} >= ${VERSION}\" \
     --rpm-attr 755,root,root:/usr/bin/apelparser \
     --rpm-attr 600,-,-:/etc/apel/parser.cfg \
     --rpm-attr 755,root,root:/usr/share/apel/slurm_acc.sh \
@@ -217,20 +218,20 @@ FPM_PARSERS_PACKAGE="-n apel-parsers \
     --config-files /etc/apel/parser.cfg \
     --description \"Parsers for APEL system\" "
 
-FPM_CLIENT_PACKAGE="-n apel-client \
+FPM_CLIENT_PACKAGE="-n apel-client-py${PY_NUM_FOR_BUILD_NAMING} \
     -C $TEMP_DIR_FOR_CLIENT \
-    --depends \"apel-lib >= ${VERSION}\" \
-    --depends \"apel-ssm >= 3.2.0\" \
+    --depends \"apel-lib-py${PY_NUM_FOR_BUILD_NAMING} >= ${VERSION}\" \
+    --depends \"apel-ssm-py${PY_NUM_FOR_BUILD_NAMING} >= 3.2.0\" \
     --rpm-attr 755,root,root:/usr/bin/apelclient \
     --rpm-attr 600,-,-:/etc/apel/client.cfg \
     --config-files /etc/apel/client.cfg \
     --config-files /etc/logrotate.d/apel-client \
     --description \"APEL client package\" "
 
-FPM_SERVER_PACKAGE="-n apel-server \
+FPM_SERVER_PACKAGE="-n apel-server-py${PY_NUM_FOR_BUILD_NAMING} \
     --before-install \"$SOURCE_DIR/$APEL_DIR/scripts/apel-server-helper.sh\" \
     -C $TEMP_DIR_FOR_SERVER \
-    --depends \"apel-lib >= ${VERSION}\" \
+    --depends \"apel-lib-py${PY_NUM_FOR_BUILD_NAMING} >= ${VERSION}\" \
     --rpm-attr 755,root,root:/usr/share/apel/msg_status.py \
     --rpm-attr 755,root,root:/usr/bin/apeldbunloader \
     --rpm-attr 755,root,root:/usr/bin/apeldbloader \
@@ -244,7 +245,7 @@ FPM_SERVER_PACKAGE="-n apel-server \
     --config-files /etc/apel/auth.cfg \
     --description \"APEL server package\" "
 
-FPM_LIB_PACKAGE="-n apel-lib \
+FPM_LIB_PACKAGE="-n apel-lib-py${PY_NUM_FOR_BUILD_NAMING} \
     -C $TEMP_DIR_FOR_LIB \
     --description \"Libraries required for Apel Client, Server and Parsers\" "
 
@@ -261,13 +262,12 @@ eval "$BUILD_PACKAGE_COMMAND_SERVER"
 BUILD_PACKAGE_COMMAND_LIB="${FPM_CORE}${FPM_LIB_PACKAGE}${FPM_PYTHON}${VERBOSE} ."
 eval "$BUILD_PACKAGE_COMMAND_LIB"
 
-echo "== Generating pleaserun package =="
 
 FILE_TO_EXECUTE="/usr/bin/${PY_VERSION} /usr/bin/apeldbloader"
 
 # When installed, use pleaserun to perform system specific service setup
 fpm -s pleaserun -t "$PACK_TYPE" \
-    -n apeldbloader-service \
+    -n apeldbloader-service-py"${PY_NUM_FOR_BUILD_NAMING}" \
     -v "$VERSION" \
     --iteration "$ITERATION" \
     --"$PACK_TYPE"-dist "$OS_EXTENSION" \
@@ -275,7 +275,7 @@ fpm -s pleaserun -t "$PACK_TYPE" \
     --description "Accounting Processor for Event Logs (APEL) apeldbloader Daemon service" \
     --architecture $ARCH_TYPE \
     --no-auto-depends \
-    --depends "apel-lib >= $VERSION" \
+    --depends "apel-lib-py${PY_NUM_FOR_BUILD_NAMING} >= $VERSION" \
     --package "$BUILD_DIR" \
     "$FILE_TO_EXECUTE"
 
