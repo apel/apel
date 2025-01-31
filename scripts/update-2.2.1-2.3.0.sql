@@ -1,5 +1,5 @@
 -- This script contains a SQL block that can update
--- APEL version x.x.x databases of the following types to 2.1.0:
+-- APEL version 2.2.1 databases of the following types to 2.3.0:
 --  - Server Grid Accounting Database
 
 -- UPDATE SCRIPT FOR SERVER SCHEMA
