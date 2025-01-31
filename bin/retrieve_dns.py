@@ -361,7 +361,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('-c', '--config',
                             help='Location of the config file',
                             default=default_conf_location)
-    arg_parser.add_argument('-l', '---log_config',
+    arg_parser.add_argument('-l', '--log_config',
                             help='DEPRECATED - Location of logging config file',
                             default=None)
     arg_parser.add_argument('-v', '--version',

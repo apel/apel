@@ -142,7 +142,7 @@ if __name__ == '__main__':
                             help='Location of DB',
                             default=default_db_conf_location)
     arg_parser.add_argument('-c', '--config',
-                            help="Location of config file",
+                            help='Location of config file',
                             default=default_conf_location)
     arg_parser.add_argument('-l', '--log_config',
                             help='DEPRECATED - Location of logging config file',
