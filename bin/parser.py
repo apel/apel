@@ -346,7 +346,7 @@ def main():
                             help='Location of config file',
                             default=default_conf_location)
     arg_parser.add_argument('-l', '--log_config',
-                            help='Location of logging config file (optional)',
+                            help='Location of logging config file',
                             default=default_log_conf_location)
     arg_parser.add_argument('-v', '--version',
                             action='version',
