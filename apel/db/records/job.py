@@ -332,7 +332,7 @@ class JobRecord04(JobRecord):
         super().__init__()
 
         # Fields which are required by the message format.
-        self._mandatory_fields = ["Site", "LocalJobId",  "WallDuration",
+        self._mandatory_fields = ["Site", "LocalJobId", "WallDuration",
                                   "CpuDuration", "StartTime", "EndTime"]
 
         # This list allows us to specify the order of lines when we construct records.

@@ -175,7 +175,7 @@ class Record(object):
                         raise InvalidRecordException('Unknown datetime format!: %s' % value)
                 try:
                     return datetime.utcfromtimestamp(value)
-                except (ValueError, OverflowError, OSError): # Failed to parse timestamp
+                except (ValueError, OverflowError, OSError) as e: # Failed to parse timestamp
                     # Given timestamp is probably out of range
                     raise InvalidRecordException(e)
             elif name in self._dict_fields:

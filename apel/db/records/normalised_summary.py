@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from future.builtins import str
+from future.builtins import str, super
 
 from datetime import datetime
 import time
@@ -36,7 +36,7 @@ class NormalisedSummaryRecord(Record):
     def __init__(self):
         '''Populate fields required to load the message.'''
 
-        Record.__init__(self)
+        super().__init__()
 
         # Fields which are required by the message format.
         self._mandatory_fields = ["Site", "Month", "Year", "WallDuration",
@@ -66,12 +66,12 @@ class NormalisedSummaryRecord(Record):
         # This list specifies the information that goes in the database. It includes
         # the additional ServiceLevelType field.
         self._db_fields = ["Site", "Month", "Year", "GlobalUserName", "VO",
-                            "VOGroup", "VORole", "SubmitHost", "Infrastructure",
-                            "ServiceLevelType",
-                            "NodeCount", "Processors", "EarliestEndTime",
-                            "LatestEndTime", "WallDuration", "CpuDuration",
-                            "NormalisedWallDuration", "NormalisedCpuDuration",
-                            "NumberOfJobs"]
+                           "VOGroup", "VORole", "SubmitHost", "Infrastructure",
+                           "ServiceLevelType",
+                           "NodeCount", "Processors", "EarliestEndTime",
+                           "LatestEndTime", "WallDuration", "CpuDuration",
+                           "NormalisedWallDuration", "NormalisedCpuDuration",
+                           "NumberOfJobs"]
         # All allowed fields.
         self._all_fields = self._db_fields
 
@@ -81,7 +81,7 @@ class NormalisedSummaryRecord(Record):
         '''
 
         # Call the parent's checks first.
-        Record._check_fields(self)
+        super()._check_fields()
 
         # shorthand
         rc = self._record_content
@@ -243,6 +243,7 @@ class NormalisedSummaryRecord(Record):
         # document will be assembled by another part of the program.
         return doc.documentElement.toxml()
 
+
 class NormalisedSummaryRecord04(NormalisedSummaryRecord):
     """Class to represent a normalised summary record using the 0.4 message format
 
@@ -255,7 +256,7 @@ class NormalisedSummaryRecord04(NormalisedSummaryRecord):
     def __init__(self):
         """Provide the necessary lists containing message information."""
 
-        Record.__init__(self)
+        super().__init__()
 
         # Fields which are required by the message format.
         self._mandatory_fields = ["Site", "Month", "Year", "WallDuration", "CpuDuration",
