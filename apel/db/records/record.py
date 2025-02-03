@@ -457,5 +457,5 @@ class Record(object):
             for benchmark_type in benchmark_priority:
                 if benchmark_type in cleaned_dict:
                     return benchmark_type, cleaned_dict[benchmark_type]
-            else:
-                raise InvalidRecordException("No valid benchmark type found")
+            # Raise error if for-loop exhausted without finding a valid benchmark.
+            raise InvalidRecordException("No valid benchmark type found")
