@@ -293,5 +293,5 @@ class NormalisedSummaryRecord04(NormalisedSummaryRecord):
 
         self._datetime_fields = ["EarliestEndTime", "LatestEndTime"]
 
-        # Fields which should contain associative arrays in the message
+        # Fields which should contain associative arrays in the v0.4 message
         self._dict_fields = ["NormalisedWallDuration", "NormalisedCpuDuration"]

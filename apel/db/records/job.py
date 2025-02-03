@@ -367,7 +367,7 @@ class JobRecord04(JobRecord):
 
         self._datetime_fields = ["StartTime", "EndTime"]
 
-        # Fields which should contain associative arrays in the message
+        # Fields which should contain associative arrays in the v0.4 message
         self._dict_fields = ["ServiceLevel"]
 
         # Acceptable values for the ServiceLevelType field, not case-sensitive
