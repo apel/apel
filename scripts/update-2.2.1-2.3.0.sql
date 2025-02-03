@@ -40,6 +40,79 @@ ALTER TABLE HybridSuperSummaries
   MODIFY ServiceLevelType VARCHAR(50) NOT NULL;
 
 
+DROP PROCEDURE IF EXISTS SummariseJobs;
+
+DELIMITER //
+CREATE PROCEDURE SummariseJobs()
+BEGIN
+  REPLACE INTO HybridSuperSummaries(SiteID, Month, Year, GlobalUserNameID, VOID,
+    VOGroupID, VORoleID, SubmitHostID, Infrastructure, ServiceLevelType,
+    ServiceLevel, NodeCount, Processors, EarliestEndTime, LatestEndTime,
+    WallDuration, CpuDuration, NormalisedWallDuration, NormalisedCpuDuration,
+    NumberOfJobs)
+  SELECT SiteID,
+         EndMonth AS Month,
+         EndYear AS Year,
+         GlobalUserNameID,
+         VOID,
+         VOGroupID,
+         VORoleID,
+         SubmitHostID,
+         InfrastructureType,
+         ServiceLevelType,
+         ServiceLevel,
+         NodeCount,
+         Processors,
+         MIN(EndTime) AS EarliestEndTime,
+         MAX(EndTime) AS LatestEndTime,
+         SUM(WallDuration) AS SumWCT,
+         SUM(CpuDuration) AS SumCPU,
+         ROUND(SUM(IF(WallDuration > 0, WallDuration, 0) * IF(ServiceLevelType = "si2k", ServiceLevel / 250, ServiceLevel))) AS NormSumWCT,
+         ROUND(SUM(IF(CpuDuration > 0, CpuDuration, 0) * IF(ServiceLevelType = "si2k", ServiceLevel / 250, ServiceLevel))) AS NormSumCPU,
+         COUNT(*) AS Njobs
+  FROM JobRecords
+  GROUP BY SiteID, VOID, GlobalUserNameID, VOGroupID, VORoleID, EndYear,
+           EndMonth, InfrastructureType, SubmitHostID, ServiceLevelType,
+           ServiceLevel, NodeCount, Processors;
+END //
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS NormaliseSummaries;
+
+DELIMITER //
+CREATE PROCEDURE NormaliseSummaries()
+BEGIN
+  REPLACE INTO HybridSuperSummaries(SiteID, Month, Year, GlobalUserNameID, VOID,
+    VOGroupID, VORoleID, SubmitHostID, Infrastructure, ServiceLevelType,
+    ServiceLevel, NodeCount, Processors, EarliestEndTime, LatestEndTime,
+    WallDuration, CpuDuration, NormalisedWallDuration, NormalisedCpuDuration,
+    NumberOfJobs)
+  SELECT SiteID,
+         Month,
+         Year,
+         GlobalUserNameID,
+         VOID,
+         VOGroupID,
+         VORoleID,
+         SubmitHostID,
+         InfrastructureType,
+         ServiceLevelType,
+         ServiceLevel,
+         NodeCount,
+         Processors,
+         EarliestEndTime,
+         LatestEndTime,
+         WallDuration,
+         CpuDuration,
+         ROUND(IF(WallDuration > 0, WallDuration, 0) * IF(ServiceLevelType = "si2k", ServiceLevel / 250, ServiceLevel)) AS NormSumWCT,
+         ROUND(IF(CpuDuration > 0, CpuDuration, 0) * IF(ServiceLevelType = "si2k", ServiceLevel / 250, ServiceLevel)) AS NormSumCPU,
+         NumberOfJobs
+  FROM Summaries;
+END //
+DELIMITER ;
+
+
 DROP PROCEDURE IF EXISTS CopyNormalisedSummaries;
 
 DELIMITER //
