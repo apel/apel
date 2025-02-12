@@ -10,7 +10,7 @@ Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
 
 Group:          Development/Languages
-License:        ASL 2.0
+License:        Apache-2.0
 URL:            https://wiki.egi.eu/wiki/APEL
 Source:         %{name}-%{version}-%{releasenumber}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
