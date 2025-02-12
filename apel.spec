@@ -199,7 +199,7 @@ exit 0
 # ==============================================================================
 
 %changelog
- * Wed Feb 11 2025 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.2.1-1
+ * Wed Feb 12 2025 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.2.1-1
  - Fixed issue with trailing whitespace in header for unloader and loader.
  - Refactored argparse code for CLI and fixed a typo.
  - [server] Fixed typo and missing function in the loader, introduced with change to argparse.
