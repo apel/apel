@@ -185,7 +185,11 @@ class Record(object):
         '''
         Given a tuple from a mysql database, load fields.
         '''
-        assert len(tup) == len(self._db_fields), 'Different length of tuple and fields list'
+        if len(tup) != len(self._db_fields):
+            raise ValueError(
+                'Wrong tuple length. Expected %s items but got %s.'
+                % (len(self._db_fields), len(tup))
+            )
         self.set_all(dict(zip(self._db_fields, tup)))
 
     def load_from_msg(self, text):
