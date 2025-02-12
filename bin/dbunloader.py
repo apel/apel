@@ -95,16 +95,16 @@ if __name__ == '__main__':
                             action='version',
                             version=ver)
 
-    # Using the vars function to output a dict-like view rather than Namespace object.
-    options = vars(arg_parser.parse_args())
+    # Parsing arguments into an argparse.Namespace object for structured access.
+    options = arg_parser.parse_args()
 
     # Deprecating functionality.
-    if os.path.exists('/etc/apel/logging.cfg') or options['log_config'] is not None:
+    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
         logging.warning('Separate logging config file option has been deprecated.')
 
     # Set default for 'interval' as it is a new option so may not be in config.
     cp = ConfigParser.ConfigParser({'interval': 'latest'})
-    cp.read([options['config']])
+    cp.read([options.config])
 
     # set up logging
     try:
@@ -119,7 +119,7 @@ if __name__ == '__main__':
     db = None
 
     dbcp = ConfigParser.ConfigParser()
-    dbcp.read([options['db']])
+    dbcp.read([options.db])
 
     try:
         db = ApelDb(dbcp.get('db', 'backend'),

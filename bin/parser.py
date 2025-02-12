@@ -339,26 +339,29 @@ def main():
     ver = "APEL parser %s.%s.%s" % __version__
 
     default_conf_location = '/etc/apel/parser.cfg'
-    default_log_conf_location = '/etc/apel/parserlog.cfg'
     arg_parser = ArgumentParser(description=__doc__)
 
-    arg_parser.add_argument('c', '--config',
+    arg_parser.add_argument('-c', '--config',
                             help='Location of config file',
                             default=default_conf_location)
     arg_parser.add_argument('-l', '--log_config',
-                            help='Location of logging config file (optional)',
-                            default=default_log_conf_location)
+                            help='DEPRECATED - Location of logging config file',
+                            default=None)
     arg_parser.add_argument('-v', '--version',
                             action='version',
                             version=ver)
 
-    # Using the vars function to output a dict-like view rather than Namespace object.
-    options = vars(arg_parser.parse_args())
+    # Parsing arguments into an argparse.Namespace object for structured access.
+    options = arg_parser.parse_args()
+
+    # Deprecating functionality.
+    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
+        logging.warning('Separate logging config file option has been deprecated.')
 
     # Read configuration from file
     try:
         cp = ConfigParser.ConfigParser()
-        cp.read(options['config'])
+        cp.read(options.config)
     except Exception as e:
         sys.stderr.write(str(e))
         sys.stderr.write('\n')
@@ -366,12 +369,11 @@ def main():
 
     # set up logging
     try:
-        if os.path.exists(options['log_config']):
-            logging.config.fileConfig(options['log_config'])
-        else:
-            set_up_logging(cp.get('logging', 'logfile'),
-                           cp.get('logging', 'level'),
-                           cp.getboolean('logging', 'console'))
+        set_up_logging(
+            cp.get('logging', 'logfile'),
+            cp.get('logging', 'level'),
+            cp.getboolean('logging', 'console')
+        )
     except (ConfigParser.Error, ValueError, IOError) as err:
         print('Error configuring logging: %s' % str(err))
         print('The system will exit.')

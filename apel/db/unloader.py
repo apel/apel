@@ -272,7 +272,7 @@ class DbUnloader(object):
         record_type = type(records[0])
 
         buf = StringIO.StringIO()
-        buf.write(self.APEL_HEADERS[record_type] + ' \n')
+        buf.write(self.APEL_HEADERS[record_type] + '\n')
         buf.write('%%\n'.join( [ record.get_msg(self._withhold_dns) for record in records ] ))
         buf.write('%%\n')
 
