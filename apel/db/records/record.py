@@ -310,7 +310,7 @@ class Record(object):
                 benchmark_type = self._record_content['ServiceLevelType']
                 if benchmark_type is None:
                     benchmark_type = "HEPSPEC"
-                msg += key+ ": {" + benchmark_type + ": " + value + "}\n"
+                msg += key + ": {" + benchmark_type + ": " + value + "}\n"
             else:
                 # otherwise, add the line
                 msg += key + ": " + value + "\n"
