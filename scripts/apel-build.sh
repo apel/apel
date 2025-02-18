@@ -185,7 +185,7 @@ SOURCE_TYPE="dir"
 ARCH_TYPE="noarch"
 ADMIN_CONTACT_EMAIL="apel-admins@stfc.ac.uk"
 APEL_WIKI_URL="https://wiki.egi.eu/wiki/APEL"
-LICENSE="ASL 2.0"
+LICENSE="Apache-2.0"
 GROUP="Development/Languages"
 
 FPM_CORE="fpm -s $SOURCE_TYPE \

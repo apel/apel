@@ -10,7 +10,7 @@ Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
 
 Group:          Development/Languages
-License:        ASL 2.0
+License:        Apache-2.0
 URL:            https://wiki.egi.eu/wiki/APEL
 Source:         %{name}-%{version}-%{releasenumber}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -199,7 +199,7 @@ exit 0
 # ==============================================================================
 
 %changelog
- * Wed Feb 11 2025 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.2.1-1
+ * Wed Feb 12 2025 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.2.1-1
  - Fixed issue with trailing whitespace in header for unloader and loader.
  - Refactored argparse code for CLI and fixed a typo.
  - [server] Fixed typo and missing function in the loader, introduced with change to argparse.
