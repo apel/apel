@@ -30,11 +30,12 @@ from future import standard_library
 standard_library.install_aliases()
 from future.builtins import str
 
-from optparse import OptionParser
 import sys
 import os
 import logging.config
 import ldap
+from argparse import ArgumentParser
+
 try:
     # Renamed ConfigParser to configparser in Python 3
     import configparser as ConfigParser
@@ -281,21 +282,31 @@ def main():
     '''
     install_exc_handler(default_handler)
     ver = 'APEL client %s.%s.%s' % __version__
-    opt_parser = OptionParser(version=ver, description=__doc__)
 
-    opt_parser.add_option('-c', '--config',
-                          help='main configuration file for APEL',
-                          default='/etc/apel/client.cfg')
+    default_conf_location = '/etc/apel/client.cfg'
+    default_ssm_conf_location = '/etc/apel/sender.cfg'
+    arg_parser = ArgumentParser(description=__doc__)
 
-    opt_parser.add_option('-s', '--ssm_config',
-                          help='location of SSM config file',
-                          default='/etc/apel/sender.cfg')
+    arg_parser.add_argument('-c', '--config',
+                            help='Location of main configuration file for APEL',
+                            default=default_conf_location)
+    arg_parser.add_argument('-s', '--ssm_config',
+                            help='Location of SSM config file',
+                            default=default_ssm_conf_location)
+    arg_parser.add_argument('-l', '--log_config',
+                            help='DEPRECATED - Location of logging config file',
+                            default=None)
+    arg_parser.add_argument('-v', '--version',
+                            action='version',
+                            version=ver)
 
-    opt_parser.add_option('-l', '--log_config',
-                          help='location of logging config file (optional)',
-                          default='/etc/apel/logging.cfg')
+    # Parsing arguments into an argparse.Namespace object for structured access.
+    options = arg_parser.parse_args()
 
-    options, unused_args = opt_parser.parse_args()
+    # Deprecating functionality.
+    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
+        logging.warning('Separate logging config file option has been deprecated.')
+
     ccp = ConfigParser.ConfigParser()
     ccp.read(options.config)
 
@@ -304,12 +315,8 @@ def main():
 
     # set up logging
     try:
-        if os.path.exists(options.log_config):
-            logging.config.fileConfig(options.log_config)
-        else:
-            set_up_logging(ccp.get('logging', 'logfile'),
-                           ccp.get('logging', 'level'),
-                           ccp.getboolean('logging', 'console'))
+        set_up_logging(ccp.get('logging', 'logfile'), ccp.get('logging', 'level'),
+                       ccp.getboolean('logging', 'console'))
         log = logging.getLogger(LOGGER_ID)
     except (ConfigParser.Error, ValueError, IOError) as err:
         print('Error configuring logging: %s' % str(err))

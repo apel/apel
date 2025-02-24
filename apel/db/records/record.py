@@ -79,6 +79,9 @@ class Record(object):
         self._datetime_fields = []
         # The dictionary into which all the information goes
         self._record_content = {}
+        # These fields need special handling as they shouldn't be inserted as
+        # Null into the database
+        self._fqan_fields = ["VO", "VOGroup", "VORole"]
 
     def set_all(self, fielddict):
         '''
@@ -126,8 +129,8 @@ class Record(object):
         Otherwise it raises an error.
         '''
         try:
-            # Convert any null equivalents to a None object
-            if check_for_null(value):
+            # Convert null equivalents (except VOMS attributes) to None object
+            if name not in self._fqan_fields and check_for_null(value):
                 value = None
             # firstly we must ensure that we do not put None
             # in mandatory field
@@ -182,7 +185,11 @@ class Record(object):
         '''
         Given a tuple from a mysql database, load fields.
         '''
-        assert len(tup) == len(self._db_fields), 'Different length of tuple and fields list'
+        if len(tup) != len(self._db_fields):
+            raise ValueError(
+                'Wrong tuple length. Expected %s items but got %s.'
+                % (len(self._db_fields), len(tup))
+            )
         self.set_all(dict(zip(self._db_fields, tup)))
 
     def load_from_msg(self, text):

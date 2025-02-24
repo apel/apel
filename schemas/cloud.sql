@@ -29,17 +29,17 @@ CREATE TABLE CloudRecords (
   MeasurementMonth INT NOT NULL,
   MeasurementYear INT NOT NULL,
 
-  SuspendDuration INT,
-  WallDuration INT,
-  CpuDuration INT,
+  SuspendDuration BIGINT,
+  WallDuration BIGINT,
+  CpuDuration BIGINT,
   CpuCount INT,
 
   NetworkType VARCHAR(255),
-  NetworkInbound INT,
-  NetworkOutbound INT,
+  NetworkInbound BIGINT,
+  NetworkOutbound BIGINT,
   PublicIPCount INT,
-  Memory INT,
-  Disk INT,
+  Memory BIGINT,
+  Disk BIGINT,
 
   BenchmarkType VARCHAR(50) NOT NULL,
   Benchmark DECIMAL(10,3) NOT NULL,
@@ -72,11 +72,11 @@ CREATE PROCEDURE ReplaceCloudRecord(
   fqan VARCHAR(255), vo VARCHAR(255),
   voGroup VARCHAR(255), voRole VARCHAR(255), status VARCHAR(255),
   startTime DATETIME, endTime DATETIME,
-  suspendDuration INT,
-  wallDuration INT, cpuDuration INT,
-  cpuCount INT, networkType VARCHAR(255),  networkInbound INT,
-  networkOutbound INT, publicIPCount INT, memory INT,
-  disk INT, benchmarkType VARCHAR(50), benchmark DECIMAL(10,3), storageRecordId VARCHAR(255),
+  suspendDuration BIGINT,
+  wallDuration BIGINT, cpuDuration BIGINT,
+  cpuCount INT, networkType VARCHAR(255),  networkInbound BIGINT,
+  networkOutbound BIGINT, publicIPCount INT, memory BIGINT,
+  disk BIGINT, benchmarkType VARCHAR(50), benchmark DECIMAL(10,3), storageRecordId VARCHAR(255),
   imageId VARCHAR(255), cloudType VARCHAR(255),
   publisherDN VARCHAR(255))
 
@@ -156,7 +156,7 @@ CREATE TABLE CloudSummaries (
   VORoleID INT NOT NULL, -- Foreign key
 
   Status VARCHAR(255) NOT NULL,
-  CloudType VARCHAR(255) NOT NULL,
+  CloudType VARCHAR(255),
   ImageId VARCHAR(255) NOT NULL,
 
   EarliestStartTime DATETIME,
@@ -179,7 +179,7 @@ CREATE TABLE CloudSummaries (
   PublisherDNID VARCHAR(255),
 
   PRIMARY KEY (SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID,
-    VOID, VOGroupID, VORoleID, Status, CloudType, ImageId, CpuCount,
+    VOID, VOGroupID, VORoleID, Status, ImageId, CpuCount,
     BenchmarkType, Benchmark)
 
 );
@@ -284,7 +284,7 @@ BEGIN
       'summariser'
       FROM TVMUsagePerMonth
       GROUP BY SiteID, CloudComputeServiceID, Month, Year, GlobalUserNameID, VOID,
-          VOGroupID, VORoleID, Status, CloudType, ImageId, CpuCount,
+          VOGroupID, VORoleID, Status, ImageId, CpuCount,
           BenchmarkType, Benchmark
       ORDER BY NULL;
 END //

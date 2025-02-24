@@ -4,13 +4,13 @@
 %endif
 
 Name:           apel
-Version:        2.0.0
+Version:        2.2.1
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
 
 Group:          Development/Languages
-License:        ASL 2.0
+License:        Apache-2.0
 URL:            https://wiki.egi.eu/wiki/APEL
 Source:         %{name}-%{version}-%{releasenumber}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -199,6 +199,26 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Wed Feb 12 2025 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.2.1-1
+ - Fixed issue with trailing whitespace in header for unloader and loader.
+ - Refactored argparse code for CLI and fixed a typo.
+ - [server] Fixed typo and missing function in the loader, introduced with change to argparse.
+ - [server] Improved clean-up of database connections when summarising.
+ - [server] Updated cloud schema to use BIGINT for some fields that were using INT.
+ - [server] Updated partitions in initialisation schema for next few years.
+
+ * Tue Oct 08 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.2.0-1
+ - Changed deprecated command line option module optparse for argparse.
+ - Deprecated separate logging configuration file.
+ - [server] Changed the primary key of cloud summary records to reduce duplication on republish.
+ - [server] Added logging of record type when loading storage records.
+
+ * Wed Aug 21 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.1.0-1
+ - [client] Fix LDAP returning bytes and not strings with Python 3
+ - [client] Fix the parser failing on VOMS attributes without Role or Capability parts
+ - [server] Add support for deleting stale cloud summaries reporting recent usage
+ - Various CI and code maintenance changes.
+
  * Wed May 08 2024 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.0.0-1
  - Added codebase compatability with Python3.
  - Removed support for Oracle as a backend database.

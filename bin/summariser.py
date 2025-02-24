@@ -24,7 +24,7 @@ from future import standard_library
 standard_library.install_aliases()
 from future.builtins import str
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 import datetime
 import logging.config
 import os
@@ -40,7 +40,7 @@ from apel.common import set_up_logging, LOG_BREAK
 from apel import __version__
 
 
-def runprocess(db_config_file, config_file, log_config_file):
+def runprocess(db_config_file, config_file):
     '''Parse the configuration file, connect to the database and run the
        summarising process.'''
 
@@ -73,12 +73,8 @@ def runprocess(db_config_file, config_file, log_config_file):
 
     # set up logging
     try:
-        if os.path.exists(log_config_file):
-            logging.config.fileConfig(log_config_file)
-        else:
-            set_up_logging(cp.get('logging', 'logfile'),
-                           cp.get('logging', 'level'),
-                           cp.getboolean('logging', 'console'))
+        set_up_logging(cp.get('logging', 'logfile'), cp.get('logging', 'level'),
+                       cp.getboolean('logging', 'console'))
         log = logging.getLogger('summariser')
     except (ConfigParser.Error, ValueError, IOError) as err:
         print('Error configuring logging: %s' % str(err))
@@ -161,6 +157,8 @@ def runprocess(db_config_file, config_file, log_config_file):
         log.error('Summarising has been cancelled.')
         sys.exit(1)
     finally:
+        # Close the database connection before final cleanup
+        db.db.close()
         # Clean up pidfile regardless of any excpetions
         # This even executes if sys.exit() is called
         log.info('Removing Pidfile')
@@ -181,13 +179,28 @@ if __name__ == '__main__':
     # Main method for running the summariser.
 
     ver = "APEL summariser %s.%s.%s" % __version__
-    opt_parser = OptionParser(description=__doc__, version=ver)
-    opt_parser.add_option('-d', '--db', help='the location of database config file',
-                          default='/etc/apel/db.cfg')
-    opt_parser.add_option('-c', '--config', help='the location of config file',
-                          default='/etc/apel/summariser.cfg')
-    opt_parser.add_option('-l', '--log_config', help='Location of logging config file (optional)',
-                          default='/etc/apel/logging.cfg')
-    (options,args) = opt_parser.parse_args()
+    default_db_conf_file = '/etc/apel/db.cfg'
+    default_conf_file = '/etc/apel/summariser.cfg'
+    arg_parser = ArgumentParser(description=__doc__)
 
-    runprocess(options.db, options.config, options.log_config)
+    arg_parser.add_argument('-d', '--db',
+                            help='Location of database config file',
+                            default=default_db_conf_file)
+    arg_parser.add_argument('-c', '--config',
+                            help='Location of config file',
+                            default=default_conf_file)
+    arg_parser.add_argument('-l', '--log_config',
+                            help='DEPRECATED - Location of logging config file',
+                            default=None)
+    arg_parser.add_argument('-v', '--version',
+                            action='version',
+                            version=ver)
+
+    # Parsing arguments into an argparse.Namespace object for structured access.
+    options = arg_parser.parse_args()
+
+    # Deprecating functionality.
+    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
+        logging.warning('Separate logging config file option has been deprecated.')
+
+    runprocess(options.db, options.config)

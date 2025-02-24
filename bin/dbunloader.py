@@ -21,13 +21,13 @@ from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
 
+from argparse import ArgumentParser
 try:
     # Renamed ConfigParser to configparser in Python 3
     import configparser as ConfigParser
 except ImportError:
     import ConfigParser
 import logging.config
-from optparse import OptionParser
 import os
 import sys
 
@@ -35,7 +35,6 @@ from apel import __version__
 from apel.common import set_up_logging
 from apel.db import ApelDb, ApelDbException
 from apel.db.unloader import DbUnloader
-
 
 RECORDS_PER_MESSAGE_MIN = 1
 RECORDS_PER_MESSAGE_DEFAULT = 1000
@@ -77,15 +76,31 @@ def _bounded_records_per_message(config_object, logger):
 
 
 if __name__ == '__main__':
-    opt_parser = OptionParser()
-    opt_parser.add_option('-d', '--db', help='location of configuration file for database',
-                          default='/etc/apel/db.cfg')
-    opt_parser.add_option('-c', '--config', help='Location of configuration file for dbunloader',
-                          default='/etc/apel/unloader.cfg')
-    opt_parser.add_option('-l', '--log_config', help='Location of logging configuration file for dbloader',
-                          default='/etc/apel/logging.cfg')
 
-    (options, args) = opt_parser.parse_args()
+    ver = 'Starting APEL dbunloader %s.%s.%s' % __version__
+    default_db_conf_location = '/etc/apel/db.cfg'
+    default_dbun_conf_location = '/etc/apel/unloader.cfg'
+    arg_parser = ArgumentParser()
+
+    arg_parser.add_argument('-d', '--db',
+                            help='Location of config file for database',
+                            default=default_db_conf_location)
+    arg_parser.add_argument('-c', '--config',
+                            help='Location of config file for dbunloader',
+                            default=default_dbun_conf_location)
+    arg_parser.add_argument('-l', '--log_config',
+                            help='DEPRECATED - Location of logging config file for dbloader',
+                            default=None)
+    arg_parser.add_argument('-v', '--version',
+                            action='version',
+                            version=ver)
+
+    # Parsing arguments into an argparse.Namespace object for structured access.
+    options = arg_parser.parse_args()
+
+    # Deprecating functionality.
+    if os.path.exists('/etc/apel/logging.cfg') or options.log_config is not None:
+        logging.warning('Separate logging config file option has been deprecated.')
 
     # Set default for 'interval' as it is a new option so may not be in config.
     cp = ConfigParser.ConfigParser({'interval': 'latest'})
@@ -93,12 +108,8 @@ if __name__ == '__main__':
 
     # set up logging
     try:
-        if os.path.exists(options.log_config):
-            logging.config.fileConfig(options.log_config)
-        else:
-            set_up_logging(cp.get('logging', 'logfile'),
-                           cp.get('logging', 'level'),
-                           cp.getboolean('logging', 'console'))
+        set_up_logging(cp.get('logging', 'logfile'), cp.get('logging', 'level'),
+                       cp.getboolean('logging', 'console'))
         log = logging.getLogger('dbunloader')
     except (ConfigParser.Error, ValueError, IOError) as err:
         print('Error configuring logging: %s' % err)
