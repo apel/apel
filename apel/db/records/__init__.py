@@ -31,10 +31,10 @@ from .cloud import CloudRecord
 from .cloud_summary import CloudSummaryRecord
 from .event import EventRecord
 from .group_attribute import GroupAttributeRecord
-from .job import JobRecord
+from .job import JobRecord, JobRecord04
 from .processed import ProcessedRecord
 
 from .storage import StorageRecord
-from .summary import SummaryRecord
-from .normalised_summary import NormalisedSummaryRecord
+from .summary import SummaryRecord, SummaryRecord04
+from .normalised_summary import NormalisedSummaryRecord, NormalisedSummaryRecord04
 from .sync import SyncRecord

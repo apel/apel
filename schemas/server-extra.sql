@@ -148,7 +148,7 @@ DROP VIEW IF EXISTS VSpecIntHistory;
 
 CREATE VIEW VSpecIntHistory AS
     SELECT site.name AS ExecutingSite,
-           CAST(ROUND(IF((ServiceLevelType = 'HEPSPEC'), (ServiceLevel * 250), ServiceLevel), 0) AS UNSIGNED) AS SpecInt2000,
+           CAST(ROUND(IF((ServiceLevelType = 'si2k'), ServiceLevel, (ServiceLevel * 250)), 0) AS UNSIGNED) AS SpecInt2000,
            CAST(SUM(NumberOfJobs) AS UNSIGNED) AS Njobs,
            Month,
            Year,
@@ -168,7 +168,7 @@ DROP VIEW IF EXISTS VHepSpecHistory;
 
 CREATE VIEW VHepSpecHistory AS
   SELECT site.name AS Site,
-         IF((ServiceLevelType = 'HEPSPEC'), ServiceLevel, (ServiceLevel / 250)) AS HepSpec06,
+         IF((ServiceLevelType = 'si2k'), (ServiceLevel / 250), ServiceLevel) AS HepSpec06,
          SUM(NumberOfJobs) AS NumberOfJobs,
          Year,
          Month,

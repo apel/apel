@@ -77,6 +77,8 @@ class Record(object):
         self._float_fields = []
         # Fields which should contain datetime (will be stored as a integers)
         self._datetime_fields = []
+        # Fields which should contain associative arrays
+        self._dict_fields = []
         # The dictionary into which all the information goes
         self._record_content = {}
         # These fields need special handling as they shouldn't be inserted as
@@ -173,13 +175,34 @@ class Record(object):
                         raise InvalidRecordException('Unknown datetime format!: %s' % value)
                 try:
                     return datetime.utcfromtimestamp(value)
-                except (ValueError, OverflowError, OSError): # Failed to parse timestamp
+                except (ValueError, OverflowError, OSError) as e: # Failed to parse timestamp
                     # Given timestamp is probably out of range
+                    raise InvalidRecordException(e)
+            elif name in self._dict_fields:
+                try:
+                    return self._clean_up_dict(value)
+                except ValueError as e:
                     raise InvalidRecordException(e)
             else:
                 return value
         except ValueError:
             raise InvalidRecordException('Invalid content for field: %s (%s)' % (name, str(value)))
+
+    def _clean_up_dict(self, dict_like):
+        """Take a dict-like string and return a dict object with float values."""
+        # Pull out the combined key:value elements from the string.
+        elements = dict_like.strip('{}').split(',')
+        # Separate the combined key:value elements into paired items.
+        pairs = list((a.strip(), float(b.strip())) for a, b in (element.split(':') for element in elements))
+
+        out_dict = {}
+        for key, value in pairs:
+            # Check for duplicates before inserting into the dictionary.
+            if key in out_dict:
+                raise ValueError('Duplicate keys found in %s' % dict_like)
+            else:
+                out_dict[key] = value
+        return out_dict
 
     def load_from_tuple(self, tup):
         '''
@@ -209,10 +232,32 @@ class Record(object):
         for line in lines:
             try:
                 key, value = [x.strip() for x in line.split(':', 1)]
+
+                # This loop handles the v0.4 messages that have dictionaries in certain fields
+                # It won't loop or do anything if _dict_fields is empty
+                for field in self._dict_fields:
+                    if field == key:
+
+                        # Retrieve the benchmark type based on the preferntial order set in the extract method
+                        benchmark_type, value = self._extract_benchmark_dict({key: value}, field)
+
+                        if "ServiceLevelType" not in self._record_content:
+                            # Set the benchmark type if it is its first occurence.
+                            self._record_content["ServiceLevelType"] = benchmark_type
+                        elif self._record_content["ServiceLevelType"] != benchmark_type:
+                            # If a different benchmark type is retrieved from another field, raise a warning
+                            raise InvalidRecordException("Mixture of benchmark types detected")
+                        # Else the ServiceLevelType is already set to benchmark_type so nothing to do.
+
+                        # Set the field to the value retrieved as that's what needs to do into the database
+                        self._record_content[field] = self.checked(field, value)
+                        break
+
                 self.set_field(key, value)
             except IndexError:
                 raise InvalidRecordException("Record contains a line  "
                                              "without a key-value pair: %s" % line)
+
         # Now, go through the logic to fill the contents[] dictionary.
         # The logic can get a bit involved here.
 
@@ -260,8 +305,15 @@ class Record(object):
                 # to say.
                 continue
 
-            # otherwise, add the line
-            msg += key + ": " + value + "\n"
+            if key in self._dict_fields:
+                # Create dictionary fields for v0.4 message formats.
+                benchmark_type = self._record_content['ServiceLevelType']
+                if benchmark_type is None:
+                    benchmark_type = "HEPSPEC"
+                msg += key + ": {" + benchmark_type + ": " + value + "}\n"
+            else:
+                # otherwise, add the line
+                msg += key + ": " + value + "\n"
 
         return msg
 
@@ -388,3 +440,22 @@ class Record(object):
                 elif value is not None:
                     raise InvalidRecordException("Datetime field " + key +
                                     " doesn't contain an datetime.")
+
+    def _extract_benchmark_dict(self, fielddict, field):
+        """Extract a preferrred benchmark type and value from a fielddict"""
+
+        benchmark_priority = ("hepscore23", "hepspec", "si2k")
+
+        if field in fielddict:
+            try:
+                cleaned_dict = self._clean_up_dict(fielddict[field])
+                # Covert keys to lower case
+                cleaned_dict = {k.lower(): v for k, v in cleaned_dict.items()}
+            except ValueError as e:
+                raise InvalidRecordException("Expecting dictionary-like value. %s" % e)
+
+            for benchmark_type in benchmark_priority:
+                if benchmark_type in cleaned_dict:
+                    return benchmark_type, cleaned_dict[benchmark_type]
+            # Raise error if for-loop exhausted without finding a valid benchmark.
+            raise InvalidRecordException("No valid benchmark type found")
