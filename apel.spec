@@ -199,6 +199,14 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Wed Feb 26 2025 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.3.0-1
+ - Added support for handling of multiple benchmarks in the accounting records, to enable
+   HEPscore benchmark accounting transition.
+ - Changed handling of benchmark types to make si2k the special exception when summarising
+   to give newer benchmarks primacy.
+ - Replaced use of `assert` with a check that can raise an exception.
+ - Fixed licence tag and date issues in build scripts.
+
  * Wed Feb 12 2025 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.2.1-1
  - Fixed issue with trailing whitespace in header for unloader and loader.
  - Refactored argparse code for CLI and fixed a typo.
