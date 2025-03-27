@@ -53,8 +53,8 @@ class CloudSummaryRecord(Record):
 
         # Fields which will have an integer stored in them
         self._int_fields = ['Month', 'Year', 'WallDuration', 'CpuDuration',
-                            'CpuCount', 'NetworkInbound', 'NetworkOutbound',
+                            'NetworkInbound', 'NetworkOutbound',
                             'Memory', 'Disk', 'NumberOfVMs']
 
-        self._float_fields = ['Benchmark']
+        self._float_fields = ['Benchmark', 'CpuCount']
         self._datetime_fields = ['EarliestStartTime', 'LatestStartTime']

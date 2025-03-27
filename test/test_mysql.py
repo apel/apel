@@ -300,7 +300,7 @@ EndTime: 1318849976
 SuspendDuration: NULL
 WallDuration: NULL
 CpuDuration: NULL
-CpuCount: 1
+CpuCount: 1.0
 NetworkType: NULL
 NetworkInbound: 0
 NetworkOutbound: 0
@@ -325,7 +325,7 @@ EndTime: NULL
 SuspendDuration: NULL
 WallDuration: 1582876
 CpuDuration: 437
-CpuCount: 1
+CpuCount: 1.0
 NetworkType: NULL
 NetworkInbound: NULL
 NetworkOutbound: NULL
@@ -354,7 +354,7 @@ EndTime: NULL
 SuspendDuration: NULL
 WallDuration: 1583876
 CpuDuration: 438
-CpuCount: 1
+CpuCount: 1.0
 NetworkType: NULL
 NetworkInbound: NULL
 NetworkOutbound: NULL

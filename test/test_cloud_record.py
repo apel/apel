@@ -56,7 +56,7 @@ EndTime: 1318848076
 SuspendDuration: NULL
 WallDuration: NULL
 CpuDuration: NULL
-CpuCount: 1
+CpuCount: 1.0
 NetworkType: NULL
 NetworkInbound: 0
 NetworkOutbound: 0
@@ -74,7 +74,7 @@ CloudType: OpenNebula
                         'MachineName': '\'one-0\'',
                         'LocalUserId': '5',
                         'Status': 'completed',
-                        'CpuCount': 1,
+                        'CpuCount': 1.0,
                         'PublicIPCount': 5,
                         'Memory': 512,
                         'BenchmarkType': 'Hepspec',
@@ -98,7 +98,7 @@ EndTime: NULL
 SuspendDuration: NULL
 WallDuration: 1582876
 CpuDuration: 437
-CpuCount: 1
+CpuCount: 1.0
 NetworkType: NULL
 NetworkInbound: NULL
 NetworkOutbound: NULL
@@ -122,7 +122,7 @@ CloudType: Openstack
                         'VOGroup': '/ops',
                         'VORole': 'Role=NULL',
                         'Status': 'started',
-                        'CpuCount': 1,
+                        'CpuCount': 1.0,
                         'PublicIPCount': 1,
                         'Memory': 512,
                         'BenchmarkType': 'Si2k',
@@ -147,7 +147,7 @@ EndTime: 1318849976
 SuspendDuration: NULL
 WallDuration: NULL
 CpuDuration: NULL
-CpuCount: 1
+CpuCount: 1.0
 NetworkType: NULL
 NetworkInbound: 0
 NetworkOutbound: 0
@@ -163,7 +163,7 @@ CloudType: OpenNebula
                          'MachineName': '\'one-1\'',
                          'LocalUserId': '5',
                          'Status': 'completed',
-                         'CpuCount': 1,
+                         'CpuCount': 1.0,
                          'PublicIPCount': None,
                          'Memory': 512,
                          'BenchmarkType': 'None',
@@ -199,7 +199,7 @@ CloudComputeService: Test Service'''
                          'SuspendDuration': None,
                          'WallDuration': None,
                          'CpuDuration': None,
-                         'CpuCount': 0,
+                         'CpuCount': 0.0,
                          'NetworkType': 'None',
                          'NetworkInbound': None,
                          'NetworkOutbound': None,
