@@ -5,13 +5,13 @@
 -- UPDATE SCRIPT FOR CLOUD SCHEMA
 
 -- This section will:
--- - Update CpuCount DBType in CloudRecords to DECIMAL(10,3) from INT.
+-- - Update CpuCount DBType in CloudRecords to DECIMAL(10,3) UNSIGNED from INT.
 -- - Update the ReplaceCloudRecord procedure to match this change.
--- - Update CpuCount DBType in CloudSummaries to DECIMAL(10,3) from INT.
+-- - Update CpuCount DBType in CloudSummaries to DECIMAL(10,3) UNSIGNED from INT.
 -- - Update the ReplaceCloudSummaryRecord procedure to match this change.
 
 -- CloudRecords
-ALTER TABLE CloudRecords MODIFY CpuCount DECIMAL(10,3);
+ALTER TABLE CloudRecords MODIFY CpuCount DECIMAL(10,3) UNSIGNED;
 
 
 DROP PROCEDURE IF EXISTS ReplaceCloudRecord;
@@ -26,7 +26,7 @@ CREATE PROCEDURE ReplaceCloudRecord(
   startTime DATETIME, endTime DATETIME,
   suspendDuration BIGINT,
   wallDuration BIGINT, cpuDuration BIGINT,
-  cpuCount DECIMAL(10,3), networkType VARCHAR(255),  networkInbound BIGINT,
+  cpuCount DECIMAL(10,3) UNSIGNED, networkType VARCHAR(255),  networkInbound BIGINT,
   networkOutbound BIGINT, publicIPCount INT, memory BIGINT,
   disk BIGINT, benchmarkType VARCHAR(50), benchmark DECIMAL(10,3), storageRecordId VARCHAR(255),
   imageId VARCHAR(255), cloudType VARCHAR(255),
@@ -90,7 +90,7 @@ DELIMITER ;
 
 
 -- CloudSummaries
-ALTER TABLE CloudSummaries MODIFY CpuCount DECIMAL(10,3);
+ALTER TABLE CloudSummaries MODIFY CpuCount DECIMAL(10,3) UNSIGNED;
 
 
 DROP PROCEDURE IF EXISTS ReplaceCloudSummaryRecord;
@@ -100,7 +100,7 @@ CREATE PROCEDURE ReplaceCloudSummaryRecord(
   vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255), status VARCHAR(255),
   cloudType VARCHAR(255), imageId VARCHAR(255),
   earliestStartTime DATETIME, latestStartTime DATETIME,
-  wallDuration BIGINT, cpuDuration BIGINT, cpuCount DECIMAL(10,3),
+  wallDuration BIGINT, cpuDuration BIGINT, cpuCount DECIMAL(10,3) UNSIGNED,
   networkInbound BIGINT, networkOutbound BIGINT, memory BIGINT,
   disk BIGINT, benchmarkType VARCHAR(50), benchmark DECIMAL(10,3), numberOfVMs BIGINT,
   publisherDN VARCHAR(255))

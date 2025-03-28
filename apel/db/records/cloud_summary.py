@@ -56,5 +56,5 @@ class CloudSummaryRecord(Record):
                             'NetworkInbound', 'NetworkOutbound',
                             'Memory', 'Disk', 'NumberOfVMs']
 
-        self._float_fields = ['Benchmark', 'CpuCount']
+        self._float_fields = ['CpuCount', 'Benchmark']
         self._datetime_fields = ['EarliestStartTime', 'LatestStartTime']

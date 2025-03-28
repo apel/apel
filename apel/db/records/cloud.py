@@ -59,7 +59,7 @@ class CloudRecord(Record):
         self._int_fields = [ "SuspendDuration", "WallDuration", "CpuDuration",
                              "NetworkInbound", "NetworkOutbound", "PublicIPCount", "Memory", "Disk"]
 
-        self._float_fields = ['Benchmark', 'CpuCount']
+        self._float_fields = ['CpuCount', 'Benchmark']
         self._datetime_fields = ["RecordCreateTime", "StartTime", "EndTime"]
 
     def _check_fields(self):
