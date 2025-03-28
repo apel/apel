@@ -32,7 +32,7 @@ CREATE TABLE CloudRecords (
   SuspendDuration BIGINT,
   WallDuration BIGINT,
   CpuDuration BIGINT,
-  CpuCount INT,
+  CpuCount DECIMAL(10,3) UNSIGNED,
 
   NetworkType VARCHAR(255),
   NetworkInbound BIGINT,
@@ -74,7 +74,7 @@ CREATE PROCEDURE ReplaceCloudRecord(
   startTime DATETIME, endTime DATETIME,
   suspendDuration BIGINT,
   wallDuration BIGINT, cpuDuration BIGINT,
-  cpuCount INT, networkType VARCHAR(255),  networkInbound BIGINT,
+  cpuCount DECIMAL(10,3) UNSIGNED, networkType VARCHAR(255),  networkInbound BIGINT,
   networkOutbound BIGINT, publicIPCount INT, memory BIGINT,
   disk BIGINT, benchmarkType VARCHAR(50), benchmark DECIMAL(10,3), storageRecordId VARCHAR(255),
   imageId VARCHAR(255), cloudType VARCHAR(255),
@@ -163,7 +163,7 @@ CREATE TABLE CloudSummaries (
   LatestStartTime DATETIME,
   WallDuration BIGINT,
   CpuDuration BIGINT,
-  CpuCount INT NOT NULL,
+  CpuCount DECIMAL(10,3) UNSIGNED NOT NULL,
 
   NetworkInbound BIGINT,
   NetworkOutbound BIGINT,
@@ -191,7 +191,7 @@ CREATE PROCEDURE ReplaceCloudSummaryRecord(
   vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255), status VARCHAR(255),
   cloudType VARCHAR(255), imageId VARCHAR(255),
   earliestStartTime DATETIME, latestStartTime DATETIME,
-  wallDuration BIGINT, cpuDuration BIGINT, cpuCount INT,
+  wallDuration BIGINT, cpuDuration BIGINT, cpuCount DECIMAL(10,3) UNSIGNED,
   networkInbound BIGINT, networkOutbound BIGINT, memory BIGINT,
   disk BIGINT, benchmarkType VARCHAR(50), benchmark DECIMAL(10,3), numberOfVMs BIGINT,
   publisherDN VARCHAR(255))

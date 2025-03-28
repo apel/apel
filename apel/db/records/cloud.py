@@ -56,10 +56,10 @@ class CloudRecord(Record):
                                 "MeasurementMonth", "MeasurementYear"]
 
         # Fields which will have an integer stored in them
-        self._int_fields = [ "SuspendDuration", "WallDuration", "CpuDuration", "CpuCount",
+        self._int_fields = [ "SuspendDuration", "WallDuration", "CpuDuration",
                              "NetworkInbound", "NetworkOutbound", "PublicIPCount", "Memory", "Disk"]
 
-        self._float_fields = ['Benchmark']
+        self._float_fields = ['CpuCount', 'Benchmark']
         self._datetime_fields = ["RecordCreateTime", "StartTime", "EndTime"]
 
     def _check_fields(self):
@@ -100,7 +100,7 @@ class CloudRecord(Record):
         # table allowing it because the CloudSummaries table
         # doesn't allow it, creating a problem at summariser time.
         if self._record_content['CpuCount'] is None:
-            self._record_content['CpuCount'] = 0
+            self._record_content['CpuCount'] = 0.0
 
         # Check the values of StartTime and EndTime
         # self._check_start_end_times()
