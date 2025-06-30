@@ -31,8 +31,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Python versions on Rocky 8 and 9 respectively
-        python-version: ['3.9']
+        # Python versions on RHEL 9 and 10 respectively
+        python-version: ['3.9', '3.12']
     name: Python ${{ matrix.python-version }} test
     steps:
     - uses: actions/checkout@v4
