@@ -100,8 +100,6 @@ mkdir -p "$TEMP_DIR_FOR_CLIENT/usr/bin"
 mkdir -p "$TEMP_DIR_FOR_CLIENT/etc/logrotate.d"
 mkdir -p "$TEMP_DIR_FOR_CLIENT/etc/apel"
 mkdir -p "$TEMP_DIR_FOR_CLIENT/usr/share/apel"
-mkdir -p "$TEMP_DIR_FOR_CLIENT/var/log/apel"
-mkdir -p  "$TEMP_DIR_FOR_CLIENT/var/run/apel"
 
 # apel-server
 mkdir -p "$TEMP_DIR_FOR_SERVER/etc/apel"
