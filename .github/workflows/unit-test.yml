@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   unit-test:
-    runs-on: ubuntu-20.04  # 20.04 to allow for Py 3.6
+    runs-on: ubuntu-22.04
     services:
       mariadb:
         image: mariadb:10.4
@@ -31,8 +31,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Python versions on Rocky 8 and 9 respectively
-        python-version: ['3.6', '3.9']
+        # Python versions on RHEL 9 and 10 respectively
+        python-version: ['3.9', '3.12']
     name: Python ${{ matrix.python-version }} test
     steps:
     - uses: actions/checkout@v4
