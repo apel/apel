@@ -38,14 +38,14 @@ class HTCondorParser(Parser):
         '''
         Parses single line from accounting log file.
         '''
-        # condor_history -constraint "JobStartDate > 0" -format "%s|" GlobalJobId -format "%s|" Owner -format "%d|" RemoteWallClockTime -format "%d|" RemoteUserCpu -format "%d|" RemoteSysCpu -format "%d|" JobStartDate -format "%d|" EnteredCurrentStatus -format "%d|" ResidentSetSize_RAW -format "%d|" ImageSize_RAW -format "%d|" RequestCpus
-        # arcce.rl.ac.uk#2376.0#71589|tatls011|287|107|11|1435671643|1435671930|26636|26832|1|1
+        # condor_history -constraint "JobStartDate > 0" -format "%s|" GlobalJobId -format "%s|" Owner -format "%d|" RemoteWallClockTime -format "%d|" RemoteUserCpu -format "%d|" RemoteSysCpu -format "%d|" JobStartDate -format "%d|" EnteredCurrentStatus -format "%d|" ResidentSetSize_RAW -format "%d|" ImageSize_RAW -format "%d|\n" RequestCpus
+        # arcce.rl.ac.uk#2376.0#71589|tatls011|287|107|11|1435671643|1435671930|26636|26832|1|1|
 
         values = line.strip().split('|')
 
         # Set scaling factor using value from log if appended to log line.
         cputmult = float(1.0)
-        if len(values) > 10:
+        if len(values) > 10 and values[10]:
             cputmult = float(values[10])
 
         mapping = {'Site'            : lambda x: self.site_name,
