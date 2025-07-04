@@ -5,7 +5,7 @@
 
 Name:           apel
 Version:        2.3.0
-%define releasenumber 1
+%define releasenumber 3
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
 
@@ -199,6 +199,9 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Fri Jul 04 2025 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.3.0-3
+ - Fix issue with dir conflicts in EL8 build.
+
  * Wed Feb 26 2025 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.3.0-1
  - Added support for handling of multiple benchmarks in the accounting records, to enable
    HEPscore benchmark accounting transition.
