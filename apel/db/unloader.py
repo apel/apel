@@ -72,7 +72,8 @@ class DbUnloader(object):
 
     DICT_APEL_HEADERS = {JobRecord04: JOB_MSG_HEADER_04,
                          SummaryRecord04: SUMMARY_MSG_HEADER_04,
-                         NormalisedSummaryRecord04: NORMALISED_SUMMARY_MSG_HEADER_04}
+                         NormalisedSummaryRecord04: NORMALISED_SUMMARY_MSG_HEADER_04,
+                         SyncRecord: SYNC_MSG_HEADER}
 
 
     # all record types for which withholding DNs is a valid option
