@@ -1,4 +1,4 @@
-name: "CodeQL"
+name: "CodeQL Advanced"
 
 on:
   push:
@@ -10,14 +10,13 @@ on:
     paths-ignore:
       - '**/*.md'
       - '**/*.txt'
-      - '**/*.ya?ml'
       - '**/*.sh'
   schedule:
     - cron: '31 10 * * 1'
 
 jobs:
   analyze:
-    name: Analyze
+    name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -27,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'python' ]
+        language: [ actions, python ]
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
 
     steps:
