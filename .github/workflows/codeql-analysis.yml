@@ -18,6 +18,8 @@ jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
+    if: '!github.event.repository.fork'
+
     permissions:
       actions: read
       contents: read
