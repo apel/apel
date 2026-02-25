@@ -264,7 +264,7 @@ class Record(object):
         self._check_fields()
 
 
-    def get_msg(self, withhold_dns=False):
+    def get_msg(self, withhold_dns=False, exclude_fields=None):
         '''
         Get the information about the record as a string in the format used
         for APEL's messages.  self._record_content holds the appropriate
@@ -274,7 +274,14 @@ class Record(object):
         None.  In this case, no line is included in the message unless
         it is a mandatory field.  If the field is mandatory, an
         exception is raised.
+
+        If exclude_fields is provided, any field in that set will be omitted
+        from the output message. This is used to conditionally exclude
+        optional fields like InfrastructureDescription based on configuration.
         '''
+        if exclude_fields is None:
+            exclude_fields = set()
+
         # Check that the record is consistent.
         self._check_fields()
         # for certain records, we can replace GlobalUserName with 'withheld'
@@ -285,6 +292,10 @@ class Record(object):
 
         msg = ""
         for key in self._msg_fields:
+            # Skip fields that are explicitly excluded by configuration.
+            if key in exclude_fields:
+                continue
+
             # reset value each time.
             value = None
             try:

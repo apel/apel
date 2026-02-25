@@ -239,6 +239,9 @@ def run_client(ccp):
 
         unloader = DbUnloader(db, unload_dir, include_vos, exclude_vos,
                               local_jobs, withhold_dns, dict_records)
+        # Preserve existing client behaviour: Ensures to include `infrastructureDescription` in outgoing messages.
+        unloader.include_infrastructure_description = True
+
         try:
             if interval == 'latest':
                 msgs, recs = unloader.unload_latest(table_name, send_ur)

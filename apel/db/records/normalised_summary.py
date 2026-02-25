@@ -48,7 +48,8 @@ class NormalisedSummaryRecord(Record):
         # used "InfrastructureType"
         self._msg_fields = ["Site", "Month", "Year", "GlobalUserName", "VO",
                             "VOGroup", "VORole", "SubmitHost", "Infrastructure",
-                            "NodeCount", "Processors", "EarliestEndTime",
+                            "InfrastructureDescription", "NodeCount",
+                            "Processors", "EarliestEndTime",
                             "LatestEndTime", "WallDuration", "CpuDuration",
                             "NormalisedWallDuration", "NormalisedCpuDuration",
                             "NumberOfJobs"]
@@ -66,7 +67,8 @@ class NormalisedSummaryRecord(Record):
         # This list specifies the information that goes in the database. It includes
         # the additional ServiceLevelType field.
         self._db_fields = ["Site", "Month", "Year", "GlobalUserName", "VO",
-                           "VOGroup", "VORole", "SubmitHost", "Infrastructure",
+                           "VOGroup", "VORole", "SubmitHost",
+                           "Infrastructure", "InfrastructureDescription",
                            "ServiceLevelType",
                            "NodeCount", "Processors", "EarliestEndTime",
                            "LatestEndTime", "WallDuration", "CpuDuration",
@@ -196,6 +198,8 @@ class NormalisedSummaryRecord(Record):
 
         infra = doc.createElement('aur:Infrastructure')
         infra.setAttribute('urf:type', self.get_field('Infrastructure'))
+        if self.get_field('InfrastructureDescription') is not None:
+            infra.setAttribute('urf:description', self.get_field('InfrastructureDescription'))
         ur.appendChild(infra)
 
         earliest = doc.createElement('aur:EarliestEndTime')
@@ -268,7 +272,7 @@ class NormalisedSummaryRecord04(NormalisedSummaryRecord):
         # used "InfrastructureType"
         self._msg_fields = [
             "Site", "Month", "Year", "GlobalUserName", "VO", "VOGroup", "VORole", "SubmitHost",
-            "Infrastructure", "NodeCount", "Processors", "EarliestEndTime",
+            "Infrastructure", "InfrastructureDescription", "NodeCount", "Processors", "EarliestEndTime",
             "LatestEndTime", "WallDuration", "CpuDuration", "NormalisedWallDuration",
             "NormalisedCpuDuration", "NumberOfJobs"
         ]
@@ -279,8 +283,8 @@ class NormalisedSummaryRecord04(NormalisedSummaryRecord):
         # It includes the extra ServiceLevelType field that's extracted from the dict fields.
         self._db_fields = [
             "Site", "Month", "Year", "GlobalUserName", "VO", "VOGroup", "VORole", "SubmitHost",
-            "Infrastructure", "ServiceLevelType", "NodeCount", "Processors", "EarliestEndTime",
-            "LatestEndTime", "WallDuration", "CpuDuration", "NormalisedWallDuration",
+            "Infrastructure", "InfrastructureDescription", "ServiceLevelType", "NodeCount", "Processors",
+            "EarliestEndTime", "LatestEndTime", "WallDuration", "CpuDuration", "NormalisedWallDuration",
             "NormalisedCpuDuration", "NumberOfJobs"
         ]
         # All allowed fields.

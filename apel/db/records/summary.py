@@ -44,9 +44,9 @@ class SummaryRecord(Record):
         # This list allows us to specify the order of lines when we construct
         # records.
         self._msg_fields = ["Site", "Month", "Year", "GlobalUserName", "VO",
-                            "VOGroup", "VORole", "SubmitHost", "InfrastructureType", "ServiceLevelType",
-                            "ServiceLevel", "NodeCount", "Processors", "EarliestEndTime", "LatestEndTime",
-                            "WallDuration", "CpuDuration", "NumberOfJobs"]
+                            "VOGroup", "VORole", "SubmitHost", "InfrastructureType", "InfrastructureDescription",
+                            "ServiceLevelType", "ServiceLevel", "NodeCount", "Processors", "EarliestEndTime",
+                            "LatestEndTime", "WallDuration", "CpuDuration", "NumberOfJobs"]
 
         # Fields which will have an integer stored in them
         self._int_fields = ["Month", "Year", "NodeCount", "Processors",
@@ -186,6 +186,8 @@ class SummaryRecord(Record):
 
         infra = doc.createElement('aur:Infrastructure')
         infra.setAttribute('urf:type', self.get_field('InfrastructureType'))
+        if self.get_field('InfrastructureDescription') is not None:
+            infra.setAttribute('urf:description', self.get_field('InfrastructureDescription'))
         ur.appendChild(infra)
 
         earliest = doc.createElement('aur:EarliestEndTime')
@@ -253,15 +255,15 @@ class SummaryRecord04(SummaryRecord):
         # as this is included in the dict for ServiceLevel.
         self._msg_fields = [
             "Site", "Month", "Year", "GlobalUserName", "VO", "VOGroup", "VORole", "SubmitHost",
-            "InfrastructureType", "ServiceLevel", "NodeCount", "Processors",
+            "InfrastructureType", "InfrastructureDescription", "ServiceLevel", "NodeCount", "Processors",
             "EarliestEndTime", "LatestEndTime", "WallDuration", "CpuDuration", "NumberOfJobs"
         ]
 
         # This list specifies the information that goes in the database.
         self._db_fields = [
             "Site", "Month", "Year", "GlobalUserName", "VO", "VOGroup", "VORole", "SubmitHost",
-            "InfrastructureType", "ServiceLevelType", "ServiceLevel", "NodeCount", "Processors",
-            "EarliestEndTime", "LatestEndTime", "WallDuration", "CpuDuration", "NumberOfJobs"
+            "InfrastructureType", "InfrastructureDescription", "ServiceLevelType", "ServiceLevel", "NodeCount",
+            "Processors", "EarliestEndTime", "LatestEndTime", "WallDuration", "CpuDuration", "NumberOfJobs"
         ]
 
         self._ignored_fields = ["UpdateTime"]
