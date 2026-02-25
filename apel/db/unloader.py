@@ -325,8 +325,15 @@ class DbUnloader(object):
 
         # Build the set of fields to exclude based on configuration.
         exclude_fields = set()
-        if not self.include_infrastructure_description:
-            exclude_fields.add('InfrastructureDescription')
+        
+        if record_type in (
+            SummaryRecord,
+            SummaryRecord04,
+            NormalisedSummaryRecord,
+            NormalisedSummaryRecord04
+        ):
+            if not self.include_infrastructure_description:
+                exclude_fields.add('InfrastructureDescription')
 
         buf = StringIO.StringIO()
         buf.write(self.APEL_HEADERS[record_type] + '\n')
