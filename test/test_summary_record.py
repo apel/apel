@@ -111,7 +111,7 @@ class TestSummaryRecord(unittest.TestCase):
                'ttribute urf:type="vo-group">/atlas</urf:GroupAttribute><urf:Gr'
                'oupAttribute urf:type="vo-role">Role=production</urf:GroupAttri'
                'bute></aur:UserIdentity><aur:SubmitHost>some.host.org</aur:Subm'
-               'itHost><aur:Infrastructure urf:type="grid"/><aur:EarliestEndTim'
+               'itHost><aur:Infrastructure urf:type="grid" urf:description="APEL-CREAM-PBS"/><aur:EarliestEndTim'
                'e>2010-03-01T01:00:00Z</aur:EarliestEndTime><aur:LatestEndTime>'
                '2010-03-20T01:00:00Z</aur:LatestEndTime><aur:WallDuration>PT234'
                '256S</aur:WallDuration><aur:CpuDuration>PT244435S</aur:CpuDurat'
@@ -137,6 +137,7 @@ class TestSummaryRecord(unittest.TestCase):
             VORole: Role=production
             SubmitHost: some.host.org
             InfrastructureType: grid
+            InfrastructureDescription: APEL-CREAM-PBS
             ServiceLevelType: Si2k
             ServiceLevel: 1000.0
             EarliestEndTime: 1267405200
@@ -154,6 +155,7 @@ class TestSummaryRecord(unittest.TestCase):
             VORole: Role=production
             SubmitHost: some.host.org
             InfrastructureType: local
+            InfrastructureDescription: APEL-CREAM-HTCONDOR
             ServiceLevelType: Si2k
             ServiceLevel: 1000.0
             EarliestEndTime: 1270083600
@@ -196,15 +198,18 @@ class TestSummaryRecord(unittest.TestCase):
         tuples = []
 
         tuple1 = ('RAL-LCG2', 3, 2010, '/C=whatever/D=someDN', 'atlas', '/atlas',
-                  'Role=production', 'some.host.org', 'grid', 'Si2k', 1000.0, None, None, datetime.utcfromtimestamp(1267405200),
+                  'Role=production', 'some.host.org', 'grid', 'APEL-CREAM-PBS',
+                  'Si2k', 1000.0, None, None, datetime.utcfromtimestamp(1267405200),
                   datetime.utcfromtimestamp(1269046800), 234256, 244435, 100)
 
         tuple2 = ('RAL-LCG2', 4, 2010, '/C=whatever/D=someDN', 'atlas', '/atlas',
-                  'Role=production', 'some.host.org', 'local', 'Si2k', 1000.0, None, None, datetime.utcfromtimestamp(1270083600),
+                  'Role=production', 'some.host.org', 'local', 'APEL-CREAM-HTCONDOR',
+                  'Si2k', 1000.0, None, None, datetime.utcfromtimestamp(1270083600),
                   datetime.utcfromtimestamp(1271725200), 234256, 244435, 100)
 
         tuple3 = ('RAL-LCG2', 5, 2010, '/C=whatever/D=someDN', 'atlas', '/atlas',
-                  'Role=production', 'some.host.org', 'local', 'Si2k', 1000.0, 1, 1, datetime.utcfromtimestamp(1272672000),
+                  'Role=production', 'some.host.org', 'local', 'None',
+                  'Si2k', 1000.0, 1, 1, datetime.utcfromtimestamp(1272672000),
                   datetime.utcfromtimestamp(1272672500), 234256, 244435, 100)
 
         tuples.append(tuple1)
