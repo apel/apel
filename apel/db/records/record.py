@@ -275,8 +275,8 @@ class Record(object):
         it is a mandatory field.  If the field is mandatory, an
         exception is raised.
 
-        If exclude_fields is provided, any field in that set will be omitted
-        from the output message. This is used to conditionally exclude
+        If exclude_fields is provided(as a set of strings), any field name in that set
+        will be omitted from the output message. This is used to conditionally exclude
         optional fields like InfrastructureDescription based on configuration.
         '''
         if exclude_fields is None:
