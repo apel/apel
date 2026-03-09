@@ -126,7 +126,7 @@ def copy_records(db1, db2, cutoff):
     Copy all records from the LcgRecords table in db1 to the JobRecords
     table in db2 whose EndTime is greater than the cutoff datetime.
     '''
-    c1 = db1.cursor(cursorclass=MySQLdb.cursors.SSCursor)
+    c1 = db1.cursor(MySQLdb.cursors.SSCursor)
     c2 = db2.cursor()
 
     remove_proc(c2)

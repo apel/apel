@@ -164,7 +164,7 @@ class ApelMysqlDb(object):
             # 'MySQL server has gone' exception
             self._mysql_reconnect()
 
-            c = self.db.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+            c = self.db.cursor(MySQLdb.cursors.DictCursor)
 
             for record in record_list:
                 values = record.get_db_tuple(source)
@@ -227,7 +227,7 @@ class ApelMysqlDb(object):
             # 'MySQL server has gone' exception
             self._mysql_reconnect()
 
-            c = self.db.cursor(cursorclass=MySQLdb.cursors.SSDictCursor)
+            c = self.db.cursor(MySQLdb.cursors.SSDictCursor)
             c.execute(query_string)
             while True:
                 for row in c.fetchmany(size=records_per_message):
