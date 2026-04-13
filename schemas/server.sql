@@ -113,7 +113,8 @@ CREATE TABLE Summaries (
   PublisherDNID INT NOT NULL,
 
   PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VORoleID, VOGroupID,
-               SubmitHostId, ServiceLevelType, ServiceLevel, NodeCount, Processors)
+               SubmitHostId, InfrastructureType, ServiceLevelType, ServiceLevel,
+               NodeCount, Processors)
 );
 
 
@@ -167,7 +168,7 @@ CREATE TABLE NormalisedSummaries (
   PublisherDNID INT NOT NULL,
 
   PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VORoleID, VOGroupID,
-               SubmitHostId, NodeCount, Processors, ServiceLevelType)
+               SubmitHostId, Infrastructure, NodeCount, Processors, ServiceLevelType)
 );
 
 
