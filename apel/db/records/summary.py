@@ -186,8 +186,6 @@ class SummaryRecord(Record):
 
         infra = doc.createElement('aur:Infrastructure')
         infra.setAttribute('urf:type', self.get_field('InfrastructureType'))
-        if self.get_field('InfrastructureDescription') is not None:
-            infra.setAttribute('urf:description', self.get_field('InfrastructureDescription'))
         ur.appendChild(infra)
 
         earliest = doc.createElement('aur:EarliestEndTime')

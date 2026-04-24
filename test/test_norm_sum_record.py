@@ -109,7 +109,7 @@ class TestNormalisedSummaryRecord(unittest.TestCase):
                'ttribute urf:type="vo-group">/atlas</urf:GroupAttribute><urf:Gr'
                'oupAttribute urf:type="vo-role">Role=production</urf:GroupAttri'
                'bute></aur:UserIdentity><aur:SubmitHost>some.host.org</aur:Subm'
-               'itHost><aur:Infrastructure urf:type="grid" urf:description="APEL-CREAM-PBS"/><aur:EarliestEndTim'
+               'itHost><aur:Infrastructure urf:type="grid"/><aur:EarliestEndTim'
                'e>2010-03-01T01:00:00Z</aur:EarliestEndTime><aur:LatestEndTime>'
                '2010-03-20T01:00:00Z</aur:LatestEndTime><aur:WallDuration>PT234'
                '256S</aur:WallDuration><aur:CpuDuration>PT244435S</aur:CpuDurat'
