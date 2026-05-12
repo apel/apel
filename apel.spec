@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        2.4.0
+Version:        2.4.1
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -199,6 +199,10 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Tue May 12 2026 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.4.1-1
+ - [server] Fixed overwriting of local/grid jobs by adding infrastructure type to primary
+   key of summary tables.
+
  * Wed Mar 11 2026 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.4.0-1
  - [server] Added support for decimal CPU counts for cloud VM accounting.
  - Improved compatibility of APEL code with different Python DB modules.
