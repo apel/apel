@@ -322,7 +322,7 @@ def runprocess(config_file):
     # remove all items from the list dns which are in the list dns_to_remove
     dns = [ dn for dn in dns if dn not in dns_to_remove ]
 
-    # print all the the dns to a file, with the discarded ones to a second file
+    # print all valid dns to a file, and all discarded ones to the log file
     try:
         with open(cfg.dn_file, 'w') as new_dn_file:
             added = 0
