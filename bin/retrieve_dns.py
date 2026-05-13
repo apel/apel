@@ -324,28 +324,25 @@ def runprocess(config_file):
 
     # print all the the dns to a file, with the discarded ones to a second file
     try:
-        new_dn_file = open(cfg.dn_file, 'w')
+        with open(cfg.dn_file, 'w') as new_dn_file:
+            added = 0
+            for dn in dns:
+                if verify_dn(dn):
+                    new_dn_file.write(dn)
+                    new_dn_file.write('\n')
+                    added += 1
+                elif dn.lstrip().startswith("#"):
+                    # Ignore comment lines starting with "#"
+                    log.debug("Comment ignored: %s", dn)
+                else:
+                    # We haven't accepted the DN, so write it to the log file.
+                    log.warning("DN not valid and won't be added: %s", dn)
     except IOError:
         log.warning("Failed to open file %s for writing.", cfg.dn_file)
         log.warning("Check the configuration.")
         log.warning("auth will exit.")
         log.info(LOG_BREAK)
         sys.exit(1)
-
-    added = 0
-    for dn in dns:
-        if verify_dn(dn):
-            new_dn_file.write(dn)
-            new_dn_file.write('\n')
-            added += 1
-        elif dn.lstrip().startswith("#"):
-            # Ignore comment lines starting with "#"
-            log.debug("Comment ignored: %s", dn)
-        else:
-            # We haven't accepted the DN, so write it to the log file.
-            log.warning("DN not valid and won't be added: %s", dn)
-
-    new_dn_file.close()
 
     log.info("%s DNs have been written to %s.", added, cfg.dn_file)
 
