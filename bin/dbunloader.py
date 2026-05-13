@@ -174,7 +174,7 @@ if __name__ == '__main__':
             exclude      = cp.get('unloader', 'exclude_vos')
             exclude_vos  = [ vo.strip() for vo in exclude.split(',') ]
         except ConfigParser.NoOptionError:
-            pass
+            pass  # Optional config so fall-back to None as defined above.
 
     interval = cp.get('unloader', 'interval')
 
