@@ -106,7 +106,6 @@ def run_as_daemon(loader, interval):
     # We need to preserve the file descriptor for any log files.
     rootlogger = logging.getLogger()
     log_files = [x.stream for x in rootlogger.handlers]
-    dc = DaemonContext(files_preserve=log_files)
 
     with DaemonContext(files_preserve=log_files):
         try:
