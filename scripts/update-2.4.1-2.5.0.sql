@@ -1,6 +1,6 @@
 -- ============================================================================
 -- APEL UPDATE SCRIPT FOR SERVER SCHEMA
--- APEL version 2.4.1 databases of the following types to 2.x.x:
+-- APEL version 2.4.1 databases of the following types to 2.5.0:
 -- Run this script against the SERVER accounting database.
 --
 -- This script will:
