@@ -100,6 +100,7 @@ CREATE TABLE Summaries (
   VORoleID INT NOT NULL,                -- Foreign key
   SubmitHostId INT NOT NULL,
   InfrastructureType VARCHAR(20),
+  InfrastructureDescription VARCHAR(100),
   ServiceLevelType VARCHAR(50) NOT NULL,
   ServiceLevel DECIMAL(10,3) NOT NULL,
   NodeCount INT NOT NULL,
@@ -123,18 +124,18 @@ DELIMITER //
 CREATE PROCEDURE ReplaceSummary(
   site VARCHAR(255),  month INT,  year INT,
   globalUserName VARCHAR(255), vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255),
-  submitHost VARCHAR(255), infrastructureType VARCHAR(50), serviceLevelType VARCHAR(50), serviceLevel DECIMAL(10,3),
-  nodeCount INT, processors INT, earliestEndTime DATETIME, latestEndTime DATETIME, wallDuration BIGINT, cpuDuration BIGINT,
-   numberOfJobs INT, publisherDN VARCHAR(255))
+  submitHost VARCHAR(255), infrastructureType VARCHAR(50), infrastructureDescription VARCHAR(100), serviceLevelType VARCHAR(50),
+  serviceLevel DECIMAL(10,3), nodeCount INT, processors INT, earliestEndTime DATETIME, latestEndTime DATETIME, wallDuration BIGINT,
+  cpuDuration BIGINT, numberOfJobs INT, publisherDN VARCHAR(255))
 BEGIN
     REPLACE INTO Summaries(SiteID, Month, Year, GlobalUserNameID, VOID,
-        VOGroupID, VORoleID, SubmitHostId, InfrastructureType, ServiceLevelType, ServiceLevel,
-        NodeCount, Processors, EarliestEndTime, LatestEndTime, WallDuration,
+        VOGroupID, VORoleID, SubmitHostId, InfrastructureType, InfrastructureDescription, ServiceLevelType,
+        ServiceLevel, NodeCount, Processors, EarliestEndTime, LatestEndTime, WallDuration,
         CpuDuration, NumberOfJobs, PublisherDNID)
       VALUES (
         SiteLookup(site), month, year, DNLookup(globalUserName), VOLookup(vo),
         VOGroupLookup(voGroup), VORoleLookup(voRole), SubmitHostLookup(submitHost),
-        infrastructureType, serviceLevelType, serviceLevel, nodeCount, processors, earliestEndTime,
+        infrastructureType, infrastructureDescription, serviceLevelType, serviceLevel, nodeCount, processors, earliestEndTime,
         latestEndTime, wallDuration, cpuDuration, numberOfJobs, DNLookup(publisherDN));
 END //
 DELIMITER ;
@@ -154,6 +155,7 @@ CREATE TABLE NormalisedSummaries (
   VORoleID INT NOT NULL,                -- Foreign key
   SubmitHostId INT NOT NULL,
   Infrastructure VARCHAR(20),
+  InfrastructureDescription VARCHAR(100),
   ServiceLevelType VARCHAR(50) NOT NULL DEFAULT '',
   NodeCount INT NOT NULL,
   Processors INT NOT NULL,
@@ -177,19 +179,19 @@ DELIMITER //
 CREATE PROCEDURE ReplaceNormalisedSummary(
   site VARCHAR(255),  month INT,  year INT,
   globalUserName VARCHAR(255), vo VARCHAR(255), voGroup VARCHAR(255), voRole VARCHAR(255),
-  submitHost VARCHAR(255), infrastructure VARCHAR(50), serviceLevelType VARCHAR(50),
+  submitHost VARCHAR(255), infrastructure VARCHAR(50), infrastructureDescription VARCHAR(100), serviceLevelType VARCHAR(50),
   nodeCount INT, processors INT, earliestEndTime DATETIME, latestEndTime DATETIME, wallDuration BIGINT, cpuDuration BIGINT,
   normalisedWallDuration BIGINT, normalisedCpuDuration BIGINT, numberOfJobs INT, publisherDN VARCHAR(255))
 BEGIN
     REPLACE INTO NormalisedSummaries(SiteID, Month, Year, GlobalUserNameID, VOID,
-        VOGroupID, VORoleID, SubmitHostId, Infrastructure, ServiceLevelType,
+        VOGroupID, VORoleID, SubmitHostId, Infrastructure, InfrastructureDescription, ServiceLevelType,
         NodeCount, Processors, EarliestEndTime, LatestEndTime, WallDuration,
         CpuDuration, NormalisedWallDuration, NormalisedCpuDuration,
         NumberOfJobs, PublisherDNID)
       VALUES (
         SiteLookup(site), month, year, DNLookup(globalUserName), VOLookup(vo),
         VOGroupLookup(voGroup), VORoleLookup(voRole), SubmitHostLookup(submitHost),
-        infrastructure, serviceLevelType, nodeCount, processors, earliestEndTime,
+        infrastructure, infrastructureDescription, serviceLevelType, nodeCount, processors, earliestEndTime,
         latestEndTime, wallDuration, cpuDuration, normalisedWallDuration, normalisedCpuDuration,
         numberOfJobs, DNLookup(publisherDN));
 END //
@@ -211,6 +213,7 @@ CREATE TABLE SuperSummaries (
   VORoleID INT NOT NULL,                -- Foreign key
   SubmitHostId INT NOT NULL,
   InfrastructureType VARCHAR(20),
+  InfrastructureDescription VARCHAR(100),
   ServiceLevelType VARCHAR(50) NOT NULL,
   ServiceLevel DECIMAL(10,3) NOT NULL,
   NodeCount INT NOT NULL,
@@ -243,6 +246,7 @@ CREATE TABLE HybridSuperSummaries (
   VORoleID INT NOT NULL,                -- ID for lookup table
   SubmitHostId INT NOT NULL,            -- ID for lookup table
   Infrastructure VARCHAR(20) NOT NULL,
+  InfrastructureDescription VARCHAR(100),
   ServiceLevelType VARCHAR(50) NOT NULL,
   /* Defaults for service level set so that warnings are not raised when
   normalised summaries (which lack service level value) are copied in.*/
@@ -269,8 +273,8 @@ DELIMITER //
 CREATE PROCEDURE SummariseJobs()
 BEGIN
   REPLACE INTO HybridSuperSummaries(SiteID, Month, Year, GlobalUserNameID, VOID,
-    VOGroupID, VORoleID, SubmitHostID, Infrastructure, ServiceLevelType,
-    ServiceLevel, NodeCount, Processors, EarliestEndTime, LatestEndTime,
+    VOGroupID, VORoleID, SubmitHostID, Infrastructure, InfrastructureDescription,
+    ServiceLevelType, ServiceLevel, NodeCount, Processors, EarliestEndTime, LatestEndTime,
     WallDuration, CpuDuration, NormalisedWallDuration, NormalisedCpuDuration,
     NumberOfJobs)
   SELECT SiteID,
@@ -282,6 +286,7 @@ BEGIN
          VORoleID,
          SubmitHostID,
          InfrastructureType,
+         InfrastructureDescription,
          ServiceLevelType,
          ServiceLevel,
          NodeCount,
@@ -307,8 +312,8 @@ DELIMITER //
 CREATE PROCEDURE NormaliseSummaries()
 BEGIN
   REPLACE INTO HybridSuperSummaries(SiteID, Month, Year, GlobalUserNameID, VOID,
-    VOGroupID, VORoleID, SubmitHostID, Infrastructure, ServiceLevelType,
-    ServiceLevel, NodeCount, Processors, EarliestEndTime, LatestEndTime,
+    VOGroupID, VORoleID, SubmitHostID, Infrastructure, InfrastructureDescription,
+    ServiceLevelType, ServiceLevel, NodeCount, Processors, EarliestEndTime, LatestEndTime,
     WallDuration, CpuDuration, NormalisedWallDuration, NormalisedCpuDuration,
     NumberOfJobs)
   SELECT SiteID,
@@ -320,6 +325,7 @@ BEGIN
          VORoleID,
          SubmitHostID,
          InfrastructureType,
+         InfrastructureDescription,
          ServiceLevelType,
          ServiceLevel,
          NodeCount,
@@ -342,7 +348,8 @@ DELIMITER //
 CREATE PROCEDURE CopyNormalisedSummaries()
 BEGIN
   REPLACE INTO HybridSuperSummaries(SiteID, Month, Year, GlobalUserNameID, VOID,
-    VOGroupID, VORoleID, SubmitHostID, Infrastructure, ServiceLevelType, NodeCount, Processors,
+    VOGroupID, VORoleID, SubmitHostID, Infrastructure, InfrastructureDescription,
+    ServiceLevelType, NodeCount, Processors,
     EarliestEndTime, LatestEndTime, WallDuration, CpuDuration,
     NormalisedWallDuration, NormalisedCpuDuration, NumberOfJobs)
   SELECT SiteID,
@@ -354,6 +361,7 @@ BEGIN
         VORoleID,
         SubmitHostID,
         Infrastructure,
+        InfrastructureDescription,
         ServiceLevelType,
         NodeCount,
         Processors,
@@ -640,6 +648,7 @@ CREATE VIEW VSummaries AS
         vorole.name VORole,
         submithost.name SubmitHost,
         InfrastructureType,
+        InfrastructureDescription,
         ServiceLevelType,
         ServiceLevel,
         NodeCount,
@@ -680,6 +689,7 @@ CREATE VIEW VNormalisedSummaries AS
         vorole.name VORole,
         submithost.name SubmitHost,
         Infrastructure,
+        InfrastructureDescription,
         ServiceLevelType,
         NodeCount,
         Processors,
@@ -724,6 +734,7 @@ CREATE VIEW VSuperSummaries AS
         vorole.name VORole,
         submithost.name SubmitHost,
         Infrastructure AS InfrastructureType,
+        InfrastructureDescription,
         ServiceLevelType,
         ServiceLevel,
         NodeCount,
@@ -766,6 +777,7 @@ CREATE VIEW VNormalisedSuperSummaries AS
          vorole.name VORole,
          submithost.name SubmitHost,
          Infrastructure,
+         InfrastructureDescription,
          ServiceLevelType,
          NodeCount,
          Processors,
