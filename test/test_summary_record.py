@@ -51,6 +51,8 @@ class TestSummaryRecord(unittest.TestCase):
 
             # not a proper test yet
             sr.get_msg()
+            sr.get_msg(withhold_dns=True)
+            sr.get_msg(exclude_fields={'InfrastructureDescription'})
 
 
     def test_load_from_msg_wrong(self):

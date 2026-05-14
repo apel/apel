@@ -51,6 +51,8 @@ class TestNormalisedSummaryRecord(unittest.TestCase):
 
             # not a proper test yet
             nsr.get_msg()
+            nsr.get_msg(withhold_dns=True)
+            nsr.get_msg(exclude_fields={'InfrastructureDescription'})
 
     def test_load_from_msg_wrong(self):
         """Check that invalid records don't get loaded."""
