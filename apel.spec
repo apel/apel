@@ -4,7 +4,7 @@
 %endif
 
 Name:           apel
-Version:        2.4.1
+Version:        2.5.0
 %define releasenumber 1
 Release:        %{releasenumber}%{?dist}
 Summary:        APEL packages
@@ -199,6 +199,9 @@ exit 0
 # ==============================================================================
 
 %changelog
+ * Thu May 14 2026 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.5.0-1
+ - [server] Added support for sites sending an InfrastructureDescription in summaries.
+
  * Tue May 12 2026 Adrian Coveney <adrian.coveney@stfc.ac.uk> - 2.4.1-1
  - [server] Fixed overwriting of local/grid jobs by adding infrastructure type to primary
    key of summary tables.
