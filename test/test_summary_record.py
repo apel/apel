@@ -8,7 +8,7 @@ from __future__ import print_function
 from future.builtins import str, zip
 
 from apel.db.records import SummaryRecord, InvalidRecordException
-from datetime import datetime, timedelta
+from datetime import datetime
 import unittest
 
 class TestSummaryRecord(unittest.TestCase):
@@ -51,6 +51,8 @@ class TestSummaryRecord(unittest.TestCase):
 
             # not a proper test yet
             sr.get_msg()
+            sr.get_msg(withhold_dns=True)
+            sr.get_msg(exclude_fields={'InfrastructureDescription'})
 
 
     def test_load_from_msg_wrong(self):
@@ -98,12 +100,7 @@ class TestSummaryRecord(unittest.TestCase):
             # Mock object so we don't have to use an actual DB.
             values = sr.get_db_tuple(test_dn)
         for item1, item2 in zip(values, rec_tuple):
-#            if isinstance(item1, datetime):
-#                if abs(item1 - item2) > timedelta(seconds = 1):
-#                    self.fail('Datetimes %s and %s do not match.' % (item1, item2))
-
             if item1 != item2 and str(item1) != str(item2):
-                print(values)
                 self.fail('Values changed when creating a summary record: ' +
                           str(item1) + ": " + str(item2))
 
@@ -142,6 +139,7 @@ class TestSummaryRecord(unittest.TestCase):
             VORole: Role=production
             SubmitHost: some.host.org
             InfrastructureType: grid
+            InfrastructureDescription: APEL-CREAM-PBS
             ServiceLevelType: Si2k
             ServiceLevel: 1000.0
             EarliestEndTime: 1267405200
@@ -159,6 +157,7 @@ class TestSummaryRecord(unittest.TestCase):
             VORole: Role=production
             SubmitHost: some.host.org
             InfrastructureType: local
+            InfrastructureDescription: APEL-CREAM-HTCONDOR
             ServiceLevelType: Si2k
             ServiceLevel: 1000.0
             EarliestEndTime: 1270083600
@@ -201,15 +200,18 @@ class TestSummaryRecord(unittest.TestCase):
         tuples = []
 
         tuple1 = ('RAL-LCG2', 3, 2010, '/C=whatever/D=someDN', 'atlas', '/atlas',
-                  'Role=production', 'some.host.org', 'grid', 'Si2k', 1000.0, None, None, datetime.utcfromtimestamp(1267405200),
+                  'Role=production', 'some.host.org', 'grid', 'APEL-CREAM-PBS',
+                  'Si2k', 1000.0, None, None, datetime.utcfromtimestamp(1267405200),
                   datetime.utcfromtimestamp(1269046800), 234256, 244435, 100)
 
         tuple2 = ('RAL-LCG2', 4, 2010, '/C=whatever/D=someDN', 'atlas', '/atlas',
-                  'Role=production', 'some.host.org', 'local', 'Si2k', 1000.0, None, None, datetime.utcfromtimestamp(1270083600),
+                  'Role=production', 'some.host.org', 'local', 'APEL-CREAM-HTCONDOR',
+                  'Si2k', 1000.0, None, None, datetime.utcfromtimestamp(1270083600),
                   datetime.utcfromtimestamp(1271725200), 234256, 244435, 100)
 
         tuple3 = ('RAL-LCG2', 5, 2010, '/C=whatever/D=someDN', 'atlas', '/atlas',
-                  'Role=production', 'some.host.org', 'local', 'Si2k', 1000.0, 1, 1, datetime.utcfromtimestamp(1272672000),
+                  'Role=production', 'some.host.org', 'local', 'None',
+                  'Si2k', 1000.0, 1, 1, datetime.utcfromtimestamp(1272672000),
                   datetime.utcfromtimestamp(1272672500), 234256, 244435, 100)
 
         tuples.append(tuple1)

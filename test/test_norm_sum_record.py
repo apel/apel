@@ -51,6 +51,8 @@ class TestNormalisedSummaryRecord(unittest.TestCase):
 
             # not a proper test yet
             nsr.get_msg()
+            nsr.get_msg(withhold_dns=True)
+            nsr.get_msg(exclude_fields={'InfrastructureDescription'})
 
     def test_load_from_msg_wrong(self):
         """Check that invalid records don't get loaded."""
@@ -133,6 +135,7 @@ class TestNormalisedSummaryRecord(unittest.TestCase):
             VORole: Role=production
             SubmitHost: some.host.org
             Infrastructure: grid
+            InfrastructureDescription: APEL-CREAM-PBS
             EarliestEndTime: 1267405200
             LatestEndTime: 1269046800
             WallDuration: 234256
@@ -150,6 +153,7 @@ class TestNormalisedSummaryRecord(unittest.TestCase):
             VORole: Role=production
             SubmitHost: some.host.org
             Infrastructure: local
+            InfrastructureDescription: APEL-CREAM-HTCONDOR
             EarliestEndTime: 1270083600
             LatestEndTime: 1271725200
             WallDuration: 234256
@@ -191,19 +195,22 @@ class TestNormalisedSummaryRecord(unittest.TestCase):
         tuples = []
 
         tuple1 = ('RAL-LCG2', 3, 2010, '/C=whatever/D=someDN', 'atlas',
-                  '/atlas',   'Role=production', 'some.host.org', 'grid', None,
+                  '/atlas',   'Role=production', 'some.host.org', 'grid',
+                  'APEL-CREAM-PBS', None,
                   None, None, datetime.utcfromtimestamp(1267405200),
                   datetime.utcfromtimestamp(1269046800), 234256, 244435, 234256,
                   244435, 100)
 
         tuple2 = ('RAL-LCG2', 4, 2010, '/C=whatever/D=someDN', 'atlas',
-                  '/atlas', 'Role=production', 'some.host.org', 'local', None,
+                  '/atlas', 'Role=production', 'some.host.org', 'local',
+                  'APEL-CREAM-HTCONDOR', None,
                   None, None, datetime.utcfromtimestamp(1270083600),
                   datetime.utcfromtimestamp(1271725200), 234256, 244435, 234256,
                   244435, 100)
 
         tuple3 = ('RAL-LCG2', 12, 2010, '/C=whatever/D=someDN', 'atlas',
-                  '/atlas', 'Role=production', 'some.host.org', 'local', None, 1, 1,
+                  '/atlas', 'Role=production', 'some.host.org', 'local',
+                  'None', None, 1, 1,
                   datetime.utcfromtimestamp(1291161600),
                   datetime.utcfromtimestamp(1291162100), 234256, 244435, 234256,
                   244435, 100)
@@ -287,6 +294,7 @@ class TestNormalisedSummaryRecord04(TestNormalisedSummaryRecord):
             VORole: Role=production
             SubmitHost: some.host.org
             Infrastructure: grid
+            InfrastructureDescription: APEL-CREAM-PBS
             EarliestEndTime: 1267405200
             LatestEndTime: 1269046800
             WallDuration: 234256
@@ -304,6 +312,7 @@ class TestNormalisedSummaryRecord04(TestNormalisedSummaryRecord):
             VORole: Role=production
             SubmitHost: some.host.org
             Infrastructure: local
+            InfrastructureDescription: APEL-CREAM-HTCONDOR
             EarliestEndTime: 1270083600
             LatestEndTime: 1271725200
             WallDuration: 234256
@@ -345,19 +354,22 @@ class TestNormalisedSummaryRecord04(TestNormalisedSummaryRecord):
         tuples = []
 
         tuple1 = ('RAL-LCG2', 3, 2010, '/C=whatever/D=someDN', 'atlas',
-                  '/atlas',   'Role=production', 'some.host.org', 'grid', 'hepscore23',
+                  '/atlas',   'Role=production', 'some.host.org', 'grid',
+                  'APEL-CREAM-PBS', 'hepscore23',
                   None, None, datetime.utcfromtimestamp(1267405200),
                   datetime.utcfromtimestamp(1269046800), 234256, 244435, 234256,
                   244435, 100)
 
         tuple2 = ('RAL-LCG2', 4, 2010, '/C=whatever/D=someDN', 'atlas',
-                  '/atlas', 'Role=production', 'some.host.org', 'local', 'hepspec',
+                  '/atlas', 'Role=production', 'some.host.org', 'local',
+                  'APEL-CREAM-HTCONDOR', 'hepspec',
                   None, None, datetime.utcfromtimestamp(1270083600),
                   datetime.utcfromtimestamp(1271725200), 234256, 244435, 234256,
                   244435, 100)
 
         tuple3 = ('RAL-LCG2', 12, 2010, '/C=whatever/D=someDN', 'atlas',
-                  '/atlas', 'Role=production', 'some.host.org', 'local', 'si2k', 1, 1,
+                  '/atlas', 'Role=production', 'some.host.org', 'local',
+                  'None', 'si2k', 1, 1,
                   datetime.utcfromtimestamp(1291161600),
                   datetime.utcfromtimestamp(1291162100), 234256, 244435, 234256,
                   244435, 100)

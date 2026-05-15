@@ -1,7 +1,10 @@
+# To set up locally with a Python 3.9 compatible version:
+# pip install pre-commit==4.3.0
+# pre-commit install --install-hooks
 # See https://pre-commit.com for more information
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.1.0  # Python 3.6 compatible
+  rev: v6.0.0  # Python 3.9 compatible
   hooks:
   # Python related checks
   - id: check-ast
@@ -25,7 +28,7 @@ repos:
   - id: trailing-whitespace
 
 - repo: https://github.com/pre-commit/pygrep-hooks
-  rev: v1.10.0
+  rev: v1.10.0  # Python 3.9 compatible
   hooks:
   - id: python-check-mock-methods
   - id: python-no-eval
