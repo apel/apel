@@ -237,7 +237,7 @@ CREATE VIEW VSummaries AS
         AND SubmitHostID = submithost.id;
 
 
---  Update View on Summaries
+--  Update View on NormalisedSummaries
 DROP VIEW IF EXISTS VNormalisedSummaries;
 CREATE VIEW VNormalisedSummaries AS
     SELECT
@@ -278,7 +278,7 @@ CREATE VIEW VNormalisedSummaries AS
         AND SubmitHostID = submithost.id;
 
 
---  Update View on VSuperSummaries
+--  Update View on HybridSuperSummaries
 DROP VIEW IF EXISTS VSuperSummaries;
 CREATE VIEW VSuperSummaries AS
     SELECT
@@ -318,7 +318,7 @@ CREATE VIEW VSuperSummaries AS
         AND SubmitHostID = submithost.id;
 
 
---  Update View on VNormalisedSuperSummaries
+--  Update normalised View on HybridSuperSummaries
 DROP VIEW IF EXISTS VNormalisedSuperSummaries;
 CREATE VIEW VNormalisedSuperSummaries AS
   SELECT UpdateTime,
