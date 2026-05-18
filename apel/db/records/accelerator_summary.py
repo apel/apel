@@ -68,6 +68,8 @@ class AcceleratorSummary(Record):
             "Benchmark",
         ]
 
+        self._ignored_fields = ["CloudType", "CloudComputeService"]
+
         # This list specifies the output ordering for printed records
         self._msg_fields = self._db_fields
 
