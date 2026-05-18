@@ -26,6 +26,8 @@ from apel.db.records import (BlahdRecord,
                              CloudSummaryRecord,
                              EventRecord,
                              GroupAttributeRecord,
+                             AcceleratorRecord,
+                             AcceleratorSummary,
                              JobRecord,
                              JobRecord04,
                              NormalisedSummaryRecord,
@@ -61,7 +63,9 @@ class ApelMysqlDb(object):
                     ProcessedRecord : 'VProcessedFiles',
                     SummaryRecord : 'VSummaries',
                     SummaryRecord04: 'VSummaries',
-                    StorageRecord: 'VStarRecords'}
+                    StorageRecord: 'VStarRecords',
+                    AcceleratorSummary: 'AcceleratorSummaries',
+                    }
 
     # These simply need to have the same number of arguments as the stored procedures defined in the database schemas.
     INSERT_PROCEDURES = {
@@ -82,7 +86,9 @@ class ApelMysqlDb(object):
               CloudRecord : "CALL ReplaceCloudRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               CloudSummaryRecord : "CALL ReplaceCloudSummaryRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               StorageRecord: "CALL ReplaceStarRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-              GroupAttributeRecord: "CALL ReplaceGroupAttribute(%s, %s, %s)"
+              GroupAttributeRecord: "CALL ReplaceGroupAttribute(%s, %s, %s)",
+              AcceleratorRecord: "CALL ReplaceAcceleratorRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+              AcceleratorSummary: "CALL ReplaceAcceleratorSummaryRecord(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
               }
 
     def __init__(self, host, port, username, pwd, db):
@@ -104,6 +110,7 @@ class ApelMysqlDb(object):
         self._local_jobs_proc = "LocalJobs"
         self._spec_lookup_proc = "SpecLookup (%s, %s, %s, %s)"
         self._spec_update_proc = "CALL SpecUpdate (%s, %s, %s, %s, %s)"
+        self._summarise_accelerators_proc = "SummariseAccelerators"
 
         self._processed_clean = "CALL CleanProcessedFiles(%s)"
 
@@ -458,6 +465,35 @@ class ApelMysqlDb(object):
 
             if self.db is not None:
                 self.db.rollback()
+
+    def summarise_accelerators(self):
+        """
+        Aggregate the AcceleratorRecords table and put the results in the
+        AcceleratorSummaries table.  This method does this by calling the
+        SummariseAccelerators procedure.
+
+        Any failure will result in the entire transaction being rolled
+        back.
+        """
+        try:
+            # prevent MySQLdb from raising
+            # 'MySQL server has gone' exception
+            self._mysql_reconnect()
+
+            c = self.db.cursor()
+
+            log.info("Summarising Accelerator records...")
+            c.callproc(self._summarise_accelerators_proc)
+            log.info("Done.")
+
+            self.db.commit()
+        except MySQLdb.Error as e:
+            log.error("A mysql error occurred: %s", e)
+            log.error("Any transaction will be rolled back.")
+
+            if self.db is not None:
+                self.db.rollback()
+            raise
 
     def join_records(self):
         '''

@@ -141,7 +141,8 @@ def runprocess(db_config_file, config_file):
             if stale_summary_clean_up:
                 db.clean_stale_cloud_summaries(start_time,
                                                stale_summary_age_limit_days)
-
+        elif db_type == 'accelerator':
+            db.summarise_accelerators()
         else:
             raise ApelDbException('Unknown database type: %s' % db_type)
 
