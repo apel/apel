@@ -25,5 +25,7 @@ NORMALISED_SUMMARY_MSG_HEADER_04 = "APEL-normalised-summary-message: v0.4"
 SYNC_MSG_HEADER = "APEL-sync-message: v0.1"
 CLOUD_MSG_HEADER = 'APEL-cloud-message: v0.4'
 CLOUD_SUMMARY_MSG_HEADER = 'APEL-cloud-summary-message: v0.4'
+ACCELERATOR_MSG_TYPE = "APEL-accelerator-message"
+ACCELERATOR_SUMMARY_MSG_TYPE = "APEL-accelerator-summary-message"
 
 from apel.db.apeldb import ApelDb, Query, ApelDbException

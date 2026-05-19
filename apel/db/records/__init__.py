@@ -33,6 +33,8 @@ from .event import EventRecord
 from .group_attribute import GroupAttributeRecord
 from .job import JobRecord, JobRecord04
 from .processed import ProcessedRecord
+from .accelerator import AcceleratorRecord
+from .accelerator_summary import AcceleratorSummary
 
 from .storage import StorageRecord
 from .summary import SummaryRecord, SummaryRecord04
