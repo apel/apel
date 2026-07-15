@@ -197,38 +197,6 @@ BEGIN
 END //
 DELIMITER ;
 
-
--- -----------------------------------------------------------------------------
--- SuperSummaries
--- Deprecated in 1.3.0
-DROP TABLE IF EXISTS SuperSummaries;
-CREATE TABLE SuperSummaries (
-  UpdateTime TIMESTAMP,
-  SiteID INT NOT NULL,                  -- Foreign key
-  Month INT NOT NULL,
-  Year INT NOT NULL,
-  GlobalUserNameID INT NOT NULL,        -- Foreign key
-  VOID INT NOT NULL,                    -- Foreign key
-  VOGroupID INT NOT NULL,               -- Foreign key
-  VORoleID INT NOT NULL,                -- Foreign key
-  SubmitHostId INT NOT NULL,
-  InfrastructureType VARCHAR(20),
-  InfrastructureDescription VARCHAR(100),
-  ServiceLevelType VARCHAR(50) NOT NULL,
-  ServiceLevel DECIMAL(10,3) NOT NULL,
-  NodeCount INT NOT NULL,
-  Processors INT NOT NULL,
-  EarliestEndTime DATETIME,
-  LatestEndTime DATETIME,
-  WallDuration BIGINT UNSIGNED NOT NULL,
-  CpuDuration BIGINT UNSIGNED NOT NULL,
-  NumberOfJobs BIGINT UNSIGNED NOT NULL,
-
-  PRIMARY KEY (SiteID, Month, Year, GlobalUserNameID, VOID, VORoleID, VOGroupID,
-               SubmitHostId, InfrastructureType, ServiceLevelType, ServiceLevel,
-               NodeCount, Processors)
-);
-
 -- -----------------------------------------------------------------------------
 -- HybridSuperSummaries
 -- These contain normalised durations as well as the original service levels

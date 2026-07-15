@@ -208,7 +208,7 @@ class ApelMysqlDb(object):
 
     def get_sync_records(self, query=None, records_per_message=1000):
         """
-        Get sync records from the SuperSummaries table. Filter by the
+        Get sync records from the VSuperSummaries view. Filter by the
         provided query.
         """
         if query is not None:
