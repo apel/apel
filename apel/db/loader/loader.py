@@ -19,7 +19,7 @@ Module containing the Loader class.
 '''
 
 from __future__ import absolute_import
-from future.builtins import next, object, str
+from future.builtins import next, str
 
 import logging
 import os
@@ -46,7 +46,7 @@ class LoaderException(Exception):
     pass
 
 
-class Loader(object):
+class Loader:
     '''
     Designed to read apel messages containing summary records or individual
     job records and load them into the appropriate database.

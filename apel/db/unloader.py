@@ -17,7 +17,7 @@
 '''
 from future import standard_library
 standard_library.install_aliases()
-from future.builtins import object, str
+from future.builtins import str
 
 import datetime
 import os
@@ -45,7 +45,7 @@ from dirq.QueueSimple import QueueSimple
 log = logging.getLogger(__name__)
 
 
-class DbUnloader(object):
+class DbUnloader:
 
     APEL_HEADERS = {JobRecord: JOB_MSG_HEADER,
                     SummaryRecord: SUMMARY_MSG_HEADER,

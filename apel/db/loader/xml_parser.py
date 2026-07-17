@@ -16,8 +16,6 @@
    @author: Konrad Jopek
 '''
 
-from future.builtins import object
-
 import xml.dom.minidom
 
 class XMLParserException(Exception):
@@ -26,7 +24,7 @@ class XMLParserException(Exception):
     '''
     pass
 
-class XMLParser(object):
+class XMLParser:
     '''
     Base class for CarParser and StarParser
 

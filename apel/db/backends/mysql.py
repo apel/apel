@@ -18,7 +18,7 @@ Created on 27 Oct 2011
     @author: Will Rogers, Konrad Jopek
 '''
 
-from future.builtins import object, str
+from future.builtins import str
 
 from apel.db import ApelDbException
 from apel.db.records import (BlahdRecord,
@@ -47,7 +47,7 @@ log = logging.getLogger(__name__)
 # treat MySQL warnings as exceptions
 # warnings.simplefilter("error", category=MySQLdb.Warning)
 
-class ApelMysqlDb(object):
+class ApelMysqlDb:
     '''
     MySQL implementation of the general ApelDb interface.
     '''

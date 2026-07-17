@@ -16,7 +16,6 @@
    @author: Konrad Jopek
 '''
 
-from future.builtins import object
 from apel import __version__
 
 import logging
@@ -26,7 +25,7 @@ log = logging.getLogger(__name__)
 class ParserException(Exception):
     pass
 
-class Parser(object):
+class Parser:
     ''' The base class for all parsers '''
 
     UNPROCESSED = '0'

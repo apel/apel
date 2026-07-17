@@ -53,7 +53,7 @@ class RecordFactoryException(Exception):
     pass
 
 
-class RecordFactory(object):
+class RecordFactory:
     '''
     Class to create message objects for the appropriate message.  We only
     expect to make JobRecord and SummaryRecord objects, but this shouldn't
